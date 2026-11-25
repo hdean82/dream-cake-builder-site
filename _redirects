@@ -1,0 +1,5 @@
+/editor          /studio.html   301
+/editor/*        /studio.html   301
+/editor.html     /studio.html   301
+/client-review.html  /contact.html  302
+/launch-board*   /  302

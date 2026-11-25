@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Your Cake Quote · Dream Cake Builder</title>
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+.q-wrap{max-width:780px;margin:0 auto;padding:6px 14px 30px}
+.doc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;box-shadow:0 8px 24px #7a1a5a12}
+.dtop{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--acc);padding-bottom:12px;margin-bottom:12px}
+.dbrand{font-family:Fraunces,Georgia,serif;font-size:24px;font-weight:600;color:var(--acc)}
+.dno{text-align:right}.dno b{display:block;font-family:Fraunces,Georgia,serif;font-size:22px;text-transform:capitalize}.dno span{color:var(--muted);font-size:13px}
+.note{color:var(--muted);font-size:13px}
+.dmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:8px 0 14px}
+.lbl{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:12px 0 3px}
+.dmeta .lbl{margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 4px}
+td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
+.n{text-align:right;white-space:nowrap}
+.dtot{margin:10px 0 0 auto;max-width:300px;font-size:14px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:3px 0}.kv.tot{font-weight:600;border-top:1px solid var(--line);margin-top:4px;padding-top:6px}
+.dpics{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.dpics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.pre{white-space:pre-wrap;margin:0;font-size:14px}
+.dcancel{border:2px solid #b3261e;color:#b3261e;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:13px}.dcancel b{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.docfoot{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 0}
+.answer{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.answer h2{font-size:20px;margin:0 0 4px}
+.field{display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.field input,.field textarea{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink)}
+.field textarea{min-height:80px;resize:vertical}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.state{border-radius:14px;padding:14px 16px;margin-top:14px;font-size:15px}
+.state.ok{background:#e3f4f2;color:#0f5f5b;border:1px solid #bfe3df}
+.state.no{background:#fdecea;color:#8c1d16;border:1px solid #f3c7c2}
+.msg{color:#8c1d16;font-size:14px;min-height:1em;margin:6px 0 0}
+.paybtn{display:inline-flex;align-items:center;gap:6px}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}.big{font-family:Fraunces,Georgia,serif;font-size:26px;color:var(--ink);margin-bottom:6px}
+@media print{.site-head,.site-foot,.answer,.noprint{display:none!important}body{background:#fff!important}.doc{border:0;box-shadow:none}}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
+ </div>
+</header>
+<main class="band"><div class="q-wrap" id="app"><p class="note" style="padding:20px 0">Loading…</p></div></main>
+<footer class="site-foot"><div class="foot-in"><span>Sent with <a href="index.html">Dream Cake Builder</a>.</span><span class="end">© <span data-year>2026</span></span></div></footer>
+<script src="assets/dcb-site.js" defer></script>
+<script>
+{
+const SB='https://gcorvodfcxhumesttwvj.supabase.co',KEY='sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app=$('app');
+const token=(new URLSearchParams(location.search).get('t')||'').trim();
+let Q=null,urls={};
+const rpc=async(fn,body)=>{const r=await fetch(`${SB}/rest/v1/rpc/${fn}`,{method:'POST',headers:H,body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||'Something went wrong');return j};
+const safeColor=c=>/^#[0-9a-fA-F]{6}$/.test(c||'')?c:'#c12c7e';
+const safeLink=u=>/^https:\/\/[^\s"'<>]+$/.test(u||'')?u:'';
+
+function msg(t,x){app.innerHTML=`<div class="empty"><div class="big">${esc(t)}</div><p>${esc(x)}</p></div>`}
+function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
+ document.title=`${d.title||'Quote'} #${d.no} · ${d.biz}`;
+ const when=Q.responded_at?new Date(Q.responded_at).toLocaleDateString(undefined,{month:'long',day:'numeric'}):'';
+ app.innerHTML=`
+ <div class="doc" style="--acc:${safeColor(d.accent)}">
+  <div class="dtop"><div><div class="dbrand">${esc(d.biz)}</div><div class="note">${esc(d.contact)}</div></div><div class="dno"><b>${esc(d.title)}</b><span>#${esc(d.no)}</span></div></div>
+  ${d.cancelled?`<div class="dcancel"><b>Cancelled</b>${d.cancelled.note?`<div class="pre" style="color:var(--ink)">${esc(d.cancelled.note)}</div>`:''}</div>`:''}
+  <div class="dmeta"><div><span class="lbl">For</span><b>${esc(d.customer)}</b></div>
+   <div><span class="lbl">Event</span><b>${esc(d.date||'Date to be set')}${d.time?' · '+esc(d.time):''}</b><div class="note">${esc([d.event,d.handoff+(d.address?': '+d.address:'')].filter(Boolean).join(' · '))}</div></div>
+   <div><span class="lbl">${esc(d.validLabel)}</span><b>${esc(d.validDate)}</b></div></div>
+  <table><thead><tr><th>Item</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Total</th></tr></thead><tbody>
+   ${(d.items||[]).map(it=>`<tr><td><b>${esc(it.title)}</b>${(it.lines||[]).map(l=>`<div class="note">${esc(l)}</div>`).join('')}</td><td class="n">${esc(it.qty)}</td><td class="n">${esc(it.price)}</td><td class="n">${esc(it.total)}</td></tr>`).join('')}
+  </tbody></table>
+  <div class="dtot"><div class="kv"><span>Subtotal</span><span>${esc(d.sub)}</span></div>${d.tax?`<div class="kv"><span>Tax</span><span>${esc(d.tax)}</span></div>`:''}${d.fee?`<div class="kv"><span>Delivery</span><span>${esc(d.fee)}</span></div>`:''}
+   <div class="kv tot"><span>Total</span><span>${esc(d.total)}</span></div>${d.paid?`<div class="kv"><span>Paid</span><span>${esc(d.paid)}</span></div>`:''}
+   <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv tot"><span>Balance due</span><span>${esc(d.bal)}</span></div></div>
+  ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
+  ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
+  ${d.payNote||safeLink(d.payLink)?`<span class="lbl">How to pay</span>${d.payNote?`<p class="pre">${esc(d.payNote)}</p>`:''}${safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:''}`:''}
+  ${d.terms?`<span class="lbl">Terms</span><p class="pre note">${esc(d.terms)}</p>`:''}
+  ${d.footer?`<p class="docfoot">${esc(d.footer)}</p>`:''}
+ </div>
+ ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b> ${esc(d.biz)} will see your answer in their orders.${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</div>${answerBox(true)}`
+  :st==='declined'?`<div class="state no"><b>You declined this ${isQ?'quote':'invoice'}${when?' on '+esc(when):''}.</b> Changed your mind? Send ${esc(d.biz)} a message below.</div>${answerBox(true)}`
+  :Q.expired?`<div class="state no"><b>This quote has expired.</b> Send ${esc(d.biz)} a message below to ask for a new one.</div>${answerBox(true)}`
+  :answerBox(false)}
+ <p class="noprint" style="text-align:center;margin:12px 0 0"><button class="btn sm" type="button" onclick="print()">Print Or Save As PDF</button></p>`;
+}
+function answerBox(msgOnly){const isQ=Q.doc.kind==='quote';
+ return `<form class="answer noprint" id="ans" novalidate><h2>${msgOnly?'Send A Message':isQ?'Ready To Book?':'Questions?'}</h2>
+  <p class="note" style="margin:0">${msgOnly?`Your message goes straight to ${esc(Q.doc.biz)}.`:isQ?`Approve to let ${esc(Q.doc.biz)} know you'd like to go ahead, or send a question first.`:`Let ${esc(Q.doc.biz)} know if anything needs changing.`}</p>
+  <div class="field"><label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="120" value="${esc(Q.responder_name||Q.doc.customer||'')}"></div>
+  <div class="field"><label for="a-msg">Message <span class="note">optional</span></label><textarea id="a-msg" maxlength="2000" placeholder="Anything you'd like to add or change"></textarea></div>
+  ${!msgOnly&&isQ&&Q.doc.terms?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-terms" style="margin-top:3px"> I've read the terms above.</label>`:''}
+  <div class="acts">${msgOnly?`<button class="btn primary" type="button" data-act="message">Send Message</button>`:`${isQ?`<button class="btn primary" type="button" data-act="approve">Approve Quote</button>`:''}<button class="btn" type="button" data-act="message">Send A Question</button>${isQ?`<button class="btn" type="button" data-act="decline">Decline</button>`:''}`}</div>
+  <p class="msg" id="a-out" role="status"></p></form>`}
+
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act,out=$('a-out');
+ const name=$('a-name').value.trim(),m=$('a-msg').value.trim();out.textContent='';
+ if(!name){out.textContent='Please type your name.';$('a-name').focus();return}
+ if(act==='message'&&!m){out.textContent='Please write your message.';$('a-msg').focus();return}
+ if(act==='approve'&&$('a-terms')&&!$('a-terms').checked){out.textContent='Please tick the box to confirm you read the terms.';return}
+ if(act==='decline'&&!confirm('Decline this quote?'))return;
+ document.querySelectorAll('[data-act]').forEach(x=>x.disabled=true);b.textContent='Sending…';
+ try{const st=await rpc('shop_quote_respond',{p_token:token,p_action:act,p_name:name,p_message:m||null});
+  fetch(`${SB}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'quote',token}),keepalive:true}).catch(()=>{});
+  Q.status=st;Q.responder_name=name;Q.responded_at=new Date().toISOString();draw();
+  if(act==='message'){const o=$('a-out');if(o){o.style.color='#0f5f5b';o.textContent='Message sent. Thank you!'}}
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
+ }catch(err){document.querySelectorAll('[data-act]').forEach(x=>x.disabled=false);b.textContent={approve:'Approve Quote',decline:'Decline',message:'Send Message'}[act];out.textContent=err.message||'Something went wrong. Please try again.'}});
+
+(async()=>{
+ if(!/^[0-9a-f-]{36}$/i.test(token))return msg('Link not found','Please check the link you were sent.');
+ try{Q=await rpc('shop_quote_view',{p_token:token});
+  if(!Q)return msg('This link is no longer active','Please contact your cake artist for a new link.');
+  draw();
+  const paths=(Q.doc.images||[]).slice(0,8);
+  if(paths.length){const r=await fetch(`${SB}/storage/v1/object/sign/shop-files`,{method:'POST',headers:H,body:JSON.stringify({expiresIn:86400,paths})});
+   if(r.ok){(await r.json()).forEach(x=>{if(x.signedURL&&x.path)urls[x.path]=SB+'/storage/v1'+x.signedURL});const keep=[$('a-name')&&$('a-name').value,$('a-msg')&&$('a-msg').value];draw();if(keep[0]!=null&&$('a-name')){$('a-name').value=keep[0];$('a-msg').value=keep[1]}}}
+ }catch{msg('We couldn’t load this page','Please check your connection and try again.')}
+})();
+}
+</script>
+</body>
+</html>

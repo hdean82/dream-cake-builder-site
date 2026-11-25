@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Dream Cake Builder</title>
+<meta name="theme-color" content="#c12c7e">
+<meta name="robots" content="noindex">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+.acc{max-width:440px;margin:0 auto;padding:0 16px}
+.acc .card{padding:20px 22px}
+.acc h1{font-size:clamp(26px,4vw,32px);margin:4px 0 6px}
+.acc .lead{color:var(--muted);margin-bottom:12px}
+.field{margin:10px 0}
+.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
+input[type=email],input[type=password]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+.wide{width:100%;min-height:44px}
+.alt{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13.5px}
+.linkbtn{border:0;background:none;color:var(--rose-ink);text-decoration:underline;cursor:pointer;padding:4px 0;font:inherit}
+.msg{padding:10px 12px;border-radius:10px;background:var(--rose-soft);color:var(--rose-ink);font-size:14px;margin:10px 0 0}
+.msg.ok{background:var(--teal-soft);color:var(--teal)}
+.who{display:flex;gap:12px;align-items:center;margin:6px 0 12px}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--rose-soft);color:var(--rose-ink);display:flex;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:600;flex-shrink:0}
+.who b{display:block;overflow-wrap:anywhere}
+.access{display:grid;gap:6px;margin:10px 0 14px}
+.access div{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:14px}
+.go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:420px){input{font-size:16px}.go{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a>
+  </nav>
+  <details class="menu"><summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a></div>
+  </details>
+ </div>
+</header>
+
+<main class="band"><div class="acc"><div class="card" id="app"><p class="muted">Loading…</p></div></div></main>
+
+<footer class="site-foot"><div class="foot-in"><a class="brand" href="index.html">Dream <span>Cake</span> Builder</a><nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="contact.html">Contact</a></nav><span class="end">© <span data-year>2026</span></span></div></footer>
+
+<script src="assets/dcb-auth.js"></script>
+<script src="assets/dcb-site.js" defer></script>
+<script>
+{
+const A=window.DCBAuth,$=id=>document.getElementById(id),app=$('app');
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let mode='password',busy=false;
+const say=(t,ok)=>{const m=$('amsg');if(m){m.className='msg'+(ok?' ok':'');m.textContent=t;m.hidden=!t}};
+const next=()=>{const n=new URLSearchParams(location.search).get('next')||'';return /^[a-z0-9/_.#-]*$/i.test(n)&&!n.startsWith('//')?n:''};
+
+function signedOut(){
+ app.innerHTML=`<span class="eyebrow">Your account</span><h1>${mode==='reset'?'Reset your password':'Sign in'}</h1>
+ <p class="lead">${mode==='link'?'We’ll email you a link that signs you in, with no password needed.':mode==='reset'?'Enter your email and we’ll send a link to set a new password.':'Use the same account as the Dream Cake Builder Studio.'}</p>
+ <form id="af" novalidate>
+  <div class="field"><label for="a-email">Email</label><input type="email" id="a-email" autocomplete="email" required></div>
+  ${mode==='password'?`<div class="field"><label for="a-pass">Password</label><input type="password" id="a-pass" autocomplete="current-password" required></div>`:''}
+  <button class="btn primary wide" type="submit">${mode==='password'?'Sign in':mode==='link'?'Email me a sign-in link':'Send reset link'}</button>
+  <p id="amsg" class="msg" role="status" aria-live="polite" hidden></p>
+ </form>
+ <div class="alt">${mode!=='password'?`<button class="linkbtn" data-mode="password">Sign in with a password</button>`:`<button class="linkbtn" data-mode="link">Email me a link instead</button><button class="linkbtn" data-mode="reset">Forgot password?</button>`}</div>
+ <p class="note" style="margin-top:12px;font-size:12.5px;color:var(--muted)">New here? Dream Cake Builder is in early access. <a href="index.html#launch-list">Join the waitlist</a>.</p>`;
+}
+async function signedIn(s){
+ const email=s.user?.email||'your account';
+ app.innerHTML=`<span class="eyebrow">Your account</span><h1>You're signed in</h1><div class="who"><span class="avatar">${esc(email[0].toUpperCase())}</span><span><b>${esc(email)}</b><span class="muted" style="font-size:13px">Signed in on this device</span></span></div>
+ <div class="access" id="acc"><div><span>Checking your access…</span></div></div>
+ <div class="go"><a class="btn primary" href="studio.html">Open the Studio</a><a class="btn" href="shop.html#calendar">Open Orders</a></div>
+ <button class="btn wide" data-out style="margin-top:10px">Sign out</button>`;
+ const n=next();if(n){location.replace(n);return}
+ try{const a=await A.rpc('dcb_studio_access');$('acc').innerHTML=`<div><span>Studio</span><b>${a&&a.premium?'Full access':'Studio Lite'}</b></div><div><span>Orders</span><b>${a&&a.artist_cloud?'Included':'Needs artist access'}</b></div>`}
+ catch{$('acc').innerHTML='<div><span>Couldn’t check your access right now.</span></div>'}
+}
+async function draw(){const s=await A.session();s?signedIn(s):signedOut()}
+
+document.addEventListener('click',async e=>{
+ const m=e.target.closest('[data-mode]');if(m){mode=m.dataset.mode;signedOut();$('a-email').focus();return}
+ if(e.target.closest('[data-out]')){await A.signOut();mode='password';signedOut()}
+});
+document.addEventListener('submit',async e=>{
+ if(e.target.id!=='af')return;e.preventDefault();if(busy)return;
+ const email=$('a-email').value.trim(),pass=$('a-pass')?.value||'';
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){say('Enter a valid email address.');return}
+ if(mode==='password'&&!pass){say('Enter your password.');return}
+ busy=true;const btn=e.target.querySelector('button');btn.disabled=true;say('');
+ try{
+  if(mode==='password'){await A.signInWithPassword(email,pass);await draw()}
+  else if(mode==='link'){await A.sendLink(email,location.origin+location.pathname);say('Check your email for a sign-in link.',true)}
+  else{await A.sendReset(email,location.origin+location.pathname);say('If that email has an account, a reset link is on its way.',true)}
+ }catch(err){say(err.message||'Something went wrong. Please try again.')}
+ finally{busy=false;btn.disabled=false}
+});
+
+(async()=>{
+ try{const back=await A.fromRedirect();if(back==='recovery'){app.innerHTML=`<span class="eyebrow">Your account</span><h1>Set a new password</h1><form id="pf" novalidate><div class="field"><label for="n-pass">New password</label><input type="password" id="n-pass" autocomplete="new-password" minlength="8" required></div><button class="btn primary wide" type="submit">Save password</button><p id="amsg" class="msg" role="status" hidden></p></form>`;
+  $('pf').addEventListener('submit',async ev=>{ev.preventDefault();const p=$('n-pass').value;if(p.length<8){say('Use at least 8 characters.');return}try{await A.updatePassword(p);say('Password saved.',true);setTimeout(draw,900)}catch(err){say(err.message)}});return}}
+ catch(err){signedOut();say(err.message);return}
+ draw();
+})();
+window.addEventListener('hashchange',async()=>{if(!/access_token=|error_description=/.test(location.hash))return;try{await A.fromRedirect()}catch(err){signedOut();say(err.message);return}draw()});
+}
+</script>
+</body>
+</html>

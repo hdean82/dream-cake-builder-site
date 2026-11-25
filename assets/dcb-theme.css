@@ -1,0 +1,103 @@
+/* =====================================================================
+   Dream Cake Builder — shared site theme
+   Studio look (Fraunces headings, Inter text, soft cards) with the
+   site's colors, frosting-drip header and sprinkle background.
+   Every page links this file and uses the same header and footer.
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#fff4ed; --panel:#fffaf5; --card:#ffffff;
+  --ink:#4b103d; --muted:#79536e; --line:#eed3e3;
+  --rose:#c12c7e; --rose-soft:#fde3f0; --rose-ink:#9a1b5f;
+  --teal:#177d79; --teal-soft:#dff3f1; --lilac:#b69adb; --butter:#ffdb70;
+  --radius:12px; --gap:12px; --max:1180px;
+}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+html,body{margin:0}
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+body>main{flex:1 0 auto}
+body>.site-foot{flex-shrink:0}
+body{
+  color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif;overflow-x:clip;
+  background-color:var(--bg);
+  background-image:url("sprinkles.svg"),
+    radial-gradient(at 9% 12%,#f7d2edaa,transparent 38%),
+    radial-gradient(at 88% 20%,#c9f0ebbd,transparent 42%),
+    linear-gradient(125deg,#fff5e4,#f9e1f2 36%,#e5ddf8 62%,#d8f4ec 84%,#fff0c9);
+  background-size:340px 270px,cover,cover,cover;background-attachment:fixed;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--rose-ink)}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:clamp(30px,4.4vw,46px);letter-spacing:-.01em}
+h2{font-size:clamp(22px,2.6vw,28px)}
+h3{font-size:16px}
+p{margin:0}
+.muted{color:var(--muted)}
+.eyebrow{font-size:12px;font-weight:600;color:var(--rose-ink)}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 16px}
+
+/* ---------- header with frosting drip ---------- */
+.site-head{position:sticky;top:0;z-index:40;background:linear-gradient(105deg,#fff6f8,#fff7ef 52%,#f5eefb)}
+.site-head::after{content:"";position:absolute;left:0;right:0;top:calc(100% - 2px);height:46px;pointer-events:none;
+  background:url("drip.svg") 0 0/460px 46px repeat-x;filter:drop-shadow(0 3px 3px #da6aa33a)}
+.head-in{max-width:var(--max);margin:0 auto;height:56px;padding:0 16px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-family:Fraunces,Georgia,serif;font-weight:600;font-size:19px;white-space:nowrap}
+.brand img{width:34px;height:34px;border-radius:9px;object-fit:contain}
+.brand span{color:var(--rose)}
+.site-nav{display:flex;align-items:center;gap:2px;margin-left:auto}
+.site-nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;padding:7px 11px;border-radius:9px;white-space:nowrap}
+.site-nav a:hover{background:var(--rose-soft);color:var(--ink)}
+.site-nav a[aria-current=page]{background:var(--rose-soft);color:var(--rose-ink)}
+.site-nav .cta{margin-left:6px}
+.menu{display:none;margin-left:auto}
+.menu summary{list-style:none;cursor:pointer;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center}
+.menu summary::-webkit-details-marker{display:none}
+.menu[open] .menu-panel{display:flex}
+.menu-panel{display:none;position:absolute;right:12px;top:60px;z-index:50;flex-direction:column;min-width:220px;padding:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px #4b103d26}
+.menu-panel a{padding:10px 12px;border-radius:9px;text-decoration:none;color:var(--ink);font-weight:500}
+.menu-panel a:hover,.menu-panel a[aria-current=page]{background:var(--rose-soft);color:var(--rose-ink)}
+
+/* ---------- buttons, chips, cards ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:500;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:#e2b4ca;background:#fffafb}
+.btn.primary{background:var(--rose);border-color:var(--rose);color:#fff}
+.btn.primary:hover{background:#a92470}
+.btn.sm{min-height:34px;padding:6px 12px;font-size:13.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;background:var(--rose-soft);color:var(--rose-ink);white-space:nowrap}
+.chip.teal{background:var(--teal-soft);color:var(--teal)}
+.chip.plain{background:#fff;border:1px solid var(--line);color:var(--muted)}
+.card{background:rgba(255,250,245,.95);border:1px solid #f1dbe7;border-radius:var(--radius);box-shadow:0 3px 12px #4b103d0d}
+
+/* ---------- sections (compact) ---------- */
+.band{padding:22px 0}
+.band:first-of-type{padding-top:40px}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.sec-head p{max-width:560px}
+
+/* ---------- footer ---------- */
+.site-foot{margin-top:18px;background:rgba(255,250,245,.92);border-top:1px solid var(--line)}
+.foot-in{max-width:var(--max);margin:0 auto;padding:16px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:13.5px;color:var(--muted)}
+.foot-in nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+.foot-in a{color:var(--muted);text-decoration:none}
+.foot-in a:hover{color:var(--rose-ink)}
+.foot-in .brand{font-size:16px}
+.foot-in .end{margin-left:auto}
+
+/* image fallback when a picture can't load (e.g. previews) */
+.ph{background:linear-gradient(135deg,#fde3f0,#efe4fb 55%,#dff3f1)}
+
+@media (max-width:860px){
+  .site-nav{display:none}
+  .menu{display:block}
+  .site-head::after{height:37px;background-size:368px 37px}
+  .foot-in .end{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Title Case for headings, buttons and labels */
+h1,h2,h3,h4,.btn,.eyebrow,.site-nav a,.menu-panel a,label,.lbl,.filters button,summary{text-transform:capitalize}
+.note,.hint,.fine,.muted,input,textarea,select,option{text-transform:none}

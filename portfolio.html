@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cake gallery · Dream Cake Builder</title>
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+.pf-wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.pf-head{padding:14px 0 10px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between}
+.pf-head h1{font-size:clamp(26px,4vw,36px);margin:0}
+.pf-head .lead{color:var(--muted);margin:4px 0 0;max-width:60ch}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.filters button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:13px;cursor:pointer}
+.filters button.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.cake{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.cake .img{aspect-ratio:1;background:#f6e7ee;cursor:zoom-in;border:0;padding:0;display:block;width:100%}
+.cake .img img{width:100%;height:100%;object-fit:cover;display:block}
+.cake .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.cake h3{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:17px;margin:0}
+.cake .meta{font-size:12.5px;color:var(--muted)}
+.cake p{margin:2px 0 6px;font-size:13.5px}
+.cake .btn{margin-top:auto;align-self:flex-start}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.big{font-family:Fraunces,Georgia,serif;font-size:26px;color:var(--ink);margin-bottom:6px}
+.lb{position:fixed;inset:0;background:#2a0a22e6;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.lb.on{display:flex}.lb img{max-width:100%;max-height:85vh;border-radius:12px}
+.lb button{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:12px;border:0;background:#fff;font-size:18px;cursor:pointer}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
+  <nav class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign in</a></nav>
+  <details class="menu"><summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary><div class="menu-panel"><a href="index.html">Home</a><a href="contact.html">Contact</a></div></details>
+ </div>
+</header>
+
+<main class="band"><div class="pf-wrap" id="app"><p class="muted" style="padding:20px 0">Loading the gallery…</p></div></main>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo"><button type="button" id="lbX" aria-label="Close">✕</button><img id="lbImg" alt=""></div>
+
+<footer class="site-foot"><div class="foot-in"><span>Gallery powered by <a href="index.html">Dream Cake Builder</a>.</span><span class="end">© <span data-year>2026</span></span></div></footer>
+
+<script src="assets/dcb-site.js" defer></script>
+<script>
+{
+const SB='https://gcorvodfcxhumesttwvj.supabase.co',KEY='sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const app=$('app');
+const params=new URLSearchParams(location.search.slice(1)||location.hash.slice(1));
+const slug=(params.get('shop')||'').trim().toLowerCase();
+let P=null,urls={},filter='';
+
+function msg(title,text){app.innerHTML=`<div class="empty"><div class="big">${esc(title)}</div><p>${esc(text)}</p><p style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
+function draw(){
+ const events=[...new Set(P.items.map(x=>x.event).filter(Boolean))];
+ const shown=P.items.filter(x=>!filter||x.event===filter);
+ const reqBase=`request.html?shop=${encodeURIComponent(P.slug||slug)}`;
+ app.innerHTML=`<div class="pf-head"><div><span class="eyebrow">Cake gallery</span><h1>${esc(P.business)}</h1>${P.intro?`<p class="lead">${esc(P.intro)}</p>`:''}</div>${P.accepting?`<a class="btn primary" href="${reqBase}">Request a cake</a>`:''}</div>
+ ${events.length>1?`<div class="filters"><button type="button" class="${filter?'':'on'}" data-f="">All</button>${events.map(e=>`<button type="button" class="${filter===e?'on':''}" data-f="${esc(e)}">${esc(e)}</button>`).join('')}</div>`:''}
+ ${shown.length?`<div class="grid">${shown.map(x=>{const u=urls[x.path]||'';return `<article class="cake"><button type="button" class="img" data-zoom="${esc(x.path)}" aria-label="View ${esc(x.title||'cake')} larger">${u?`<img src="${esc(u)}" alt="${esc(x.title||'Cake')}" loading="lazy">`:''}</button>
+  <div class="body"><h3>${esc(x.title||'Custom cake')}</h3>${x.event||x.servings?`<div class="meta">${esc([x.event,x.servings?x.servings+' servings':''].filter(Boolean).join(' · '))}</div>`:''}${x.note?`<p>${esc(x.note)}</p>`:''}
+  ${P.accepting?`<a class="btn sm" href="${reqBase}&like=${encodeURIComponent(x.title||'this cake')}${u?`&img=${encodeURIComponent(u)}`:''}">Order something like this</a>`:''}</div></article>`}).join('')}</div>`:`<div class="empty">No cakes here yet.</div>`}`;
+}
+document.addEventListener('click',e=>{const f=e.target.closest('[data-f]');if(f){filter=f.dataset.f;draw();return}
+ const z=e.target.closest('[data-zoom]');if(z&&urls[z.dataset.zoom]){$('lbImg').src=urls[z.dataset.zoom];$('lb').classList.add('on');$('lbX').focus();return}
+ if(e.target.id==='lb'||e.target.id==='lbX')$('lb').classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lb').classList.remove('on')});
+
+(async()=>{
+ if(!slug)return msg('Gallery not found','Check the link you were given.');
+ try{
+  const r=await fetch(`${SB}/rest/v1/rpc/shop_portfolio`,{method:'POST',headers:H,body:JSON.stringify({p_slug:slug}),signal:AbortSignal.timeout(15000)});
+  if(!r.ok)throw 0;P=await r.json();
+  if(!P)return msg('This gallery is private','The cake artist hasn’t shared their gallery yet.');
+  document.title=`${P.business} · Cake gallery`;
+  draw();
+  const paths=P.items.map(x=>x.path);
+  if(paths.length){const s=await fetch(`${SB}/storage/v1/object/sign/shop-files`,{method:'POST',headers:H,body:JSON.stringify({expiresIn:86400,paths}),signal:AbortSignal.timeout(15000)});
+   if(s.ok){(await s.json()).forEach(x=>{if(x.signedURL&&x.path)urls[x.path]=SB+'/storage/v1'+x.signedURL});draw()}}
+ }catch{msg('We couldn’t load the gallery','Please check your connection and try again.')}
+})();
+}
+</script>
+</body>
+</html>
