@@ -9,7 +9,7 @@ const sgMat={
  metal:c=>dmat(c,{r:.22,metal:1,cc:.5}),
  sugar:c=>dmat(c,{r:.45,cc:.35,ccr:.2,sh:.35})};
 // Bend a flat "face" piece around a tier of radius R (local units) so wide pieces hug the cake.
-function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R;p.setX(i,(R+y)*Math.sin(th));p.setY(i,(R+y)*Math.cos(th)-R)}g.computeVertexNormals();return g}
+function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position,n=g.attributes.normal;if(!n)g.computeVertexNormals();const nn=g.attributes.normal;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R,c=Math.cos(th),s=Math.sin(th);p.setX(i,(R+y)*s);p.setY(i,(R+y)*c-R);const nx=nn.getX(i),ny=nn.getY(i);nn.setXYZ(i,nx*c+ny*s,-nx*s+ny*c,nn.getZ(i))}p.needsUpdate=true;nn.needsUpdate=true;return g}
 const sgR=(dc)=>dc&&dc.R?dc.R/((dc.size??100)/100):0;
 const sgOval=(x,y,rx,ry,depth,lift=0)=>{const pts=[];for(let i=0;i<72;i++){const a=i/72*2*PI;pts.push(new T.Vector2(x+rx*Math.cos(a),y+ry*Math.sin(a)))}return flatShape(new T.Shape(pts),depth,lift)};
 // ---------- sports balls ----------
@@ -271,6 +271,15 @@ function cornUpParts(q,c,mode,dc){const p=cornParts(q,c,mode,dc);for(const[,g]of
 DECOR.cornup={label:'Standing Corn',layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#f2c230',colors:['#f2c230','#f6d76a'],sp:.7,side:'up',sink:.02,tilt:[0,0],make:cornUpParts};
 DECOR_ICONS.cornup=DECOR_ICONS.corncob;
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('cornup')}
+// ---- rope knot with hanging ends (money bag neck) ----
+function ropeKnotParts(q,c){const g=[];const rope=(pts,r)=>{const cv=new T.CatmullRomCurve3(pts.map(p=>new V3(...p))),tb=new T.TubeGeometry(cv,48,r,10,false),pp=tb.attributes.position;return tb};
+ for(let k=0;k<3;k++){const a=k/3*2*PI,t=new T.TorusGeometry(.24,.12,10,24);t.rotateY(.4);t.translate(Math.cos(a)*.13,Math.sin(a)*.13,.12);g.push(t)}const b=new T.SphereGeometry(.17,14,10);b.translate(0,0,.2);g.push(b);
+ g.push(rope([[-.05,-.1,.15],[-.2,-.6,.5],[-.36,-1.2,.85],[-.45,-1.75,1.15],[-.55,-2.4,1.35]],.13));g.push(rope([[.08,-.1,.15],[.22,-.55,.45],[.34,-1.05,.8],[.45,-1.6,1.1],[.5,-2.1,1.3]],.13));
+ for(const[x,y,z]of[[-.55,-2.42,1.35],[.5,-2.12,1.3]]){const s=new T.SphereGeometry(.1,10,8);s.translate(x,y,z);g.push(s)}
+ return[[dmat(c,{r:.6,cc:.1}),mg(g)]]}
+DECOR.ropeknot={label:'Rope Knot And Ties',layouts:['band'],layout:'band',count:1,max:2,color:'#1d1b1f',colors:['#1d1b1f','#d4ae5a','#8a5a3a','#fbf7f1'],sp:2,roll:0,sink:0,embed:.08,make:ropeKnotParts};
+DECOR_ICONS.ropeknot=di('<circle cx="20" cy="12" r="5" fill="#1d1b1f"/><path d="M18 15q-4 10-6 18M22 15q3 8 4 14" stroke="#1d1b1f" stroke-width="3" fill="none"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('ropeknot')}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -326,11 +335,10 @@ THEMES.unshift(
   newTier(7.8,8.4,{color:'#fbf7f1',finish:'fondant',prof:'bucket',stencil:{pattern:'stripes',color:'#d62839',size:1.3,height:8.2},top:'rope',pipe:'#fbf7f1',bottom:'none',decor:[DC('poplabel','band',1,{color:'#d62839',size:200,R:3.7,rot:55,y:.6}),DC('popcorn','cluster',120,{color:'#f8efd4',size:260}),DC('ticket','cluster',1,{color:'#f6cf5a',size:300,center:true,face:95}),DC('stars','cluster',5,{mix:['#f38ab0','#5fc8d8','#f2c230'],size:240})]})]}},
  {key:'sig_crawfish',name:'Crawfish Boil Pot',tag:SIG,blurb:'A brushed silver stock pot cake with a tilted lid and loop handles, spilling over with crawfish and corn, with potatoes and corn on the board.',d:{board:'white',boardColor:'#ece5d3',topper:'none',tiers:[
   newTier(8,7,{color:'#c4c8ce',finish:'fondant',texture:'brushed',top:'rope',pipe:'#aeb2b8',bottom:'rope',bottomColor:'#aeb2b8',decor:[DC('pothandle','band',2,{color:'#c9ccd2',size:160,y:2,rot:95}),DC('potlid2','cluster',1,{color:'#c9ccd2',size:300,center:true}),DC('crawfish','crown',9,{color:'#d2381e',size:300}),DC('corncob','crown',3,{color:'#eeb31c',size:250,rot:60}),DC('crawhang','band',6,{color:'#d2381e',size:240,y:2.2}),DC('cornup','cluster',4,{color:'#eeb31c',size:300,where:'board',seed:3}),DC('corncob','cluster',2,{color:'#eeb31c',size:280,where:'board',seed:9}),DC('potato','cluster',5,{color:'#c99a45',size:320,where:'board'})]})]}},
- {key:'sig_bee',name:'Bumble Bee Garden',tag:SIG,blurb:'A smooth yellow dome bee head with big eyes and a smile, a fuzzy black piped collar, looped antennae and a garden of piped grass and sugar flowers.',d:{board:'white',boardColor:'#c9d96a',topper:'none',tiers:[
-  newTier(13,1.6,{color:'#5cae4a',texture:'grass',top:'none',bottom:'none',decor:[DC('daisies','scatter',12,{color:'#fbf7f1',size:130}),DC('blossoms','scatter',18,{mix:['#f3a6c0','#f2c230','#7fb0e8','#e8475f'],size:130})]}),
-  newTier(10.4,2.2,{color:'#1d1b1f',texture:'fur',top:'none',bottom:'none'}),
-  newTier(9,5,{color:'#ffd21f',finish:'fondant',prof:'half',top:'none',bottom:'none',decor:[DC('beeface','band',1,{color:'#ffd21f',size:340,R:4.5,rot:55,y:-.6}),DC('beetop','cluster',1,{color:'#ffd21f',size:230,center:true,face:95})]})]}},
- {key:'sig_moneybag',name:'Money Bag Birthday',tag:SIG,blurb:'A red money bag cake with a gathered neck tied in thick black rope, a big gold dollar sign, and cash and gold dollar signs bursting out the top.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
-  newTier(9,8,{color:'#c1442e',finish:'fondant',prof:'bag',top:'none',bottom:'none',decor:[DC('dollarface','band',1,{color:'#d4ae5a',size:340,R:4.5,rot:55,y:-1.2})]}),
-  newTier(3.4,1.2,{color:'#b73a26',finish:'fondant',top:'rope',pipe:'#1d1b1f',bottom:'rope',bottomColor:'#1d1b1f'}),
-  newTier(3.6,2.6,{color:'#c1442e',finish:'fondant',texture:'ruffle',prof:'flare',top:'none',bottom:'none',decor:[DC('cash','cluster',24,{size:340,center:true}),DC('dollarsign','cluster',3,{color:'#d4ae5a',size:230,center:true})]})]}});
+ {key:'sig_bee',name:'Bumble Bee Garden',tag:SIG,blurb:'A fuzzy black piped bee dome with a big round yellow face, googly eyes and a smile, swirl wings and curly antennae, in a garden of piped grass and sugar flowers.',d:{board:'white',boardColor:'#c9d96a',topper:'none',tiers:[
+  newTier(13,1.4,{color:'#5cae4a',texture:'grass',top:'none',bottom:'none',decor:[DC('daisies','scatter',12,{color:'#fbf7f1',size:130}),DC('blossoms','scatter',18,{mix:['#f3a6c0','#f2c230','#7fb0e8','#e8475f'],size:130})]}),
+  newTier(10,6,{color:'#1d1b1f',texture:'fur',prof:'half',top:'none',bottom:'none',decor:[DC('beeface','band',1,{color:'#ffd21f',size:370,R:4.3,rot:55,y:-.3}),DC('beetop','cluster',1,{color:'#ffd21f',size:260,center:true,face:95})]})]}},
+ {key:'sig_moneybag',name:'Money Bag Birthday',tag:SIG,blurb:'A red money bag cake with a gathered neck tied in thick black rope with a knot and hanging ties, a big gold dollar sign, and cash and gold dollar signs bursting out the top.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
+  newTier(9.4,7.4,{color:'#b5321f',prof:'sack',texture:'smooth',top:'none',bottom:'none',decor:[DC('dollarface','band',1,{color:'#d4ae5a',size:320,R:4.7,rot:55,y:-.5})]}),
+  newTier(4.4,.9,{color:'#a82e1c',top:'rope',pipe:'#1d1b1f',bottom:'rope',bottomColor:'#1d1b1f',decor:[DC('ropeknot','band',1,{color:'#1d1b1f',size:200,rot:92,y:.1})]}),
+  newTier(5.4,2,{color:'#b5321f',texture:'ruffle',prof:'flare',top:'none',bottom:'none',decor:[DC('cash','cluster',26,{size:360,center:true}),DC('dollarsign','cluster',2,{color:'#d4ae5a',size:300,center:true})]})]}});

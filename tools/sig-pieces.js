@@ -9,7 +9,7 @@ const sgMat={
  metal:c=>dmat(c,{r:.22,metal:1,cc:.5}),
  sugar:c=>dmat(c,{r:.45,cc:.35,ccr:.2,sh:.35})};
 // Bend a flat "face" piece around a tier of radius R (local units) so wide pieces hug the cake.
-function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R;p.setX(i,(R+y)*Math.sin(th));p.setY(i,(R+y)*Math.cos(th)-R)}g.computeVertexNormals();return g}
+function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position,n=g.attributes.normal;if(!n)g.computeVertexNormals();const nn=g.attributes.normal;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R,c=Math.cos(th),s=Math.sin(th);p.setX(i,(R+y)*s);p.setY(i,(R+y)*c-R);const nx=nn.getX(i),ny=nn.getY(i);nn.setXYZ(i,nx*c+ny*s,-nx*s+ny*c,nn.getZ(i))}p.needsUpdate=true;nn.needsUpdate=true;return g}
 const sgR=(dc)=>dc&&dc.R?dc.R/((dc.size??100)/100):0;
 const sgOval=(x,y,rx,ry,depth,lift=0)=>{const pts=[];for(let i=0;i<72;i++){const a=i/72*2*PI;pts.push(new T.Vector2(x+rx*Math.cos(a),y+ry*Math.sin(a)))}return flatShape(new T.Shape(pts),depth,lift)};
 // ---------- sports balls ----------

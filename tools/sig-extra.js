@@ -96,3 +96,12 @@ function cornUpParts(q,c,mode,dc){const p=cornParts(q,c,mode,dc);for(const[,g]of
 DECOR.cornup={label:'Standing Corn',layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#f2c230',colors:['#f2c230','#f6d76a'],sp:.7,side:'up',sink:.02,tilt:[0,0],make:cornUpParts};
 DECOR_ICONS.cornup=DECOR_ICONS.corncob;
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('cornup')}
+// ---- rope knot with hanging ends (money bag neck) ----
+function ropeKnotParts(q,c){const g=[];const rope=(pts,r)=>{const cv=new T.CatmullRomCurve3(pts.map(p=>new V3(...p))),tb=new T.TubeGeometry(cv,48,r,10,false),pp=tb.attributes.position;return tb};
+ for(let k=0;k<3;k++){const a=k/3*2*PI,t=new T.TorusGeometry(.24,.12,10,24);t.rotateY(.4);t.translate(Math.cos(a)*.13,Math.sin(a)*.13,.12);g.push(t)}const b=new T.SphereGeometry(.17,14,10);b.translate(0,0,.2);g.push(b);
+ g.push(rope([[-.05,-.1,.15],[-.2,-.6,.5],[-.36,-1.2,.85],[-.45,-1.75,1.15],[-.55,-2.4,1.35]],.13));g.push(rope([[.08,-.1,.15],[.22,-.55,.45],[.34,-1.05,.8],[.45,-1.6,1.1],[.5,-2.1,1.3]],.13));
+ for(const[x,y,z]of[[-.55,-2.42,1.35],[.5,-2.12,1.3]]){const s=new T.SphereGeometry(.1,10,8);s.translate(x,y,z);g.push(s)}
+ return[[dmat(c,{r:.6,cc:.1}),mg(g)]]}
+DECOR.ropeknot={label:'Rope Knot And Ties',layouts:['band'],layout:'band',count:1,max:2,color:'#1d1b1f',colors:['#1d1b1f','#d4ae5a','#8a5a3a','#fbf7f1'],sp:2,roll:0,sink:0,embed:.08,make:ropeKnotParts};
+DECOR_ICONS.ropeknot=di('<circle cx="20" cy="12" r="5" fill="#1d1b1f"/><path d="M18 15q-4 10-6 18M22 15q3 8 4 14" stroke="#1d1b1f" stroke-width="3" fill="none"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('ropeknot')}
