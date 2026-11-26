@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leave The Launch List · Dream Cake Builder</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>.leave{max-width:520px;margin:0 auto;padding:26px;display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}.leave .btn{min-height:44px}#lmsg{font-weight:500;color:var(--teal);min-height:1em}</style>
+</head>
+<body>
+<header class="site-head"><div class="head-in"><a class="brand" href="index.html"><img src="lilac/assets/favicon.svg" alt="" width="34" height="34">Dream <span>Cake</span> Builder</a>
+ <nav class="site-nav" aria-label="Main"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="contact.html">Contact</a></nav>
+ <details class="menu"><summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary><div class="menu-panel"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="contact.html">Contact</a></div></details></div></header>
+<main><section class="band"><div class="wrap">
+ <div class="card leave">
+  <span class="eyebrow">Launch List</span>
+  <h1 id="lh">Leave The Launch List?</h1>
+  <p class="muted" id="lp">You'll stop getting Dream Cake Studio launch emails at <b id="lemail"></b>.</p>
+  <button class="btn primary" id="lbtn" type="button">Yes, Remove Me</button>
+  <p id="lmsg" role="status" aria-live="polite"></p>
+  <a class="btn" href="index.html">Back To Dream Cake Builder</a>
+ </div>
+</div></section></main>
+<footer class="site-foot"><div class="foot-in"><a class="brand" href="index.html">Dream <span>Cake</span> Builder</a><nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="contact.html">Contact</a></nav><span class="end">support@dreamcakebuilder.com · © <span data-year>2026</span></span></div></footer>
+<script>
+(function(){
+  const q=new URLSearchParams(location.search),u=q.get('u')||'',t=q.get('t')||'';
+  const $=id=>document.getElementById(id);
+  $('lemail').textContent=u||'your email';
+  if(!u||!t){$('lbtn').hidden=true;$('lp').textContent='This link looks incomplete. Email support@dreamcakebuilder.com and we\'ll remove you.';return}
+  $('lbtn').onclick=async()=>{
+    $('lbtn').disabled=true;$('lmsg').textContent='Removing…';
+    try{
+      const r=await fetch('https://gcorvodfcxhumesttwvj.supabase.co/functions/v1/launch-welcome?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),{method:'POST'});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok||!d.ok)throw 0;
+      $('lh').textContent='You\'ve Left The List';$('lp').textContent='You won\'t get any more launch emails from us. Changed your mind? You can join again on our home page anytime.';$('lbtn').hidden=true;$('lmsg').textContent='';
+    }catch(e){$('lbtn').disabled=false;$('lmsg').textContent='That didn\'t work. Try again, or email support@dreamcakebuilder.com and we\'ll remove you.'}
+  };
+})();
+</script>
+<script src="assets/dcb-site.js" defer></script>
+</body>
+</html>

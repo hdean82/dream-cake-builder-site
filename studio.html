@@ -2644,5 +2644,45 @@ function updateSizes(){if(!showSizes){if(sizeLayer.childElementCount)sizeLayer.i
 R.setAnimationLoop(()=>{updateSizes();if(tween){tween.f=Math.min(1,tween.f+.03);const e=tween.f<.5?2*tween.f*tween.f:1-Math.pow(-2*tween.f+2,2)/2;ctl.target.lerpVectors(tween.t0,tween.t1,e);cam.position.lerpVectors(tween.p0,tween.p1,e);cake.rotation.y=tween.r0+(tween.r1-tween.r0)*e;if(tween.f>=1)tween=null}if(spin&&turnX===null)cake.rotation.y-=.0035;ctl.update();if(hlMeshes.length)hlMat.opacity=.3+.18*Math.sin(performance.now()/170);render()});
 sceneReady=true;applyScene();renderPanels();renderSummary();updateUndo();build();
 </script>
+<style>
+#wlCard{position:fixed;right:14px;bottom:14px;z-index:60;width:min(330px,calc(100vw - 28px));background:#fffaf5;border:1px solid #eed3e3;border-radius:16px;box-shadow:0 16px 40px #4b103d33;padding:14px 14px 12px;font:14px/1.45 Inter,system-ui,sans-serif;color:#4b103d;transform:translateY(20px);opacity:0;transition:.35s}
+#wlCard.on{transform:none;opacity:1}
+#wlCard h4{margin:0 0 3px;font:600 18px Fraunces,Georgia,serif;text-transform:capitalize}
+#wlCard p{margin:0 0 9px;color:#79536e;font-size:13.5px}
+#wlCard form{display:flex;gap:6px}
+#wlCard input{flex:1;min-width:0;min-height:40px;border:1px solid #eed3e3;border-radius:10px;padding:0 10px;font:inherit;background:#fff}
+#wlCard button.go{min-height:40px;border:0;border-radius:10px;background:#c12c7e;color:#fff;font:600 14px Inter,sans-serif;padding:0 14px;cursor:pointer;white-space:nowrap}
+#wlCard .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:20px;line-height:1;color:#79536e;cursor:pointer;padding:4px}
+#wlCard .st{margin:7px 0 0;font-size:13px;font-weight:500;color:#177d79}
+#wlCard .st:empty{display:none}
+html.client #wlCard{display:none!important}
+@media (max-width:820px){#wlCard{left:10px;right:10px;width:auto;bottom:10px}}
+</style>
+<script>
+// Launch tease: invite Studio visitors to the waitlist once, after they've had time to play
+(function(){
+  try{
+    if(window.DCS_REVIEW||/(?:^|; )dcb_team=/.test(document.cookie))return;
+    if(localStorage.getItem('dcb-wl-card'))return;
+  }catch(e){return}
+  const LIVE=['dreamcakebuilder.com','www.dreamcakebuilder.com','dream-cake-builder-site.pages.dev'];
+  setTimeout(function show(){
+    if(document.querySelector('.tour,.modal.on,.rotcard')){setTimeout(show,15000);return}
+    const c=document.createElement('div');c.id='wlCard';c.setAttribute('role','dialog');c.setAttribute('aria-label','Join the launch list');
+    c.innerHTML='<button class="x" type="button" aria-label="Close">×</button><h4>Loving The Studio?</h4><p>Dream Cake Studio launches soon. Join the list to get early access and sneak peeks.</p><form novalidate><input type="email" name="email" required maxlength="254" autocomplete="email" placeholder="Your email" aria-label="Email address"><button class="go" type="submit">Join</button></form><p class="st" role="status" aria-live="polite"></p>';
+    document.body.appendChild(c);requestAnimationFrame(()=>c.classList.add('on'));
+    const done=()=>{try{localStorage.setItem('dcb-wl-card','1')}catch(e){}};
+    c.querySelector('.x').onclick=()=>{done();c.classList.remove('on');setTimeout(()=>c.remove(),400)};
+    const f=c.querySelector('form'),st=c.querySelector('.st');
+    f.onsubmit=async e=>{e.preventDefault();if(!f.reportValidity())return;const b=f.querySelector('button');b.disabled=true;st.textContent='Joining…';
+      try{
+        if(!LIVE.includes(location.hostname)){st.textContent='Preview only: on the live site this adds you to the list.';return}
+        const r=await fetch('https://gcorvodfcxhumesttwvj.supabase.co/rest/v1/launch_subscribers',{method:'POST',headers:{apikey:'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb','Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({email:f.email.value.trim().toLowerCase(),news_updates:false})});
+        if(!r.ok){const er=await r.json().catch(()=>({}));if(er.code!=='23505')throw 0}
+        done();f.hidden=true;st.textContent='You’re on the list! Keep designing. 🎂';setTimeout(()=>{c.classList.remove('on');setTimeout(()=>c.remove(),400)},5000);
+      }catch(e){st.textContent='That didn’t save. Please try again.'}finally{b.disabled=false}};
+  },45000);
+})();
+</script>
 </body>
 </html>
