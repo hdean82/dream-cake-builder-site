@@ -75,7 +75,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
  const when=Q.responded_at?new Date(Q.responded_at).toLocaleDateString(undefined,{month:'long',day:'numeric'}):'';
  app.innerHTML=`
  <div class="doc" style="--acc:${safeColor(d.accent)}">
-  <div class="dtop"><div><div class="dbrand">${esc(d.biz)}</div><div class="note">${esc(d.contact)}</div></div><div class="dno"><b>${esc(d.title)}</b><span>#${esc(d.no)}</span></div></div>
+  <div class="dtop"><div>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(d.logo||"")?`<img src="${d.logo}" alt="" style="height:52px;max-width:180px;object-fit:contain;display:block;margin-bottom:6px">`:""}<div class="dbrand">${esc(d.biz)}</div><div class="note">${esc(d.contact)}</div></div><div class="dno"><b>${esc(d.title)}</b><span>#${esc(d.no)}</span></div></div>
   ${d.cancelled?`<div class="dcancel"><b>Cancelled</b>${d.cancelled.note?`<div class="pre" style="color:var(--ink)">${esc(d.cancelled.note)}</div>`:''}</div>`:''}
   <div class="dmeta"><div><span class="lbl">For</span><b>${esc(d.customer)}</b></div>
    <div><span class="lbl">Event</span><b>${esc(d.date||'Date to be set')}${d.time?' · '+esc(d.time):''}</b><div class="note">${esc([d.event,d.handoff+(d.address?': '+d.address:'')].filter(Boolean).join(' · '))}</div></div>
