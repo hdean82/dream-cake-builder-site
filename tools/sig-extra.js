@@ -132,4 +132,4 @@ for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k
  DECOR_ICONS['mx_'+k]='<svg viewBox="0 0 40 30" aria-hidden="true"><image href="/assets/models/thumbs/'+k+'.webp" x="5" y="0" width="30" height="30" preserveAspectRatio="xMidYMid slice"/></svg>'}
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push(...MX.map(m=>'mx_'+m[0]))}
 // ---- hide 3D toppers whose files were lost with the old Studio host (they no longer load) ----
-queueMicrotask(()=>{for(const k in MODELS){if(!String(MODELS[k][2]).startsWith('/')&&DECOR['m_'+k])DECOR['m_'+k].hidden=true}})
+queueMicrotask(()=>{for(const k in MODELS){if(!modelLive(MODELS[k])&&DECOR['m_'+k])DECOR['m_'+k].hidden=true}})
