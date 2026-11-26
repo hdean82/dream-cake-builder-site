@@ -292,16 +292,30 @@ DECOR_ICONS.hoopnet=di('<ellipse cx="20" cy="14" rx="10" ry="4" fill="none" stro
 DECOR_ICONS.yardnums=di('<rect x="3" y="12" width="34" height="16" fill="#3f9a45"/><text x="20" y="24" font-size="9" text-anchor="middle" fill="#fff" font-weight="900">10 20</text>');
 DECOR_ICONS.grasstuft=di('<path d="M8 30l4-12M14 30l2-14M20 30v-15M26 30l-2-14M32 30l-4-12" stroke="#3f9a45" stroke-width="3"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('hoopnet','yardnums','grasstuft')}
+// ---- Meshy sculpted pieces (hosted GLBs, optimized) ----
+const MX=[
+ ['peony_coral','Coral Sugar Peony','up',{ds:true,cut:.74}],['peony_blush','Blush Sugar Peony','up',{ds:true,cut:.3}],['peony_bud','Coral Peony Bud','up',{ds:true,cut:.55}],
+ ['queenanne','Queen Anne\'s Lace Sprig','front',{ds:true}],['waxflower','White Waxflower Sprig','front',{ds:true}],['eucalyptus','Eucalyptus Sprig','front',{ds:true}],
+ ['cascade_wedding','Peony Cascade Spray','front',{ds:true}],['cascade_rose','Rose Cascade Spray','front',{ds:true}],
+ ['teddy_balloon','Teddy Hot Air Balloon','front',{}],['teddy_seated','Sitting Teddy Bear','front',{}],['teddy_reclining','Playful Teddy Bear','front',{}],['block_c','Baby Letter Block','front',{}],
+ ['brooch','Rose Gold Brooch','front',{metal:.85,rough:.25}],['tassel','Gold Tassel','front',{metal:.85,rough:.35}],
+ ['crawfish','Boiled Crawfish','up',{}],['corn_cob','Corn On The Cob','front',{}],['corn_round','Corn Round','front',{}],['potato','Red Potato','front',{}],
+ ['cash_fan','Fanned Cash','front',{ds:true}],['cash_bundle','Cash Bundle','front',{}],['clapperboard','Clapperboard','front',{}],['ticket','Admit One Ticket','front',{ds:true}],['glove','Baseball Glove','front',{}]];
+for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k+'.glb',1,null,null,null,o];
+ DECOR['mx_'+k]={label:label+' (Sculpted)',layouts:['cluster','crown','band','cascade','scatter'],layout:'cluster',count:1,max:24,color:'',colors:[],sp:1.4,side:'up',roll:face==='front'?.1:.5,spin:.6,sink:0,embed:.05,noTilt:true,model:true,
+  make:(q,c,mode,dc)=>{const id='mx_'+k,e=MODEL_CACHE[id];if(!e){loadModel(id);return[]}if(!e.parts)return[];const out=e.parts.map(([m,g])=>[m,g.clone()]);if(mode==='side'&&face==='up')out.forEach(([,g])=>{g.rotateX(PI/2)});if(dc&&dc.flip)out.forEach(([,g])=>g.rotateZ(PI));return out}};
+ DECOR_ICONS['mx_'+k]=di('<circle cx="20" cy="20" r="12" fill="#f3d6d9"/><text x="20" y="25" font-size="13" text-anchor="middle">✨</text>')}
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push(...MX.map(m=>'mx_'+m[0]))}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
 THEMES.unshift(
- {key:'sig_peony',name:'Coral Peony Cascade',tag:SIG,blurb:'Five tall ivory tiers alternating combed buttercream and Swiss dots, with a lush column of coral peonies, magenta and lilac ranunculus, white wildflowers and greenery down one side.',d:{board:'silver',topper:'none',tiers:[
-  newTier(9.6,5.4,{texture:'lines',top:'none',bottom:'none',decor:[DC('sprig','cascade',6,{color:'#7d9a6e',rot:-70,wide:1.2,size:220}),DC('peonies','cascade',6,{color:'#f0706a',rot:-68,wide:1.6,size:380}),DC('ranunculus','cascade',5,{color:'#b77fc4',rot:-74,wide:1.6,size:300}),DC('peonies','cascade',4,{color:'#c4335f',rot:-66,wide:1.6,size:330}),DC('blossoms','cascade',10,{color:'#fbf7f1',rot:-70,wide:1.4,size:170})]}),
-  newTier(8.4,5.2,{top:'none',bottom:'none',decor:[DC('dragees','scatter',110,{color:'#f1e8de',size:85}),DC('sprig','cascade',5,{color:'#7d9a6e',rot:-70,wide:1.2,size:210}),DC('peonies','cascade',5,{color:'#f0706a',rot:-68,wide:1.6,size:370}),DC('ranunculus','cascade',4,{color:'#e48fb0',rot:-74,wide:1.6,size:290}),DC('peonies','cascade',4,{color:'#c4335f',rot:-66,wide:1.6,size:320}),DC('blossoms','cascade',9,{color:'#fbf7f1',rot:-70,wide:1.4,size:160})]}),
-  newTier(7.4,5,{texture:'lines',top:'none',bottom:'none',decor:[DC('sprig','cascade',4,{color:'#7d9a6e',rot:-70,wide:1.2,size:200}),DC('peonies','cascade',5,{color:'#f0706a',rot:-68,wide:1.6,size:360}),DC('ranunculus','cascade',3,{color:'#b77fc4',rot:-74,wide:1.6,size:280}),DC('blossoms','cascade',8,{color:'#fbf7f1',rot:-70,wide:1.4,size:150})]}),
-  newTier(6.4,5,{top:'none',bottom:'none',decor:[DC('dragees','scatter',80,{color:'#f1e8de',size:85}),DC('sprig','cascade',3,{color:'#7d9a6e',rot:-70,wide:1.2,size:190}),DC('peonies','cascade',4,{color:'#f08a8a',rot:-68,wide:1.6,size:330}),DC('ranunculus','cascade',3,{color:'#e48fb0',rot:-74,wide:1.6,size:260}),DC('blossoms','cascade',6,{color:'#fbf7f1',rot:-70,wide:1.4,size:140})]}),
-  newTier(5,4.8,{texture:'lines',top:'none',bottom:'none'})]}},
+ {key:'sig_peony',name:'Coral Peony Cascade',tag:SIG,blurb:'Five tall ivory tiers alternating combed buttercream and Swiss dots, with a sculpted column of coral and magenta peonies, ranunculus, white wildflowers and eucalyptus trailing down one side.',d:{board:'silver',topper:'none',tiers:[
+  newTier(9.6,5.4,{texture:'lines',top:'none',bottom:'none',decor:[DC('mx_cascade_wedding','band',1,{size:880,rot:18,y:.2}),DC('mx_peony_coral','band',1,{size:330,rot:40,y:-1.4}),DC('mx_eucalyptus','band',1,{size:420,rot:-5,y:-.6})]}),
+  newTier(8.4,5.2,{top:'none',bottom:'none',decor:[DC('dragees','scatter',110,{color:'#f1e8de',size:85}),DC('mx_cascade_wedding','band',1,{size:860,rot:20,y:0}),DC('mx_peony_blush','band',1,{size:300,rot:44,y:.8}),DC('mx_queenanne','band',1,{size:360,rot:-4,y:-.4})]}),
+  newTier(7.4,5,{texture:'lines',top:'none',bottom:'none',decor:[DC('mx_cascade_rose','band',1,{size:840,rot:20,y:0}),DC('mx_peony_coral','band',1,{size:310,rot:42,y:.6}),DC('mx_waxflower','band',1,{size:330,rot:-2,y:-.8})]}),
+  newTier(6.4,5,{top:'none',bottom:'none',decor:[DC('dragees','scatter',80,{color:'#f1e8de',size:85}),DC('mx_cascade_wedding','band',1,{size:800,rot:22,y:0}),DC('mx_peony_bud','band',1,{size:260,rot:44,y:1})]}),
+  newTier(5,4.8,{texture:'lines',top:'none',bottom:'none',decor:[DC('mx_cascade_rose','band',1,{size:620,rot:22,y:1.2}),DC('mx_peony_coral','cluster',1,{size:300,face:30}),DC('mx_peony_bud','cluster',1,{size:220,face:30}),DC('mx_waxflower','cluster',1,{size:260})]})]}},
  {key:'sig_monogram',name:'Gilded Monogram Hexagon',tag:SIG,blurb:'Champagne hexagons with bold geometric gold lines and a gold quilt, a pleated ivory tier, a gold leaf top and a floral monogram hoop.',d:{board:'silver',topper:'none',tiers:[
   newTier(13,5.2,{shape:'hexagon',color:'#e8d6bc',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'geo',color:'#c9a24e',size:4.4,height:4.4,y:.3},bottom:'pearls',bottomColor:'#d4ae5a'}),
   newTier(10.6,5.4,{shape:'hexagon',color:'#cfa95f',finish:'fondant',texture:'golf',goldLeaf:true,top:'none',bottom:'none'}),

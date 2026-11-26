@@ -117,3 +117,17 @@ DECOR_ICONS.hoopnet=di('<ellipse cx="20" cy="14" rx="10" ry="4" fill="none" stro
 DECOR_ICONS.yardnums=di('<rect x="3" y="12" width="34" height="16" fill="#3f9a45"/><text x="20" y="24" font-size="9" text-anchor="middle" fill="#fff" font-weight="900">10 20</text>');
 DECOR_ICONS.grasstuft=di('<path d="M8 30l4-12M14 30l2-14M20 30v-15M26 30l-2-14M32 30l-4-12" stroke="#3f9a45" stroke-width="3"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('hoopnet','yardnums','grasstuft')}
+// ---- Meshy sculpted pieces (hosted GLBs, optimized) ----
+const MX=[
+ ['peony_coral','Coral Sugar Peony','up',{ds:true,cut:.74}],['peony_blush','Blush Sugar Peony','up',{ds:true,cut:.3}],['peony_bud','Coral Peony Bud','up',{ds:true,cut:.55}],
+ ['queenanne','Queen Anne\'s Lace Sprig','front',{ds:true}],['waxflower','White Waxflower Sprig','front',{ds:true}],['eucalyptus','Eucalyptus Sprig','front',{ds:true}],
+ ['cascade_wedding','Peony Cascade Spray','front',{ds:true}],['cascade_rose','Rose Cascade Spray','front',{ds:true}],
+ ['teddy_balloon','Teddy Hot Air Balloon','front',{}],['teddy_seated','Sitting Teddy Bear','front',{}],['teddy_reclining','Playful Teddy Bear','front',{}],['block_c','Baby Letter Block','front',{}],
+ ['brooch','Rose Gold Brooch','front',{metal:.85,rough:.25}],['tassel','Gold Tassel','front',{metal:.85,rough:.35}],
+ ['crawfish','Boiled Crawfish','up',{}],['corn_cob','Corn On The Cob','front',{}],['corn_round','Corn Round','front',{}],['potato','Red Potato','front',{}],
+ ['cash_fan','Fanned Cash','front',{ds:true}],['cash_bundle','Cash Bundle','front',{}],['clapperboard','Clapperboard','front',{}],['ticket','Admit One Ticket','front',{ds:true}],['glove','Baseball Glove','front',{}]];
+for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k+'.glb',1,null,null,null,o];
+ DECOR['mx_'+k]={label:label+' (Sculpted)',layouts:['cluster','crown','band','cascade','scatter'],layout:'cluster',count:1,max:24,color:'',colors:[],sp:1.4,side:'up',roll:face==='front'?.1:.5,spin:.6,sink:0,embed:.05,noTilt:true,model:true,
+  make:(q,c,mode,dc)=>{const id='mx_'+k,e=MODEL_CACHE[id];if(!e){loadModel(id);return[]}if(!e.parts)return[];const out=e.parts.map(([m,g])=>[m,g.clone()]);if(mode==='side'&&face==='up')out.forEach(([,g])=>{g.rotateX(PI/2)});if(dc&&dc.flip)out.forEach(([,g])=>g.rotateZ(PI));return out}};
+ DECOR_ICONS['mx_'+k]=di('<circle cx="20" cy="20" r="12" fill="#f3d6d9"/><text x="20" y="25" font-size="13" text-anchor="middle">✨</text>')}
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push(...MX.map(m=>'mx_'+m[0]))}
