@@ -48,3 +48,8 @@ function pillowTopParts(q,c,mode,dc){const N=40,g=new T.PlaneGeometry(2,2,N,N);g
 DECOR.pillowtop={label:'Puffy Pillow Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#fbf7f1',colors:['#fbf7f1','#f3d6d9','#c9dbef'],sp:3,side:'up',sink:0,tilt:[0,0],spin:0,make:pillowTopParts};
 DECOR_ICONS.pillowtop=di('<path d="M6 22q14-14 28 0q-14 4-28 0z" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="6" cy="22" r="1.6" fill="#d4ae5a"/><circle cx="34" cy="22" r="1.6" fill="#d4ae5a"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');void 0}
+// ---- gold tassels for pillow corners ----
+function tasselParts(q,c){const b=new T.SphereGeometry(.16,16,12);b.translate(0,0,.12);const cap=new T.CylinderGeometry(.09,.13,.14,14);cap.translate(0,-.17,.12);const fr=[];for(let i=0;i<14;i++){const a=i/14*2*PI,g=new T.CylinderGeometry(.022,.016,.55,5);g.translate(Math.cos(a)*.08,-.5,.12+Math.sin(a)*.08);fr.push(g)}return[[sgMat.metal(c),mg([b,cap])],[dmat(c,{r:.5,metal:.5}),mg(fr)]]}
+DECOR.tassel={label:'Gold Tassels',layouts:['band'],layout:'band',count:4,max:8,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#fbf7f1'],sp:1,roll:0,sink:0,embed:-.05,make:tasselParts};
+DECOR_ICONS.tassel=di('<circle cx="20" cy="10" r="4" fill="#d4ae5a"/><path d="M16 14h8l3 18H13z" fill="#d4ae5a"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('tassel')}

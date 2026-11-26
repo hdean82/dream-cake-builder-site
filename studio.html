@@ -1555,6 +1555,11 @@ function pillowTopParts(q,c,mode,dc){const N=40,g=new T.PlaneGeometry(2,2,N,N);g
 DECOR.pillowtop={label:'Puffy Pillow Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#fbf7f1',colors:['#fbf7f1','#f3d6d9','#c9dbef'],sp:3,side:'up',sink:0,tilt:[0,0],spin:0,make:pillowTopParts};
 DECOR_ICONS.pillowtop=di('<path d="M6 22q14-14 28 0q-14 4-28 0z" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="6" cy="22" r="1.6" fill="#d4ae5a"/><circle cx="34" cy="22" r="1.6" fill="#d4ae5a"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');void 0}
+// ---- gold tassels for pillow corners ----
+function tasselParts(q,c){const b=new T.SphereGeometry(.16,16,12);b.translate(0,0,.12);const cap=new T.CylinderGeometry(.09,.13,.14,14);cap.translate(0,-.17,.12);const fr=[];for(let i=0;i<14;i++){const a=i/14*2*PI,g=new T.CylinderGeometry(.022,.016,.55,5);g.translate(Math.cos(a)*.08,-.5,.12+Math.sin(a)*.08);fr.push(g)}return[[sgMat.metal(c),mg([b,cap])],[dmat(c,{r:.5,metal:.5}),mg(fr)]]}
+DECOR.tassel={label:'Gold Tassels',layouts:['band'],layout:'band',count:4,max:8,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#fbf7f1'],sp:1,roll:0,sink:0,embed:-.05,make:tasselParts};
+DECOR_ICONS.tassel=di('<circle cx="20" cy="10" r="4" fill="#d4ae5a"/><path d="M16 14h8l3 18H13z" fill="#d4ae5a"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('tassel')}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -1583,7 +1588,7 @@ THEMES.unshift(
   newTier(8,6.2,{color:'#ffffff',finish:'fondant',print:'cow',printColor:'#1d1b1f',top:'none',bottom:'none',decor:[DC('cowface','band',1,{color:'#f3b6c8',size:300,R:4,rot:55,y:.3}),DC('cowear','band',1,{color:'#f3b6c8',size:200,rot:-25,y:2.6}),DC('cowear','band',1,{color:'#f3b6c8',size:200,rot:135,y:2.6}),DC('cowtop','cluster',1,{color:'#f3a6c0',size:190,center:true,face:95})]})]}},
  {key:'sig_pillows',name:'Gold Damask Pillows',tag:SIG,blurb:'A pillow cake: a base tier in gold damask with a ring of ivory roses, a puffy pleated pillow with pinched corners and gold tassels, and a silver rose dome topped with ivory roses.',d:{board:'silver',boardShape:'square',topper:'none',tiers:[
   newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',prof:'pillow',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.8,y:-.8},decor:[DC('roses','band',16,{color:'#fbf7f1',size:130,y:-1.4})]}),
-  newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'none',bottom:'scrolls',bottomColor:'#d4ae5a'}),
+  newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'rope',pipe:'#fbf7f1',bottom:'scrolls',bottomColor:'#d4ae5a',decor:[DC('tassel','band',4,{color:'#d4ae5a',size:180,rot:45,y:.9})]}),
   newTier(5.5,3.4,{color:'#c9ccd2',texture:'rosettes',prof:'dome',top:'none',bottom:'none',decor:[DC('roses','cluster',10,{color:'#fbf7f1',size:130})]})]}},
  {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers with a sweep of ruffles, a lace band and a clean top tier ready for your script topper.',d:{board:'silver',topper:'none',tiers:[
   newTier(10,5,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2'}),
