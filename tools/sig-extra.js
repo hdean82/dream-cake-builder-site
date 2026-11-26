@@ -83,7 +83,7 @@ function scriptTopParts(q,c,mode,dc){const MF=MSG_FONTS[(dc&&dc.font)||'dancing'
  const lines=String((dc&&dc.text)||'forever|eva').split('|').slice(0,3),gs=[];let y=0;
  lines.forEach((ln,i)=>{const sh=NUM_FONT.generateShapes(ln,.55,ff);if(!sh.length)return;const g=new T.ExtrudeGeometry(sh,{depth:.07,bevelEnabled:true,bevelThickness:.012,bevelSize:.008,bevelSegments:1,curveSegments:6});g.computeBoundingBox();const b=g.boundingBox;g.translate(-(b.min.x+b.max.x)/2+(i%2?.25:-.1),-b.max.y+y,-.035);y-=(b.max.y-b.min.y)*.86;gs.push(g)});
  if(!gs.length)return[];const m=mg(gs);m.computeBoundingBox();const bb=m.boundingBox,pk=[];for(const sx of[-.28,.28]){const p=new T.CylinderGeometry(.022,.022,1.3,8);p.translate(sx,bb.min.y-.55,0);pk.push(p)}
- return[[sgMat.metal(c),mg([m,...pk])]]}
+ return[[dmat(c,{r:.28,metal:.4,cc:.7,ccr:.1}),mg([m,...pk])]]}
 DECOR.scripttop={label:'Script Word Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2','#1d1b1f','#fbf7f1'],sp:.4,side:'up',sink:.6,tilt:[0,0],spin:0,make:scriptTopParts};
 DECOR_ICONS.scripttop=di('<text x="20" y="24" font-size="13" text-anchor="middle" fill="#d9a08a" font-style="italic" font-family="cursive">love</text>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('scripttop')}
