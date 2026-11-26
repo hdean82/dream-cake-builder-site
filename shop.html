@@ -345,6 +345,7 @@ main{background:transparent;padding-top:50px}
  .dcancel{border:2px solid #b3261e;color:#b3261e;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:13px}.dcancel b{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:12px;margin-bottom:2px}.dcancel div{color:#4b103d}
  .cxcard{border-color:#e8b4b0;background:#fff6f5}
 
+.jitem{border:1px solid #eee;border-radius:10px;padding:8px 10px;margin:8px 0}.jh{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}.jl{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin:3px 0;text-transform:none}.jl input{margin-top:3px}.jbox{border-top:1px dashed #e4d6dc;margin-top:10px;padding-top:8px}.jwarn b{color:#b3261e}.jpics{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:4px}.jpics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px}
 /* Title Case for headings, buttons and labels */
 h1,h2,h3,h4,.btn,.navbtn,.seg button,.tile,label,.lbl,th,.status,.eyebrow,.site-nav a,.menu-panel a,.toggle .t,summary{text-transform:capitalize}
 .note,.hint,.d,input,textarea,select,option,.cc,.toast,#toast{text-transform:none}
@@ -547,7 +548,7 @@ function vOrder(){
  </div>
  ${d.items.length&&d.date?checksHtml(d):""}
  ${historyHtml(d)}
- <div class="sticky"><button class="btn primary" data-a="saveOrder">${d.id?"Save changes":`Create ${d.kind.toLowerCase()}`}</button><button class="btn" data-a="docPreview">Preview</button><button class="btn" data-a="compose">Email</button><button class="btn" data-a="resetOrder">${d.id?"Close":"Clear"}</button></div>
+ <div class="sticky"><button class="btn primary" data-a="saveOrder">${d.id?"Save changes":`Create ${d.kind.toLowerCase()}`}</button><button class="btn" data-a="docPreview">Preview</button><button class="btn" data-a="jobSheet">Job sheet</button><button class="btn" data-a="compose">Email</button><button class="btn" data-a="resetOrder">${d.id?"Close":"Clear"}</button></div>
  </div>`;
 }
 function schedule(o,t){const n=Math.max(1,+S.settings.instalments||1);if(!t.total)return[];const rest=t.total-t.dep;const out=[{label:"Deposit to book",amt:t.dep,when:"When booked"}];if(n<=1||rest<=0)return t.dep>=t.total?out:[...out,{label:"Balance",amt:rest,when:o.date?"By "+new Date(o.date+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}):"Before the event"}];const each=Math.round(rest/(n-1)*100)/100;for(let i=1;i<n;i++){const amt=i===n-1?Math.round((rest-each*(n-2))*100)/100:each;let when="Before the event";if(o.date){const d=new Date(o.date+"T00:00");const days=Math.round(28*(n-1-i)/(n-1))+(i===n-1?7:0);d.setDate(d.getDate()-days);when="By "+d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}out.push({label:"Payment "+(i+1),amt,when})}return out}
@@ -1257,6 +1258,17 @@ function docHtml(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
  ${L.payNote?`<span class="lbl">How to pay</span><p class="note" style="white-space:pre-wrap">${esc(L.payNote)}</p>`:""}
  ${L.showTerms&&s.terms?`<span class="lbl">Terms</span><p class="note" style="white-space:pre-wrap">${esc(s.terms)}</p>`:""}
  ${s.footer?`<p class="docfoot">${esc(s.footer)}</p>`:""}</div>`}
+
+function jobHtml(o){const s=S.settings,e=evt(o.eventId),f=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+ const allergens=Array.isArray(o.allergens)?o.allergens:(o.allergens&&typeof o.allergens==="object"?Object.keys(o.allergens).filter(k=>o.allergens[k]):[]);
+ return `<div class="doc job" id="docPrint" style="--acc:${esc(s.doc.accent)}"><div class="dtop"><div><div class="dbrand">Job sheet</div><div class="note">${esc(s.biz)} · for the kitchen, not the customer</div></div><div class="dno"><b>${esc(o.kind==="Quote"?"Quote":"Order")}</b><span>#${esc(o.no||s.nextNo)}</span></div></div>
+ <div class="dmeta"><div><span class="lbl">Customer</span><b>${esc(o.customer||"No name yet")}</b><div class="note">${esc([o.phone,o.email].filter(Boolean).join(" · "))}</div></div><div><span class="lbl">Due</span><b>${o.date?esc(f(o.date)):"Date to be set"}${o.time?" · "+esc(o.time):""}</b><div class="note">${esc(e?.name||"")}</div></div><div><span class="lbl">${esc({Collected:"Pickup",Delivered:"Delivery",Shipped:"Shipping"}[o.handoff]||"Handoff")}</span><b>${esc(o.handoff==="Collected"?(s.address||"From the shop"):(o.address||"Address to be set"))}</b></div></div>
+ ${o.items.filter(it=>!it.discount).map(it=>`<div class="jitem"><div class="jh"><b>${esc(itemTitle(it))}</b><span class="pill">Qty ${esc(it.qty)}</span></div>${itemLines(it).map(l=>`<label class="jl"><input type="checkbox"> ${esc(l)}</label>`).join("")}${it.notes?`<div class="note" style="margin-top:4px">${esc(it.notes)}</div>`:""}</div>`).join("")||`<p class="note">No items yet</p>`}
+ ${o.notes?`<div class="jbox"><span class="lbl">Order notes</span><div style="white-space:pre-wrap">${esc(o.notes)}</div></div>`:""}
+ ${allergens.length?`<div class="jbox jwarn"><span class="lbl">Allergens</span><b>${esc(allergens.join(", "))}</b></div>`:""}
+ ${(o.images||[]).length?`<div class="jbox"><span class="lbl">Design and inspiration</span><div class="jpics">${o.images.map(u=>`<img src="${esc(u)}" alt="">`).join("")}</div></div>`:""}
+ <div class="jbox"><span class="lbl">Checklist</span>${["Bake and cool layers","Fill, crumb coat and chill","Final coat and decorate","Add toppers and writing","Photo for portfolio","Box, label and care card"].map(x=>`<label class="jl"><input type="checkbox"> ${x}</label>`).join("")}</div></div>`}
+function openJob(){$("dialog").innerHTML=`<div class="dhead"><div><h2>Job sheet</h2><p class="hint">Print this for the kitchen. Prices are left off.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div><div class="dbody" style="background:#f6efe9;padding-top:14px">${jobHtml(draft)}</div><div class="dfoot"><button class="btn" data-a="closeM">Close</button><button class="btn primary" data-a="docPrint">Print job sheet</button></div>`;$("dialog").classList.add("wide");$("modal").classList.add("on")}
 function openDoc(){$("dialog").innerHTML=`<div class="dhead"><div><h2>${esc(draft.kind==="Quote"?S.settings.doc.quoteTitle:S.settings.doc.invoiceTitle)} preview</h2><p class="hint">This is what your customer sees. Edit the order to change it.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div><div class="dbody" style="background:#f6efe9;padding-top:14px">${docHtml(draft)}</div><div class="dfoot"><button class="btn" data-a="closeM">Close</button><button class="btn primary" data-a="docPrint">Print or save as PDF</button></div>`;$("dialog").classList.add("wide");$("modal").classList.add("on")}
 async function addPics(files){const room=8-(draft.images||[]).length;for(const f of [...files].slice(0,room)){if(!f.type.startsWith("image/"))continue;try{const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});const k=Math.min(1,720/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);draft.images.push(c.toDataURL("image/jpeg",.72))}catch(e){toast("Couldn't read one of those photos")}}if(files.length>room)toast("Only 8 photos per order");render()}
 
@@ -1443,6 +1455,7 @@ document.addEventListener("click",e=>{
    break}
   case"delPay":logEv(draft,`Payment of ${money(draft.payments[i].amount)} removed`);draft.payments.splice(i,1);render();break;
   case"docPreview":openDoc();break;
+  case"jobSheet":openJob();break;
   case"safetyCard":openCard();break;
   case"cardPrint":try{document.body.classList.add("printing-card");window.print();setTimeout(()=>document.body.classList.remove("printing-card"),500)}catch(e){toast("Printing isn't available here")}break;
   case"allergen":{draft.allergens=draft.allergens||[];const v=b.dataset.v,k=draft.allergens.indexOf(v);k>=0?draft.allergens.splice(k,1):draft.allergens.push(v);b.classList.toggle("on",k<0);break}
