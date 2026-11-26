@@ -53,3 +53,13 @@ function tasselParts(q,c){const b=new T.SphereGeometry(.16,16,12);b.translate(0,
 DECOR.tassel={label:'Gold Tassels',layouts:['band'],layout:'band',count:4,max:8,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#fbf7f1'],sp:1,roll:0,sink:0,embed:-.05,make:tasselParts};
 DECOR_ICONS.tassel=di('<circle cx="20" cy="10" r="4" fill="#d4ae5a"/><path d="M16 14h8l3 18H13z" fill="#d4ae5a"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('tassel')}
+// ---- lettered face pieces: popcorn label and birthday plaque ----
+function sgText(str,h,cx,cy,depth){const g=mg(NUM_FONT.generateShapes(str,h).map(s=>flatShape(s,depth,0)));g.computeBoundingBox();const b=g.boundingBox;g.translate(cx-(b.min.x+b.max.x)/2,0,-cy-(b.min.z+b.max.z)/2);return g}
+function rrectShape(w,h,r){const s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);return s}
+function popLabelParts(q,c,mode,dc){const R=sgR(dc),B=g=>sgBend(g,R);return[[dmat(c,{r:.4,cc:.4}),B(mg([sgOval(0,0,.62,.62,.03),sgText('POP',.26,0,.16,.07),sgText('CORN',.26,0,-.2,.07)]))],[dmat('#fbf7f1',{r:.4,cc:.3}),B(sgOval(0,0,.55,.55,.05))]]}
+function plaqueParts(q,c,mode,dc){const R=sgR(dc),B=g=>sgBend(g,R),t1=(dc&&dc.l1)||'HAPPY',t2=(dc&&dc.l2)||'BIRTHDAY';return[[dmat('#fbf7f1',{r:.4,cc:.3}),B(mg([flatShape(rrectShape(1.9,.86,.12),.03,0),sgText(t1,.2,0,.16,.08),sgText(t2,.2,0,-.16,.08)]))],[dmat(c,{r:.35,cc:.5}),B(flatShape(rrectShape(1.8,.76,.1),.05,0))]]}
+DECOR.poplabel={label:'Popcorn Label',layouts:['band'],layout:'band',count:1,max:1,color:'#d62839',colors:['#d62839','#2f6fd0','#1d1b1f'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:popLabelParts};
+DECOR.plaque={label:'Happy Birthday Plaque',layouts:['band'],layout:'band',count:1,max:1,color:'#1d1b1f',colors:['#1d1b1f','#d62839','#2f6fd0','#d4ae5a'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:plaqueParts};
+DECOR_ICONS.poplabel=di('<circle cx="20" cy="20" r="13" fill="#fff" stroke="#d62839" stroke-width="3"/><text x="20" y="24" font-size="9" text-anchor="middle" fill="#d62839" font-weight="900">POP</text>');
+DECOR_ICONS.plaque=di('<rect x="4" y="12" width="32" height="16" rx="3" fill="#1d1b1f" stroke="#fff"/><text x="20" y="23" font-size="7" text-anchor="middle" fill="#fff" font-weight="900">HAPPY</text>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('poplabel','plaque')}
