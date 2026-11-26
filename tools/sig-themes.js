@@ -27,9 +27,9 @@ THEMES.unshift(
   newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',prof:'pillow',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.8,y:-.8},decor:[DC('roses','band',16,{color:'#fbf7f1',size:130,y:-1.4})]}),
   newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'rope',pipe:'#fbf7f1',bottom:'scrolls',bottomColor:'#d4ae5a',decor:[DC('tassel','band',4,{color:'#d4ae5a',size:180,rot:45,y:.9})]}),
   newTier(5.5,3.4,{color:'#c9ccd2',texture:'rosettes',prof:'dome',top:'none',bottom:'none',decor:[DC('roses','cluster',10,{color:'#fbf7f1',size:130})]})]}},
- {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers: two bottom tiers swept in soft ruffles, a lace band, a clean top tier and a rose gold "forever" script topper.',d:{board:'silver',topper:'none',tiers:[
-  newTier(10,5.4,{color:'#fbf8f2',finish:'fondant',texture:'frills',top:'none',bottom:'none'}),
-  newTier(8.6,5.2,{color:'#fbf8f2',finish:'fondant',texture:'frills',top:'none',bottom:'none'}),
+ {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers with a diagonal sweep of vertical fondant ruffles edged in gold luster, a lace band, a clean top tier and a rose gold "forever" script topper.',d:{board:'silver',topper:'none',tiers:[
+  newTier(10,5.4,{color:'#fbf8f2',finish:'fondant',texture:'vruffles',edgeColor:'#c8a46a',vr:{c:110,w0:180,w1:180},top:'none',bottom:'none'}),
+  newTier(8.6,5.2,{color:'#fbf8f2',finish:'fondant',texture:'vruffles',edgeColor:'#c8a46a',vr:{c:135,w0:105,w1:40},top:'none',bottom:'none'}),
   newTier(7.4,5,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'lace',color:'#e6dccd',size:2.2,height:2.6,y:1.1}}),
   newTier(6.2,5.4,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'none',decor:[DC('scripttop','cluster',1,{color:'#e2ae96',size:380,center:true,face:95,text:'forever|eva'})]})]}},
  {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and rhinestone brooch bursts with rose gold roses.',d:{board:'rosegold',topper:'none',tiers:[
