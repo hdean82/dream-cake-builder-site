@@ -860,6 +860,7 @@ function vToday(){const today=isoD(new Date()),tom=addDays(today,1),wk=addDays(t
  ${card(`Order prep due ${tasks.length?`<span class="pill">${tasks.length}</span>`:""}`,tasks.length?`<div class="tlist">${tasks.map(t=>taskRow(t)).join("")}</div>`:"","Nothing due today. Nice work!")}
  ${card("Pickups & deliveries",handoffs.length?`<div class="rows">${handoffs.map(o=>orow(o,`${o.date===today?"Today":"Tomorrow"}<br><span class="note">${esc({Collected:"Pickup",Delivered:"Delivery",Shipped:"Ship"}[o.handoff])}</span>`)).join("")}</div>`:"","None today or tomorrow.")}
  ${soon.length?card("Coming up in the next 3 days",`<div class="tlist">${soon.map(t=>taskRow(t)).join("")}</div>`):""}
+ ${(()=>{const nx=x=>{if(!x.date)return null;const[,m,dd]=x.date.split("-");let y=new Date().getFullYear(),k=`${y}-${m}-${dd}`;if(k<today)k=`${y+1}-${m}-${dd}`;return k};const sd=S.customers.flatMap(c=>(c.dates||[]).map(x=>({c,x,k:nx(x)}))).filter(o=>o.k&&o.k<=wk).sort((a,b)=>a.k.localeCompare(b.k));return sd.length?card("Special dates this week",`<div class="rows">${sd.map(o=>`<button class="rowi" data-a="custToday" data-id="${esc(o.c.id)}"><span class="bd"><span class="t">${esc(o.x.label||"Special date")}</span><br><span class="d">${esc(o.c.name)} · ${esc(new Date(o.k+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</span></span><span class="v">${o.c.phone?"Call":"Email"}</span></button>`).join("")}</div>`):""})()}
  <div class="grid2" style="gap:0 12px">${card("Quotes expiring soon",expiring.length?`<div class="rows">${expiring.map(o=>orow(o,money(totals(o).total))).join("")}</div>`:"","No quotes about to expire.")}
  ${card("Balances due this week",owed.length?`<div class="rows">${owed.map(o=>orow(o,money(totals(o).bal))).join("")}</div>`:"","Everyone's paid up for this week.")}</div></div>`;
 }
@@ -1142,6 +1143,7 @@ function vCustomers(){
   $("main").innerHTML=`<div class="wrap"><button class="back" data-a="backCust">‹ All customers</button><div class="card"><h1 style="font-size:22px">${esc(c.name)}</h1>
   <div class="grid2"><div class="field"><label>Name</label><input type="text" data-c="name" value="${esc(c.name)}"></div><div class="field"><label>Phone</label><input type="tel" data-c="phone" value="${esc(c.phone)}"></div><div class="field"><label>Email</label><input type="email" data-c="email" value="${esc(c.email)}"></div></div>
   <div class="field"><label>Notes</label><textarea data-c="notes" placeholder="Allergies, favorite flavors, how they found you">${esc(c.notes||"")}</textarea></div>
+  <div class="field"><label>Special dates</label><p class="hint" style="margin:0 0 6px">Birthdays and anniversaries show on your Today page the week before, so you can reach out.</p>${(c.dates||[]).map((x,i)=>`<div class="grid3" style="align-items:end"><div class="field"><input type="text" data-sd="${i}" data-sk="label" value="${esc(x.label||"")}" placeholder="e.g. Ava's birthday" aria-label="What it is"></div><div class="field"><input type="date" data-sd="${i}" data-sk="date" value="${esc(x.date||"")}" aria-label="Date"></div><div class="field"><button class="btn sm" data-a="sdDel" data-i="${i}">Remove</button></div></div>`).join("")}<button class="btn sm" data-a="sdAdd">+ Add a date</button></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" data-a="custOrder">+ New order for ${esc(c.name.split(" ")[0])}</button><button class="btn danger sm" data-a="custDel">Delete customer</button></div></div>
   <div class="card"><h3>Orders</h3>${os.length?`<div class="rows">${os.map(o=>`<button class="rowi" data-a="openOrder" data-id="${esc(o.id)}"><span class="bd"><span class="t">#${esc(o.no)} · ${esc(o.kind)}</span><br><span class="d">${esc(o.date||"No date")} · ${esc(o.status)}</span></span><span class="v">${money(totals(o).total)}</span></button>`).join("")}</div>`:`<p class="hint">No orders yet.</p>`}</div></div>`;return}
  if(custTab==="suppliers")return vSuppliers();
@@ -1478,6 +1480,9 @@ document.addEventListener("click",e=>{
    break}
   case"delPay":logEv(draft,`Payment of ${money(draft.payments[i].amount)} removed`);draft.payments.splice(i,1);render();break;
   case"docPreview":openDoc();break;
+  case"custToday":editCust=b.dataset.id;custTab="customers";go("customers");break;
+  case"sdAdd":{const c=S.customers.find(x=>x.id===editCust);if(c){(c.dates=c.dates||[]).push({label:"",date:""});save();render()}}break;
+  case"sdDel":{const c=S.customers.find(x=>x.id===editCust);if(c&&c.dates){c.dates.splice(+b.dataset.i,1);save();render()}}break;
   case"planSet":draft.plan=+b.dataset.v;render();break;
   case"jobSheet":openJob();break;
   case"safetyCard":openCard();break;
@@ -1677,7 +1682,8 @@ function setM(el){const k=el.dataset.m,it=M.item;if(k.startsWith("t:"))it.tiers[
 document.addEventListener("input",e=>{
  const el=e.target;
  if(el.id==="o-customer"){draft.customer=el.value;const c=S.customers.find(x=>x.name.toLowerCase()===el.value.trim().toLowerCase());if(c&&draft.customerId!==c.id){Object.assign(draft,{customerId:c.id,phone:draft.phone||c.phone,email:draft.email||c.email});render();const n=$("o-customer");n.focus();n.setSelectionRange(n.value.length,n.value.length)}else if(!c&&draft.customerId){draft.customerId=null}side();return}
- if(el.dataset.c){const c=S.customers.find(x=>x.id===editCust);c[el.dataset.c]=el.value;save();return}
+ if(el.dataset.sd!=null){const c=S.customers.find(x=>x.id===editCust);c.dates[+el.dataset.sd][el.dataset.sk]=el.value;save();return}
+  if(el.dataset.c){const c=S.customers.find(x=>x.id===editCust);c[el.dataset.c]=el.value;save();return}
  if(el.id==="pl-g"){planner.guests=el.value;const pos=el.selectionStart;renderItem();const n=$("pl-g");if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch{}}return}
  if(el.dataset.fq&&el.type!=="checkbox"&&el.tagName==="INPUT"){const[i,k]=el.dataset.fq.split(":");S.formQ[+i][k]=el.value;save();return}
  if(el.dataset.pf&&el.tagName==="INPUT"){const[i,k]=el.dataset.pf.split(":");S.portfolio.items[+i][k]=el.value;save();return}
