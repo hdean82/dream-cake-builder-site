@@ -127,7 +127,7 @@ const MX=[
  ['crawfish','Boiled Crawfish','up',{}],['corn_cob','Corn On The Cob','front',{}],['corn_round','Corn Round','front',{}],['potato','Red Potato','front',{}],
  ['cash_fan','Fanned Cash','front',{ds:true}],['cash_bundle','Cash Bundle','front',{}],['clapperboard','Clapperboard','front',{}],['ticket','Admit One Ticket','front',{ds:true}],['glove','Baseball Glove','front',{}]];
 for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k+'.glb',1,null,null,null,o];
- DECOR['mx_'+k]={label:label+' (Sculpted)',layouts:['cluster','crown','band','cascade','scatter'],layout:'cluster',count:1,max:24,color:'',colors:[],sp:1.4,side:'up',roll:face==='front'?.1:.5,spin:.6,sink:0,embed:.05,noTilt:true,model:true,
+ DECOR['mx_'+k]={label:label+' (Sculpted)',layouts:['cluster','crown','band','cascade','scatter'],layout:'cluster',count:1,max:24,color:'',colors:[],sp:1.4,side:'up',roll:face==='front'?.1:.5,spin:.6,sink:0,embed:-.004,noTilt:true,model:true,
   make:(q,c,mode,dc)=>{const id='mx_'+k,e=MODEL_CACHE[id];if(!e){loadModel(id);return[]}if(!e.parts)return[];const out=e.parts.map(([m,g])=>[m,g.clone()]);if(mode==='side'&&face==='up')out.forEach(([,g])=>{g.rotateX(PI/2)});if(dc&&dc.flip)out.forEach(([,g])=>g.rotateZ(PI));return out}};
  DECOR_ICONS['mx_'+k]=di('<circle cx="20" cy="20" r="12" fill="#f3d6d9"/><text x="20" y="25" font-size="13" text-anchor="middle">✨</text>')}
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push(...MX.map(m=>'mx_'+m[0]))}
