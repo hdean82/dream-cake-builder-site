@@ -48,7 +48,7 @@ function cornParts(q,c){const L=.9,R=.2,g=new T.CylinderGeometry(R,R*.85,L,28,26
 function potatoParts(q,c){const g=new T.SphereGeometry(.22,18,12),p=g.attributes.position,ph=q()*9;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.08*Math.sin(x*9+ph)*Math.sin(z*7);p.setXYZ(i,x*k*1.25,y*k*.8,z*k)}g.computeVertexNormals();g.translate(0,.16,0);
  tintTo(g,(x,y,z)=>{const s=Math.sin(x*40+ph)*Math.sin(z*37)*Math.sin(y*41);return s>.6?[.55,.4,.25]:[1,1,1]});return[[dmat(c,{r:.7,sh:.25}),norm(g)]]}
 function potLidParts(q,c){const R=1/Math.sin(.42),lid=new T.SphereGeometry(R,64,12,0,2*PI,0,.42);lid.scale(1,1.8,1);lid.translate(0,-Math.cos(.42)*R*1.8+.02,0);const rim=new T.TorusGeometry(1,.035,8,64);rim.rotateX(PI/2);rim.translate(0,.03,0);
- const h=new T.TorusGeometry(.22,.04,10,24,PI);h.translate(0,.2,0);const k1=new T.CylinderGeometry(.04,.05,.06,10);k1.translate(-.22,.2,0);const k2=k1.clone();k2.translate(.44,0,0);
+ const h=new T.TorusGeometry(.3,.06,12,28,PI);h.translate(0,.42,0);const k1=new T.CylinderGeometry(.07,.09,.1,12);k1.translate(-.3,.4,0);const k2=k1.clone();k2.translate(.6,0,0);
  return[[sgMat.metal(c),mg([lid,rim,h,k1,k2])]]}
 // ---------- money ----------
 function cashParts(q,c){const parts=[];const n=1+(q()<.5?1:0);for(let k=0;k<n;k++){const W=1.05,H=.45,g=new T.PlaneGeometry(W,H,18,6),p=g.attributes.position,cv=rj(q,.25);for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,cv*x*x)}
