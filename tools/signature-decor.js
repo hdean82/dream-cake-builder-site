@@ -251,6 +251,17 @@ function sportsTopParts(q,c,mode,dc){const RAD=(dc&&dc.rad)||1;const F=(r0,r1,a0
 DECOR.sportstop={label:'Sports Field Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#3f8f45',colors:['#3f8f45'],sp:.3,side:'up',sink:0,tilt:[0,0],spin:0,make:sportsTopParts};
 DECOR_ICONS.sportstop=di('<circle cx="20" cy="20" r="14" fill="#5cb04e"/><path d="M20 20V6A14 14 0 0 1 34 20z" fill="#d9893a"/><path d="M20 20H6A14 14 0 0 0 20 34z" fill="#2f6fd0"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('sportstop')}
+// ---- script word topper (e.g. "forever|eva"), traced from the script fonts ----
+const SCRIPT_WAIT=new Set();
+function scriptTopParts(q,c,mode,dc){const MF=MSG_FONTS[(dc&&dc.font)||'dancing']||MSG_FONTS.dancing,ff={css:MF.css,w:MF.w||''},fs=(ff.w?ff.w+' ':'')+'80px '+MF.css;
+ if(document.fonts&&!document.fonts.check(fs)&&!SCRIPT_WAIT.has(fs)){SCRIPT_WAIT.add(fs);document.fonts.load(fs).then(()=>{GLY.clear();scheduleBuild()}).catch(()=>{})}
+ const lines=String((dc&&dc.text)||'forever|eva').split('|').slice(0,3),gs=[];let y=0;
+ lines.forEach((ln,i)=>{const sh=NUM_FONT.generateShapes(ln,.55,ff);if(!sh.length)return;const g=new T.ExtrudeGeometry(sh,{depth:.07,bevelEnabled:true,bevelThickness:.012,bevelSize:.008,bevelSegments:1,curveSegments:6});g.computeBoundingBox();const b=g.boundingBox;g.translate(-(b.min.x+b.max.x)/2+(i%2?.25:-.1),-b.max.y+y,-.035);y-=(b.max.y-b.min.y)*.86;gs.push(g)});
+ if(!gs.length)return[];const m=mg(gs);m.computeBoundingBox();const bb=m.boundingBox,pk=[];for(const sx of[-.28,.28]){const p=new T.CylinderGeometry(.022,.022,1.3,8);p.translate(sx,bb.min.y-.55,0);pk.push(p)}
+ return[[sgMat.metal(c),mg([m,...pk])]]}
+DECOR.scripttop={label:'Script Word Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2','#1d1b1f','#fbf7f1'],sp:.4,side:'up',sink:.6,tilt:[0,0],spin:0,make:scriptTopParts};
+DECOR_ICONS.scripttop=di('<text x="20" y="24" font-size="13" text-anchor="middle" fill="#d9a08a" font-style="italic" font-family="cursive">love</text>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('scripttop')}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -281,11 +292,11 @@ THEMES.unshift(
   newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',prof:'pillow',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.8,y:-.8},decor:[DC('roses','band',16,{color:'#fbf7f1',size:130,y:-1.4})]}),
   newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'rope',pipe:'#fbf7f1',bottom:'scrolls',bottomColor:'#d4ae5a',decor:[DC('tassel','band',4,{color:'#d4ae5a',size:180,rot:45,y:.9})]}),
   newTier(5.5,3.4,{color:'#c9ccd2',texture:'rosettes',prof:'dome',top:'none',bottom:'none',decor:[DC('roses','cluster',10,{color:'#fbf7f1',size:130})]})]}},
- {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers with a sweep of ruffles, a lace band and a clean top tier ready for your script topper.',d:{board:'silver',topper:'none',tiers:[
-  newTier(10,5,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2'}),
-  newTier(8,4.8,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2'}),
-  newTier(7,4.6,{color:'#fbf8f2',finish:'fondant',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',stencil:{pattern:'lace',color:'#cdb89a',size:2.2,height:3.2,y:.6}}),
-  newTier(6,5,{color:'#fbf8f2',finish:'fondant',texture:'dimple',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',decor:[DC('roses','crown',6,{color:'#fbf8f2',size:120})]})]}},
+ {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers: two bottom tiers swept in soft ruffles, a lace band, a clean top tier and a rose gold "forever" script topper.',d:{board:'silver',topper:'none',tiers:[
+  newTier(10,5.4,{color:'#fbf8f2',finish:'fondant',texture:'frills',top:'none',bottom:'none'}),
+  newTier(8.6,5.2,{color:'#fbf8f2',finish:'fondant',texture:'frills',top:'none',bottom:'none'}),
+  newTier(7.4,5,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'lace',color:'#e6dccd',size:2.2,height:2.6,y:1.1}}),
+  newTier(6.2,5.4,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'none',decor:[DC('scripttop','cluster',1,{color:'#e2ae96',size:380,center:true,face:95,text:'forever|eva'})]})]}},
  {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and rhinestone brooch bursts with rose gold roses.',d:{board:'rosegold',topper:'none',tiers:[
   newTier(12,4,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:230,R:6,rot:95}),DC('dragees','scatter',40,{color:'#d9a08a',size:45})]}),
   newTier(10,3.6,{color:'#fbf8f2',finish:'fondant',side:'swags',sideColor:'#d9a08a',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('roses','cascade',5,{color:'#d9a08a',size:130,rot:-30})]}),
