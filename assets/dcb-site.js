@@ -28,35 +28,35 @@
   // footer year
   document.querySelectorAll('[data-year]').forEach(n => { n.textContent = new Date().getFullYear(); });
 
-  // waitlist: saves to the Supabase launch_subscribers table (same as the current site)
-  const form = document.getElementById('launchForm');
-  if (form) {
-    const SUPABASE_URL = 'https://gcorvodfcxhumesttwvj.supabase.co';
-    const PUBLISHABLE_KEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
-    const status = document.getElementById('launchStatus');
+  // waitlist forms (any form[data-launch], plus the original #launchForm) save to Supabase launch_subscribers
+  const SUPABASE_URL = 'https://gcorvodfcxhumesttwvj.supabase.co';
+  const PUBLISHABLE_KEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+  const LIVE = ['dreamcakebuilder.com', 'www.dreamcakebuilder.com', 'dream-cake-builder-site.pages.dev'];
+  document.querySelectorAll('form[data-launch], #launchForm').forEach(form => {
+    const status = form.querySelector('[data-launch-status]') || document.getElementById('launchStatus');
     let busy = false;
     form.addEventListener('submit', async e => {
       e.preventDefault();
       if (busy || !form.reportValidity()) return;
-      if (form.elements.website.value) return;            // spam trap
+      if (form.elements.website && form.elements.website.value) return;   // spam trap
       busy = true;
       const btn = form.querySelector('button');
       btn.disabled = true; status.textContent = 'Joining the list…';
       try {
-        const live = ['dreamcakebuilder.com', 'www.dreamcakebuilder.com'].includes(location.hostname);
-        if (!live) { await new Promise(r => setTimeout(r, 500)); status.textContent = 'Preview only: on the live site this adds you to the list.'; return; }
+        if (!LIVE.includes(location.hostname)) { await new Promise(r => setTimeout(r, 500)); status.textContent = 'Preview only: on the live site this adds you to the list.'; return; }
         const res = await fetch(SUPABASE_URL + '/rest/v1/launch_subscribers', {
           method: 'POST',
           headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-          body: JSON.stringify({ email: form.elements.email.value.trim().toLowerCase(), news_updates: form.elements.news.checked }),
+          body: JSON.stringify({ email: form.elements.email.value.trim().toLowerCase(), news_updates: !!(form.elements.news && form.elements.news.checked) }),
           signal: AbortSignal.timeout(15000)
         });
         if (!res.ok) { const err = await res.json().catch(() => ({})); if (err.code !== '23505') throw new Error('save failed'); }
         status.textContent = 'You’re on the list! Watch your inbox for launch news.';
+        form.classList.add('joined');
         form.reset();
       } catch {
         status.textContent = 'We couldn’t save your email. Please try again in a moment.';
       } finally { busy = false; btn.disabled = false; }
     });
-  }
+  });
 }
