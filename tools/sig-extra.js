@@ -105,3 +105,15 @@ function ropeKnotParts(q,c){const g=[];const rope=(pts,r)=>{const cv=new T.Catmu
 DECOR.ropeknot={label:'Rope Knot And Ties',layouts:['band'],layout:'band',count:1,max:2,color:'#1d1b1f',colors:['#1d1b1f','#d4ae5a','#8a5a3a','#fbf7f1'],sp:2,roll:0,sink:0,embed:.08,make:ropeKnotParts};
 DECOR_ICONS.ropeknot=di('<circle cx="20" cy="12" r="5" fill="#1d1b1f"/><path d="M18 15q-4 10-6 18M22 15q3 8 4 14" stroke="#1d1b1f" stroke-width="3" fill="none"/>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('ropeknot')}
+// ---- sports details: hoop rim with piped net, yard numbers, grass tuft ----
+function hoopNetParts(q,c){const rim=new T.TorusGeometry(.62,.06,10,40);rim.rotateX(PI/2);rim.translate(0,.08,0);const net=[];for(let k=0;k<16;k++){const a=-1.2+k/15*2.4+(q()-.5)*.15,pts=[];for(let s=0;s<=10;s++){const u=s/10,rr=.6+u*1.5,w=Math.sin(u*9+k)*.12;pts.push(new V3(-Math.cos(a)*rr+Math.sin(a)*w,.07-Math.pow(Math.max(0,u-.55),2)*1.6+Math.sin(u*14+k)*.02,Math.sin(a)*rr*.75+Math.cos(a)*w))}net.push(new T.TubeGeometry(new T.CatmullRomCurve3(pts),40,.035,6,false))}
+ return[[dmat(c,{r:.35,cc:.5}),rim],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(net)]]}
+DECOR.hoopnet={label:'Hoop Rim And Piped Net',layouts:['cluster'],layout:'cluster',count:1,max:2,color:'#d62839',colors:['#d62839','#e8762c'],sp:.6,side:'up',sink:.05,tilt:[0,0],make:hoopNetParts};
+function yardNumParts(q,c,mode,dc){const txt=(dc&&dc.text)||'10 20 30 40 50';return[[dmat(c,{r:.4,cc:.3}),sgText(txt,.5,0,0,.04)]]}
+DECOR.yardnums={label:'Yard Line Numbers',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#fbf7f1',colors:['#fbf7f1','#f2c230'],sp:.3,side:'up',sink:.0,tilt:[0,0],spin:0,make:yardNumParts};
+function grassTuftParts(q,c){const g=[];for(let k=0;k<90;k++){const a=q()*2*PI,r0=.45+q()*.35,L=.18+q()*.2,cn=new T.ConeGeometry(.035,L,5);cn.translate(0,L/2,0);cn.rotateZ((q()*.6+.3));cn.rotateY(-a);cn.translate(Math.cos(a)*r0,0,Math.sin(a)*r0);g.push(cn)}return[[dmat(c,{r:.6}),mg(g)]]}
+DECOR.grasstuft={label:'Piped Grass Tuft',layouts:['cluster','scatter'],layout:'cluster',count:1,max:8,color:'#3f9a45',colors:['#3f9a45','#5cb04e'],sp:.6,side:'up',sink:.02,tilt:[0,0],make:grassTuftParts};
+DECOR_ICONS.hoopnet=di('<ellipse cx="20" cy="14" rx="10" ry="4" fill="none" stroke="#d62839" stroke-width="3"/><path d="M11 15l4 14M20 18v12M29 15l-4 14" stroke="#ccc" stroke-width="2"/>');
+DECOR_ICONS.yardnums=di('<rect x="3" y="12" width="34" height="16" fill="#3f9a45"/><text x="20" y="24" font-size="9" text-anchor="middle" fill="#fff" font-weight="900">10 20</text>');
+DECOR_ICONS.grasstuft=di('<path d="M8 30l4-12M14 30l2-14M20 30v-15M26 30l-2-14M32 30l-4-12" stroke="#3f9a45" stroke-width="3"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('hoopnet','yardnums','grasstuft')}
