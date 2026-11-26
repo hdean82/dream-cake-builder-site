@@ -104,3 +104,5 @@ h1,h2,h3,h4,.btn,.eyebrow,.site-nav a,.menu-panel a,label,.lbl,.filters button,s
 
 /* Launch teaser: Orders links show only on devices unlocked with the team key */
 html:not(.team) [data-team]{display:none!important}
+
+[hidden]{display:none!important}
