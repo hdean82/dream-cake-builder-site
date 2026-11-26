@@ -101,3 +101,6 @@ p{margin:0}
 /* Title Case for headings, buttons and labels */
 h1,h2,h3,h4,.btn,.eyebrow,.site-nav a,.menu-panel a,label,.lbl,.filters button,summary{text-transform:capitalize}
 .note,.hint,.fine,.muted,input,textarea,select,option{text-transform:none}
+
+/* Launch teaser: Orders links show only on devices unlocked with the team key */
+html:not(.team) [data-team]{display:none!important}

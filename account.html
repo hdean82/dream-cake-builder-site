@@ -37,17 +37,17 @@ input[type=email],input[type=password]{width:100%;min-height:42px;border:1px sol
  <div class="head-in">
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
   <nav class="site-nav" aria-label="Main">
-   <a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a>
+   <a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a data-team href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a>
   </nav>
   <details class="menu"><summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
-   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a></div>
+   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How it works</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a data-team href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" aria-current="page" data-acct>Sign in</a></div>
   </details>
  </div>
 </header>
 
 <main class="band"><div class="acc"><div class="card" id="app"><p class="muted">Loading…</p></div></div></main>
 
-<footer class="site-foot"><div class="foot-in"><a class="brand" href="index.html">Dream <span>Cake</span> Builder</a><nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="contact.html">Contact</a></nav><span class="end">© <span data-year>2026</span></span></div></footer>
+<footer class="site-foot"><div class="foot-in"><a class="brand" href="index.html">Dream <span>Cake</span> Builder</a><nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a></nav><span class="end">© <span data-year>2026</span></span></div></footer>
 
 <script src="assets/dcb-auth.js"></script>
 <script src="assets/dcb-site.js" defer></script>
@@ -75,10 +75,10 @@ async function signedIn(s){
  const email=s.user?.email||'your account';
  app.innerHTML=`<span class="eyebrow">Your account</span><h1>You're signed in</h1><div class="who"><span class="avatar">${esc(email[0].toUpperCase())}</span><span><b>${esc(email)}</b><span class="muted" style="font-size:13px">Signed in on this device</span></span></div>
  <div class="access" id="acc"><div><span>Checking your access…</span></div></div>
- <div class="go"><a class="btn primary" href="studio.html">Open the Studio</a><a class="btn" href="shop.html#calendar">Open Orders</a></div>
+ <div class="go"><a class="btn primary" href="studio.html">Open the Studio</a><a class="btn" data-team href="shop.html#calendar">Open Orders</a></div>
  <button class="btn wide" data-out style="margin-top:10px">Sign out</button>`;
  const n=next();if(n){location.replace(n);return}
- try{const a=await A.rpc('dcb_studio_access');$('acc').innerHTML=`<div><span>Studio</span><b>${a&&a.premium?'Full access':'Studio Lite'}</b></div><div><span>Orders</span><b>${a&&a.artist_cloud?'Included':'Needs artist access'}</b></div>`}
+ try{const a=await A.rpc('dcb_studio_access');$('acc').innerHTML=`<div><span>Studio</span><b>${a&&a.premium?'Full access':'Studio Lite'}</b></div><div data-team><span>Orders</span><b>${a&&a.artist_cloud?'Included':'Needs artist access'}</b></div>`}
  catch{$('acc').innerHTML='<div><span>Couldn’t check your access right now.</span></div>'}
 }
 async function draw(){const s=await A.session();s?signedIn(s):signedOut()}

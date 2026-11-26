@@ -1,5 +1,8 @@
 /* Dream Cake Builder — shared site script: menu, image fallback, waitlist form */
 {
+  // team devices (unlocked at /team?key=…) also see the Orders links
+  if (/(?:^|; )dcb_team=/.test(document.cookie)) document.documentElement.classList.add('team');
+
   // close the phone menu after choosing a link or tapping outside
   const menu = document.querySelector('.menu');
   if (menu) {

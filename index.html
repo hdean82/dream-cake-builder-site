@@ -3,53 +3,86 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dream Cake Builder · Design, Client Review & Cake Preparation</title>
-<meta name="description" content="A creative workflow for cake artists: design in 3D, share client concepts, handle revisions, capture visual approval and prepare to bake.">
+<title>Dream Cake Studio · Design Cakes In 3D, Get Client Approval</title>
+<meta name="description" content="Dream Cake Studio lets cake artists design real-looking cakes in 3D — Lambeth piping, bows, frosting and lighting — then send the client a link to approve it before you bake.">
 <meta name="theme-color" content="#c12c7e">
+<meta property="og:title" content="Dream Cake Studio · Design It In 3D Before You Bake">
+<meta property="og:description" content="Design your client's cake in 3D, send a link, and get it approved before you bake.">
+<meta property="og:image" content="https://dreamcakebuilder.com/assets/home/lambeth-hero.jpg">
 <link rel="icon" href="lilac/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/home/lambeth-hero.webp" type="image/webp">
 <link rel="stylesheet" href="assets/dcb-theme.css">
 <style>
-/* ---------- home page only ---------- */
-.hero{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:var(--gap);align-items:stretch}
-.hero-copy{padding:22px 24px;display:flex;flex-direction:column;gap:12px;justify-content:center}
-.hero-copy .lead{font-size:17px;color:var(--muted);max-width:470px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
-.hero-points{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.hero-pic{position:relative;overflow:hidden;padding:0;min-height:320px}
-.hero-pic img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-.hero-pic .tag{position:absolute;left:12px;top:12px}
-.hero-pic .note{position:absolute;right:12px;bottom:12px;left:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,250,245,.94);border:1px solid #fff;border-radius:12px;padding:8px 12px;font-size:13px}
-.hero-pic .note b{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:15px}
+/* ---------- home page ---------- */
+.band:first-of-type{padding-top:34px}
 
-.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gap)}
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:var(--gap);align-items:stretch}
+.hero-copy{padding:26px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.hero-copy h1{font-size:clamp(34px,4.8vw,54px)}
+.hero-copy h1 em{font-style:italic;font-weight:400;color:var(--rose)}
+.hero-copy .lead{font-size:17px;color:var(--muted);max-width:480px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:8px}
+.hero-actions .btn{min-height:44px;padding:10px 18px;font-size:15px}
+.soon{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:13px;font-weight:600;color:var(--rose-ink);text-transform:capitalize}
+.soon i{width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 4px var(--rose-soft);margin-left:4px;animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px #fde3f000}}
+.proof-row{display:flex;flex-wrap:wrap;gap:6px}
+
+.stage{position:relative;margin:0;padding:0;overflow:hidden;min-height:440px;background:#e1ddde}
+.stage picture,.stage img{position:absolute;inset:0;width:100%;height:100%}
+.stage img{object-fit:cover;object-position:50% 55%}
+.stage .made{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;color:var(--rose-ink)}
+.stage .spec{position:absolute;display:flex;flex-direction:column;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:12px;padding:7px 11px;font-size:12px;color:var(--muted);box-shadow:0 6px 18px #4b103d1a;line-height:1.3}
+.stage .spec b{font:600 15px Fraunces,Georgia,serif;color:var(--ink)}
+.stage .s1{right:12px;top:14%}
+.stage .s2{left:12px;top:46%}
+.stage .bar{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,250,245,.94);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:12px;padding:8px 8px 8px 14px}
+.stage .bar b{font:600 16px Fraunces,Georgia,serif;display:block}
+.stage .bar span{font-size:12.5px;color:var(--muted)}
+
+/* quick facts */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+.fact{display:flex;gap:12px;align-items:flex-start;padding:12px 14px}
+.fact .ic{flex:0 0 36px;height:36px;border-radius:10px;background:var(--rose-soft);color:var(--rose-ink);display:flex;align-items:center;justify-content:center}
+.fact .ic svg{width:20px;height:20px}
+.fact b{font:600 16px Fraunces,Georgia,serif;display:block;margin-bottom:2px}
+.fact span{font-size:13.5px;color:var(--muted)}
+
+/* how it works */
+.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--gap);list-style:none;margin:0;padding:0}
 .step{display:flex;flex-direction:column;overflow:hidden}
-.step .vis{position:relative;aspect-ratio:4/3;background:#fff;border-bottom:1px solid #f1dbe7;overflow:hidden}
-.step .vis img{width:100%;height:100%;object-fit:cover}
-.step .num{position:absolute;left:8px;top:8px;font:600 12px Inter,sans-serif;background:var(--ink);color:#fff;border-radius:999px;padding:2px 8px}
-.step .body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
-.step p{font-size:13.5px;color:var(--muted)}
-.step .who{margin-top:auto}
-.mini{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:12px;background:linear-gradient(135deg,#fff7fb,#f6f0ff 60%,#eefaf7);font-size:12.5px}
-.mini .line{display:flex;gap:6px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 8px}
-.mini .ok{color:var(--teal);font-weight:700}
-.mini .todo{color:#c9a7b8;font-weight:700}
-.mini .big{font-family:Fraunces,Georgia,serif;font-size:18px;font-weight:600;color:var(--teal);display:flex;align-items:center;gap:6px}
-.bubble{position:absolute;right:8px;bottom:8px;background:#fff;border:1px solid var(--line);border-radius:12px 12px 4px 12px;padding:5px 9px;font-size:12.5px;font-weight:500;box-shadow:0 3px 10px #4b103d1a}
+.step.w3{grid-column:span 3}.step.w2{grid-column:span 2}
+.step .txt{padding:12px 14px 10px;display:flex;flex-direction:column;gap:5px}
+.step .top{display:flex;align-items:center;gap:8px}
+.step .num{font:600 12px Inter,sans-serif;background:var(--ink);color:#fff;border-radius:999px;padding:2px 9px}
+.step h3{font-size:19px}
+.step p{font-size:14px;color:var(--muted)}
+.step .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.shot{position:relative;margin:auto 10px 10px;border-radius:10px;overflow:hidden;border:1px solid #efdbe6;background:#f4edf1;box-shadow:0 4px 14px #4b103d12}
+.shot img{width:100%;height:100%;object-fit:cover}
+.w3 .shot{aspect-ratio:16/9.6}
+.w3 .shot img{object-position:0 0}
+.w2 .shot{aspect-ratio:4/4.3}
+.shot.phone{background:linear-gradient(150deg,#fde3f0,#efe4fb 60%,#dff3f1);display:flex;justify-content:center;align-items:flex-start;padding-top:16px}
+.shot.phone .device{width:56%;max-width:210px;border-radius:26px;border:6px solid #3a1030;overflow:hidden;box-shadow:0 14px 30px #4b103d33;background:#fff}
+.shot.phone .device img{height:auto}
+.shot.proof img{object-position:50% 0}
+.shot .cap{position:absolute;right:8px;bottom:8px;background:#fff;border:1px solid var(--line);border-radius:12px 12px 4px 12px;padding:4px 9px;font-size:12px;font-weight:600;color:var(--teal);box-shadow:0 3px 10px #4b103d1a}
 
-.tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
-.tool{display:flex;flex-direction:column;gap:4px;padding:12px 14px;text-decoration:none;color:var(--ink);transition:border-color .15s,box-shadow .15s}
-.tool:hover{border-color:#e2b4ca;box-shadow:0 6px 18px #4b103d1a}
-.tool .ti{width:34px;height:34px;border-radius:10px;background:var(--rose-soft);color:var(--rose-ink);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
-.tool .ti svg{width:19px;height:19px}
-.tool b{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:16px}
-.tool span:last-child{font-size:13.5px;color:var(--muted)}
-@media (max-width:860px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:420px){.tools{grid-template-columns:minmax(0,1fr)}}
-.lower{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:var(--gap);align-items:start}
+/* features */
+.feats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
+.feat{padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.feat b{font:600 15.5px Fraunces,Georgia,serif}
+.feat span{font-size:13.5px;color:var(--muted)}
+.feat .k{font-size:11.5px;font-weight:600;color:var(--rose-ink);text-transform:capitalize}
+
+/* waitlist + faq */
+.lower{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:var(--gap);align-items:start}
 .faq{padding:14px 16px}
-.faq h2{margin-bottom:8px}
+.faq h2{margin-bottom:6px}
 .faq details{border-top:1px solid var(--line)}
 .faq details:first-of-type{border-top:0}
 .faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 2px;font-weight:600}
@@ -57,31 +90,39 @@
 .faq summary::after{content:"+";color:var(--rose);font-weight:600;font-size:18px;line-height:1}
 .faq details[open] summary::after{content:"–"}
 .faq details p{padding:0 2px 12px;color:var(--muted);font-size:14px}
-.join{padding:16px;position:sticky;top:76px}
-.join h2{margin-bottom:4px}
+.join{padding:18px;position:sticky;top:76px;background:linear-gradient(160deg,#fff,#fff6fa 60%,#f7f0ff)}
+.join h2{margin:2px 0 4px}
 .join form{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .join label{font-size:13px;color:var(--muted)}
-.join input[type=email]{width:100%;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;margin-top:4px}
-.join .check{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:13.5px}
+.join input[type=email]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;margin-top:4px}
+.join .check{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:13.5px;text-transform:none}
 .join .check input{accent-color:var(--rose);width:17px;height:17px;margin-top:2px}
-.join .btn{width:100%}
+.join .btn{width:100%;min-height:44px}
 .join .fine{font-size:12px;color:var(--muted)}
 .join #launchStatus{font-size:13.5px;font-weight:500;color:var(--teal);min-height:1em}
 .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 @media (max-width:1020px){
-  .steps{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
-  .step{scroll-snap-align:start}
+  .feats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step.w3,.step.w2{grid-column:span 3}
+  .steps>.step:last-child{grid-column:span 6}
+  .steps>.step:last-child .shot{aspect-ratio:16/8}
 }
 @media (max-width:860px){
   .hero,.lower{grid-template-columns:minmax(0,1fr)}
-  .hero-pic{min-height:260px;order:-1}
+  .stage{min-height:0;aspect-ratio:1/1.02;order:-1}
+  .facts{grid-template-columns:minmax(0,1fr)}
   .join{position:static}
 }
-@media (max-width:480px){
-  .hero-copy{padding:16px}
+@media (max-width:640px){
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .step.w3,.step.w2,.steps>.step:last-child{grid-column:auto}
+  .w2 .shot,.steps>.step:last-child .shot{aspect-ratio:4/3.6}
+  .hero-copy{padding:18px}
   .hero-actions .btn{flex:1}
+  .stage .spec{display:none}
 }
+@media (max-width:420px){.feats{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -90,18 +131,17 @@
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
   <nav class="site-nav" aria-label="Main">
    <a href="index.html" aria-current="page">Home</a>
-   <a href="#how-it-works">How it works</a>
+   <a href="#how-it-works">How It Works</a>
    <a href="studio.html">Studio</a>
-   <a href="shop.html#orders">Orders</a>
-   <a href="shop.html#calendar">Calendar</a>
+   <a data-team href="shop.html#orders">Orders</a>
    <a href="contact.html">Contact</a>
-   <a href="account.html" data-acct>Sign in</a>
-   <a class="btn primary sm cta" href="#launch-list">Join waitlist</a>
+   <a href="account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="#launch-list">Join Waitlist</a>
   </nav>
   <details class="menu">
    <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
    <div class="menu-panel">
-    <a href="index.html" aria-current="page">Home</a><a href="#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign in</a><a href="#launch-list">Join waitlist</a>
+    <a href="index.html" aria-current="page">Home</a><a href="#how-it-works">How It Works</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="#launch-list">Join Waitlist</a>
    </div>
   </details>
  </div>
@@ -111,46 +151,85 @@
  <section class="band">
   <div class="wrap hero">
    <div class="card hero-copy">
-    <span class="eyebrow">Featured Lambeth preview</span>
-    <h1>Dream it. Design it. Then bake it.</h1>
-    <p class="lead">Design your cake in 3D and share it with your client for approval before you bake.</p>
-    <div class="hero-actions"><a class="btn primary" href="#launch-list">Join the waitlist</a><a class="btn" href="#how-it-works">See how it works</a></div>
-    <div class="hero-points"><span class="chip">3D cake design</span><span class="chip teal">Client review</span><span class="chip plain">Approval & prep</span></div>
+    <span class="soon"><i></i>Dream Cake Studio · Launching Soon</span>
+    <h1>Dream It. Design It <em>In 3D.</em> Then Bake It.</h1>
+    <p class="lead">Build your client's cake in real 3D, with Lambeth piping, satin bows, frosting textures and studio lighting. Then send them a link to turn it, zoom in and approve it before you bake.</p>
+    <div class="hero-actions"><a class="btn primary" href="studio.html">Try The Studio</a><a class="btn" href="#launch-list">Join The Waitlist</a></div>
+    <div class="proof-row"><span class="chip">80+ Themes To Start From</span><span class="chip teal">Client Approves From A Link</span><span class="chip plain">Works On Phone, Tablet &amp; Computer</span></div>
    </div>
-   <figure class="card hero-pic" style="margin:0">
-    <img src="lilac/art/concept.jpg" alt="Blush and ivory Lambeth cake concept with layered piping and nine pink bows" data-fallback>
-    <span class="chip tag">Lambeth concept</span>
-    <figcaption class="note"><span><b>Two tiers, nine bows</b><br><span class="muted">Blush and ivory, layered swags</span></span><a class="btn sm" href="studio.html">Open in Studio</a></figcaption>
+   <figure class="card stage">
+    <picture><source srcset="assets/home/lambeth-hero.webp" type="image/webp"><img src="assets/home/lambeth-hero.jpg" alt="Two-tier blush and ivory Lambeth cake with piped swags, pink satin bows, pearl borders and sugar roses, rendered in Dream Cake Studio" data-fallback width="1400" height="1017"></picture>
+    <span class="made">Rendered In Dream Cake Studio</span>
+    <span class="spec s1"><b>Serves About 50</b>Party Slices</span>
+    <span class="spec s2"><b>2 Tiers · 8.4" Tall</b>10" &amp; 7" Rounds</span>
+    <figcaption class="bar"><span><b>Blush Lambeth</b><span>Pearls, Swags And Satin Bows</span></span><a class="btn primary sm" href="studio.html" data-open-cake>Open This Cake</a></figcaption>
    </figure>
+  </div>
+ </section>
+
+ <section class="band" style="padding-top:0">
+  <div class="wrap facts">
+   <div class="card fact"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg></span><div><b>Real 3D, Not A Sketch</b><span>Turn it, zoom in on the piping and see it under real lighting.</span></div></div>
+   <div class="card fact"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 15c2-3 4 3 6 0s4 3 6 0"/><circle cx="7" cy="8" r="1.4"/><circle cx="12" cy="7" r="1.4"/><circle cx="17" cy="8" r="1.4"/></svg></span><div><b>Made For Cake Artists</b><span>Tiers, piping borders, bows, drips, flowers, fruit and writing.</span></div></div>
+   <div class="card fact"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><b>Approved Before You Bake</b><span>Your client approves the exact design, or tells you what to change.</span></div></div>
   </div>
  </section>
 
  <section class="band" id="how-it-works">
   <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">Your project, step by step</span><h2>Five steps from inquiry to prep.</h2></div><p class="muted">A clear path for you, and a clear way for your client to take part.</p></div>
-   <ol class="steps" style="list-style:none;margin:0;padding:0">
-    <li class="card step"><div class="vis"><img src="lilac/art/concept.jpg" alt="Lambeth concept" data-fallback loading="lazy"><span class="num">01</span></div>
-     <div class="body"><h3>Plan the project</h3><p>Plan two blush and ivory tiers around the reference, with layered swags and nine pink bows.</p><span class="chip plain who">Artist organizes</span></div></li>
-    <li class="card step"><div class="vis"><img src="lilac/art/piping.jpg" alt="Lambeth piping in progress" data-fallback loading="lazy"><span class="num">02</span></div>
-     <div class="body"><h3>Design in 3D</h3><p>Explore the two-tier design, from the blush and ivory frosting to the first bow-to-bow panel.</p><span class="chip who">Artist creates</span></div></li>
-    <li class="card step"><div class="vis"><img src="lilac/art/review.jpg" alt="Sample client review" data-fallback loading="lazy"><span class="num">03</span><span class="bubble">Love the pink bows!</span></div>
-     <div class="body"><h3>Share for review</h3><p>Share the finished Lambeth preview so the client can review the crown, swags and bows together.</p><span class="chip teal who">Client reviews</span></div></li>
-    <li class="card step"><div class="vis"><div class="mini"><span class="big">✓ Design approved</span><span class="line">Sample · same revision</span><span class="line">Signed and dated</span></div><span class="num">04</span></div>
-     <div class="body"><h3>Capture approval</h3><p>Keep visual approval attached to the exact shared revision.</p><span class="chip teal who">Client approves</span></div></li>
-    <li class="card step"><div class="vis"><div class="mini"><b>Ready for the kitchen</b><span class="line"><span class="ok">✓</span>Mix blush and ivory</span><span class="line"><span class="ok">✓</span>Mark nine bow joins</span><span class="line"><span class="todo">○</span>Set out the piping tips</span></div><span class="num">05</span></div>
-     <div class="body"><h3>Prepare to bake</h3><p>Use the approved Lambeth design to organize the buttercream, bow placement and piping tips.</p><span class="chip plain who">Artist prepares</span></div></li>
+   <div class="sec-head"><div><span class="eyebrow">How The Studio Works</span><h2>From Idea To Approved Cake In Five Steps.</h2></div><p class="muted">Every picture below is the real Studio, showing the same Blush Lambeth cake.</p></div>
+   <ol class="steps">
+    <li class="card step w3">
+     <div class="txt"><div class="top"><span class="num">01</span><h3>Start Your Cake</h3></div>
+      <p>Pick one of 80+ ready-made themes, type the client's idea into AI Draft, or add their inspiration photo and tap it to pull the exact colors.</p>
+      <div class="tags"><span class="chip plain">Themes</span><span class="chip plain">AI Draft</span><span class="chip plain">Inspiration Photo</span></div></div>
+     <div class="shot"><picture><source srcset="assets/home/step-themes.webp" type="image/webp"><img src="assets/home/step-themes.jpg" alt="The Studio's Start From A Theme window with wedding, birthday and statement cakes" loading="lazy" data-fallback width="1000" height="621"></picture></div>
+    </li>
+    <li class="card step w3">
+     <div class="txt"><div class="top"><span class="num">02</span><h3>Design Every Detail In 3D</h3></div>
+      <p>Set tier sizes and shapes, choose from 20+ frosting textures and 14 piping borders, then add Lambeth swags, bows, flowers and writing. Drag any piece where you want it.</p>
+      <div class="tags"><span class="chip plain">Tiers</span><span class="chip plain">Frosting</span><span class="chip plain">Piping</span><span class="chip plain">Decor</span><span class="chip plain">Lighting</span></div></div>
+     <div class="shot"><picture><source srcset="assets/home/step-design.webp" type="image/webp"><img src="assets/home/step-design.jpg" alt="Editing the Lambeth cake's piping borders in the Studio" loading="lazy" data-fallback width="1200" height="707"></picture></div>
+    </li>
+    <li class="card step w2">
+     <div class="txt"><div class="top"><span class="num">03</span><h3>Send It For Review</h3></div>
+      <p>Tap Send For Review and text or email the link. Your client turns the cake in 3D on their phone, then taps Approve Design or Request Changes.</p></div>
+     <div class="shot phone"><div class="device"><picture><source srcset="assets/home/step-review.webp" type="image/webp"><img src="assets/home/step-review.jpg" alt="A client viewing the cake on a phone with Approve Design and Request Changes buttons" loading="lazy" data-fallback width="600" height="1212"></picture></div><span class="cap">✓ Approved</span></div>
+    </li>
+    <li class="card step w2">
+     <div class="txt"><div class="top"><span class="num">04</span><h3>Share A Proof</h3></div>
+      <p>Make a one-page proof with three views, sizes, colors and notes. Print it, save it as a PDF or send it with your quote.</p></div>
+     <div class="shot proof"><picture><source srcset="assets/home/step-proof.webp" type="image/webp"><img src="assets/home/step-proof.jpg" alt="One-page client proof of the Blush Lambeth cake with front and top views" loading="lazy" data-fallback width="800" height="916"></picture></div>
+    </li>
+    <li class="card step w2">
+     <div class="txt"><div class="top"><span class="num">05</span><h3>Bake With A Plan</h3></div>
+      <p>The Summary shows servings, tier sizes and every detail tier by tier, plus a How To Cut This Cake guide. Save it to your Cake Box to reuse later.</p></div>
+     <div class="shot" style="background:linear-gradient(150deg,#fff,#fff5fa);padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:6px"><b style="font:600 16px Fraunces,Georgia,serif">Design Summary</b><span class="muted">Blush Lambeth</span></div>
+      <div style="display:flex;justify-content:space-between"><span class="muted">Tiers</span><b>2</b></div>
+      <div style="display:flex;justify-content:space-between"><span class="muted">Height</span><b>8.4"</b></div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Serves About</span><b style="font:600 26px Fraunces,Georgia,serif;color:var(--rose-ink)">50</b></div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px"><b>Tier 1</b> · 7" × 4" · Lambeth, Bows</div>
+      <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px"><b>Tier 2</b> · 10" × 4.4" · Pearls, Shells</div>
+      <div style="display:flex;gap:6px;margin-top:auto"><span class="chip">How To Cut This Cake</span><span class="chip teal">Option A / B</span></div>
+     </div>
+    </li>
    </ol>
   </div>
  </section>
 
- <section class="band" id="shop-tools">
+ <section class="band" id="features">
   <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">Beyond the design</span><h2>Run the whole order in one place.</h2></div><a class="btn sm" href="shop.html#calendar">Open Orders</a></div>
-   <div class="tools">
-    <a class="card tool" href="shop.html#calendar"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><b>Calendar</b><span>Every order on its event date, color-coded by occasion.</span></a>
-    <a class="card tool" href="shop.html#new-order"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5"/></svg></span><b>Quotes & invoices</b><span>Tier-by-tier cakes, tax, deposits and a clean document to send.</span></a>
-    <a class="card tool" href="shop.html#customers"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><b>Customers & payments</b><span>Saved customers, payment plans and what's still owed.</span></a>
-    <a class="card tool" href="shop.html#recipes"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6"/><path d="M14 7a3 3 0 0 1 3-3h3v14h-6"/></svg></span><b>Recipe costing</b><span>Know what each cake costs to make and what to charge.</span></a>
+   <div class="sec-head"><div><span class="eyebrow">Inside The Studio</span><h2>Everything You Need To Show The Cake.</h2></div><a class="btn sm" href="studio.html">Open The Studio</a></div>
+   <div class="feats">
+    <div class="card feat"><span class="k">Start</span><b>80+ Themes</b><span>Weddings, birthdays, number and letter cakes, and more.</span></div>
+    <div class="card feat"><span class="k">Start</span><b>AI Draft</b><span>Describe the client's cake and get a 3D starting design.</span></div>
+    <div class="card feat"><span class="k">Design</span><b>Piping &amp; Lambeth</b><span>Shells, pearls, rosettes, ruffles, rope, swags and bows.</span></div>
+    <div class="card feat"><span class="k">Design</span><b>Decor Library</b><span>Flowers, fruit, sprinkles, toppers and your own images.</span></div>
+    <div class="card feat"><span class="k">Look</span><b>Studio Lighting</b><span>Soft Daylight, Golden Studio, Clean Gallery or Moody.</span></div>
+    <div class="card feat"><span class="k">Share</span><b>Client Options</b><span>Make Option A and B and compare them side by side.</span></div>
+    <div class="card feat"><span class="k">Share</span><b>Photo &amp; Proof</b><span>Save a clean cake photo or a one-page proof in one tap.</span></div>
+    <div class="card feat"><span class="k">Keep</span><b>Cake Box</b><span>Every design saved, backed up and ready to reuse.</span></div>
    </div>
   </div>
  </section>
@@ -158,23 +237,23 @@
  <section class="band">
   <div class="wrap lower">
    <div class="card faq" id="workflow-questions">
-    <h2>Questions before you start?</h2>
-    <details open><summary>Who is Dream Cake Builder for?</summary><p>Cake artists who want to develop designs visually and give clients a clearer way to review them.</p></details>
-    <details><summary>What happens when a client wants changes?</summary><p>Use the revision request to refine the editable cake, then prepare the updated concept for review. Once changes are requested, wait for a fresh concept before approving. Approval belongs to the specific revision shared, so an older approval does not automatically approve a changed design.</p></details>
-    <details><summary>What happens after approval?</summary><p>Open the prep checklist from the approved cake. Check off tasks and save progress there, then return to the approval record. Track the event date and mark the project Complete when the work is finished.</p></details>
-    <details><summary>Can I explain non-edible decorations?</summary><p>Yes. Decoration materials, serving status and client-facing notes help you explain what is edible, what needs confirmation and what must be removed before serving. The cake artist remains responsible for confirming these details.</p></details>
-    <details><summary>Does this handle booking, contracts and payments?</summary><p>Not yet. Today’s focus is cake design, client review, approval and preparation. Keep using your existing booking and payment process while those broader workflow goals are evaluated. New paid subscriptions are currently paused.</p></details>
-    <details><summary>How do I get full Studio access?</summary><p>Join the launch list for access news and product updates.</p></details>
+    <h2>Questions Before You Start?</h2>
+    <details open><summary>Who Is Dream Cake Studio For?</summary><p>Cake artists who want to show clients exactly what their cake will look like, and get a clear yes before baking.</p></details>
+    <details><summary>Do My Clients Need An Account?</summary><p>No. They open the link you send, turn the cake in 3D and tap Approve Design or Request Changes. You're notified either way.</p></details>
+    <details><summary>What Happens When A Client Wants Changes?</summary><p>Their note comes straight to you. Update the same design in the Studio and send the link again, so the approval always matches the latest version.</p></details>
+    <details><summary>Does It Work On My Phone Or Tablet?</summary><p>Yes. The Studio works in your browser on a phone, tablet or computer. On a phone, turn it sideways for the biggest cake view.</p></details>
+    <details><summary>Can I Show Non-Edible Decorations?</summary><p>Yes. You can mark decorations and add client notes about what is edible and what must be removed before serving. You remain responsible for confirming these details.</p></details>
+    <details><summary>Is There More Coming?</summary><p>Yes. We're building more tools for running your cake business alongside the Studio. Join the list to hear about them first.</p></details>
    </div>
    <div class="card join" id="launch-list">
-    <span class="eyebrow">Launch list</span>
-    <h2>Your next creative chapter.</h2>
-    <p class="muted">Leave your email and we’ll let you know when Dream Cake Builder is ready to try.</p>
+    <span class="eyebrow">Launch List</span>
+    <h2>Be First In The Studio.</h2>
+    <p class="muted">Leave your email and we'll let you know the moment Dream Cake Studio opens, plus a few sneak peeks along the way.</p>
     <form id="launchForm" novalidate>
-     <label>Email address<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"></label>
+     <label>Email Address<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"></label>
      <label class="check"><input name="news" type="checkbox"> Also send me occasional Studio sneak peeks and product updates.</label>
      <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-     <button class="btn primary" type="submit">Keep me in the loop</button>
+     <button class="btn primary" type="submit">Keep Me In The Loop</button>
      <p id="launchStatus" role="status" aria-live="polite"></p>
      <p class="fine">By joining, you agree to receive a launch email. Product news is optional. Email support@dreamcakebuilder.com to leave the list.</p>
     </form>
@@ -187,10 +266,14 @@
  <div class="foot-in">
   <a class="brand" href="index.html">Dream <span>Cake</span> Builder</a>
   <span>Made for creative cake artists.</span>
-  <nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a href="shop.html#orders">Orders</a><a href="shop.html#calendar">Calendar</a><a href="contact.html">Contact</a><a href="https://www.instagram.com/dreamcakebuilder/">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder">Facebook</a></nav>
+  <nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a><a href="https://www.instagram.com/dreamcakebuilder/">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder">Facebook</a></nav>
   <span class="end">support@dreamcakebuilder.com · © <span data-year>2026</span></span>
  </div>
 </footer>
+<script>
+// "Open This Cake" loads the Blush Lambeth into the Studio
+document.querySelectorAll('[data-open-cake]').forEach(a=>a.addEventListener('click',()=>{try{localStorage.setItem('dcs-open-code','DCS1:eyJuYW1lIjoiQmx1c2ggTGFtYmV0aCIsInRpZXJzIjpbeyJkIjoxMCwiaCI6NC40LCJjb2xvciI6IiNmOGRkZTQiLCJmaW5pc2giOiJidXR0ZXJjcmVhbSIsInRleHR1cmUiOiJzbW9vdGgiLCJ0b3AiOiJwZWFybHMiLCJib3R0b20iOiJzaGVsbHMiLCJzaWRlIjoibGFtYmV0aCIsInBpcGUiOiIjZmJmN2YxIiwiYWNjZW50IjoiI2U5YTZiYSIsInBlYXJsQ29sb3IiOm51bGwsImJvd3MiOnRydWUsImJvd0NvbG9yIjoiI2YyOWJiNCIsImdvbGRMZWFmIjpmYWxzZSwiZHJvcHMiOmZhbHNlfSx7ImQiOjcsImgiOjQsImNvbG9yIjoiI2ZiZjdmMSIsImZpbmlzaCI6ImJ1dHRlcmNyZWFtIiwidGV4dHVyZSI6InNtb290aCIsInRvcCI6InNoZWxscyIsImJvdHRvbSI6InNoZWxscyIsInNpZGUiOiJsYW1iZXRoIiwicGlwZSI6IiNmYmY3ZjEiLCJhY2NlbnQiOiIjZTlhNmJhIiwicGVhcmxDb2xvciI6bnVsbCwiYm93cyI6dHJ1ZSwiYm93Q29sb3IiOiIjZjI5YmI0IiwiZ29sZExlYWYiOmZhbHNlLCJkcm9wcyI6ZmFsc2V9XSwiYm9hcmQiOiJ3aGl0ZSIsImJvYXJkQ29sb3IiOiIjZjI5YmI0IiwidG9wcGVyIjoicm9zZXMiLCJ0b3BwZXJDb2xvciI6IiNmM2Q2ZGMiLCJtZXNzYWdlIjp7InRleHQiOiIiLCJ0aWVyIjowLCJjb2xvciI6IiNjMjVkN2QifSwiY2hhcmFjdGVyIjo3MCwic2NlbmUiOnsicHJlc2V0Ijoic29mdCIsInNoaW5lIjo4NSwic29mdG5lc3MiOjEwMCwic3RyZW5ndGgiOjEwMCwiY3JldmljZSI6NTMsImJyaWdodCI6ODF9LCJub3RlcyI6IiJ9')}catch(e){}}));
+</script>
 <script src="assets/dcb-site.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/team", "/team/", "/shop", "/shop.html", "/shop/", "/request", "/request.html", "/portfolio", "/portfolio.html", "/quote", "/quote.html", "/calendar", "/calendar.html"],
+  "exclude": []
+}
