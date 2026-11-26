@@ -61,15 +61,26 @@ function dollarFaceParts(q,c,mode,dc){const g=dollarGeo();g.scale(1.6,1.6,.35);g
 // ---------- bows, cow ----------
 function sugarBowParts(q,c){const g=bowGeo(q,.9);g.rotateX(-PI/2);return[[bowMat(c),g]]}
 function cowTopParts(q,c,mode,dc){const horns=[],ears=[],inner=[];const sp=(dc&&dc.spread)||1.15;
- for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.16,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
-  const ear=new T.SphereGeometry(1,24,14);ear.scale(.6,.16,.38);ear.rotateZ(-sd*.28);ear.translate(sd*(sp+.62),.02,.12);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.44,.1,.27);inn.rotateZ(-sd*.28);inn.translate(sd*(sp+.62),.1,.14);inner.push(inn)}
+ for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.24,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
+  }
  const bows=[];for(const sd of[-1,1]){const b=bowGeo(q,.8);b.translate(sd*sp,.25,.25);bows.push(b)}
- return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(ears)],[dmat('#f3a6c0',{r:.45,cc:.3}),mg(inner)],[bowMat(c),mergeGeometries(bows)]]}
-function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[];
- for(const sd of[-1,1]){const cx=sd*.55,cy=.55;black.push(sgOval(cx,cy,.34,.44,.025));white.push(sgOval(cx,cy,.29,.39,.035));black.push(sgOval(cx+sd*.04,cy-.05,.2,.28,.05));white.push(sgOval(cx+sd*.08,cy+.08,.05,.05,.06))}
- black.push(sgOval(0,-.45,.86,.6,.025));pink.push(sgOval(0,-.45,.81,.55,.05));for(const sd of[-1,1])dark.push(sgOval(sd*.28,-.25,.07,.1,.07));
- const sm=new T.Shape();sm.moveTo(-.4,-.55);sm.quadraticCurveTo(0,-1.0,.4,-.55);sm.quadraticCurveTo(0,-.72,-.4,-.55);dark.push(flatShape(sm,.065,0));const tooth=new T.Shape();tooth.moveTo(-.12,-.66);tooth.lineTo(.02,-.67);tooth.lineTo(.0,-.8);tooth.lineTo(-.1,-.78);tooth.closePath();white.push(flatShape(tooth,.075,0));
- const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.35,cc:.5}),B(black)],[dmat('#ffffff',{r:.35,cc:.4}),B(white)],[dmat(c,{r:.4,cc:.4}),B(pink)],[dmat('#7a1f35',{r:.4,cc:.4}),B(dark)]]}
+ return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[bowMat(c),mergeGeometries(bows)]]}
+function cowEarParts(q,c){const e=new T.SphereGeometry(1,28,18);e.scale(.5,.78,.09);e.translate(0,-.62,0);e.rotateX(-.55);const o=new T.SphereGeometry(1,28,18);o.scale(.53,.81,.06);o.translate(0,-.62,-.02);o.rotateX(-.55);const i=new T.SphereGeometry(1,24,14);i.scale(.36,.6,.06);i.translate(0,-.6,.05);i.rotateX(-.55);return[[dmat('#ffffff',{r:.45,cc:.3}),e],[dmat('#1d1b1f',{r:.4,cc:.4}),o],[dmat(c,{r:.45,cc:.3}),i]]}
+function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[],red=[],tongue=[];
+ const rov=(x,y,rx,ry,rot,d)=>{const pts=[],cr=Math.cos(rot),sr=Math.sin(rot);for(let i=0;i<72;i++){const a=i/72*2*PI,u=rx*Math.cos(a),v=ry*Math.sin(a);pts.push(new T.Vector2(x+u*cr-v*sr,y+u*sr+v*cr))}return flatShape(new T.Shape(pts),d,0)};
+ // eyes: left smaller and lower, right bigger and higher, pupils looking up and right
+ const E=[[-.52,.3,.27,.4,-.12,.24],[.22,.6,.33,.47,.18,.3]];
+ for(const[x,y,rx,ry,r,pr]of E){black.push(rov(x,y,rx+.045,ry+.045,r,.03));white.push(rov(x,y,rx,ry,r,.04));black.push(rov(x+rx*.28,y+ry*.12,rx*.66,ry*.74,r,.055));white.push(rov(x+rx*.1,y+ry*.45,.05,.05,0,.065));
+  const l=new T.Shape();l.moveTo(x-rx*.9,y-ry*1.05);l.quadraticCurveTo(x+rx*.3,y-ry*1.45,x+rx*1.5,y-ry*.95);l.quadraticCurveTo(x+rx*.3,y-ry*1.3,x-rx*.9,y-ry*1.05);black.push(flatShape(l,.035,0))}
+ // muzzle
+ black.push(rov(.12,-.52,.9,.64,.22,.03));pink.push(rov(.12,-.52,.84,.58,.22,.05));
+ for(const[x,y]of[[-.28,-.24],[.43,-.06]]){black.push(rov(x,y,.085,.065,.2,.06));dark.push(rov(x,y,.055,.038,.2,.07))}
+ // big open smile: straight top lip, round bottom
+ const M=k=>{const cx=.12,cy=-.62,P=(x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k];const s=new T.Shape();s.moveTo(...P(-.42,-.52));s.quadraticCurveTo(...P(.1,-.42),...P(.66,-.26));s.bezierCurveTo(...P(.72,-.75),...P(.25,-1.05),...P(-.12,-.92));s.quadraticCurveTo(...P(-.38,-.8),...P(-.42,-.52));return s};
+ black.push(flatShape(M(.92),.06,0));red.push(flatShape(M(.82),.07,0));
+ const tg=new T.Shape();tg.absellipse(.2,-.8,.18,.08,0,2*PI,false,.15);tongue.push(flatShape(tg,.075,0));
+ const th=new T.Shape();th.moveTo(-.16,-.52);th.lineTo(.02,-.49);th.lineTo(.0,-.66);th.lineTo(-.15,-.68);th.closePath();white.push(flatShape(th,.08,0));
+ const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.35,cc:.5}),B(black)],[dmat('#ffffff',{r:.35,cc:.4}),B(white)],[dmat(c,{r:.4,cc:.4}),B(pink)],[dmat('#a0475c',{r:.4,cc:.4}),B(dark)],[dmat('#8a2338',{r:.45,cc:.4}),B(red)],[dmat('#e77f96',{r:.45,cc:.4}),B(tongue)]]}
 // ---------- baby shower ----------
 function teddyParts(q,c){const S=(sx,sy,sz,x,y,z)=>{const g=new T.SphereGeometry(1,20,14);g.scale(sx,sy,sz);g.translate(x,y,z);return g};
  const fur=[S(.34,.36,.3,0,.36,0),S(.28,.26,.26,0,.92,0),S(.1,.1,.06,-.2,1.14,0),S(.1,.1,.06,.2,1.14,0),S(.12,.1,.1,-.3,.42,.16),S(.12,.1,.1,.3,.42,.16),S(.13,.12,.18,-.18,.1,.26),S(.13,.12,.18,.18,.1,.26)];
@@ -119,7 +130,8 @@ Object.assign(DECOR,{
  dollarsign:{label:'Gold Dollar Signs',layouts:['cluster','crown'],layout:'cluster',count:2,max:6,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#1d1b1f'],sp:1,sink:.35,noTilt:true,spin:0,make:dollarStandParts},
  dollarface:{label:'Dollar Sign Plaque',layouts:['scatter','band'],layout:'scatter',count:1,max:6,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#1d1b1f'],sp:1.2,side:'face',roll:0,sink:0,embed:-.02,make:dollarFaceParts},
  sugarbows:{label:'Fondant Bows',layouts:['band','scatter','cascade','crown'],layout:'band',count:4,max:16,color:'#f3a6c0',colors:['#f3a6c0','#fbf7f1','#d4ae5a','#c9dbef','#e8475f','#1d1b1f'],sp:1.4,side:'face',roll:.2,sink:0,embed:-.02,make:sugarBowParts},
- cowtop:{label:'Cow Horns, Ears And Bows',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#f3a6c0',colors:['#f3a6c0','#c9dbef','#fbf7f1','#e8475f'],sp:3,side:'up',sink:.02,noTilt:true,spin:0,make:cowTopParts},
+ cowtop:{label:'Cow Horns And Bows',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#f3a6c0',colors:['#f3a6c0','#c9dbef','#fbf7f1','#e8475f'],sp:3,side:'up',sink:.02,noTilt:true,spin:0,make:cowTopParts},
+ cowear:{label:'Floppy Cow Ear',layouts:['band'],layout:'band',count:1,max:2,color:'#f3b6c8',colors:['#f3b6c8','#f3a6c0'],sp:3,roll:0,sink:0,embed:.02,make:cowEarParts},
  cowface:{label:'Cartoon Cow Face',layouts:['band','scatter'],layout:'band',count:1,max:1,color:'#f3a6c0',colors:['#f3a6c0','#e9a6ba'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:cowFaceParts},
  teddy:{label:'Fondant Teddy Bears',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:6,color:'#fbf7f1',colors:['#fbf7f1','#c9a26b','#f3c1cf','#c9dbef'],sp:1.4,side:'up',sink:.02,noTilt:true,spin:0,make:teddyParts},
  abcblocks:{label:'Alphabet Blocks',mixes:true,layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#2f6fd0',colors:['#2f6fd0','#e8475f','#5cc06c','#f2c230','#f3a6c0'],sp:.7,side:'up',sink:0,embed:.02,noTilt:true,make:abcBlockParts},
@@ -129,7 +141,7 @@ Object.assign(DECOR,{
  brooch:{label:'Jeweled Brooch Burst',layouts:['band','scatter'],layout:'band',count:1,max:4,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2'],sp:2,side:'face',roll:0,sink:0,embed:-.02,make:broochParts},
  hoop:{label:'Floral Hoop Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#d9a08a'],sp:2,sink:.4,noTilt:true,spin:0,make:hoopParts},
  bee:{label:'Bumble Bee',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:6,color:'#ffd21f',colors:['#ffd21f'],sp:1.4,side:'up',sink:.02,noTilt:true,spin:0,make:beeParts}});
-DECOR_CATS.push({key:'signature',label:'Signature Cake Pieces',items:['soccerball','football','hoopball','baseball2','popcorn','ticket','clapper','crawfish','corncob','potato','potlid','cash','dollarsign','dollarface','sugarbows','cowtop','cowface','teddy','abcblocks','balloon','ladder','buttons','brooch','hoop','bee']});
+DECOR_CATS.push({key:'signature',label:'Signature Cake Pieces',items:['soccerball','football','hoopball','baseball2','popcorn','ticket','clapper','crawfish','corncob','potato','potlid','cash','dollarsign','dollarface','sugarbows','cowtop','cowear','cowface','teddy','abcblocks','balloon','ladder','buttons','brooch','hoop','bee']});
 {const ic=(k,b)=>DECOR_ICONS[k]=di(b);
  ic('soccerball','<circle cx="20" cy="15" r="10" fill="#fff" stroke="#222"/><path d="M20 10l4 3-1.5 4.5h-5L16 13z" fill="#222"/>');
  ic('football','<ellipse cx="20" cy="15" rx="13" ry="8" fill="#7a4022"/><path d="M15 15h10M17 13v4M20 13v4M23 13v4" stroke="#fff" stroke-width="1.2"/>');
@@ -147,6 +159,7 @@ DECOR_CATS.push({key:'signature',label:'Signature Cake Pieces',items:['soccerbal
  ic('dollarface','<rect x="8" y="4" width="24" height="22" rx="3" fill="#fff4ef"/><text x="20" y="22" font-size="17" text-anchor="middle" fill="#d4ae5a" font-weight="700">$</text>');
  ic('sugarbows','<path d="M20 15l-10-6v12zM20 15l10-6v12z" fill="#f3a6c0"/><circle cx="20" cy="15" r="2.6" fill="#e17ca0"/>');
  ic('cowtop','<path d="M10 22q-2-10 3-14M30 22q2-10-3-14" stroke="#1d1b1f" stroke-width="3" fill="none"/><ellipse cx="5" cy="22" rx="5" ry="2.5" fill="#f3a6c0"/><ellipse cx="35" cy="22" rx="5" ry="2.5" fill="#f3a6c0"/>');
+ ic('cowear','<ellipse cx="20" cy="20" rx="9" ry="14" fill="#fff" stroke="#1d1b1f" stroke-width="2"/><ellipse cx="20" cy="21" rx="6" ry="10" fill="#f3b6c8"/>');
  ic('cowface','<ellipse cx="14" cy="10" rx="4" ry="5" fill="#fff" stroke="#1d1b1f"/><ellipse cx="26" cy="10" rx="4" ry="5" fill="#fff" stroke="#1d1b1f"/><ellipse cx="20" cy="21" rx="10" ry="6" fill="#f3a6c0" stroke="#1d1b1f"/>');
  ic('teddy','<circle cx="20" cy="20" r="7" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="20" cy="10" r="5" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="16" cy="6.5" r="2" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="24" cy="6.5" r="2" fill="#fbf7f1" stroke="#d9cdbd"/>');
  ic('abcblocks','<rect x="7" y="13" width="12" height="12" fill="#fff" stroke="#2f6fd0"/><rect x="21" y="13" width="12" height="12" fill="#fff" stroke="#e8475f"/><rect x="14" y="2" width="12" height="11" fill="#fff" stroke="#5cc06c"/>');
@@ -234,8 +247,8 @@ THEMES.unshift(
   newTier(8.6,6,{color:'#7cc8b8',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'harlequin',color:'#c4e8df',size:1.6,height:3,y:-1.4},decor:[DC('glitterspheres','cascade',6,{color:'#b0825f',rot:-100,size:290}),DC('glitterspheres','cascade',5,{color:'#f3ead8',rot:-96,size:300}),DC('spheres','cascade',3,{color:'#5fb3a3',rot:-104,size:280}),DC('glitterspheres','cascade',4,{color:'#8c6a52',rot:-100,size:220})]}),
   newTier(7.6,5.8,{color:'#7cc8b8',finish:'fondant',top:'none',bottom:'none',decor:[DC('glitterspheres','cascade',5,{color:'#b0825f',rot:-100,size:280}),DC('glitterspheres','cascade',4,{color:'#f3ead8',rot:-96,size:290}),DC('spheres','cascade',3,{color:'#5fb3a3',rot:-104,size:270}),DC('glitterspheres','cascade',3,{color:'#8c6a52',rot:-100,size:210})]}),
   newTier(6.6,5.6,{color:'#7cc8b8',finish:'fondant',top:'none',bottom:'none',decor:[DC('glitterspheres','cascade',5,{color:'#b0825f',rot:-100,size:270}),DC('glitterspheres','cascade',4,{color:'#f3ead8',rot:-96,size:280}),DC('spheres','cascade',3,{color:'#5fb3a3',rot:-104,size:260}),DC('sprinkles','cascade',220,{mix:['#5fb3a3','#d4ae5a','#c9ccd2','#fbf7f1'],rot:30})]})]}},
- {key:'sig_cow',name:'Pink Bow Cow',tag:SIG,blurb:'A tall white cow cake with black spots, a cartoon face and pink nose, black horns, floppy ears and pink bows.',d:{board:'white',boardColor:'#fbf7f1',topper:'none',tiers:[
-  newTier(7,6,{color:'#ffffff',finish:'fondant',print:'cow',printColor:'#1d1b1f',top:'none',bottom:'none',decor:[DC('cowface','band',1,{color:'#f3a6c0',size:285,R:3.5,rot:55}),DC('cowtop','cluster',1,{color:'#f3a6c0',size:170,center:true,face:95})]})]}},
+ {key:'sig_cow',name:'Pink Bow Cow',tag:SIG,blurb:'A white cow cake with black spots, big cartoon eyes, a pink muzzle with a wide open grin, floppy pink-lined ears, black horns and pink bows.',d:{board:'white',boardColor:'#fbf7f1',topper:'none',tiers:[
+  newTier(8,6.2,{color:'#ffffff',finish:'fondant',print:'cow',printColor:'#1d1b1f',top:'none',bottom:'none',decor:[DC('cowface','band',1,{color:'#f3b6c8',size:300,R:4,rot:55,y:.3}),DC('cowear','band',1,{color:'#f3b6c8',size:200,rot:-25,y:2.6}),DC('cowear','band',1,{color:'#f3b6c8',size:200,rot:135,y:2.6}),DC('cowtop','cluster',1,{color:'#f3a6c0',size:190,center:true,face:95})]})]}},
  {key:'sig_pillows',name:'Gold Damask Pillows',tag:SIG,blurb:'A pillow cake: a base tier in gold damask with a ring of ivory roses, a puffy pleated pillow with pinched corners and gold tassels, and a silver rose dome topped with ivory roses.',d:{board:'silver',boardShape:'square',topper:'none',tiers:[
   newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',prof:'pillow',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.8,y:-.8},decor:[DC('roses','band',16,{color:'#fbf7f1',size:130,y:-1.4})]}),
   newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'none',bottom:'scrolls',bottomColor:'#d4ae5a'}),
