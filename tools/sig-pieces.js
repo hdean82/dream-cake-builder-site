@@ -79,7 +79,7 @@ function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[],red=[
  const M=k=>{const cx=.12,cy=-.62,P=(x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k];const s=new T.Shape();s.moveTo(...P(-.42,-.52));s.quadraticCurveTo(...P(.1,-.42),...P(.66,-.26));s.bezierCurveTo(...P(.72,-.75),...P(.25,-1.05),...P(-.12,-.92));s.quadraticCurveTo(...P(-.38,-.8),...P(-.42,-.52));return s};
  black.push(flatShape(M(.92),.06,0));red.push(flatShape(M(.82),.07,0));
  const tg=new T.Shape();tg.absellipse(.2,-.8,.18,.08,0,2*PI,false,.15);tongue.push(flatShape(tg,.075,0));
- const th=new T.Shape();th.moveTo(-.16,-.52);th.lineTo(.02,-.49);th.lineTo(.0,-.66);th.lineTo(-.15,-.68);th.closePath();white.push(flatShape(th,.08,0));
+ {const k=.82,cx=.12,cy=-.62,P=(x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k],q=(u,a,c,d)=>(1-u)*(1-u)*a+2*u*(1-u)*c+u*u*d,A=P(-.42,-.52),C=P(.1,-.42),D=P(.66,-.26),top=[],bot=[];for(let i=0;i<=16;i++){const u=.06+.86*i/16,x=q(u,A[0],C[0],D[0]),y=q(u,A[1],C[1],D[1]);top.push(new T.Vector2(x,y-.01));bot.push(new T.Vector2(x,y-.15-.03*Math.sin(u*PI)))}const th=new T.Shape([...top,...bot.reverse()]);white.push(flatShape(th,.08,0))}
  const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.35,cc:.5}),B(black)],[dmat('#ffffff',{r:.35,cc:.4}),B(white)],[dmat(c,{r:.4,cc:.4}),B(pink)],[dmat('#a0475c',{r:.4,cc:.4}),B(dark)],[dmat('#8a2338',{r:.45,cc:.4}),B(red)],[dmat('#e77f96',{r:.45,cc:.4}),B(tongue)]]}
 // ---------- baby shower ----------
 function teddyParts(q,c){const S=(sx,sy,sz,x,y,z)=>{const g=new T.SphereGeometry(1,20,14);g.scale(sx,sy,sz);g.translate(x,y,z);return g};
