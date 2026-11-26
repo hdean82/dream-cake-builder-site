@@ -41,3 +41,10 @@ Object.assign(DECOR,{
  ic('glove','<ellipse cx="19" cy="19" rx="9" ry="6" fill="#c7843f"/><rect x="12" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/><rect x="17" y="4" width="3" height="12" rx="1.5" fill="#c7843f"/><rect x="22" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/>');
  ic('bat','<rect x="6" y="13" width="28" height="4" rx="2" fill="#c79a5b" transform="rotate(-18 20 15)"/>');
  ic('monohoop','<circle cx="20" cy="14" r="10" fill="none" stroke="#d4ae5a" stroke-width="2"/><path d="M15 19V9l5 6 5-6v10" stroke="#d4ae5a" stroke-width="1.8" fill="none"/>')}
+// ---- puffy pillow top: a square dome with pinched corners and gold tassels ----
+function pillowTopParts(q,c,mode,dc){const N=40,g=new T.PlaneGeometry(2,2,N,N);g.rotateX(-PI/2);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),ex=1-Math.pow(Math.abs(x),2.4),ez=1-Math.pow(Math.abs(z),2.4),pinch=1-.5*Math.pow(Math.abs(x*z),1.3);p.setY(i,.3*Math.max(0,ex*ez)*pinch)}g.computeVertexNormals();
+ const tass=[];for(const sx of[-1,1])for(const sz of[-1,1]){const t=new T.SphereGeometry(.07,12,8);t.translate(sx*.99,.05,sz*.99);tass.push(t);const t2=new T.ConeGeometry(.05,.18,10);t2.rotateX(PI);t2.translate(sx*1.02,-.02,sz*1.02);tass.push(t2)}
+ return[[dmat(c,{r:.5,sh:.45}),norm(g)],[sgMat.metal('#d4ae5a'),mg(tass)]]}
+DECOR.pillowtop={label:'Puffy Pillow Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#fbf7f1',colors:['#fbf7f1','#f3d6d9','#c9dbef'],sp:3,side:'up',sink:0,tilt:[0,0],spin:0,make:pillowTopParts};
+DECOR_ICONS.pillowtop=di('<path d="M6 22q14-14 28 0q-14 4-28 0z" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="6" cy="22" r="1.6" fill="#d4ae5a"/><circle cx="34" cy="22" r="1.6" fill="#d4ae5a"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');void 0}

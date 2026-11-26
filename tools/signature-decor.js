@@ -62,7 +62,7 @@ function dollarFaceParts(q,c,mode,dc){const g=dollarGeo();g.scale(1.6,1.6,.35);g
 function sugarBowParts(q,c){const g=bowGeo(q,.9);g.rotateX(-PI/2);return[[bowMat(c),g]]}
 function cowTopParts(q,c,mode,dc){const horns=[],ears=[],inner=[];const sp=(dc&&dc.spread)||1.15;
  for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.16,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
-  const ear=new T.SphereGeometry(1,24,14);ear.scale(.5,.06,.28);ear.rotateZ(sd*.35);ear.translate(sd*(sp+.95),-.05,.25);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.38,.05,.2);inn.rotateZ(sd*.35);inn.translate(sd*(sp+.98),-.02,.29);inner.push(inn)}
+  const ear=new T.SphereGeometry(1,24,14);ear.scale(.62,.07,.34);ear.rotateZ(-sd*.5);ear.translate(sd*(sp+.55),-.12,.1);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.45,.06,.24);inn.rotateZ(-sd*.5);inn.translate(sd*(sp+.55),-.09,.16);inner.push(inn)}
  const bows=[];for(const sd of[-1,1]){const b=bowGeo(q,.8);b.translate(sd*sp,.25,.25);bows.push(b)}
  return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(ears)],[dmat('#f3a6c0',{r:.45,cc:.3}),mg(inner)],[bowMat(c),mergeGeometries(bows)]]}
 function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[];
@@ -203,6 +203,13 @@ Object.assign(DECOR,{
  ic('glove','<ellipse cx="19" cy="19" rx="9" ry="6" fill="#c7843f"/><rect x="12" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/><rect x="17" y="4" width="3" height="12" rx="1.5" fill="#c7843f"/><rect x="22" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/>');
  ic('bat','<rect x="6" y="13" width="28" height="4" rx="2" fill="#c79a5b" transform="rotate(-18 20 15)"/>');
  ic('monohoop','<circle cx="20" cy="14" r="10" fill="none" stroke="#d4ae5a" stroke-width="2"/><path d="M15 19V9l5 6 5-6v10" stroke="#d4ae5a" stroke-width="1.8" fill="none"/>')}
+// ---- puffy pillow top: a square dome with pinched corners and gold tassels ----
+function pillowTopParts(q,c,mode,dc){const N=40,g=new T.PlaneGeometry(2,2,N,N);g.rotateX(-PI/2);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),ex=1-Math.pow(Math.abs(x),2.4),ez=1-Math.pow(Math.abs(z),2.4),pinch=1-.5*Math.pow(Math.abs(x*z),1.3);p.setY(i,.3*Math.max(0,ex*ez)*pinch)}g.computeVertexNormals();
+ const tass=[];for(const sx of[-1,1])for(const sz of[-1,1]){const t=new T.SphereGeometry(.07,12,8);t.translate(sx*.99,.05,sz*.99);tass.push(t);const t2=new T.ConeGeometry(.05,.18,10);t2.rotateX(PI);t2.translate(sx*1.02,-.02,sz*1.02);tass.push(t2)}
+ return[[dmat(c,{r:.5,sh:.45}),norm(g)],[sgMat.metal('#d4ae5a'),mg(tass)]]}
+DECOR.pillowtop={label:'Puffy Pillow Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#fbf7f1',colors:['#fbf7f1','#f3d6d9','#c9dbef'],sp:3,side:'up',sink:0,tilt:[0,0],spin:0,make:pillowTopParts};
+DECOR_ICONS.pillowtop=di('<path d="M6 22q14-14 28 0q-14 4-28 0z" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="6" cy="22" r="1.6" fill="#d4ae5a"/><circle cx="34" cy="22" r="1.6" fill="#d4ae5a"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');void 0}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -229,10 +236,10 @@ THEMES.unshift(
   newTier(6,4.8,{color:'#7cc8b8',finish:'fondant',top:'none',bottom:'none',decor:[DC('glitterspheres','cluster',5,{color:'#b0825f',size:330}),DC('glitterspheres','cluster',4,{color:'#f3ead8',size:310}),DC('spheres','cluster',3,{color:'#5fb3a3',size:300}),DC('glitterspheres','cascade',4,{color:'#b0825f',rot:-30,size:260}),DC('glitterspheres','cascade',3,{color:'#f3ead8',rot:-28,size:260}),DC('sprinkles','cascade',130,{mix:['#5fb3a3','#d4ae5a','#c9ccd2','#fbf7f1'],rot:-24})]})]}},
  {key:'sig_cow',name:'Pink Bow Cow',tag:SIG,blurb:'A tall white cow cake with black spots, a cartoon face and pink nose, black horns, floppy ears and pink bows.',d:{board:'white',boardColor:'#fbf7f1',topper:'none',tiers:[
   newTier(7,6,{color:'#ffffff',finish:'fondant',print:'cow',printColor:'#1d1b1f',top:'none',bottom:'none',decor:[DC('cowface','band',1,{color:'#f3a6c0',size:285,R:3.5,rot:55}),DC('cowtop','cluster',1,{color:'#f3a6c0',size:170,center:true,face:95})]})]}},
- {key:'sig_pillows',name:'Gold Damask Pillows',tag:SIG,blurb:'Stacked ivory pillow tiers with gold damask, gold rope trim, a silver rose tier and a crown of ivory roses.',d:{board:'silver',boardShape:'square',topper:'none',tiers:[
-  newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.6,y:-.8},decor:[DC('roses','band',12,{color:'#fbf7f1',size:90,y:-1.4})]}),
-  newTier(7.5,3.4,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',top:'none',bottom:'scrolls',bottomColor:'#d4ae5a'}),
-  newTier(5.5,3.8,{color:'#c9ccd2',texture:'rosettes',top:'none',bottom:'none',decor:[DC('roses','cluster',9,{color:'#fbf7f1'})]})]}},
+ {key:'sig_pillows',name:'Gold Damask Pillows',tag:SIG,blurb:'A pillow cake: a base tier in gold damask with a ring of ivory roses, a puffy pleated pillow with pinched corners and gold tassels, and a silver rose dome topped with ivory roses.',d:{board:'silver',boardShape:'square',topper:'none',tiers:[
+  newTier(10,3.6,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'dimple',prof:'pillow',top:'rope',pipe:'#d4ae5a',bottom:'rope',bottomColor:'#d4ae5a',stencil:{pattern:'damask',color:'#d4ae5a',size:1.8,height:1.8,y:-.8},decor:[DC('roses','band',16,{color:'#fbf7f1',size:130,y:-1.4})]}),
+  newTier(7.5,3.2,{shape:'square',color:'#fbf7f1',finish:'fondant',texture:'ruffle',prof:'pillow',top:'none',bottom:'scrolls',bottomColor:'#d4ae5a'}),
+  newTier(5.5,3.4,{color:'#c9ccd2',texture:'rosettes',prof:'dome',top:'none',bottom:'none',decor:[DC('roses','cluster',10,{color:'#fbf7f1',size:130})]})]}},
  {key:'sig_ruffles',name:'Forever Ruffles',tag:SIG,blurb:'Four ivory fondant tiers with a sweep of ruffles, a lace band and a clean top tier ready for your script topper.',d:{board:'silver',topper:'none',tiers:[
   newTier(10,5,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'none',bottom:'none'}),
   newTier(8,4.8,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'none',bottom:'none'}),
@@ -251,7 +258,7 @@ THEMES.unshift(
   newTier(6,5.6,{color:'#6fb3e8',finish:'fondant',ombre:true,ombreColor:'#eef6fc',top:'none',bottom:'none',decor:[DC('clouds','scatter',10,{color:'#fbf7f1',size:150}),DC('balloon','cluster',1,{color:'#7fb0e8',size:400,center:true,face:95}),DC('teddy','cluster',1,{color:'#fbf7f1',size:170,face:95})]})]}},
  {key:'sig_sports',name:'All-Star Sports Number',tag:SIG,blurb:'A field-green number cake with a soccer ball, baseball and glove, basketball, football and a wooden bat.',d:{cakeType:'number',number:{text:'2',height:13,layers:2,cake:'vanilla',cream:'#4f9a4a',style:'frosted'},board:'white',boardColor:'#e8762c',topper:'none',tiers:[
   newTier(8,4,{decor:[DC('soccerball','cluster',1,{size:360}),DC('baseball2','cluster',1,{size:320}),DC('glove','cluster',1,{size:380}),DC('hoopball','cluster',1,{size:360}),DC('football','cluster',1,{size:330}),DC('bat','cluster',1,{size:250})]})]}},
- {key:'sig_blocks',name:'Building Block Number',tag:SIG,blurb:'A sunny yellow number cake with toy bricks, rainbow sprinkles and a border of bricks.',d:{cakeType:'number',number:{text:'6',height:13,layers:2,cake:'vanilla',cream:'#f2c230',style:'frosted'},board:'white',boardColor:'#2f3f6b',topper:'none',tiers:[
+ {key:'sig_blocks',name:'Building Block Number',tag:SIG,blurb:'A sunny yellow number 6 with a blue window, a mosaic wall of toy bricks around the side, rainbow sprinkles and bricks on top.',d:{cakeType:'number',number:{text:'6',height:13,layers:2,cake:'vanilla',cream:'#f6c919',style:'frosted',wall:['#e8475f','#2f6fd0','#f2c230','#5cc06c','#2f6fd0','#e8475f','#2a7a3a'],wallH:.95,holeFill:'#2f6fd0'},board:'white',boardColor:'#2f3f6b',topper:'none',tiers:[
   newTier(8,4,{decor:[DC('bricks','cluster',18,{size:250,mix:['#e8475f','#2f6fd0','#5cc06c']}),DC('sprinkles','cluster',260,{mix:['#e8475f','#2f6fd0','#5cc06c','#f28a3a','#fbf7f1']})]})]}},
  {key:'sig_movie',name:'Movie Night Popcorn',tag:SIG,blurb:'A red and white striped popcorn tier overflowing with popcorn and a "13" Admit One ticket, over a black and white chevron clapperboard tier with stars.',d:{board:'gold',topper:'none',tiers:[
   newTier(9,4.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'chevron',color:'#1d1b1f',size:1.4,height:4.6},decor:[DC('clapper','band',1,{size:210,rot:95}),DC('stars','scatter',12,{mix:['#f3a6c0','#7fd3cc','#f2c230'],size:150}),DC('dragees','scatter',20,{color:'#f2c230',size:140})]}),
@@ -261,7 +268,7 @@ THEMES.unshift(
  {key:'sig_bee',name:'Bumble Bee Garden',tag:SIG,blurb:'A fuzzy black piped bee with a big smiling face, wings and looped antennae, resting in a garden of piped grass and sugar flowers.',d:{board:'white',boardColor:'#c9d96a',topper:'none',tiers:[
   newTier(12,1.8,{color:'#5cae4a',texture:'grass',top:'none',bottom:'none',decor:[DC('daisies','scatter',10,{color:'#fbf7f1',size:130}),DC('blossoms','scatter',16,{mix:['#f3a6c0','#f2c230','#7fb0e8','#e8475f'],size:130})]}),
   newTier(8,4.6,{color:'#1d1b1f',texture:'fur',top:'none',bottom:'none',decor:[DC('beeface','band',1,{color:'#ffd21f',size:330,R:4,rot:55,y:-.2}),DC('beetop','cluster',1,{color:'#ffd21f',size:230,center:true,face:95})]})]}},
- {key:'sig_moneybag',name:'Money Bag Birthday',tag:SIG,blurb:'A red money bag cake with a gathered neck tied with black rope, a big gold dollar sign, cash and gold dollar signs bursting out the top.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
-  newTier(8,4.4,{color:'#c1442e',finish:'fondant',texture:'knife',top:'none',bottom:'none',decor:[DC('dollarface','band',1,{color:'#d4ae5a',size:300,R:4,rot:95})]}),
-  newTier(6,2.6,{color:'#b73a26',finish:'fondant',texture:'knife',top:'none',bottom:'none'}),
-  newTier(4.4,2.2,{color:'#c1442e',finish:'fondant',texture:'knife',top:'rope',pipe:'#1d1b1f',bottom:'rope',bottomColor:'#1d1b1f',decor:[DC('cash','cluster',14,{size:260,center:true}),DC('dollarsign','cluster',3,{color:'#d4ae5a',size:210,center:true})]})]}});
+ {key:'sig_moneybag',name:'Money Bag Birthday',tag:SIG,blurb:'A red money bag cake with a gathered neck tied in thick black rope, a big gold dollar sign, and cash and gold dollar signs bursting out the top.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
+  newTier(9,8,{color:'#c1442e',finish:'fondant',prof:'bag',top:'none',bottom:'none',decor:[DC('dollarface','band',1,{color:'#d4ae5a',size:340,R:4.5,rot:55,y:-1.2})]}),
+  newTier(3.2,1.8,{color:'#b73a26',finish:'fondant',top:'rope',pipe:'#1d1b1f',bottom:'rope',bottomColor:'#1d1b1f'}),
+  newTier(4.4,1.8,{color:'#c1442e',finish:'fondant',texture:'ruffle',top:'none',bottom:'none',decor:[DC('cash','cluster',22,{size:340,center:true}),DC('dollarsign','cluster',3,{color:'#d4ae5a',size:230,center:true})]})]}});
