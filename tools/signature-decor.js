@@ -238,6 +238,19 @@ DECOR.plaque={label:'Happy Birthday Plaque',layouts:['band'],layout:'band',count
 DECOR_ICONS.poplabel=di('<circle cx="20" cy="20" r="13" fill="#fff" stroke="#d62839" stroke-width="3"/><text x="20" y="24" font-size="9" text-anchor="middle" fill="#d62839" font-weight="900">POP</text>');
 DECOR_ICONS.plaque=di('<rect x="4" y="12" width="32" height="16" rx="3" fill="#1d1b1f" stroke="#fff"/><text x="20" y="23" font-size="7" text-anchor="middle" fill="#fff" font-weight="900">HAPPY</text>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('poplabel','plaque')}
+// ---- sports board top: four colored fields with white markings ----
+function sportsTopParts(q,c,mode,dc){const RAD=(dc&&dc.rad)||1;const F=(r0,r1,a0,da,y)=>{const g=new T.RingGeometry(r0,r1,64,1,a0,da);g.rotateX(-PI/2);g.translate(0,y,0);return g};
+ const P=PI/2,col=[['#3f8f45',0],['#d9893a',P],['#2f6fd0',2*P],['#5cb04e',3*P]],out=[];
+ col.forEach(([cl,a])=>out.push([dmat(cl,{r:.55,cc:.2}),F(0,1,a+.01,P-.02,.05)]));
+ const w=[];for(const r of[.3,.42,.54,.66,.78,.9])w.push(F(r-.012,r+.012,0+.02,P-.04,.065));
+ w.push(F(.52,.55,P+.02,P-.04,.065),F(.2,.23,P+.02,P-.04,.065));
+ w.push(F(.45,.48,3*P+.02,P-.04,.065),F(.08,.11,0,2*PI,.065));
+ {const d=new T.PlaneGeometry(.34,.34);d.rotateX(-PI/2);d.rotateY(PI/4);d.translate(Math.cos(2.5*P)*.55,.06,-Math.sin(2.5*P)*.55);out.push([dmat('#c99a62',{r:.7}),d]);const d2=new T.PlaneGeometry(.26,.26);d2.rotateX(-PI/2);d2.rotateY(PI/4);d2.translate(Math.cos(2.5*P)*.55,.064,-Math.sin(2.5*P)*.55);out.push([dmat('#4f9a4a',{r:.6}),d2])}
+ for(const a of[0,P,2*P,3*P]){const b=new T.BoxGeometry(2,.012,.03);b.rotateY(a);b.translate(0,.065,0);w.push(b)}
+ out.push([dmat('#fbf7f1',{r:.5}),mg(w)]);out.forEach(([,g])=>g.scale(RAD,1,RAD));return out}
+DECOR.sportstop={label:'Sports Field Top',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#3f8f45',colors:['#3f8f45'],sp:.3,side:'up',sink:0,tilt:[0,0],spin:0,make:sportsTopParts};
+DECOR_ICONS.sportstop=di('<circle cx="20" cy="20" r="14" fill="#5cb04e"/><path d="M20 20V6A14 14 0 0 1 34 20z" fill="#d9893a"/><path d="M20 20H6A14 14 0 0 0 20 34z" fill="#2f6fd0"/>');
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('sportstop')}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -284,8 +297,8 @@ THEMES.unshift(
   newTier(8.6,6.6,{color:'#e6f1f7',finish:'fondant',ombre:true,ombreColor:'#5aaee8',top:'none',bottom:'none',decor:[DC('clouds','scatter',22,{color:'#fbf7f1',size:190}),DC('dragees','scatter',30,{color:'#fbf7f1',size:60}),DC('teddy','cluster',2,{color:'#f6efe6',size:380,where:'board',face:95}),DC('abcblocks','cluster',3,{size:260,where:'board',mix:['#fbf7f1']})]}),
   newTier(7.6,6.4,{color:'#e6f1f7',finish:'fondant',ombre:true,ombreColor:'#4aa6e6',top:'none',bottom:'none',decor:[DC('clouds','scatter',18,{color:'#fbf7f1',size:190}),DC('buttons','cascade',70,{color:'#b8913f',rot:-75,size:180,wide:1.4}),DC('ladder','band',1,{color:'#fbf7f1',rot:110,size:240})]}),
   newTier(6.4,5.8,{color:'#e6f1f7',finish:'fondant',ombre:true,ombreColor:'#3c9be0',top:'none',bottom:'none',decor:[DC('clouds','scatter',14,{color:'#fbf7f1',size:180}),DC('balloon','cluster',1,{color:'#7fb0e8',size:440,center:true,face:95})]})]}},
- {key:'sig_sports',name:'All-Star Sports Board',tag:SIG,blurb:'A low round sports board cake with a soccer-green field, football yard lines, an orange basketball court and a blue baseball diamond, topped with a baseball, soccer ball, basketball, football, glove and bat.',d:{board:'white',boardColor:'#e8762c',topper:'none',tiers:[
-  newTier(14,2.6,{color:'#3f9a45',finish:'fondant',top:'rope',pipe:'#fbf7f1',bottom:'none',decor:[DC('glove','crown',1,{size:330,rot:40}),DC('hoopball','crown',1,{size:300,rot:110}),DC('soccerball','crown',1,{size:290,rot:170}),DC('football','crown',1,{size:290,rot:235}),DC('baseball2','crown',1,{size:270,rot:300}),DC('bat','crown',1,{size:230,rot:350})]})]}},
+ {key:'sig_sports',name:'All-Star Sports Number',tag:SIG,blurb:'A number 2 cut into sports zones: a blue baseball corner, a green soccer field, a wood basketball court and a striped football field, with a baseball and bat, soccer ball, basketball and football on an orange board.',d:{cakeType:'number',number:{text:'2',height:13,layers:2,cake:'vanilla',cream:'#3f8f45',style:'frosted',zones:[[0,.42,0,.45,'#2f6fd0'],[0,.42,.45,1,'#4fa84a'],[.42,.74,0,1,'#d6a15a'],[.74,1,0,1,'#3f8f45']]},board:'white',boardColor:'#e8762c',topper:'none',tiers:[
+  newTier(8,4,{decor:[DC('baseball2','cluster',1,{size:260,seed:11}),DC('bat','cluster',1,{size:230,seed:23}),DC('soccerball','cluster',1,{size:260,seed:37}),DC('hoopball','cluster',1,{size:260,seed:5}),DC('football','cluster',1,{size:290,seed:67}),DC('sprinkles','cluster',120,{mix:['#fbf7f1']})]})]}},
  {key:'sig_blocks',name:'Building Block Number',tag:SIG,blurb:'A sunny yellow number 6 with a blue window, a mosaic wall of toy bricks around the side, rainbow sprinkles and bricks on top.',d:{cakeType:'number',number:{text:'6',height:13,layers:2,cake:'vanilla',cream:'#f6c919',style:'frosted',wall:['#e8475f','#2f6fd0','#f2c230','#5cc06c','#2f6fd0','#e8475f','#2a7a3a'],wallH:.95,holeFill:'#2f6fd0'},board:'white',boardColor:'#2f3f6b',topper:'none',tiers:[
   newTier(8,4,{decor:[DC('bricks','cluster',18,{size:250,mix:['#e8475f','#2f6fd0','#5cc06c']}),DC('sprinkles','cluster',260,{mix:['#e8475f','#2f6fd0','#5cc06c','#f28a3a','#fbf7f1']})]})]}},
  {key:'sig_movie',name:'Movie Night Popcorn',tag:SIG,blurb:'A red and white striped popcorn tier overflowing with popcorn and a "13" Admit One ticket, over a black and white chevron clapperboard tier with stars.',d:{board:'gold',topper:'none',tiers:[
