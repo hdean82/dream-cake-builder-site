@@ -87,3 +87,12 @@ function scriptTopParts(q,c,mode,dc){const MF=MSG_FONTS[(dc&&dc.font)||'dancing'
 DECOR.scripttop={label:'Script Word Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2','#1d1b1f','#fbf7f1'],sp:.4,side:'up',sink:.6,tilt:[0,0],spin:0,make:scriptTopParts};
 DECOR_ICONS.scripttop=di('<text x="20" y="24" font-size="13" text-anchor="middle" fill="#d9a08a" font-style="italic" font-family="cursive">love</text>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('scripttop')}
+// ---- crawfish hanging over a rim (side piece) ----
+function crawHangParts(q,c,mode,dc){const p=crawfishParts(q,c,mode,dc);for(const[,g]of p){g.rotateX(PI/2);g.rotateZ((q()-.5)*.7)}return p}
+DECOR.crawhang={label:'Crawfish Over The Rim',layouts:['band'],layout:'band',count:5,max:16,color:'#d2381e',colors:['#d2381e','#b52a14'],sp:.9,roll:.3,sink:0,embed:.02,make:crawHangParts};
+DECOR_ICONS.crawhang=DECOR_ICONS.crawfish;
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('crawhang')}
+function cornUpParts(q,c,mode,dc){const p=cornParts(q,c,mode,dc);for(const[,g]of p){g.computeBoundingBox();const b=g.boundingBox;g.rotateZ(PI/2+(q()-.5)*.35)}return p}
+DECOR.cornup={label:'Standing Corn',layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#f2c230',colors:['#f2c230','#f6d76a'],sp:.7,side:'up',sink:.02,tilt:[0,0],make:cornUpParts};
+DECOR_ICONS.cornup=DECOR_ICONS.corncob;
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('cornup')}

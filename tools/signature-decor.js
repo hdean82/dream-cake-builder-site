@@ -262,6 +262,15 @@ function scriptTopParts(q,c,mode,dc){const MF=MSG_FONTS[(dc&&dc.font)||'dancing'
 DECOR.scripttop={label:'Script Word Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2','#1d1b1f','#fbf7f1'],sp:.4,side:'up',sink:.6,tilt:[0,0],spin:0,make:scriptTopParts};
 DECOR_ICONS.scripttop=di('<text x="20" y="24" font-size="13" text-anchor="middle" fill="#d9a08a" font-style="italic" font-family="cursive">love</text>');
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('scripttop')}
+// ---- crawfish hanging over a rim (side piece) ----
+function crawHangParts(q,c,mode,dc){const p=crawfishParts(q,c,mode,dc);for(const[,g]of p){g.rotateX(PI/2);g.rotateZ((q()-.5)*.7)}return p}
+DECOR.crawhang={label:'Crawfish Over The Rim',layouts:['band'],layout:'band',count:5,max:16,color:'#d2381e',colors:['#d2381e','#b52a14'],sp:.9,roll:.3,sink:0,embed:.02,make:crawHangParts};
+DECOR_ICONS.crawhang=DECOR_ICONS.crawfish;
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('crawhang')}
+function cornUpParts(q,c,mode,dc){const p=cornParts(q,c,mode,dc);for(const[,g]of p){g.computeBoundingBox();const b=g.boundingBox;g.rotateZ(PI/2+(q()-.5)*.35)}return p}
+DECOR.cornup={label:'Standing Corn',layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#f2c230',colors:['#f2c230','#f6d76a'],sp:.7,side:'up',sink:.02,tilt:[0,0],make:cornUpParts};
+DECOR_ICONS.cornup=DECOR_ICONS.corncob;
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('cornup')}
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -316,7 +325,7 @@ THEMES.unshift(
   newTier(11,4.8,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'chevron',color:'#1d1b1f',size:1.4,height:4.6},decor:[DC('plaque','band',1,{color:'#1d1b1f',size:270,R:5.5,rot:55,y:.3}),DC('clapper','band',1,{size:210,rot:-40}),DC('stars','scatter',14,{mix:['#f38ab0','#5fc8d8','#f2c230'],size:210}),DC('dragees','scatter',20,{color:'#f2c230',size:140})]}),
   newTier(7.8,8.4,{color:'#fbf7f1',finish:'fondant',prof:'bucket',stencil:{pattern:'stripes',color:'#d62839',size:1.3,height:8.2},top:'rope',pipe:'#fbf7f1',bottom:'none',decor:[DC('poplabel','band',1,{color:'#d62839',size:200,R:3.7,rot:55,y:.6}),DC('popcorn','cluster',120,{color:'#f8efd4',size:260}),DC('ticket','cluster',1,{color:'#f6cf5a',size:300,center:true,face:95}),DC('stars','cluster',5,{mix:['#f38ab0','#5fc8d8','#f2c230'],size:240})]})]}},
  {key:'sig_crawfish',name:'Crawfish Boil Pot',tag:SIG,blurb:'A brushed silver stock pot cake with a tilted lid and loop handles, spilling over with crawfish and corn, with potatoes and corn on the board.',d:{board:'white',boardColor:'#ece5d3',topper:'none',tiers:[
-  newTier(8,7,{color:'#c4c8ce',finish:'fondant',texture:'brushed',top:'rope',pipe:'#aeb2b8',bottom:'rope',bottomColor:'#aeb2b8',decor:[DC('pothandle','band',2,{color:'#c9ccd2',size:160,y:2,rot:95}),DC('potlid2','cluster',1,{color:'#c9ccd2',size:300,center:true}),DC('crawfish','crown',9,{color:'#d2381e',size:300}),DC('corncob','crown',3,{color:'#eeb31c',size:250,rot:60}),DC('crawfish','cascade',5,{color:'#d2381e',rot:-60,size:260}),DC('crawfish','cascade',4,{color:'#d2381e',rot:-10,size:250}),DC('corncob','cluster',5,{color:'#eeb31c',size:300,where:'board'}),DC('potato','cluster',5,{color:'#c99a45',size:320,where:'board'})]})]}},
+  newTier(8,7,{color:'#c4c8ce',finish:'fondant',texture:'brushed',top:'rope',pipe:'#aeb2b8',bottom:'rope',bottomColor:'#aeb2b8',decor:[DC('pothandle','band',2,{color:'#c9ccd2',size:160,y:2,rot:95}),DC('potlid2','cluster',1,{color:'#c9ccd2',size:300,center:true}),DC('crawfish','crown',9,{color:'#d2381e',size:300}),DC('corncob','crown',3,{color:'#eeb31c',size:250,rot:60}),DC('crawhang','band',6,{color:'#d2381e',size:240,y:2.2}),DC('cornup','cluster',4,{color:'#eeb31c',size:300,where:'board',seed:3}),DC('corncob','cluster',2,{color:'#eeb31c',size:280,where:'board',seed:9}),DC('potato','cluster',5,{color:'#c99a45',size:320,where:'board'})]})]}},
  {key:'sig_bee',name:'Bumble Bee Garden',tag:SIG,blurb:'A smooth yellow dome bee head with big eyes and a smile, a fuzzy black piped collar, looped antennae and a garden of piped grass and sugar flowers.',d:{board:'white',boardColor:'#c9d96a',topper:'none',tiers:[
   newTier(13,1.6,{color:'#5cae4a',texture:'grass',top:'none',bottom:'none',decor:[DC('daisies','scatter',12,{color:'#fbf7f1',size:130}),DC('blossoms','scatter',18,{mix:['#f3a6c0','#f2c230','#7fb0e8','#e8475f'],size:130})]}),
   newTier(10.4,2.2,{color:'#1d1b1f',texture:'fur',top:'none',bottom:'none'}),
