@@ -62,7 +62,7 @@ function dollarFaceParts(q,c,mode,dc){const g=dollarGeo();g.scale(1.6,1.6,.35);g
 function sugarBowParts(q,c){const g=bowGeo(q,.9);g.rotateX(-PI/2);return[[bowMat(c),g]]}
 function cowTopParts(q,c,mode,dc){const horns=[],ears=[],inner=[];const sp=(dc&&dc.spread)||1.15;
  for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.16,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
-  const ear=new T.SphereGeometry(1,24,14);ear.scale(.62,.07,.34);ear.rotateZ(-sd*.5);ear.translate(sd*(sp+.55),-.12,.1);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.45,.06,.24);inn.rotateZ(-sd*.5);inn.translate(sd*(sp+.55),-.09,.16);inner.push(inn)}
+  const ear=new T.SphereGeometry(1,24,14);ear.scale(.6,.16,.38);ear.rotateZ(-sd*.28);ear.translate(sd*(sp+.62),.02,.12);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.44,.1,.27);inn.rotateZ(-sd*.28);inn.translate(sd*(sp+.62),.1,.14);inner.push(inn)}
  const bows=[];for(const sd of[-1,1]){const b=bowGeo(q,.8);b.translate(sd*sp,.25,.25);bows.push(b)}
  return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(ears)],[dmat('#f3a6c0',{r:.45,cc:.3}),mg(inner)],[bowMat(c),mergeGeometries(bows)]]}
 function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[];

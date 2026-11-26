@@ -62,7 +62,7 @@ function dollarFaceParts(q,c,mode,dc){const g=dollarGeo();g.scale(1.6,1.6,.35);g
 function sugarBowParts(q,c){const g=bowGeo(q,.9);g.rotateX(-PI/2);return[[bowMat(c),g]]}
 function cowTopParts(q,c,mode,dc){const horns=[],ears=[],inner=[];const sp=(dc&&dc.spread)||1.15;
  for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.16,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
-  const ear=new T.SphereGeometry(1,24,14);ear.scale(.62,.07,.34);ear.rotateZ(-sd*.5);ear.translate(sd*(sp+.55),-.12,.1);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.45,.06,.24);inn.rotateZ(-sd*.5);inn.translate(sd*(sp+.55),-.09,.16);inner.push(inn)}
+  const ear=new T.SphereGeometry(1,24,14);ear.scale(.6,.16,.38);ear.rotateZ(-sd*.28);ear.translate(sd*(sp+.62),.02,.12);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.44,.1,.27);inn.rotateZ(-sd*.28);inn.translate(sd*(sp+.62),.1,.14);inner.push(inn)}
  const bows=[];for(const sd of[-1,1]){const b=bowGeo(q,.8);b.translate(sd*sp,.25,.25);bows.push(b)}
  return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(ears)],[dmat('#f3a6c0',{r:.45,cc:.3}),mg(inner)],[bowMat(c),mergeGeometries(bows)]]}
 function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[];
@@ -245,13 +245,13 @@ THEMES.unshift(
   newTier(8,4.8,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2'}),
   newTier(7,4.6,{color:'#fbf8f2',finish:'fondant',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',stencil:{pattern:'lace',color:'#cdb89a',size:2.2,height:3.2,y:.6}}),
   newTier(6,5,{color:'#fbf8f2',finish:'fondant',texture:'dimple',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',decor:[DC('roses','crown',6,{color:'#fbf8f2',size:120})]})]}},
- {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and a rhinestone brooch burst.',d:{board:'rosegold',topper:'none',tiers:[
-  newTier(12,5,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:190,R:6,rot:95})]}),
-  newTier(10,4.6,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
-  newTier(8,4.6,{color:'#98483d',finish:'fondant',texture:'stucco',top:'none',bottom:'none',decor:[DC('dragees','scatter',70,{color:'#d9a08a',size:45})]}),
-  newTier(7,4.6,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
-  newTier(6,4.4,{color:'#fbf8f2',finish:'fondant',side:'strings',pipe:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:90,R:3,rot:95})]}),
-  newTier(5,4.4,{color:'#fbf8f2',finish:'fondant',top:'dpearls',topColor:'#d9a08a',bottom:'none'})]}},
+ {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and rhinestone brooch bursts with rose gold roses.',d:{board:'rosegold',topper:'none',tiers:[
+  newTier(12,4,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:230,R:6,rot:95}),DC('dragees','scatter',40,{color:'#d9a08a',size:45})]}),
+  newTier(10,3.6,{color:'#fbf8f2',finish:'fondant',side:'swags',sideColor:'#d9a08a',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('roses','cascade',5,{color:'#d9a08a',size:130,rot:-30})]}),
+  newTier(8,3.6,{color:'#98483d',finish:'fondant',texture:'stucco',top:'dpearls',topColor:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('dragees','scatter',110,{color:'#e8b9a3',size:45})]}),
+  newTier(7,3.6,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
+  newTier(6,3.4,{color:'#fbf8f2',finish:'fondant',side:'strings',pipe:'#d9a08a',top:'pearls',pipe2:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:100,R:3,rot:95})]}),
+  newTier(5,3.4,{color:'#fbf8f2',finish:'fondant',top:'dpearls',topColor:'#d9a08a',bottom:'none',decor:[DC('roses','cluster',3,{color:'#d9a08a',size:130})]})]}},
  {key:'sig_babysky',name:'Up, Up And Away Bears',tag:SIG,blurb:'Sky blue ombre tiers with fondant clouds, a ladder, a spiral of gold buttons, teddy bears, ABC blocks and a hot air balloon.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
   newTier(9,6.5,{color:'#6fb3e8',finish:'fondant',ombre:true,ombreColor:'#eef6fc',top:'none',bottom:'pearls',bottomColor:'#fbf7f1',decor:[DC('clouds','scatter',14,{color:'#fbf7f1',size:150}),DC('teddy','cluster',2,{color:'#f6efe6',size:340,where:'board',face:95}),DC('abcblocks','cluster',4,{size:230,where:'board',mix:['#2f6fd0','#2f6fd0','#7fb0e8']}),DC('ladder','band',1,{color:'#fbf7f1',rot:-40,size:190})]}),
   newTier(7.5,6.2,{color:'#6fb3e8',finish:'fondant',ombre:true,ombreColor:'#eef6fc',top:'none',bottom:'none',decor:[DC('clouds','scatter',12,{color:'#fbf7f1',size:150}),DC('buttons','cascade',46,{color:'#d4ae5a',rot:-25,size:150,wide:1.5})]}),

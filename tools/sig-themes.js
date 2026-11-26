@@ -32,13 +32,13 @@ THEMES.unshift(
   newTier(8,4.8,{color:'#fbf8f2',finish:'fondant',texture:'ruffle',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2'}),
   newTier(7,4.6,{color:'#fbf8f2',finish:'fondant',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',stencil:{pattern:'lace',color:'#cdb89a',size:2.2,height:3.2,y:.6}}),
   newTier(6,5,{color:'#fbf8f2',finish:'fondant',texture:'dimple',top:'pearls',pipe:'#fbf8f2',bottom:'pearls',bottomColor:'#fbf8f2',decor:[DC('roses','crown',6,{color:'#fbf8f2',size:120})]})]}},
- {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and a rhinestone brooch burst.',d:{board:'rosegold',topper:'none',tiers:[
-  newTier(12,5,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:190,R:6,rot:95})]}),
-  newTier(10,4.6,{color:'#fbf8f2',finish:'fondant',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
-  newTier(8,4.6,{color:'#98483d',finish:'fondant',texture:'stucco',top:'none',bottom:'none',decor:[DC('dragees','scatter',70,{color:'#d9a08a',size:45})]}),
-  newTier(7,4.6,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
-  newTier(6,4.4,{color:'#fbf8f2',finish:'fondant',side:'strings',pipe:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:90,R:3,rot:95})]}),
-  newTier(5,4.4,{color:'#fbf8f2',finish:'fondant',top:'dpearls',topColor:'#d9a08a',bottom:'none'})]}},
+ {key:'sig_rosegold',name:'Rose Gold Jewels',tag:SIG,blurb:'Six tiers of quilted ivory, jeweled chain swags, a rose gold glitter tier and rhinestone brooch bursts with rose gold roses.',d:{board:'rosegold',topper:'none',tiers:[
+  newTier(12,4,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:230,R:6,rot:95}),DC('dragees','scatter',40,{color:'#d9a08a',size:45})]}),
+  newTier(10,3.6,{color:'#fbf8f2',finish:'fondant',side:'swags',sideColor:'#d9a08a',pearlColor:'#d9a08a',top:'pearls',pipe:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('roses','cascade',5,{color:'#d9a08a',size:130,rot:-30})]}),
+  newTier(8,3.6,{color:'#98483d',finish:'fondant',texture:'stucco',top:'dpearls',topColor:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('dragees','scatter',110,{color:'#e8b9a3',size:45})]}),
+  newTier(7,3.6,{color:'#fbf8f2',finish:'fondant',side:'quilted',sideColor:'#fbf8f2',pearlColor:'#d9a08a',top:'none',bottom:'pearls',bottomColor:'#d9a08a'}),
+  newTier(6,3.4,{color:'#fbf8f2',finish:'fondant',side:'strings',pipe:'#d9a08a',top:'pearls',pipe2:'#d9a08a',bottom:'pearls',bottomColor:'#d9a08a',decor:[DC('brooch','band',1,{color:'#d9a08a',size:100,R:3,rot:95})]}),
+  newTier(5,3.4,{color:'#fbf8f2',finish:'fondant',top:'dpearls',topColor:'#d9a08a',bottom:'none',decor:[DC('roses','cluster',3,{color:'#d9a08a',size:130})]})]}},
  {key:'sig_babysky',name:'Up, Up And Away Bears',tag:SIG,blurb:'Sky blue ombre tiers with fondant clouds, a ladder, a spiral of gold buttons, teddy bears, ABC blocks and a hot air balloon.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
   newTier(9,6.5,{color:'#6fb3e8',finish:'fondant',ombre:true,ombreColor:'#eef6fc',top:'none',bottom:'pearls',bottomColor:'#fbf7f1',decor:[DC('clouds','scatter',14,{color:'#fbf7f1',size:150}),DC('teddy','cluster',2,{color:'#f6efe6',size:340,where:'board',face:95}),DC('abcblocks','cluster',4,{size:230,where:'board',mix:['#2f6fd0','#2f6fd0','#7fb0e8']}),DC('ladder','band',1,{color:'#fbf7f1',rot:-40,size:190})]}),
   newTier(7.5,6.2,{color:'#6fb3e8',finish:'fondant',ombre:true,ombreColor:'#eef6fc',top:'none',bottom:'none',decor:[DC('clouds','scatter',12,{color:'#fbf7f1',size:150}),DC('buttons','cascade',46,{color:'#d4ae5a',rot:-25,size:150,wide:1.5})]}),
