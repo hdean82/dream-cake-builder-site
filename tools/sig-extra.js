@@ -1,0 +1,43 @@
+// extra signature pieces (added in round 2)
+METALS['#b0825f']=1;METALS['#8c6a52']=1;METALS['#b9725f']=1;
+DECOR.glitterspheres={...DECOR.spheres,label:'Glitter Spheres',mat:c=>dmat(c,{r:.62,metal:.55,cc:.1}),colors:['#b0825f','#d9a08a','#d4ae5a','#c9ccd2','#f3ead8','#5fb3a3']};
+DECOR_ICONS.glitterspheres=di('<circle cx="14" cy="18" r="8" fill="#b0825f"/><circle cx="26" cy="12" r="6" fill="#5fb3a3"/><circle cx="27" cy="23" r="4.5" fill="#f3ead8"/><circle cx="11" cy="15" r="1" fill="#fff"/>');
+// ---- bumble bee face (lies on the side of a fuzzy black cake) ----
+function beeFaceParts(q,c,mode,dc){const yel=[],lid=[],white=[],blk=[],hl=[];
+ yel.push(sgOval(0,0,1.0,.86,.03));
+ for(const sd of[-1,1]){const cx=sd*.42,cy=.16;white.push(sgOval(cx,cy,.34,.38,.045));blk.push(sgOval(cx+sd*.06,cy-.05,.15,.17,.052));lid.push(sgOval(cx,cy+.2,.37,.22,.06));hl.push(sgOval(cx+sd*.1,cy-.0,.045,.05,.075))}
+ const sm=new T.Shape();sm.moveTo(-.3,-.36);sm.quadraticCurveTo(0,-.72,.3,-.36);sm.quadraticCurveTo(0,-.56,-.3,-.36);blk.push(flatShape(sm,.05,0));
+ const R=sgR(dc),B=l=>sgBend(mg(l),R);
+ return[[dmat(c,{r:.4,cc:.4}),B(yel)],[dmat('#ffffff',{r:.3,cc:.6}),B(white)],[dmat('#f2b40f',{r:.4,cc:.4}),B(lid)],[dmat('#1d1b1f',{r:.25,cc:.7}),B(blk)],[dmat('#ffffff',{r:.1,cc:1}),B(hl)]]}
+// ---- bee wings and looped antennae (stand on top) ----
+function beeTopParts(q,c,mode,dc){const dark=[],wing=[],swirl=[];
+ for(const sd of[-1,1]){const pts=[new V3(sd*.45,0,.55),new V3(sd*.58,.5,.6),new V3(sd*.8,.85,.6)];dark.push(new T.TubeGeometry(new T.CatmullRomCurve3(pts),14,.045,6,false));const ring=new T.TorusGeometry(.22,.05,8,24);ring.translate(sd*.82,1.08,.6);dark.push(ring);
+  const w=new T.SphereGeometry(1,28,16);w.scale(.2,.95,.07);w.rotateZ(-sd*.38);w.translate(sd*.78,.7,-.35);wing.push(w);const sw=new T.TorusGeometry(.16,.035,6,22,PI*1.6);sw.translate(0,0,0);sw.rotateZ(-sd*.38);sw.translate(sd*.78,.75,-.28);swirl.push(sw);const sw2=new T.TorusGeometry(.07,.035,6,16,PI*1.6);sw2.rotateZ(-sd*.38+.5);sw2.translate(sd*.78,.75,-.28);swirl.push(sw2)}
+ return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg([...dark,...swirl])],[dmat('#ffffff',{r:.4,cc:.5}),mg(wing)]]}
+// ---- stock pot: tilted lid and loop handles ----
+function potLid2Parts(q,c){const parts=potLidParts(q,c);for(const p of parts){p[1].rotateX(-.18);p[1].translate(0,.3,-.95)}return parts}
+function potHandleParts(q,c){const a=new T.TorusGeometry(.42,.07,8,22,PI),b=new T.TorusGeometry(.42,.07,8,22,PI);b.translate(0,0,0);return[[sgMat.metal(c),mg([a])]]}
+// ---- baseball glove and bat ----
+function gloveParts(q,c){const palm=new T.SphereGeometry(1,24,16);palm.scale(.55,.14,.6);palm.translate(0,.16,0);const fing=[];for(let k=0;k<4;k++){const f=new T.CapsuleGeometry(.08,.46,4,10);f.rotateX(PI/2);f.rotateY((k-1.5)*.16);f.translate((k-1.5)*.2,.18,.66);fing.push(f)}const th=new T.CapsuleGeometry(.09,.36,4,10);th.rotateX(PI/2);th.rotateY(.95);th.translate(.5,.18,.1);fing.push(th);
+ const pocket=new T.SphereGeometry(1,20,12);pocket.scale(.3,.05,.3);pocket.translate(0,.3,.05);return[[dmat(c,{r:.55,sh:.4}),mg([palm,...fing])],[dmat('#8a5326',{r:.6}),norm(pocket)]]}
+function batParts(q,c){const b=new T.CylinderGeometry(.11,.04,1.9,18);b.rotateZ(PI/2);b.translate(.1,.12,0);const k=new T.SphereGeometry(.07,12,8);k.translate(-.88,.12,0);return[[dmat(c,{r:.5,cc:.3}),mg([b,k])]]}
+// ---- monogram hoop: floral hoop with a gold M inside ----
+function monoHoopParts(q,c,mode,dc){const parts=hoopParts(q,c),R=.95,cy=R+1.05,M=[],bar=(w,h,x,y,rz)=>{const g=new T.BoxGeometry(w,h,.05);g.rotateZ(rz||0);g.translate(x,y,0);M.push(g)};
+ bar(.08,.78,-.3,cy);bar(.08,.78,.3,cy);bar(.08,.56,-.15,cy+.1,.55);bar(.08,.56,.15,cy+.1,-.55);parts[0][1]=mg([parts[0][1],...M]);return parts}
+Object.assign(DECOR,{
+ beeface:{label:'Bumble Bee Face',layouts:['band','scatter'],layout:'band',count:1,max:1,color:'#ffd21f',colors:['#ffd21f'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:beeFaceParts},
+ beetop:{label:'Bee Wings And Antennae',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#ffd21f',colors:['#ffd21f'],sp:3,side:'up',sink:.02,noTilt:true,spin:0,make:beeTopParts},
+ potlid2:{label:'Tilted Stock Pot Lid',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#c9ccd2',colors:['#c9ccd2','#d4ae5a'],sp:2,side:'up',sink:-.05,noTilt:true,spin:0,make:potLid2Parts},
+ pothandle:{label:'Stock Pot Handles',layouts:['band'],layout:'band',count:2,max:2,color:'#c9ccd2',colors:['#c9ccd2','#d4ae5a'],sp:1,side:'face',roll:0,sink:0,embed:.02,make:potHandleParts},
+ glove:{label:'Baseball Glove',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:3,color:'#c7843f',colors:['#c7843f','#8a5326','#1d1b1f'],sp:1.4,side:'up',sink:.03,embed:.05,noTilt:true,make:gloveParts},
+ bat:{label:'Wooden Bat',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:3,color:'#c79a5b',colors:['#c79a5b','#2a1a10','#fbf7f1'],sp:1.8,side:'up',sink:.03,embed:.05,noTilt:true,make:batParts},
+ monohoop:{label:'Monogram Floral Hoop',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#d9a08a'],sp:2,sink:.4,noTilt:true,spin:0,make:monoHoopParts}});
+{const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push('glitterspheres','beeface','beetop','potlid2','pothandle','glove','bat','monohoop')}
+{const ic=(k,b)=>DECOR_ICONS[k]=di(b);
+ ic('beeface','<ellipse cx="20" cy="15" rx="12" ry="10" fill="#ffd21f"/><ellipse cx="14" cy="13" rx="4" ry="5" fill="#fff"/><ellipse cx="26" cy="13" rx="4" ry="5" fill="#fff"/><circle cx="15" cy="14" r="2" fill="#1d1b1f"/><circle cx="27" cy="14" r="2" fill="#1d1b1f"/><path d="M15 21q5 4 10 0" stroke="#1d1b1f" stroke-width="1.6" fill="none"/>');
+ ic('beetop','<path d="M12 22q-3-8 0-14M28 22q3-8 0-14" stroke="#1d1b1f" stroke-width="2" fill="none"/><circle cx="12" cy="7" r="3" fill="none" stroke="#1d1b1f" stroke-width="2"/><circle cx="28" cy="7" r="3" fill="none" stroke="#1d1b1f" stroke-width="2"/>');
+ ic('potlid2','<ellipse cx="20" cy="18" rx="15" ry="5" fill="#c9ccd2" transform="rotate(-8 20 18)"/><path d="M15 12q5-6 10 0" stroke="#999" stroke-width="2" fill="none"/>');
+ ic('pothandle','<path d="M10 20a10 10 0 0 1 20 0" stroke="#c9ccd2" stroke-width="3" fill="none"/>');
+ ic('glove','<ellipse cx="19" cy="19" rx="9" ry="6" fill="#c7843f"/><rect x="12" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/><rect x="17" y="4" width="3" height="12" rx="1.5" fill="#c7843f"/><rect x="22" y="6" width="3" height="11" rx="1.5" fill="#c7843f"/>');
+ ic('bat','<rect x="6" y="13" width="28" height="4" rx="2" fill="#c79a5b" transform="rotate(-18 20 15)"/>');
+ ic('monohoop','<circle cx="20" cy="14" r="10" fill="none" stroke="#d4ae5a" stroke-width="2"/><path d="M15 19V9l5 6 5-6v10" stroke="#d4ae5a" stroke-width="1.8" fill="none"/>')}

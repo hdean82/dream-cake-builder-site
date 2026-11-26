@@ -1,0 +1,162 @@
+// ===================================================================================================
+// Signature Cakes: decorations made to recreate Sprinkle Me Silly's real cakes in the Studio.
+// Every piece is built in code (no downloads), so it always loads. Units are inches; size 100 = life size.
+// "face" pieces are authored lying flat (thickness along +Y) and are turned to face out on the cake side.
+// ===================================================================================================
+const sgMat={
+ gloss:c=>dmat(c,{r:.28,cc:.7,ccr:.1,sh:.2}),
+ matte:c=>dmat(c,{r:.6,sh:.35}),
+ metal:c=>dmat(c,{r:.22,metal:1,cc:.5}),
+ sugar:c=>dmat(c,{r:.45,cc:.35,ccr:.2,sh:.35})};
+// Bend a flat "face" piece around a tier of radius R (local units) so wide pieces hug the cake.
+function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R;p.setX(i,(R+y)*Math.sin(th));p.setY(i,(R+y)*Math.cos(th)-R)}g.computeVertexNormals();return g}
+const sgR=(dc)=>dc&&dc.R?dc.R/((dc.size??100)/100):0;
+const sgOval=(x,y,rx,ry,depth,lift=0)=>{const pts=[];for(let i=0;i<72;i++){const a=i/72*2*PI;pts.push(new T.Vector2(x+rx*Math.cos(a),y+ry*Math.sin(a)))}return flatShape(new T.Shape(pts),depth,lift)};
+// ---------- sports balls ----------
+function soccerParts(q){const R=.42,g=new T.SphereGeometry(R,48,32),ico=new T.IcosahedronGeometry(1,0),ip=ico.attributes.position,dirs=[];for(let i=0;i<ip.count;i++){const v=new V3(ip.getX(i),ip.getY(i),ip.getZ(i)).normalize();if(!dirs.some(d=>d.distanceTo(v)<.01))dirs.push(v)}
+ tintTo(g,(x,y,z)=>{const v=new V3(x,y,z).normalize();let m=0;for(const d of dirs)m=Math.max(m,v.dot(d));return m>.925?[.08,.08,.09]:[.97,.97,.96]});g.translate(0,R,0);return[[dmat('#ffffff',{r:.32,cc:.6,ccr:.12}),norm(g)]]}
+function footballParts(q){const g=new T.SphereGeometry(.34,40,24);g.scale(1.75,1,1);tintTo(g,(x)=>{const e=Math.abs(x)/.595;return e>.68&&e<.76?[.97,.95,.92]:[.47,.25,.13]});g.translate(0,.32,0);
+ const lace=[];const sp=new T.BoxGeometry(.38,.025,.025);sp.translate(0,.655,0);lace.push(sp);for(let k=-3;k<=3;k++){const b=new T.BoxGeometry(.022,.024,.11);b.translate(k*.055,.655,0);lace.push(b)}
+ return[[dmat('#7a4022',{r:.62,sh:.3}),norm(g)],[dmat('#fbf7f1',{r:.4}),mg(lace)]]}
+function hoopBallParts(q){const R=.45,g=new T.SphereGeometry(R,48,32);tintTo(g,(x,y,z)=>{const a=Math.abs(x)<.012||Math.abs(y)<.012,cy=Math.abs(Math.hypot(y,z-R*1.05)-R*.78)<.014||Math.abs(Math.hypot(y,z+R*1.05)-R*.78)<.014;return a||cy?[.08,.06,.05]:[1,1,1]});g.translate(0,R,0);return[[dmat('#e8762c',{r:.7,sh:.3}),norm(g)]]}
+function baseball2Parts(q){const R=.4,g=new T.SphereGeometry(R,40,28);g.translate(0,R,0);const pts=[];for(let i=0;i<=96;i++){const t=i/96*2*PI,a=.44;const v=new V3(Math.cos(t)+a*Math.cos(3*t),Math.sin(t)-a*Math.sin(3*t),2*Math.sqrt(a*(1-a))*Math.sin(2*t)).normalize().multiplyScalar(R*1.005);v.y+=R;pts.push(v)}
+ const seam=new T.TubeGeometry(new T.CatmullRomCurve3(pts,true),160,.012,6,true),st=[];for(let i=0;i<96;i+=2){const p=pts[i],n=pts[(i+1)%96].clone().sub(p).normalize(),out=p.clone().sub(new V3(0,R,0)).normalize(),side=new V3().crossVectors(n,out).normalize();for(const s of[-1,1]){const b=new T.BoxGeometry(.012,.012,.05);b.lookAt(side.clone().multiplyScalar(s));b.translate(p.x+side.x*s*.025,p.y+side.y*s*.025,p.z+side.z*s*.025);st.push(b)}}
+ return[[dmat('#fbf9f4',{r:.5,sh:.4}),norm(g)],[dmat('#d62839',{r:.5}),mg([seam,...st])]]}
+// ---------- movie night ----------
+function popcornParts(q,c){const list=[];const n=4+Math.floor(q()*3);for(let k=0;k<n;k++){const r=.07+q()*.05,g=new T.SphereGeometry(r,10,8),p=g.attributes.position,ph=q()*9;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),kk=1+.28*Math.sin(x*40+ph)*Math.sin(y*37)*Math.sin(z*33+ph);p.setXYZ(i,x*kk,y*kk,z*kk)}g.computeVertexNormals();g.translate(rj(q,.18),.07+q()*.1,rj(q,.18));list.push(g)}
+ const m=mg(list);tintTo(m,(x,y,z)=>{const k=.9+.1*Math.sin(x*60+z*50);return Math.sin(x*23+y*31+z*17)>.75?[1,.86,.55]:[k,k,k*.95]});return[[dmat(c,{r:.75,sh:.4}),m]]}
+function ticketParts(q,c){const W=1.15,H=.58,s=new T.Shape();s.moveTo(-W/2,-H/2);s.lineTo(W/2,-H/2);s.lineTo(W/2,-.09);s.absarc(W/2,0,.09,-PI/2,PI/2,true);s.lineTo(W/2,H/2);s.lineTo(-W/2,H/2);s.lineTo(-W/2,.09);s.absarc(-W/2,0,.09,PI/2,-PI/2,true);s.closePath();
+ const g=new T.ExtrudeGeometry(s,{depth:.03,bevelEnabled:false});g.translate(0,0,-.015);
+ const line=[];for(const[y0]of[[H/2-.07],[-H/2+.07]]){const b=new T.BoxGeometry(W-.24,.025,.04);b.translate(0,y0,0);line.push(b)}for(let k=0;k<6;k++){const b=new T.BoxGeometry(.018,.07+((k*7)%3)*.03,.04);b.translate(W/2-.22-k*.03,-.12,0);line.push(b)}{const dg=(w,h,x,y)=>{const b=new T.BoxGeometry(w,h,.04);b.translate(x,y,0);line.push(b)};dg(.06,.3,-.12,.02);for(const y of[.17,.02,-.13])dg(.15,.05,.12,y);dg(.05,.3,.19,.02)}
+ const st=flatShape(starShape(.07,.03),.03,0);st.rotateX(PI/2);st.translate(-W/2+.2,.12,.03);const st2=st.clone();st2.translate(W-.4,0,0);
+ const stick=new T.CylinderGeometry(.018,.018,1.3,8);stick.translate(0,-H/2-.55,0);const all=[g];all.forEach(x=>x.translate(0,1.4,0));[...line,st,st2].forEach(x=>x.translate(0,1.4,0));stick.translate(0,1.4,0);
+ return[[dmat(c,{r:.5,sh:.3}),norm(g)],[dmat('#d62839',{r:.5}),mg([...line,st,st2])],[dmat('#fbf7f1',{r:.6}),norm(stick)]]}
+function clapperParts(q){const W=1.5,H=.85,base=new T.BoxGeometry(W,.06,H);base.translate(0,.03,0);const lines=[];for(const z of[-.12,.12]){const b=new T.BoxGeometry(W-.12,.012,.02);b.translate(0,.066,z);lines.push(b)}const v=new T.BoxGeometry(.02,.012,.26);v.translate(-.2,.066,-.24);lines.push(v);
+ const stripe=g=>tintTo(g,(x)=>{const k=Math.floor((x+2)/.17+(x*.0))%2;return k?[.06,.06,.07]:[.97,.97,.96]});
+ const bar1=new T.BoxGeometry(W,.07,.2,30,1,1);const p1=bar1.attributes.position;for(let i=0;i<p1.count;i++){const x=p1.getX(i),z=p1.getZ(i);p1.setX(i,x+z*.9)}stripe(bar1);bar1.translate(0,.035,-H/2-.11);
+ const bar2=bar1.clone();bar2.rotateX(-.28);bar2.translate(0,.09,-.16);
+ return[[dmat('#1d1b1f',{r:.45,cc:.3}),mg([base])],[dmat('#fbf7f1',{r:.5}),mg(lines)],[dmat('#ffffff',{r:.45,cc:.3}),mg([bar1,bar2])]]}
+// ---------- crawfish boil ----------
+function crawfishParts(q,c){const body=[],dark=[];const seg=(z,rx,ry,rz)=>{const g=new T.SphereGeometry(1,16,12);g.scale(rx,ry,rz);g.translate(0,ry*.9,z);body.push(g)};
+ seg(.0,.16,.13,.26);for(let k=1;k<=5;k++)seg(-.2-k*.11,.13-k*.012,.1-k*.008,.08);const fan=new T.SphereGeometry(1,12,8);fan.scale(.17,.03,.11);fan.translate(0,.06,-.92);body.push(fan);
+ const claw=sd=>{const arm=new T.CylinderGeometry(.03,.035,.38,8);arm.rotateX(PI/2);arm.rotateY(sd*.45);arm.translate(sd*.14,.12,.3);const pin=new T.SphereGeometry(1,14,10);pin.scale(.09,.06,.2);pin.rotateY(sd*.25);pin.translate(sd*.24,.12,.6);const tip=new T.ConeGeometry(.035,.18,8);tip.rotateX(PI/2);tip.translate(sd*.3,.12,.82);return[arm,pin,tip]};
+ body.push(...claw(-1),...claw(1));for(const sd of[-1,1])for(let k=0;k<4;k++){const l=new T.CylinderGeometry(.012,.012,.3,5);l.rotateZ(sd*(PI/2-.5));l.translate(sd*.2,.06,.08-k*.08);body.push(l)}
+ for(const sd of[-1,1]){const pts=[new V3(sd*.04,.2,.25),new V3(sd*.18,.35,.6),new V3(sd*.28,.32,.78),new V3(sd*.36,.2,.95)];dark.push(new T.TubeGeometry(new T.CatmullRomCurve3(pts),24,.013,5,false));const e=new T.SphereGeometry(.028,8,6);e.translate(sd*.07,.22,.24);dark.push(e)}
+ const m=mg(body);tintTo(m,(x,y)=>{const k=.8+.4*Math.min(1,y/.25);return[k,k*.95,k*.9]});return[[dmat(c,{r:.25,cc:.85,ccr:.08,sh:.2}),m],[dmat('#2a1210',{r:.4,cc:.6}),mg(dark)]]}
+function cornParts(q,c){const L=.9,R=.2,g=new T.CylinderGeometry(R,R*.85,L,28,26),p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.08*Math.abs(Math.sin(a*14))*Math.abs(Math.sin(y*44)),e=1-Math.pow(Math.abs(y)/(L/2),6)*.25;p.setX(i,x*k*e);p.setZ(i,z*k*e)}g.computeVertexNormals();g.rotateZ(PI/2);g.translate(0,R*.9,0);
+ tintTo(g,(x,y,z)=>{const k=.85+.15*Math.abs(Math.sin(x*44));return[k,k*.95,k*.8]});return[[dmat(c,{r:.35,cc:.55,ccr:.12,sh:.3}),norm(g)]]}
+function potatoParts(q,c){const g=new T.SphereGeometry(.22,18,12),p=g.attributes.position,ph=q()*9;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.08*Math.sin(x*9+ph)*Math.sin(z*7);p.setXYZ(i,x*k*1.25,y*k*.8,z*k)}g.computeVertexNormals();g.translate(0,.16,0);
+ tintTo(g,(x,y,z)=>{const s=Math.sin(x*40+ph)*Math.sin(z*37)*Math.sin(y*41);return s>.6?[.55,.4,.25]:[1,1,1]});return[[dmat(c,{r:.7,sh:.25}),norm(g)]]}
+function potLidParts(q,c){const R=1/Math.sin(.42),lid=new T.SphereGeometry(R,64,12,0,2*PI,0,.42);lid.scale(1,1.8,1);lid.translate(0,-Math.cos(.42)*R*1.8+.02,0);const rim=new T.TorusGeometry(1,.035,8,64);rim.rotateX(PI/2);rim.translate(0,.03,0);
+ const h=new T.TorusGeometry(.22,.04,10,24,PI);h.translate(0,.2,0);const k1=new T.CylinderGeometry(.04,.05,.06,10);k1.translate(-.22,.2,0);const k2=k1.clone();k2.translate(.44,0,0);
+ return[[sgMat.metal(c),mg([lid,rim,h,k1,k2])]]}
+// ---------- money ----------
+function cashParts(q,c){const parts=[];const n=1+(q()<.5?1:0);for(let k=0;k<n;k++){const W=1.05,H=.45,g=new T.PlaneGeometry(W,H,18,6),p=g.attributes.position,cv=rj(q,.25);for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,cv*x*x)}
+ tintTo(g,(x,y)=>{const ex=Math.abs(x)/(W/2),ey=Math.abs(y)/(H/2),oval=Math.hypot(x/.19,y/.17);return ex>.9||ey>.84?[.96,.97,.93]:oval<1?[.82,.84,.76]:oval<1.12?[.4,.5,.38]:(ex>.62&&ex<.68)||(ey>.6&&ey<.66)?[.5,.58,.46]:[.78,.83,.74]});
+ g.translate(0,H/2,0);g.rotateY(rj(q,.6)+k*.4);g.rotateZ(rj(q,.5));g.translate(rj(q,.1),.05,rj(q,.1));parts.push(g)}return[[dmat('#e9efe2',{r:.75,sh:.3}),mg(parts)]]}
+function dollarGeo(){const R=.17,pts=[];for(let i=0;i<=28;i++){const a=-.25+i/28*(1.5*PI+.25);pts.push(new V3(Math.cos(a)*R,R+Math.sin(a)*R,0))}for(let i=1;i<=28;i++){const a=PI/2-i/28*(1.5*PI+.25);pts.push(new V3(Math.cos(a)*R,-R+Math.sin(a)*R,0))}
+ const s=new T.TubeGeometry(new T.CatmullRomCurve3(pts),120,.045,10,false),bar=new T.CylinderGeometry(.028,.028,.9,10);return mg([s,bar])}
+function dollarStandParts(q,c){const g=dollarGeo();g.scale(1.6,1.6,1.6);g.translate(0,.85,0);const stick=new T.CylinderGeometry(.02,.02,.6,8);stick.translate(0,.1,0);return[[sgMat.metal(c),g],[dmat('#fbf7f1',{r:.6}),norm(stick)]]}
+function dollarFaceParts(q,c,mode,dc){const g=dollarGeo();g.scale(1.6,1.6,.35);g.rotateX(-PI/2);g.translate(0,.03,0);return[[sgMat.metal(c),sgBend(g,sgR(dc))]]}
+// ---------- bows, cow ----------
+function sugarBowParts(q,c){const g=bowGeo(q,.9);g.rotateX(-PI/2);return[[bowMat(c),g]]}
+function cowTopParts(q,c,mode,dc){const horns=[],ears=[],inner=[];const sp=(dc&&dc.spread)||1.15;
+ for(const sd of[-1,1]){const pts=[];for(let i=0;i<=12;i++){const t=i/12;pts.push(new V3(sd*(sp-.1*t+.18*t*t),t*.95,-.05*t))}const tube=new T.TubeGeometry(new T.CatmullRomCurve3(pts),20,.16,14,false),pp=tube.attributes.position;for(let i=0;i<pp.count;i++){const y=pp.getY(i),k=Math.max(.15,1-y/1.05),cx=sd*(sp-.1*(y/.95)+.18*(y/.95)**2);pp.setX(i,cx+(pp.getX(i)-cx)*k);pp.setZ(i,pp.getZ(i)*k)}tube.computeVertexNormals();horns.push(tube);
+  const ear=new T.SphereGeometry(1,24,14);ear.scale(.5,.06,.28);ear.rotateZ(sd*.35);ear.translate(sd*(sp+.95),-.05,.25);ears.push(ear);const inn=new T.SphereGeometry(1,20,12);inn.scale(.38,.05,.2);inn.rotateZ(sd*.35);inn.translate(sd*(sp+.98),-.02,.29);inner.push(inn)}
+ const bows=[];for(const sd of[-1,1]){const b=bowGeo(q,.8);b.translate(sd*sp,.25,.25);bows.push(b)}
+ return[[dmat('#1d1b1f',{r:.35,cc:.5}),mg(horns)],[dmat('#fbf7f1',{r:.45,cc:.3}),mg(ears)],[dmat('#f3a6c0',{r:.45,cc:.3}),mg(inner)],[bowMat(c),mergeGeometries(bows)]]}
+function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[];
+ for(const sd of[-1,1]){const cx=sd*.55,cy=.55;black.push(sgOval(cx,cy,.34,.44,.025));white.push(sgOval(cx,cy,.29,.39,.035));black.push(sgOval(cx+sd*.04,cy-.05,.2,.28,.05));white.push(sgOval(cx+sd*.08,cy+.08,.05,.05,.06))}
+ black.push(sgOval(0,-.45,.86,.6,.025));pink.push(sgOval(0,-.45,.81,.55,.05));for(const sd of[-1,1])dark.push(sgOval(sd*.28,-.25,.07,.1,.07));
+ const sm=new T.Shape();sm.moveTo(-.4,-.55);sm.quadraticCurveTo(0,-1.0,.4,-.55);sm.quadraticCurveTo(0,-.72,-.4,-.55);dark.push(flatShape(sm,.065,0));const tooth=new T.Shape();tooth.moveTo(-.12,-.66);tooth.lineTo(.02,-.67);tooth.lineTo(.0,-.8);tooth.lineTo(-.1,-.78);tooth.closePath();white.push(flatShape(tooth,.075,0));
+ const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.35,cc:.5}),B(black)],[dmat('#ffffff',{r:.35,cc:.4}),B(white)],[dmat(c,{r:.4,cc:.4}),B(pink)],[dmat('#7a1f35',{r:.4,cc:.4}),B(dark)]]}
+// ---------- baby shower ----------
+function teddyParts(q,c){const S=(sx,sy,sz,x,y,z)=>{const g=new T.SphereGeometry(1,20,14);g.scale(sx,sy,sz);g.translate(x,y,z);return g};
+ const fur=[S(.34,.36,.3,0,.36,0),S(.28,.26,.26,0,.92,0),S(.1,.1,.06,-.2,1.14,0),S(.1,.1,.06,.2,1.14,0),S(.12,.1,.1,-.3,.42,.16),S(.12,.1,.1,.3,.42,.16),S(.13,.12,.18,-.18,.1,.26),S(.13,.12,.18,.18,.1,.26)];
+ const lite=[S(.12,.09,.09,0,.86,.22),S(.06,.06,.03,-.2,1.14,.03),S(.06,.06,.03,.2,1.14,.03),S(.2,.22,.08,0,.38,.24)];const dark=[S(.045,.035,.03,0,.9,.31),S(.03,.035,.02,-.1,.98,.23),S(.03,.035,.02,.1,.98,.23)];
+ return[[dmat(c,{r:.75,sh:.6}),mg(fur)],[dmat('#fbf3ec',{r:.7,sh:.5}),mg(lite)],[dmat('#1d1b1f',{r:.25,cc:.8}),mg(dark)]]}
+function abcBlockParts(q,c,mode,dc){const cols=mixOf(dc,c),bc=cols[Math.floor(q()*cols.length)%cols.length],s=.42,b=new T.BoxGeometry(s,s,s);b.translate(0,s/2,0);const fr=[];for(const[x,z,ry]of[[0,s/2,0],[0,-s/2,0],[s/2,0,PI/2],[-s/2,0,PI/2]]){const f=new T.BoxGeometry(s*.82,s*.82,.012);f.rotateY(ry);f.translate(x*1.02,s/2,z*1.02);fr.push(f)}
+ const L=[];const bar=(w,h,x,y)=>{const g=new T.BoxGeometry(w,h,.02);g.translate(x,y+s/2,s/2+.012);L.push(g)};const k=Math.floor(q()*3);if(k===0){bar(.05,.22,-.06,0);bar(.05,.22,.06,0);bar(.12,.04,0,.02)}else if(k===1){bar(.05,.22,-.06,0);bar(.12,.04,0,.09);bar(.12,.04,0,-.0);bar(.12,.04,0,-.09)}else{bar(.05,.22,-.07,0);bar(.12,.04,0,.09);bar(.12,.04,0,-.09)}
+ const ry=rj(q,.6);[b,...fr,...L].forEach(g=>g.rotateY(ry));return[[dmat('#fbf7f1',{r:.45,cc:.3}),norm(b)],[dmat(bc,{r:.4,cc:.4}),mg([...fr,...L])]]}
+function balloonParts(q,c){const N=12,cc=new T.Color(c),env=new T.SphereGeometry(.75,48,32);const p=env.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i);if(y<-.2){const k=1-(-.2-y)*.75;p.setX(i,p.getX(i)*k);p.setZ(i,p.getZ(i)*k)}}env.computeVertexNormals();env.translate(0,2.0,0);
+ tintTo(env,(x,y,z)=>{const a=Math.atan2(z,x),on=Math.floor((a+PI)/(2*PI)*N)%2===0;return on?[cc.r,cc.g,cc.b]:[.98,.98,.98]});
+ const sw=[];for(let k=0;k<N;k++){const a=k/N*2*PI,g=new T.SphereGeometry(.16,12,8);g.scale(.5,.55,1);g.lookAt(new V3(Math.cos(a),0,Math.sin(a)));g.translate(Math.cos(a)*.7,1.78,Math.sin(a)*.7);sw.push(g)}
+ const ropes=[];for(let k=0;k<4;k++){const a=k/4*2*PI+PI/4,top=new V3(Math.cos(a)*.38,1.35,Math.sin(a)*.38),bot=new V3(Math.cos(a)*.24,.62,Math.sin(a)*.24);const len=top.distanceTo(bot),g=new T.CylinderGeometry(.012,.012,len,5);g.lookAt(top.clone().sub(bot));g.rotateX(PI/2);const m=top.clone().add(bot).multiplyScalar(.5);g.translate(m.x,m.y,m.z);ropes.push(g)}
+ const basket=new T.CylinderGeometry(.3,.24,.38,20,4,true);basket.translate(0,.43,0);const bb=new T.CylinderGeometry(.24,.24,.03,20);bb.translate(0,.24,0);const rim=new T.TorusGeometry(.3,.03,6,24);rim.rotateX(PI/2);rim.translate(0,.62,0);
+ return[[dmat('#ffffff',{r:.45,sh:.4,cc:.3}),norm(env)],[dmat('#fbf7f1',{r:.5,sh:.4}),mg(sw)],[dmat('#d4ae5a',{r:.3,metal:.7}),mg(ropes)],[dmat('#8a5a3a',{r:.8}),mg([basket,bb,rim])]]}
+function ladderParts(q,c){const L=2.2,parts=[];for(const x of[-.22,.22]){const r=new T.BoxGeometry(.07,.05,L);r.translate(x,.03,0);parts.push(r)}for(let k=0;k<7;k++){const r=new T.BoxGeometry(.44,.05,.06);r.translate(0,.05,-L/2+.18+k*(L-.36)/6);parts.push(r)}return[[dmat(c,{r:.5,cc:.3}),mg(parts)]]}
+function buttonParts(q,c){const r=.14+q()*.08,g=new T.CylinderGeometry(r,r,.05,28);g.translate(0,.025,0);const rim=new T.TorusGeometry(r*.85,.018,6,28);rim.rotateX(PI/2);rim.translate(0,.05,0);const holes=[];for(const[x,z]of[[-1,-1],[1,-1],[-1,1],[1,1]]){const h=new T.CylinderGeometry(.018,.018,.02,8);h.translate(x*r*.22,.055,z*r*.22);holes.push(h)}
+ const m=METALS[c]?sgMat.metal(c):sgMat.gloss(c);return[[m,mg([g,rim])],[dmat('#3a2a1a',{r:.6}),mg(holes)]]}
+// ---------- bling ----------
+function broochParts(q,c,mode,dc){const metal=[],gems=[];const big=new T.OctahedronGeometry(.16,1);big.scale(1,.5,1.3);big.translate(0,.08,-.05);gems.push(big);const ring=new T.TorusGeometry(.2,.025,6,24);ring.rotateX(PI/2);ring.translate(0,.05,-.05);metal.push(ring);
+ for(let k=0;k<9;k++){const a=-PI/2+(k-4)*.32,len=k===4?1.05:.55+.35*Math.cos((k-4)*.38);for(let j=0;j<4;j++){const t=.32+j/4*len,g=new T.OctahedronGeometry(.045+.025*(1-j/4),0);g.scale(1,.5,1.4);g.translate(Math.cos(a)*t,.05,Math.sin(a)*t);gems.push(g)}const tip=new T.OctahedronGeometry(.07,0);tip.scale(1,.5,1.6);tip.translate(Math.cos(a)*(len+.38),.05,Math.sin(a)*(len+.38));gems.push(tip)}
+ const drop=new T.OctahedronGeometry(.1,1);drop.scale(1,.5,1.6);drop.translate(0,.06,.42);gems.push(drop);const R=sgR(dc);
+ return[[sgMat.metal(c),sgBend(mg(metal),R)],[dmat('#f6e3dc',{r:.05,metal:.3,cc:1,ccr:.02}),sgBend(mg(gems),R)]]}
+function hoopParts(q,c){const R=.95,ring=new T.TorusGeometry(R,.035,10,80);ring.translate(0,R+1.05,0);const stick=[];for(const x of[-.35,.35]){const s=new T.CylinderGeometry(.02,.02,1.2,8);s.translate(x,.6,0);stick.push(s)}
+ const roses=[];for(let k=0;k<4;k++){const a=PI*1.05+k*.32,r=roseGeo(q);r.scale(.32,.32,.32);r.rotateX(-PI/2);r.translate(Math.cos(a)*R,R+1.05+Math.sin(a)*R,.06);roses.push(r)}const lv=[];for(let k=0;k<4;k++){const L=leafGeo(.4,.14);L.rotateX(-PI/2);L.rotateZ(PI*1.2+k*.5);const a=PI*1.0+k*.36;L.translate(Math.cos(a)*R*1.05,R+1.05+Math.sin(a)*R*1.05,0);lv.push(norm(L))}
+ return[[sgMat.metal(c),mg([ring,...stick])],[dm.rose('#fbf7f1'),mergeGeometries(roses.map(norm))],[dm.leaf(),mergeGeometries(lv)]]}
+// ---------- garden ----------
+function beeParts(q,c){const body=new T.SphereGeometry(.55,40,28);body.scale(1.15,.95,1);body.translate(0,.55,0);tintTo(body,(x)=>Math.floor((x+.7)/.26)%2?[.1,.09,.08]:[1,.85,.2]);
+ const face=new T.SphereGeometry(.42,32,20);face.translate(.5,.62,0);const eyes=[],dark=[];for(const z of[-.15,.15]){const e=new T.SphereGeometry(.09,16,12);e.translate(.84,.75,z);dark.push(e);const h=new T.SphereGeometry(.025,8,6);h.translate(.91,.79,z+.02);eyes.push(h)}
+ const smile=new T.TorusGeometry(.12,.02,6,20,PI);smile.rotateZ(PI);smile.rotateY(PI/2);smile.translate(.9,.58,0);dark.push(smile);const st=new T.ConeGeometry(.08,.2,12);st.rotateZ(PI/2);st.translate(-.72,.55,0);dark.push(st);
+ for(const z of[-.12,.12]){const pts=[new V3(.62,.95,z),new V3(.7,1.18,z*1.6),new V3(.86,1.25,z*1.9)];dark.push(new T.TubeGeometry(new T.CatmullRomCurve3(pts),12,.018,6,false));const b=new T.SphereGeometry(.05,10,8);b.translate(.88,1.26,z*1.9);dark.push(b)}
+ const wings=[];for(const z of[-1,1]){const w=new T.SphereGeometry(1,24,12);w.scale(.32,.04,.2);w.rotateX(z*.5);w.rotateZ(-.3);w.translate(-.05,1.1,z*.32);wings.push(w)}
+ return[[dmat('#ffffff',{r:.5,sh:.5}),norm(body)],[dmat('#ffd21f',{r:.45,cc:.3}),norm(face)],[dmat('#1d1b1f',{r:.3,cc:.7}),mg(dark)],[dmat('#ffffff',{r:.2,cc:1}),mg(eyes)],[dmat('#eaf6ff',{r:.15,cc:1,ccr:.05,sh:.5}),mg(wings)]]}
+
+Object.assign(DECOR,{
+ soccerball:{label:'Soccer Ball',layouts:['cluster','crown','scatter','band'],layout:'cluster',count:1,max:8,color:'#ffffff',colors:['#ffffff'],sp:1,side:'up',sink:.05,embed:.05,make:soccerParts},
+ football:{label:'Football',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:8,color:'#7a4022',colors:['#7a4022'],sp:1.2,side:'up',sink:.05,embed:.05,noTilt:true,make:footballParts},
+ hoopball:{label:'Basketball',layouts:['cluster','crown','scatter','band'],layout:'cluster',count:1,max:8,color:'#e8762c',colors:['#e8762c'],sp:1,side:'up',sink:.05,embed:.05,make:hoopBallParts},
+ baseball2:{label:'Baseball',layouts:['cluster','crown','scatter','band'],layout:'cluster',count:1,max:8,color:'#fbf9f4',colors:['#fbf9f4'],sp:1,side:'up',sink:.05,embed:.05,make:baseball2Parts},
+ popcorn:{label:'Popcorn',layouts:['cluster','crown','scatter','band'],layout:'cluster',count:30,max:90,color:'#f8efd4',colors:['#f8efd4','#f2d98a','#f3c1cf'],sp:.45,side:'up',sink:.02,embed:.04,pile:.5,make:popcornParts},
+ ticket:{label:'Admit One Ticket',layouts:['cluster','crown'],layout:'cluster',count:1,max:3,color:'#f6cf5a',colors:['#f6cf5a','#fbf7f1','#f3a6c0'],sp:1.4,sink:.45,noTilt:true,spin:0,make:ticketParts},
+ clapper:{label:'Movie Clapperboard',layouts:['scatter','band','cascade'],layout:'scatter',count:1,max:3,color:'#1d1b1f',colors:['#1d1b1f'],sp:1.6,side:'face',roll:.3,sink:0,embed:-.02,make:clapperParts},
+ crawfish:{label:'Crawfish',layouts:['crown','cluster','scatter','band'],layout:'crown',count:8,max:24,color:'#d2381e',colors:['#d2381e','#b52a14'],sp:.9,side:'up',sink:.04,embed:.06,make:crawfishParts},
+ corncob:{label:'Corn On The Cob',layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#f2c230',colors:['#f2c230','#f6d76a'],sp:1,side:'up',sink:.04,embed:.06,noTilt:true,make:cornParts},
+ potato:{label:'Red Potatoes',layouts:['cluster','crown','scatter'],layout:'cluster',count:4,max:16,color:'#d9a441',colors:['#d9a441','#b5523c','#e2b86a'],sp:.6,side:'up',sink:.03,embed:.05,make:potatoParts},
+ potlid:{label:'Stock Pot Lid',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#c9ccd2',colors:['#c9ccd2','#d4ae5a'],sp:2,side:'up',sink:-.02,noTilt:true,spin:0,make:potLidParts},
+ cash:{label:'Cash Bills',layouts:['cluster','crown','cascade'],layout:'cluster',count:7,max:24,color:'#e9efe2',colors:['#e9efe2'],sp:.55,side:'up',sink:.25,tilt:[.05,.35],make:cashParts},
+ dollarsign:{label:'Gold Dollar Signs',layouts:['cluster','crown'],layout:'cluster',count:2,max:6,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#1d1b1f'],sp:1,sink:.35,noTilt:true,spin:0,make:dollarStandParts},
+ dollarface:{label:'Dollar Sign Plaque',layouts:['scatter','band'],layout:'scatter',count:1,max:6,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#1d1b1f'],sp:1.2,side:'face',roll:0,sink:0,embed:-.02,make:dollarFaceParts},
+ sugarbows:{label:'Fondant Bows',layouts:['band','scatter','cascade','crown'],layout:'band',count:4,max:16,color:'#f3a6c0',colors:['#f3a6c0','#fbf7f1','#d4ae5a','#c9dbef','#e8475f','#1d1b1f'],sp:1.4,side:'face',roll:.2,sink:0,embed:-.02,make:sugarBowParts},
+ cowtop:{label:'Cow Horns, Ears And Bows',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#f3a6c0',colors:['#f3a6c0','#c9dbef','#fbf7f1','#e8475f'],sp:3,side:'up',sink:.02,noTilt:true,spin:0,make:cowTopParts},
+ cowface:{label:'Cartoon Cow Face',layouts:['band','scatter'],layout:'band',count:1,max:1,color:'#f3a6c0',colors:['#f3a6c0','#e9a6ba'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:cowFaceParts},
+ teddy:{label:'Fondant Teddy Bears',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:6,color:'#fbf7f1',colors:['#fbf7f1','#c9a26b','#f3c1cf','#c9dbef'],sp:1.4,side:'up',sink:.02,noTilt:true,spin:0,make:teddyParts},
+ abcblocks:{label:'Alphabet Blocks',mixes:true,layouts:['cluster','crown','scatter'],layout:'cluster',count:3,max:12,color:'#2f6fd0',colors:['#2f6fd0','#e8475f','#5cc06c','#f2c230','#f3a6c0'],sp:.7,side:'up',sink:0,embed:.02,noTilt:true,make:abcBlockParts},
+ balloon:{label:'Hot Air Balloon',layouts:['cluster'],layout:'cluster',count:1,max:2,color:'#7fb0e8',colors:['#7fb0e8','#f3a6c0','#f2c230','#5cc06c'],sp:2,side:'up',sink:0,noTilt:true,spin:0,make:balloonParts},
+ ladder:{label:'Fondant Ladder',layouts:['scatter','band'],layout:'scatter',count:1,max:3,color:'#fbf7f1',colors:['#fbf7f1','#c9a26b'],sp:1.4,side:'face',roll:.15,sink:0,embed:-.02,make:ladderParts},
+ buttons:{label:'Fondant Buttons',layouts:['cascade','scatter','band','cluster'],layout:'cascade',count:24,max:80,color:'#d4ae5a',colors:['#d4ae5a','#fbf7f1','#c9dbef','#f3a6c0','#c9ccd2'],sp:.4,side:'face',sink:0,embed:-.01,make:buttonParts},
+ brooch:{label:'Jeweled Brooch Burst',layouts:['band','scatter'],layout:'band',count:1,max:4,color:'#d9a08a',colors:['#d9a08a','#d4ae5a','#c9ccd2'],sp:2,side:'face',roll:0,sink:0,embed:-.02,make:broochParts},
+ hoop:{label:'Floral Hoop Topper',layouts:['cluster'],layout:'cluster',count:1,max:1,color:'#d4ae5a',colors:['#d4ae5a','#c9ccd2','#d9a08a'],sp:2,sink:.4,noTilt:true,spin:0,make:hoopParts},
+ bee:{label:'Bumble Bee',layouts:['cluster','crown','scatter'],layout:'cluster',count:1,max:6,color:'#ffd21f',colors:['#ffd21f'],sp:1.4,side:'up',sink:.02,noTilt:true,spin:0,make:beeParts}});
+DECOR_CATS.push({key:'signature',label:'Signature Cake Pieces',items:['soccerball','football','hoopball','baseball2','popcorn','ticket','clapper','crawfish','corncob','potato','potlid','cash','dollarsign','dollarface','sugarbows','cowtop','cowface','teddy','abcblocks','balloon','ladder','buttons','brooch','hoop','bee']});
+{const ic=(k,b)=>DECOR_ICONS[k]=di(b);
+ ic('soccerball','<circle cx="20" cy="15" r="10" fill="#fff" stroke="#222"/><path d="M20 10l4 3-1.5 4.5h-5L16 13z" fill="#222"/>');
+ ic('football','<ellipse cx="20" cy="15" rx="13" ry="8" fill="#7a4022"/><path d="M15 15h10M17 13v4M20 13v4M23 13v4" stroke="#fff" stroke-width="1.2"/>');
+ ic('hoopball','<circle cx="20" cy="15" r="10" fill="#e8762c"/><path d="M10 15h20M20 5v20M13 8q7 7 0 14M27 8q-7 7 0 14" stroke="#222" fill="none"/>');
+ ic('baseball2','<circle cx="20" cy="15" r="10" fill="#fbf9f4" stroke="#ccc"/><path d="M14 7q4 8 0 16M26 7q-4 8 0 16" stroke="#d62839" fill="none" stroke-dasharray="2 1.5"/>');
+ ic('popcorn','<circle cx="14" cy="18" r="5" fill="#f8efd4"/><circle cx="21" cy="14" r="6" fill="#f2e2b0"/><circle cx="27" cy="19" r="5" fill="#f8efd4"/><circle cx="20" cy="21" r="4" fill="#fff6e0"/>');
+ ic('ticket','<rect x="7" y="9" width="26" height="13" rx="2" fill="#f6cf5a"/><text x="20" y="19" font-size="6" text-anchor="middle" fill="#d62839">ADMIT</text>');
+ ic('clapper','<rect x="8" y="12" width="24" height="13" fill="#1d1b1f"/><path d="M8 6l24 3v4H8z" fill="#fff" stroke="#1d1b1f"/><path d="M12 6.5l3 6M18 7.3l3 6M24 8l3 5" stroke="#1d1b1f" stroke-width="2"/>');
+ ic('crawfish','<ellipse cx="20" cy="17" rx="5" ry="9" fill="#d2381e"/><ellipse cx="13" cy="8" rx="3" ry="5" fill="#d2381e"/><ellipse cx="27" cy="8" rx="3" ry="5" fill="#d2381e"/>');
+ ic('corncob','<rect x="8" y="11" width="24" height="9" rx="4.5" fill="#f2c230"/><path d="M12 11v9M16 11v9M20 11v9M24 11v9M28 11v9" stroke="#d9a82a"/>');
+ ic('potato','<ellipse cx="15" cy="18" rx="7" ry="5" fill="#d9a441"/><ellipse cx="26" cy="17" rx="6" ry="4.5" fill="#b5523c"/>');
+ ic('potlid','<ellipse cx="20" cy="18" rx="15" ry="5" fill="#c9ccd2"/><path d="M15 13q5-6 10 0" stroke="#999" stroke-width="2" fill="none"/>');
+ ic('cash','<rect x="7" y="9" width="22" height="11" fill="#cfe0c4" stroke="#5a7a4e" transform="rotate(-10 18 15)"/><rect x="11" y="12" width="22" height="11" fill="#dbe8d2" stroke="#5a7a4e"/><circle cx="22" cy="17.5" r="3" fill="none" stroke="#5a7a4e"/>');
+ ic('dollarsign','<text x="20" y="25" font-size="22" text-anchor="middle" fill="#d4ae5a" font-weight="700">$</text>');
+ ic('dollarface','<rect x="8" y="4" width="24" height="22" rx="3" fill="#fff4ef"/><text x="20" y="22" font-size="17" text-anchor="middle" fill="#d4ae5a" font-weight="700">$</text>');
+ ic('sugarbows','<path d="M20 15l-10-6v12zM20 15l10-6v12z" fill="#f3a6c0"/><circle cx="20" cy="15" r="2.6" fill="#e17ca0"/>');
+ ic('cowtop','<path d="M10 22q-2-10 3-14M30 22q2-10-3-14" stroke="#1d1b1f" stroke-width="3" fill="none"/><ellipse cx="5" cy="22" rx="5" ry="2.5" fill="#f3a6c0"/><ellipse cx="35" cy="22" rx="5" ry="2.5" fill="#f3a6c0"/>');
+ ic('cowface','<ellipse cx="14" cy="10" rx="4" ry="5" fill="#fff" stroke="#1d1b1f"/><ellipse cx="26" cy="10" rx="4" ry="5" fill="#fff" stroke="#1d1b1f"/><ellipse cx="20" cy="21" rx="10" ry="6" fill="#f3a6c0" stroke="#1d1b1f"/>');
+ ic('teddy','<circle cx="20" cy="20" r="7" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="20" cy="10" r="5" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="16" cy="6.5" r="2" fill="#fbf7f1" stroke="#d9cdbd"/><circle cx="24" cy="6.5" r="2" fill="#fbf7f1" stroke="#d9cdbd"/>');
+ ic('abcblocks','<rect x="7" y="13" width="12" height="12" fill="#fff" stroke="#2f6fd0"/><rect x="21" y="13" width="12" height="12" fill="#fff" stroke="#e8475f"/><rect x="14" y="2" width="12" height="11" fill="#fff" stroke="#5cc06c"/>');
+ ic('balloon','<circle cx="20" cy="11" r="9" fill="#7fb0e8"/><path d="M14 17l3 6M26 17l-3 6" stroke="#b08a3a"/><rect x="16" y="23" width="8" height="5" fill="#8a5a3a"/>');
+ ic('ladder','<path d="M14 3v24M26 3v24M14 7h12M14 12h12M14 17h12M14 22h12" stroke="#c9b9a6" stroke-width="2"/>');
+ ic('buttons','<circle cx="14" cy="15" r="6" fill="#d4ae5a"/><circle cx="27" cy="13" r="4.5" fill="#d4ae5a"/><circle cx="13" cy="14" r=".9" fill="#5a4220"/><circle cx="15" cy="16" r=".9" fill="#5a4220"/>');
+ ic('brooch','<circle cx="20" cy="17" r="4" fill="#f6e3dc" stroke="#d9a08a"/><path d="M20 13V3M16 14l-5-8M24 14l5-8M15 17H6M25 17h9" stroke="#d9a08a" stroke-width="2" stroke-dasharray="2 1"/>');
+ ic('hoop','<circle cx="20" cy="13" r="9" fill="none" stroke="#d4ae5a" stroke-width="2"/><circle cx="13" cy="19" r="3" fill="#fbf7f1" stroke="#ddd"/><circle cx="17" cy="21.5" r="2.5" fill="#fbf7f1" stroke="#ddd"/>');
+ ic('bee','<ellipse cx="19" cy="17" rx="9" ry="7" fill="#ffd21f"/><path d="M15 11v12M20 10v14" stroke="#1d1b1f" stroke-width="2.4"/><ellipse cx="17" cy="8" rx="5" ry="3" fill="#dff1ff"/><circle cx="26" cy="15" r="1.2" fill="#1d1b1f"/>')}
+
+// Stencils used by the signature cakes: Art Deco geometric lines, harlequin diamonds and soft fondant pleats.
+// (signature stencils are registered right after STENCILS is defined)
+
