@@ -2803,7 +2803,7 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
  else if(pat==='brassPanels'){x.lineWidth=12;x.strokeRect(14,14,228,228);x.lineWidth=7;x.strokeRect(40,40,176,176);for(const u of[-1,-.55,-.2,.2,.55,1]){x.beginPath();x.moveTo(128,216);x.lineTo(128+u*88,84);x.stroke()}x.beginPath();x.moveTo(40,84);x.lineTo(216,84);x.stroke();for(const px of[80,90,123,133,166,176]){x.beginPath();x.moveTo(px,50);x.lineTo(px,76);x.stroke()}}
  else if(pat==='vpleats'){x.lineWidth=12;for(let k=-1;k<6;k++){x.beginPath();x.moveTo(0,k*48);x.lineTo(128,k*48+70);x.lineTo(256,k*48);x.stroke()}}
  else if(pat==='pleats'){x.lineWidth=10;for(let k=-2;k<4;k++){x.beginPath();x.moveTo(k*96,256);x.quadraticCurveTo(k*96+70,128,k*96+150,0);x.stroke()}}
- else{x.lineWidth=9;const fl=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);for(const sg of[1,-1]){x.beginPath();x.moveTo(0,-90);x.bezierCurveTo(sg*60,-70,sg*70,-10,sg*20,10);x.bezierCurveTo(sg*-10,25,sg*10,60,sg*45,55);x.stroke();x.beginPath();x.moveTo(0,90);x.bezierCurveTo(sg*50,70,sg*80,30,sg*55,0);x.stroke()}x.beginPath();x.ellipse(0,0,14,30,0,0,7);x.fill();x.beginPath();x.arc(0,-95,9,0,7);x.fill();x.restore()};fl(128,128,1);fl(0,0,.55);fl(256,0,.55);fl(0,256,.55);fl(256,256,.55)}
+ else{x.lineCap='round';x.lineJoin='round';royalDamaskTile(x)}
  const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;STEN_TEX.set(key,t);return t}
 // Form the damask as piped relief on the true cushion wall, with even spacing at the corners.
 function buildHeirloomRelief(t,{r,h,y,R_at,add},st){
@@ -3047,6 +3047,31 @@ function printFn(kind,r,h,seed){const C=2*PI*r,fr=x=>x-Math.floor(x);
 // Printed patterns drawn as smooth vector shapes into a side-wall color map, so edges stay crisp up close.
 // Cornelli lace: one smooth meandering line of R and S curves that never crosses or touches itself, evenly spaced and seamless across tile edges.
 // Leaf damask: a mirror-symmetric medallion (open teardrop vase, C-scrolls, acanthus leaves, crown finial, pointed drop) in a half-drop repeat with small dot fillers.
+// Royal damask: a fleur plume inside a pointed ogee cartouche with scrolls and flame tufts, half-drop repeat with small rosettes between.
+function royalDamaskTile(x){
+ const leaf=(cx,cy,a,l,w,c=0)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8+c,-l*.8,c*1.6,-l);x.bezierCurveTo(w*.6+c,-l*.78,w*.9,-l*.32,0,0);x.fill();x.restore()};
+ const half=()=>{
+  // ogee cartouche outline: pointed top, swelling sides, pointed bottom
+  x.lineWidth=6;x.beginPath();x.moveTo(0,-112);x.bezierCurveTo(10,-96,20,-90,34,-80);x.bezierCurveTo(70,-56,74,-6,56,30);x.bezierCurveTo(44,56,18,74,0,104);x.stroke();
+  // inner scrolls hugging the frame
+  x.lineWidth=5;x.beginPath();x.moveTo(6,62);x.bezierCurveTo(40,46,52,12,44,-18);x.bezierCurveTo(38,-38,18,-40,18,-24);x.bezierCurveTo(18,-14,30,-14,30,-22);x.stroke();
+  x.beginPath();x.moveTo(8,-50);x.bezierCurveTo(26,-58,40,-50,40,-38);x.stroke();
+  // plume petals of the central fleur
+  leaf(2,26,.42,62,15,4);leaf(4,32,.95,44,13,4);leaf(4,40,1.55,30,10,3);
+  // outer flame tufts outside the frame
+  leaf(58,40,1.9,30,10,3);leaf(64,-30,.9,30,10,3);leaf(38,-84,.5,26,9,2);
+  // little curl outside top
+  x.lineWidth=4;x.beginPath();x.moveTo(36,-82);x.bezierCurveTo(56,-96,72,-88,66,-74);x.bezierCurveTo(62,-66,52,-70,56,-76);x.stroke();
+ };
+ const motif=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);
+  // central fleur: tall middle petal, collar band and dropped base
+  leaf(0,30,0,92,16);x.fillRect(-20,30,40,8);x.beginPath();x.moveTo(-14,38);x.quadraticCurveTo(0,64,0,86);x.quadraticCurveTo(0,64,14,38);x.closePath();x.fill();
+  x.beginPath();x.arc(0,-74,7,0,7);x.fill();x.beginPath();x.arc(0,-118,6,0,7);x.fill();x.beginPath();x.arc(0,110,5,0,7);x.fill();
+  half();x.scale(-1,1);half();x.restore()};
+ const S=.95;motif(128,128,S);for(const [cx,cy] of[[0,0],[256,0],[0,256],[256,256]])motif(cx,cy,S);
+ // small four-leaf rosettes between medallions
+ for(const [cx,cy] of[[128,0],[128,256],[0,128],[256,128]]){for(let k=0;k<4;k++)leaf(cx,cy,k*Math.PI/2+Math.PI/4,13,5);x.beginPath();x.arc(cx,cy,3,0,7);x.fill()}
+}
 function damaskTile(x){
  const leaf=(cx,cy,a,l,w,curl=0)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8+curl,-l*.8,curl*1.6,-l);x.bezierCurveTo(w*.6+curl,-l*.78,w*.9,-l*.32,0,0);x.fill();x.restore()};
  const half=()=>{
