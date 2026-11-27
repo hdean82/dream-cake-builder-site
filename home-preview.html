@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dream Cake Studio · Show your client the cake before you bake it</title>
+<link rel="canonical" href="https://www.dreamcakebuilder.com/">
+<meta name="robots" content="noindex">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Dream Cake Studio lets cake artists design real-looking cakes in 3D — Lambeth piping, bows, frosting and lighting — then send the client a link to approve it before you bake.">
+<meta name="theme-color" content="#c12c7e">
+<meta property="og:title" content="Dream Cake Studio · Design It In 3D Before You Bake">
+<meta property="og:description" content="Design your client's cake in 3D, send a link, and get it approved before you bake.">
+<meta property="og:image" content="https://www.dreamcakebuilder.com/assets/home/lambeth-hero.jpg">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/home/lambeth-hero.webp" type="image/webp">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+body.hp{background:#fffaf9}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hp h1,.hp h2,.hp h3,.hp .btn,.hp summary,.hp label{text-transform:none}
+.hp main{--pad:clamp(56px,9vw,112px)}
+.hp .wrap{max-width:1120px;padding:0 20px}
+.hp section{padding:var(--pad) 0}
+.hp h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.01em;max-width:18ch}
+.hp .lede{font-size:17px;line-height:1.6;color:var(--muted);max-width:54ch;margin-top:12px}
+/* hero */
+.hero{padding:clamp(28px,5vw,64px) 0 var(--pad);background:linear-gradient(180deg,#fff1f6 0%,#fffaf9 100%)}
+.hero .wrap{display:grid;gap:clamp(28px,5vw,64px);align-items:center}
+@media(min-width:900px){.hero .wrap{grid-template-columns:1fr 1.05fr}}
+.soon{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--rose-ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 10px}
+.soon i{width:8px;height:8px;border-radius:50%;background:#2fa36b;box-shadow:0 0 0 3px #2fa36b26}
+.hero h1{font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.02em;margin:18px 0 0;max-width:13ch}
+.hero .lede{font-size:clamp(17px,1.6vw,19px)}
+.join{display:flex;gap:8px;margin-top:26px;max-width:470px;flex-wrap:wrap}
+.join input[type=email]{flex:1 1 220px;min-height:52px;padding:0 16px;border:1px solid #e7c6d7;border-radius:14px;background:#fff;font-size:16px}
+.join .btn{min-height:52px;padding:0 22px;border-radius:14px;font-size:16px;font-weight:600;flex:0 0 auto}
+.join .stat{flex-basis:100%;font-size:14px;min-height:1px}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.alt{margin-top:16px;font-size:15px;color:var(--muted)}
+.alt a{font-weight:600}
+/* compare */
+.cmpbox{display:flex;flex-direction:column;gap:14px}
+.cmp{position:relative;aspect-ratio:1;border-radius:28px;overflow:hidden;background:#efe6e8;box-shadow:0 30px 60px -30px #4b103d55;touch-action:pan-y;user-select:none}
+.cmp img{width:100%;height:100%;object-fit:cover}
+.cmp .top{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--x)) 0 0)}
+.cmp .bar{position:absolute;top:0;bottom:0;left:var(--x);width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1px #0001}
+.cmp .knob{position:absolute;top:50%;left:var(--x);width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--rose);font-size:18px;box-shadow:0 6px 18px #4b103d33;pointer-events:none}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmp .tag{position:absolute;bottom:14px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;background:#fffffff0;color:var(--ink);pointer-events:none}
+.cmp .tag.l{left:14px}.cmp .tag.r{right:14px}
+.cmpcap{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.cmpcap p{font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13.5px;cursor:pointer;color:var(--ink)}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* steps */
+.steps{list-style:none;margin:44px 0 0;padding:0;display:grid;gap:40px}
+@media(min-width:820px){.steps{grid-template-columns:repeat(3,1fr);gap:28px}}
+.steps li{display:flex;flex-direction:column;gap:14px}
+.steps .shot{aspect-ratio:4/3;border-radius:20px;overflow:hidden;background:#f6eef1;border:1px solid #f0dde6}
+.steps .shot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.steps .n{font:600 15px Fraunces,Georgia,serif;color:var(--rose);display:block;margin-bottom:6px}
+.steps h3{font-size:22px}
+.steps p{color:var(--muted);line-height:1.6;margin-top:6px;max-width:40ch}
+/* live 3D */
+.live{background:#fbf2f5}
+.live .wrap{display:grid;gap:28px;align-items:center}
+@media(min-width:900px){.live .wrap{grid-template-columns:.8fr 1.2fr}}
+.stage{position:relative;aspect-ratio:1;border-radius:28px;overflow:hidden;background:#ece4e6}
+.stage img.poster{width:100%;height:100%;object-fit:cover;transition:opacity .5s}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .play{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-height:48px;padding:0 22px;border-radius:999px;font-weight:600;box-shadow:0 10px 24px #c12c7e55}
+.stage .open{position:absolute;right:14px;bottom:14px;border-radius:999px}
+.picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;max-width:420px}
+.picker button{border:2px solid transparent;border-radius:16px;padding:0;background:#fff;cursor:pointer;overflow:hidden;aspect-ratio:1}
+.picker button img{width:100%;height:100%;object-fit:cover}
+.picker button.on{border-color:var(--rose)}
+/* gallery */
+.ghead{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:min(62vw,240px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:36px;padding:0 20px 8px;scrollbar-width:thin}
+@media(min-width:1160px){.row{padding-left:calc((100vw - 1080px)/2)}}
+.row a{scroll-snap-align:start;text-decoration:none;color:var(--ink)}
+.row .im{display:block;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#efe6e8}
+.row .im img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.row a:hover .im img{transform:scale(1.04)}
+.row b{display:block;margin-top:10px;font-weight:600;font-size:15px}
+/* faq */
+.faq .wrap{display:grid;gap:28px}
+@media(min-width:900px){.faq .wrap{grid-template-columns:.8fr 1.2fr}}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq details:first-child{border-top:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--rose);font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);line-height:1.6;margin-top:10px;max-width:60ch}
+/* final */
+.final{padding-bottom:calc(var(--pad) + 20px)}
+.panel{background:var(--ink);color:#fff;border-radius:32px;padding:clamp(32px,6vw,72px);display:grid;gap:28px;align-items:center;position:relative;overflow:hidden}
+@media(min-width:900px){.panel{grid-template-columns:1.1fr 1fr}}
+.panel h2{color:#fff;max-width:14ch}
+.panel .lede{color:#f3d9e6}
+.panel form{display:flex;flex-direction:column;gap:12px}
+.panel .join{margin-top:0;max-width:none}
+.panel .join input[type=email]{border-color:transparent}
+.panel .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#f3d9e6;cursor:pointer}
+.panel .check input{margin-top:3px;accent-color:var(--rose)}
+.panel .fine{font-size:12.5px;color:#d9b6c8}
+.panel .fine a{color:#fff}
+.panel #launchStatus{font-size:14px;color:#fff;min-height:1px}
+/* phone quick bar, shown after the hero */
+.mbar{display:none}
+@media(max-width:700px){.mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:45;gap:8px;padding:8px;background:#fffaf9f2;backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px #4b103d2e;transform:translateY(130%);transition:transform .3s}.mbar.on{transform:none}.mbar .btn{flex:1;min-height:46px;border-radius:12px}.hp .site-foot{padding-bottom:90px}}
+@media(prefers-reduced-motion:reduce){.row .im img,.mbar,.faq summary::after{transition:none}}
+</style>
+</head>
+<body class="hp">
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="index.html" aria-current="page">Home</a>
+   <a href="#how-it-works">How it works</a>
+   <a href="studio.html">Studio</a>
+   <a href="shop.html#orders" data-team>Orders</a>
+   <a href="shop.html#calendar" data-team>Calendar</a>
+   <a href="contact.html">Contact</a>
+   <a href="account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="#launch-list">Join Waitlist</a>
+  </nav>
+  <details class="menu">
+   <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="index.html" aria-current="page">Home</a><a href="#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="#launch-list">Join Waitlist</a></div>
+  </details>
+ </div>
+</header>
+
+<main>
+ <section class="hero">
+  <div class="wrap">
+   <div>
+    <span class="soon"><i></i>Opening soon for cake artists</span>
+    <h1>Show your client the cake before you bake it.</h1>
+    <p class="lede">Design cakes in 3D, send your client one link, and get their approval on any phone. No more guessing from sketches.</p>
+    <form class="join" data-launch novalidate>
+     <label class="sr" for="hEmail">Email address</label>
+     <input id="hEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Your email">
+     <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+     <button class="btn primary" type="submit">Join the waitlist</button>
+     <p class="stat" data-launch-status role="status" aria-live="polite"></p>
+    </form>
+    <p class="alt">Or <a href="studio.html">try the Studio now</a>. It's free and runs in your browser.</p>
+   </div>
+   <div class="cmpbox">
+    <div class="cmp" id="cmp" style="--x:50%"><picture><source id="cmpRealW" srcset="assets/home/real/peony.webp" type="image/webp"><img src="assets/home/real/peony.jpg" alt="Real Coral Peony Cascade cake by Sprinkle Me Silly" width="640" height="640" data-fallback id="cmpReal"></picture><div class="top"><picture><source id="cmp3dW" srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="The same cake designed in 3D" width="640" height="640" data-fallback id="cmp3d"></picture></div><span class="tag l">3D design</span><span class="tag r">Real cake</span><span class="bar"></span><span class="knob" aria-hidden="true">⇆</span><input type="range" min="0" max="100" value="50" aria-label="Slide between the 3D design and the real cake" id="cmpRange"></div>
+    <div class="cmpcap"><p>Real cakes next to their 3D designs. Drag to compare.</p></div>
+    <div class="chips" id="cmptabs" role="group" aria-label="Choose a cake to compare"><button type="button" data-c="peony" class="on">Coral Peony Cascade</button><button type="button" data-c="cow">Pink Bow Cow</button><button type="button" data-c="moneybag">Money Bag Birthday</button><button type="button" data-c="crawfish">Crawfish Boil Pot</button><button type="button" data-c="bee">Bumble Bee Garden</button><button type="button" data-c="movie">Movie Night Popcorn</button></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="how-it-works">
+  <div class="wrap">
+   <h2>From idea to a yes in three steps</h2>
+   <ol class="steps">
+    <li><div class="shot"><picture><source srcset="assets/home/step-design.webp" type="image/webp"><img src="assets/home/step-design.jpg" alt="The Studio designing a two-tier Lambeth cake" width="640" height="640" loading="lazy" data-fallback></picture></div><div><span class="n">1</span><h3>Design it in 3D</h3><p>Start from one of 80+ themes or a blank cake. Choose tiers, frosting, piping, bows and flowers, and see every change as you make it.</p></div></li>
+    <li><div class="shot"><picture><source srcset="assets/home/step-review.webp" type="image/webp"><img src="assets/home/step-review.jpg" alt="A client approving a cake design on a phone" width="640" height="640" loading="lazy" data-fallback></picture></div><div><span class="n">2</span><h3>Send one link</h3><p>Your client turns the cake around on their phone and taps Approve or Request changes. They don't need an account.</p></div></li>
+    <li><div class="shot"><picture><source srcset="assets/home/step-proof.webp" type="image/webp"><img src="assets/home/step-proof.jpg" alt="A one-page cake proof with three views and notes" width="640" height="640" loading="lazy" data-fallback></picture></div><div><span class="n">3</span><h3>Bake with a plan</h3><p>Print a one-page proof with sizes, colors and servings, so the cake you bake is the cake they approved.</p></div></li>
+   </ol>
+  </div>
+ </section>
+
+ <section class="live" id="spin">
+  <div class="wrap">
+   <div>
+    <h2>Turn a cake around yourself</h2>
+    <p class="lede">This is the real Studio, running right here. Pick a cake, then drag to spin it and pinch to zoom.</p>
+    <div class="picker" id="picker"><button type="button" data-k="sig_peony" class="on" aria-label="Show Coral Peony Cascade in 3D"><img src="assets/home/cakes/sig_peony.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Coral Peony Cascade</span></button><button type="button" data-k="sig_monogram" aria-label="Show Champagne Gold Art Deco in 3D"><img src="assets/home/cakes/sig_monogram.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Champagne Gold Art Deco</span></button><button type="button" data-k="sig_moneybag" aria-label="Show Money Bag Birthday in 3D"><img src="assets/home/cakes/sig_moneybag.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Money Bag Birthday</span></button><button type="button" data-k="sig_cow" aria-label="Show Pink Bow Cow in 3D"><img src="assets/home/cakes/sig_cow.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Pink Bow Cow</span></button><button type="button" data-k="sig_ruffles" aria-label="Show Forever Ruffles in 3D"><img src="assets/home/cakes/sig_ruffles.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Forever Ruffles</span></button><button type="button" data-k="sig_crawfish" aria-label="Show Crawfish Boil Pot in 3D"><img src="assets/home/cakes/sig_crawfish.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Crawfish Boil Pot</span></button></div>
+   </div>
+   <div class="stage" id="stage"><img class="poster" id="stagePoster" src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade cake" width="640" height="640" loading="lazy"><span class="sr" id="stageName">Coral Peony Cascade</span><button class="btn primary play" id="stagePlay" type="button">Spin it in 3D</button><a class="btn open" id="stageOpen" href="studio.html?theme=sig_peony" style="display:none">Customize this cake</a></div>
+  </div>
+ </section>
+
+ <section id="gallery">
+  <div class="wrap ghead">
+   <div><h2>Start from a cake that's already designed</h2><p class="lede">Real Sprinkle Me Silly cakes, rebuilt in 3D. Open one and make it yours.</p></div>
+   <a class="btn" href="studio.html">See all themes in the Studio</a>
+  </div>
+  <div class="row"><a href="studio.html" data-open-cake><span class="im"><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Lambeth</b></a><a href="studio.html?theme=sig_monogram"><span class="im"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Champagne Gold Art Deco</b></a><a href="studio.html?theme=sig_rosettower"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Rosette Tower</b></a><a href="studio.html?theme=sig_babysky"><span class="im"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up and Away Bears cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Up, Up and Away Bears</b></a><a href="studio.html?theme=sig_movie"><span class="im"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Movie Night Popcorn</b></a><a href="studio.html?theme=sig_bee"><span class="im"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Bumble Bee Garden</b></a><a href="studio.html?theme=sig_teal"><span class="im"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Teal Bauble Cascade</b></a><a href="studio.html?theme=sig_pastelarch"><span class="im"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="Pastel Rainbow Unicorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Pastel Rainbow Unicorn</b></a><a href="studio.html?theme=sig_sports"><span class="im"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>All-Star Sports Number</b></a><a href="studio.html?theme=sig_rosegold"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Rose Gold Jewels</b></a></div>
+ </section>
+
+ <section class="faq">
+  <div class="wrap">
+   <h2>Questions</h2>
+   <div>
+    <details><summary>Who is it for?</summary><p>Cake artists who want to show clients exactly what their cake will look like and get a clear yes before baking.</p></details>
+    <details><summary>Do my clients need an account?</summary><p>No. They open the link you send, turn the cake in 3D and tap Approve or Request changes. You're told either way.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes. The Studio runs in your browser on a phone, tablet or computer. There's nothing to download.</p></details>
+    <details><summary>What does it cost?</summary><p>You can try the Studio free right now. Join the waitlist and you'll hear about plans and early access first.</p></details>
+   </div>
+  </div>
+ </section>
+
+ <section class="final" id="launch-list">
+  <div class="wrap">
+   <div class="panel">
+    <div><h2>Be first in the Studio</h2><p class="lede">Leave your email and we'll tell you the moment Dream Cake Studio opens, with a few sneak peeks along the way.</p></div>
+    <form id="launchForm" novalidate>
+     <div class="join"><label class="sr" for="fEmail">Email address</label><input id="fEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"><button class="btn primary" type="submit">Join the waitlist</button></div>
+     <label class="check"><input name="news" type="checkbox"> Also send me occasional sneak peeks and product news.</label>
+     <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+     <p id="launchStatus" role="status" aria-live="polite"></p>
+     <p class="fine">You'll get a launch email. Product news is optional. See our <a href="privacy.html">privacy page</a>.</p>
+    </form>
+   </div>
+  </div>
+ </section>
+</main>
+
+<footer class="site-foot">
+ <div class="foot-in">
+  <a class="brand" href="index.html">Dream <span>Cake</span> Builder</a>
+  <span>Made for creative cake artists.</span>
+  <nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="https://www.instagram.com/dreamcakebuilder/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder" target="_blank" rel="noopener">Facebook</a></nav>
+  <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
+ </div>
+</footer>
+<nav class="mbar" id="mbar" aria-label="Quick actions"><a class="btn" href="studio.html">Try the Studio</a><a class="btn primary" href="#launch-list">Join the waitlist</a></nav>
+
+<script>
+// live 3D stage
+(function(){const st=document.getElementById('stage');if(!st)return;const poster=document.getElementById('stagePoster'),nm=document.getElementById('stageName'),play=document.getElementById('stagePlay'),open=document.getElementById('stageOpen');let cur='sig_peony',fr=null;
+ const show=()=>{fr.style.opacity='1';poster.style.opacity='0'};
+ const load=k=>{cur=k;const b=document.querySelector('#picker [data-k="'+k+'"]');document.querySelectorAll('#picker button').forEach(x=>x.classList.toggle('on',x===b));const n=b?b.querySelector('span').textContent:'';nm.textContent=n;poster.src='assets/home/cakes/'+k+'.jpg';poster.alt=n+' cake';open.href='studio.html?theme='+k;if(fr){poster.style.opacity='1';fr.style.opacity='0';fr.onload=()=>setTimeout(show,1600);fr.src='studio.html?theme='+k+'&view=1'}};
+ const start=()=>{if(fr)return;fr=document.createElement('iframe');fr.title='Live 3D cake';fr.allow='fullscreen';fr.src='studio.html?theme='+cur+'&view=1';fr.style.opacity='0';fr.style.transition='opacity .5s';fr.onload=()=>setTimeout(show,1600);st.insertBefore(fr,play);play.style.display='none';open.style.display=''};
+ play.addEventListener('click',start);
+ document.getElementById('picker').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;load(b.dataset.k);if(!fr)start()});
+})();
+// real vs 3D compare
+(function(){const c=document.getElementById('cmp');if(!c)return;const r=document.getElementById('cmpRange');r.addEventListener('input',()=>c.style.setProperty('--x',r.value+'%'));
+ document.getElementById('cmptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#cmptabs button').forEach(x=>x.classList.toggle('on',x===b));const k=b.dataset.c;
+  document.getElementById('cmpRealW').srcset='assets/home/real/'+k+'.webp';document.getElementById('cmpReal').src='assets/home/real/'+k+'.jpg';document.getElementById('cmp3dW').srcset='assets/home/cakes/sig_'+k+'.webp';document.getElementById('cmp3d').src='assets/home/cakes/sig_'+k+'.jpg';document.getElementById('cmpReal').alt='Real '+b.textContent+' cake by Sprinkle Me Silly';r.value=50;c.style.setProperty('--x','50%')})})();
+// phone quick bar appears once the hero is off screen
+(function(){const m=document.getElementById('mbar'),h=document.querySelector('.hero'),f=document.getElementById('launch-list');if(!m||!h||!('IntersectionObserver'in window))return;let past=false,atEnd=false;const u=()=>m.classList.toggle('on',past&&!atEnd);
+ new IntersectionObserver(([x])=>{past=!x.isIntersecting;u()}).observe(h);new IntersectionObserver(([x])=>{atEnd=x.isIntersecting;u()}).observe(f)})();
+// "Open This Cake" loads the Blush Lambeth into the Studio
+</script>
+<script src="assets/dcb-site.js" defer></script>
+</body>
+</html>
