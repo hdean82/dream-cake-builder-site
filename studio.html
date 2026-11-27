@@ -2465,7 +2465,7 @@ THEMES.unshift(
   newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#9a6a33',height:5.1},bottom:'pearls',bottomColor:'#c99a4e'}),
   newTier(11,5.2,{shape:'hexagon',color:'#c8964a',finish:'metallic',top:'none',bottom:'none',coat:{type:'sequins',color:'#d4ae5a',size:.19}}),
   newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',size:9.8,height:5.4,folds:6}}),
-  newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',goldLeaf:true,top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
+  newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
  {key:'sig_rosettower',name:'Blush Rosette Tower',tag:SIG,blurb:'Ivory rosette tiers around a blush tier with diagonal fondant pleats, and a tall smooth blush top tier on a gold board.',d:{board:'gold',topper:'none',tiers:[
   newTier(10,5.6,{texture:'rosettes',roseSize:170,roseTip:'2D',color:'#fbf3ea',top:'none',bottom:'none'}),
   newTier(8.8,5.4,{color:'#f1cfcf',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'pleats',color:'#d9a7aa',size:1.4,height:5.4}}),
@@ -2939,7 +2939,7 @@ function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{r,R_at,add}=ctx,circ=2*PI*r
  for(let p=0;p<n;p++){const c=front+p*2*PI/n;for(const sg of[-1,1])for(let k=0;k<K;k++){
   const o0=hw*(k+.55)/K,o1=.018+k*.016/Math.max(1,r/4);
   const P=s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7),a=c+sg*off,yy=top-.04-tt*(H-.08);return radial(a).multiplyScalar(R_at(a,yy)+.004).setY(yy)};
-  const g=sweep(P,s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7);return radial(c+sg*off)},40,8,s=>{const e=Math.min(1,s/.04,(1-s)/.06);return[.05*e,.085*Math.max(.3,1-s*.45)*e]});
+  const g=sweep(P,s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7);return radial(c+sg*off)},40,8,s=>{const e=Math.min(1,s/.04,(1-s)/.06);return[.07*e,.09*Math.max(.3,1-s*.45)*e]});
   tint(g,.9+.08*((k%2)?1:0));parts.push(g)}}
  add(dmat(ST.color||t.color||'#fbf7f1',{r:.6,sh:.25,cc:.05}),mg(parts),'stencil')}
 
