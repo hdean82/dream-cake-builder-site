@@ -37,13 +37,14 @@ export async function onRequest({ request, next, env }) {
   if (path === '/team' || path === '/team/') {
     if (url.searchParams.has('off')) return go('/', ...clear);
     // setup check: says only whether a password is configured, never anything about it
-    if (url.searchParams.has('check')) return new Response(teamKey(env) ? 'team password is set' + (teamKey(env) !== String(env.TEAM_KEY) ? ' (extra spaces or line breaks were ignored)' : '') : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
+    if (url.searchParams.has('check')) return new Response('site version ' + String((env && env.CF_PAGES_COMMIT_SHA) || '?').slice(0, 7) + ' · ' + (teamKey(env) ? 'team password is set, ' + teamKey(env).length + ' characters long' + (teamKey(env) !== String(env.TEAM_KEY) ? ' (extra spaces or line breaks were ignored)' : '') : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
     let key = url.searchParams.get('key') || '';
     if (request.method === 'POST') { try { key = String((await request.formData()).get('key') || '').trim(); } catch { key = ''; } }
     else if (!key) return new Response(FORM, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
     const tok = await tokenFor(env);
     key = key.trim();
     if (key && teamKey(env) && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
+    if (request.method === 'POST') return new Response(FORM.replace('<h1>Team sign-in</h1>', '<h1>Team sign-in</h1><p style="color:#b00020;margin:0 0 12px">That password didn\'t match. Check capitals and try again.</p>'), { status: 401, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
     return go('/coming-soon');
   }
 
