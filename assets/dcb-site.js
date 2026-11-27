@@ -109,3 +109,73 @@
     });
   });
 }
+
+// Beta testers: a "Report a problem" button on every page, once their invite link has been opened on this device.
+(() => {
+  const FN = 'https://gcorvodfcxhumesttwvj.supabase.co/functions/v1/beta';
+  const code = () => { try { return localStorage.getItem('dcb-beta-code') || ''; } catch (e) { return ''; } };
+  let built = false;
+  function build() {
+    if (built || !code() || document.documentElement.classList.contains('viewer') || window.top !== window) return;
+    built = true;
+    const st = document.createElement('style');
+    st.textContent = `.dcb-bug{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9990;display:flex;align-items:center;gap:6px;border:1px solid #eed3e3;background:#fff;color:#9a1b5f;border-radius:999px;padding:8px 13px;font:600 13px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 22px -10px #4b103d77;cursor:pointer}
+.dcb-bug:hover{border-color:#c12c7e}
+.dcb-bugd{position:fixed;inset:0;z-index:9991;background:#2b142466;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+@media(min-width:640px){.dcb-bugd{align-items:center}}
+.dcb-bugd form{background:#fff;color:#4b103d;width:min(460px,100%);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px;font:15px/1.45 Inter,system-ui,sans-serif;max-height:calc(100vh - 24px);overflow:auto}
+.dcb-bugd h2{font:600 22px Fraunces,Georgia,serif;margin:0}
+.dcb-bugd p{margin:0;color:#79536e;font-size:13.5px}
+.dcb-bugd .k{display:flex;gap:6px}.dcb-bugd .k label{flex:1}
+.dcb-bugd .k input{position:absolute;opacity:0;pointer-events:none}
+.dcb-bugd .k span{display:block;text-align:center;border:1px solid #eed3e3;border-radius:10px;padding:9px 6px;font-weight:600;font-size:13.5px;cursor:pointer}
+.dcb-bugd .k input:checked+span{background:#4b103d;color:#fff;border-color:#4b103d}
+.dcb-bugd .k input:focus-visible+span{outline:2px solid #c12c7e;outline-offset:2px}
+.dcb-bugd label.f{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:13.5px}
+.dcb-bugd textarea{font:inherit;font-weight:400;font-size:16px;padding:10px 12px;border:1px solid #e3c3d4;border-radius:10px;resize:vertical;min-height:90px}
+.dcb-bugd .r{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap}
+.dcb-bugd button{font:600 14.5px Inter,system-ui,sans-serif;border-radius:10px;padding:11px 16px;cursor:pointer;border:1px solid #eed3e3;background:#fff;color:#4b103d}
+.dcb-bugd button.p{background:#c12c7e;border-color:#c12c7e;color:#fff}
+.dcb-bugd .s{font-size:13.5px;margin-right:auto}.dcb-bugd .s.bad{color:#b3261e}.dcb-bugd .s.good{color:#22703c}
+@media print{.dcb-bug,.dcb-bugd{display:none}}`;
+    document.head.appendChild(st);
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'dcb-bug'; b.setAttribute('aria-haspopup', 'dialog');
+    b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg>Report a problem';
+    document.body.appendChild(b);
+    b.addEventListener('click', open);
+  }
+  function open() {
+    const d = document.createElement('div');
+    d.className = 'dcb-bugd';
+    d.innerHTML = `<form role="dialog" aria-modal="true" aria-labelledby="dcbBugT" novalidate>
+<h2 id="dcbBugT">Tell us what happened</h2><p>We'll see which page you're on and what device you're using, so you don't need to explain that.</p>
+<div class="k" role="radiogroup" aria-label="What is it?"><label><input type="radio" name="kind" value="bug" checked><span>Something's wrong</span></label><label><input type="radio" name="kind" value="idea"><span>An idea</span></label><label><input type="radio" name="kind" value="question"><span>A question</span></label></div>
+<label class="f">What happened?<textarea name="what" maxlength="4000" required placeholder="What were you trying to do, and what did you see?"></textarea></label>
+<label class="f">What did you expect? <span style="font-weight:400;color:#79536e">(optional)</span><textarea name="expected" maxlength="2000" style="min-height:60px"></textarea></label>
+<div class="r"><p class="s" role="status" aria-live="polite"></p><button type="button" data-x>Cancel</button><button type="submit" class="p">Send report</button></div></form>`;
+    document.body.appendChild(d);
+    const f = d.querySelector('form'), s = d.querySelector('.s'), send = f.querySelector('.p');
+    const close = () => { d.remove(); document.removeEventListener('keydown', key); document.querySelector('.dcb-bug')?.focus(); };
+    const key = e => { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', key);
+    d.addEventListener('click', e => { if (e.target === d || e.target.closest('[data-x]')) close(); });
+    f.what.focus();
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (f.what.value.trim().length < 5) { s.textContent = 'Tell us a little more about what happened.'; s.className = 's bad'; f.what.focus(); return; }
+      send.disabled = true; s.textContent = 'Sending…'; s.className = 's';
+      const page = (document.title || '') + ' · ' + location.pathname + location.hash;
+      const device = `${navigator.userAgent} · screen ${screen.width}x${screen.height} · window ${innerWidth}x${innerHeight}`;
+      try {
+        const r = await fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'report', code: code(), kind: f.kind.value, what: f.what.value, expected: f.expected.value, page, device }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.ok) { s.textContent = 'Thank you! Report #' + j.id + ' is on its way.'; s.className = 's good'; f.what.value = ''; f.expected.value = ''; setTimeout(close, 1800); }
+        else { s.textContent = j.error || 'Your report couldn’t be sent. Please email support@dreamcakebuilder.com.'; s.className = 's bad'; }
+      } catch (err) { s.textContent = 'Your report couldn’t be sent. Check your connection and try again.'; s.className = 's bad'; }
+      send.disabled = false;
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
+  window.addEventListener('dcb-beta', build);
+})();
