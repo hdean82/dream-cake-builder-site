@@ -1728,7 +1728,12 @@ function gloveParts(q,c){const palm=new T.SphereGeometry(1,24,16);palm.scale(.55
  const pocket=new T.SphereGeometry(1,20,12);pocket.scale(.3,.05,.3);pocket.translate(0,.3,.05);return[[dmat(c,{r:.55,sh:.4}),mg([palm,...fing])],[dmat('#8a5326',{r:.6}),norm(pocket)]]}
 function batParts(q,c){const b=new T.CylinderGeometry(.11,.04,1.9,18);b.rotateZ(PI/2);b.translate(.1,.12,0);const k=new T.SphereGeometry(.07,12,8);k.translate(-.88,.12,0);return[[dmat(c,{r:.5,cc:.3}),mg([b,k])]]}
 // ---- monogram hoop: floral hoop with a gold M inside ----
-function monoHoopParts(q,c,mode,dc){const parts=hoopParts(q,c),R=.95,cy=R+1.05,M=[],bar=(w,h,x,y,rz)=>{const g=new T.BoxGeometry(w,h,.05);g.rotateZ(rz||0);g.translate(x,y,0);M.push(g)};
+function monoHoopBase(q,c){const R=.95,cy=R+1.05,ring=new T.TorusGeometry(R,.035,10,80);ring.translate(0,cy,0);const stick=[];for(const x of[-.35,.35]){const s=new T.CylinderGeometry(.02,.02,1.2,8);s.translate(x,.6,0);stick.push(s)}
+ const roses=[],lv=[],spots=[[.3,.46],[1.13,.44],[1.33,.38],[1.86,.27]];
+ for(const[f,sc]of spots){const a=PI*f,r=roseGeo(q);r.scale(sc,sc,sc);r.rotateX(-PI/2);r.translate(Math.cos(a)*R,cy+Math.sin(a)*R,.07);roses.push(norm(r));
+  for(const d of[-1,1]){const L=leafGeo(.3*sc/.4,.11*sc/.4);L.rotateX(-PI/2);L.rotateZ(a+d*1.1+PI/2*(d>0?0:2));const b=a+d*.2*(.4/sc)*.5;L.translate(Math.cos(b)*R*1.02,cy+Math.sin(b)*R*1.02,-.01);lv.push(norm(L))}}
+ return[[sgMat.metal(c),mg([ring,...stick])],[dm.rose('#fbf7f1'),mergeGeometries(roses)],[dm.leaf(),mergeGeometries(lv)]]}
+function monoHoopParts(q,c,mode,dc){const parts=monoHoopBase(q,c),R=.95,cy=R+1.05,M=[],bar=(w,h,x,y,rz)=>{const g=new T.BoxGeometry(w,h,.05);g.rotateZ(rz||0);g.translate(x,y,0);M.push(g)};
  bar(.08,.78,-.3,cy);bar(.08,.78,.3,cy);bar(.08,.56,-.15,cy+.1,.55);bar(.08,.56,.15,cy+.1,-.55);parts[0][1]=mg([parts[0][1],...M]);return parts}
 Object.assign(DECOR,{
  beeface:{label:'Bumble Bee Face',layouts:['band','scatter'],layout:'band',count:1,max:1,color:'#ffd21f',colors:['#ffd21f'],sp:3,side:'face',roll:0,sink:0,embed:-.02,make:beeFaceParts},
@@ -2457,10 +2462,10 @@ THEMES.unshift(
     ['cascadesprig',43,.65,98,'#f9edce']])}),
   newTier(5.68,4.87,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none'})]}},
  {key:'sig_monogram',name:'Champagne Gold Art Deco',tag:SIG,blurb:'Champagne hexagons with raised brass art deco panels and gold sugar sequins, a pleated ivory tier, a gold leaf top and a floral monogram hoop.',d:{board:'gold',topper:'none',tiers:[
-  newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#a8743a',height:4.6,y:.1},bottom:'pearls',bottomColor:'#c99a4e'}),
+  newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#9a6a33',height:5.1},bottom:'pearls',bottomColor:'#c99a4e'}),
   newTier(11,5.2,{shape:'hexagon',color:'#c8964a',finish:'metallic',top:'none',bottom:'none',coat:{type:'sequins',color:'#d4ae5a',size:.19}}),
-  newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',size:2.4,height:5.4,spacing:.36,depth:1.1}}),
-  newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
+  newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',size:9.8,height:5.4,folds:6}}),
+  newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',goldLeaf:true,top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
  {key:'sig_rosettower',name:'Blush Rosette Tower',tag:SIG,blurb:'Ivory rosette tiers around a blush tier with diagonal fondant pleats, and a tall smooth blush top tier on a gold board.',d:{board:'gold',topper:'none',tiers:[
   newTier(10,5.6,{texture:'rosettes',roseSize:170,roseTip:'2D',color:'#fbf3ea',top:'none',bottom:'none'}),
   newTier(8.8,5.4,{color:'#f1cfcf',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'pleats',color:'#d9a7aa',size:1.4,height:5.4}}),
@@ -2915,32 +2920,27 @@ function buildSequins(t,ctx,ST){const{r,h,y,R_at,add}=ctx,sp=Math.max(.12,ST.siz
  }}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  add(dmat(ST.color||'#d4ae5a',{r:.2,metal:1,cc:.5,ccr:.08}),g,'stencil')}
-function buildBrassPanels(t,ctx,ST,yb,H){const{r,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(4,Math.round(2*PI*r/(ST.size||4))),fw=2*PI/faces,bars=[],w=Math.max(.09,(ST.weight||.12)),dep=.07;
- const W=r*fw*(hex?.86:.82),Hh=H,cx0=0,cy0=yb+H/2;
- const seg=(x1,y1,x2,y2,wd=w)=>{const L=Math.hypot(x2-x1,y2-y1);if(L<.02)return;const g=new T.BoxGeometry(L+wd*.5,wd,dep,Math.max(1,Math.ceil(L/.25)),1,1);g.rotateZ(Math.atan2(y2-y1,x2-x1));g.translate((x1+x2)/2,(y1+y2)/2,dep/2);bars.push(g)};
- const L=-W/2,R=W/2,B=-Hh/2,Tp=Hh/2;
- for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw+(ST.seam||0)*PI/180,parts=[];bars.length=0;
-  // outer frame and inner frame
-  seg(L,B,R,B);seg(R,B,R,Tp);seg(R,Tp,L,Tp);seg(L,Tp,L,B);
-  const i1=W*.11;seg(L+i1,B+i1,R-i1,B+i1,w*.6);seg(R-i1,B+i1,R-i1,Tp-i1,w*.6);seg(R-i1,Tp-i1,L+i1,Tp-i1,w*.6);seg(L+i1,Tp-i1,L+i1,B+i1,w*.6);
-  // deco fan: lines rising from the bottom centre to the top of the inner frame
-  const fy=B+i1,ty=Tp-i1-Hh*.17;for(const u of[-1,-.55,-.2,.2,.55,1])seg(0,fy,u*(W/2-i1),ty,w*.62);
-  seg(L+i1,ty,R-i1,ty,w*.6);
-  // little "II" marks in the top band
-  for(const sx of[-1,1])for(const dx of[-.06,.06])seg(sx*W*.22+dx,ty+Hh*.04,sx*W*.22+dx,Tp-i1-Hh*.04,w*.55);
-  seg(-.06,ty+Hh*.04,-.06,Tp-i1-Hh*.04,w*.55);seg(.06,ty+Hh*.04,.06,Tp-i1-Hh*.04,w*.55);
+function buildBrassPanels(t,ctx,ST,yb,H){const{r,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(4,Math.round(2*PI*r/(ST.size||4))),fw=2*PI/faces,w=Math.max(.04,ST.weight||.065),dep=.04,parts=[];
+ const W=(hex?r:r*fw)*.94,cy0=yb+H/2,hw=W/2,hh=H/2;
+ // art deco linework per face, in -1..1 face units, mirrored on every other face like the proof
+ const LINES=[[-1,.72,1,-1],[-1,-.28,.22,1],[-.05,-.02,1,-.02],[.38,-1,1,-.42],[-1,.98,1,.98],[-1,-.98,1,-.98]],MARKS=[[-.52,.36],[.62,-.62]];
+ const seg=(f,x1,y1,x2,y2,wd)=>{const L=Math.hypot(x2-x1,y2-y1);if(L<.02)return;const g=new T.BoxGeometry(L+wd*.4,wd,dep,Math.max(1,Math.ceil(L/.2)),1,1);g.rotateZ(Math.atan2(y2-y1,x2-x1));g.translate((x1+x2)/2,(y1+y2)/2,dep/2);f.push(g)};
+ for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw+(ST.seam||0)*PI/180,m=f%2?-1:1,bars=[];
+  for(const[x1,y1,x2,y2]of LINES)seg(bars,m*x1*hw,y1*hh,m*x2*hw,y2*hh,w);
+  for(const[mx,my]of MARKS)for(const dx of[-.07,.07])seg(bars,m*mx*hw+dx,my*hh-.22,m*mx*hw+dx+.1,my*hh+.22,w*.9);
   for(const g0 of bars){const g=g0.index?g0.toNonIndexed():g0,p=g.attributes.position;for(let j=0;j<p.count;j++){const x=p.getX(j),yy=cy0+p.getY(j),z=p.getZ(j);
-   // map face-local x onto the flat hexagon face (or the round wall) and lift by z
    let a=a0+x/r,Rr;if(hex){const ap=R_at(a0,yy),ang=Math.atan2(x,ap);a=a0+ang;Rr=Math.hypot(x,ap)}else Rr=R_at(a,yy);
-   const q=radial(a).multiplyScalar(Rr+.01),nrm=hex?radial(a0):radial(a);q.addScaledVector(nrm,z);p.setXYZ(j,q.x,yy,q.z)}
-   g.computeVertexNormals();tint(g,.9+.08*Math.cos(f*1.7+j0(g)));parts.push(g)}
-  add(dmat(ST.color||'#a8743a',{r:.28,metal:1,cc:.35,ccr:.12}),mg(parts),'stencil')}}
+   const q=radial(a).multiplyScalar(Rr+.008),nrm=hex?radial(a0):radial(a);q.addScaledVector(nrm,z);p.setXYZ(j,q.x,yy,q.z)}
+   g.computeVertexNormals();tint(g,.92+.06*Math.cos(f*1.7));parts.push(g)}}
+ add(dmat(ST.color||'#a8743a',{r:.3,metal:1,cc:.3,ccr:.12}),mg(parts),'stencil')}
 function j0(g){return g.attributes.position.count%7}
-function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{R_at,add}=ctx,sp=Math.max(.18,ST.spacing||.34),rows=Math.max(3,Math.round(H/sp)),amp=Math.min(H*.42,(ST.depth||1.1)),parts=[],peaks=Math.max(4,reps);
- for(let j=-Math.ceil(amp/sp);j<=rows;j++){const y0=yb+j*H/rows;
-  const P=s=>{const a=seam+2*PI*s,tri=Math.abs(((s*peaks)%1)*2-1),yy=y0+amp*(1-tri);const yc=Math.max(yb,Math.min(yb+H,yy));return radial(a).multiplyScalar(R_at(a,yc)+.006).setY(yc)};
-  const g=sweep(P,(s,p)=>radial(seam+2*PI*s),peaks*28,8,(s,th)=>{const p=P(s),inb=p.y>yb+.01&&p.y<yb+H-.01?1:.001;return[.055*inb,.085*inb]},(q,s,th)=>{});
-  tint(g,.93+.05*Math.cos(j*1.3));parts.push(g)}
+function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{r,R_at,add}=ctx,circ=2*PI*r,n=Math.max(1,Math.round(circ/(ST.size||9.8))),hw=PI/n,K=Math.max(3,ST.folds||6),parts=[],top=yb+H,front=seam+PI;
+ // draped fan folds: upright at the top, sweeping into a V at the bottom centre of each panel
+ for(let p=0;p<n;p++){const c=front+p*2*PI/n;for(const sg of[-1,1])for(let k=0;k<K;k++){
+  const o0=hw*(k+.55)/K,o1=.018+k*.016/Math.max(1,r/4);
+  const P=s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7),a=c+sg*off,yy=top-.04-tt*(H-.08);return radial(a).multiplyScalar(R_at(a,yy)+.004).setY(yy)};
+  const g=sweep(P,s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7);return radial(c+sg*off)},40,8,s=>{const e=Math.min(1,s/.04,(1-s)/.06);return[.05*e,.085*Math.max(.3,1-s*.45)*e]});
+  tint(g,.9+.08*((k%2)?1:0));parts.push(g)}}
  add(dmat(ST.color||t.color||'#fbf7f1',{r:.6,sh:.25,cc:.05}),mg(parts),'stencil')}
 
 // ---------------------------------------------------------------- Materials
