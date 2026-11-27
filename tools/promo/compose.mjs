@@ -38,6 +38,7 @@ if (STILLS) {
     await page.screenshot({ path: path.join(TMP, String(f).padStart(5, '0') + '.jpg'), type: 'jpeg', quality: 92 });
     if (f % 150 === 0) console.log('frame', f, '/', total);
   }
+  try { execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' }); } catch (e) { execFileSync('sh', ['-c', 'sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg'], { stdio: 'inherit' }); }
   const tmpOut = path.join(OUT, 'dream-cake-builder-demo.tmp.mp4');
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(TMP, '%05d.jpg'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', tmpOut]);
   fs.renameSync(tmpOut, path.join(OUT, 'dream-cake-builder-demo.mp4'));
