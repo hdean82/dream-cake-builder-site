@@ -1,0 +1,40 @@
+name: Promo video (full)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cakes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: promo }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm i --no-save playwright@1.48.2 && npx playwright install --with-deps chromium
+      - run: node tools/promo/render3d.mjs frames --part ${{ matrix.part }}/10
+      - uses: actions/upload-artifact@v4
+        with: { name: "frames-${{ matrix.part }}", path: frames, retention-days: 3 }
+  film:
+    needs: cakes
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: promo }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm i --no-save playwright@1.48.2 && npx playwright install --with-deps chromium && sudo apt-get install -y fonts-noto-color-emoji && (ffmpeg -version | head -1 || (sudo apt-get update && sudo apt-get install -y ffmpeg))
+      - uses: actions/download-artifact@v4
+        with: { pattern: "frames-*", path: frames, merge-multiple: true }
+      - run: ls frames | wc -l && node tools/promo/compose.mjs frames tools/promo/out
+      - name: Save
+        run: |
+          git config user.name "promo bot"; git config user.email "promo@users.noreply.github.com"
+          git add tools/promo/out/dream-cake-builder-demo.mp4
+          git commit -m "Promo video render" || exit 0
+          for i in 1 2 3; do git pull --rebase origin promo && git push origin HEAD:promo && break; sleep 5; done
