@@ -24,7 +24,7 @@ for (const [name, vp, scale] of [['studio-hero-desktop', { width: 1440, height: 
   await page.addInitScript(c => { try { localStorage.setItem('dcs-open-code', c); } catch (e) {} }, code);
   await page.goto('http://localhost:8768/studio.html', { waitUntil: 'load', timeout: 120000 });
   await page.waitForTimeout(40000);
-  await page.evaluate(() => { document.querySelectorAll('#toast,.toast,.tour,.coach').forEach(e => e.remove()); });
+  await page.evaluate(() => { document.querySelectorAll('#toast,.toast,.tour,.coach,#wlCard').forEach(e => e.remove()); });
   await page.screenshot({ path: path.join(OUT, name + '.jpg'), type: 'jpeg', quality: 90 });
   console.log('Saved', name);
   await ctx.close();
