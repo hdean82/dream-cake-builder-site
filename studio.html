@@ -610,7 +610,7 @@ function updateUndo(){$('#undo').disabled=!hist.length;$('#redo').disabled=!fut.
 
 // ---------------------------------------------------------------- Renderer & scene
 const view=$('#view');
-const R=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+const R=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});R.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();try{toast('Refreshing the 3D view…')}catch{}},false);R.domElement.addEventListener('webglcontextrestored',()=>{setTimeout(()=>{try{matCache.forEach(m=>{try{m.dispose()}catch{}});matCache.clear();MAT_USED.clear();build();if(typeof invalidate==='function')invalidate(1500)}catch(e){console.error(e)}},50)},false);
 // Phones and low-memory devices get lighter fur, smaller shadow maps and a lower pixel ratio so the Studio stays smooth.
 var LITE=(()=>{try{return matchMedia('(pointer:coarse)').matches||(navigator.deviceMemory||8)<=4||(navigator.hardwareConcurrency||8)<=4}catch{return false}})();
 function maxPR(){return LITE?((navigator.deviceMemory||8)<=4?1.25:1.5):2}
@@ -2983,7 +2983,9 @@ function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{r,h,y,R_at,add}=ctx,parts=[
 
 // ---------------------------------------------------------------- Materials
 const matCache=new Map();
-function mkMat(key,make){if(!matCache.has(key))matCache.set(key,make());return matCache.get(key)}
+var MAT_GEN=0;const MAT_USED=new Map();function mkMat(key,make){if(!matCache.has(key))matCache.set(key,make());MAT_USED.set(key,MAT_GEN);return matCache.get(key)}
+// Free GPU memory held by materials no recent build used, so phones and iPads don't run out and lose the 3D view.
+function evictMats(){const keep=LITE?3:6,live=new Set();try{S.traverse(o=>{const m=o.material;if(Array.isArray(m))m.forEach(x=>live.add(x));else if(m)live.add(m)})}catch{}for(const [k,g] of MAT_USED){if(MAT_GEN-g<=keep)continue;const m=matCache.get(k);if(live.has(m)){MAT_USED.set(k,MAT_GEN);continue}MAT_USED.delete(k);matCache.delete(k);if(!m||!m.dispose)continue;try{for(const t of ['map','alphaMap','bumpMap','normalMap','roughnessMap']){const tx=m[t];if(tx&&tx.isCanvasTexture)tx.dispose()}m.dispose()}catch{}}}
 function shineK(){return 1.6-design.scene.shine/100*1.2}
 function surfaceMat(t,cascadeDepth=false){const nk=NKT(t.texture),om=!nk&&(t.ombre||t.texture==='stripes'||(t.print&&t.print!=='none')||(t.texture==='vruffles'&&t.edgeColor));return mkMat('surf|'+t.color+'|'+t.finish+'|'+t.texture+(nk?'|'+Math.round(t.h*4):'')+(om?'|om':'')+(TEX3D[t.texture]?'|3d':'')+(t.prof==='heirloombase'?'|cushionAO':'')+(cascadeDepth?'|cascadeDepth':''),()=>{const f=FINISHES[t.finish]||FINISHES.buttercream,nm=(TEX[t.texture]||TEX.smooth).clone(),rm=TEX.rough.clone();nm.repeat.set(3,1);rm.repeat.set(3,1);nm.needsUpdate=rm.needsUpdate=true;const m=new T.MeshPhysicalMaterial({color:t.color,roughnessMap:rm,normalMap:nm,normalScale:new V2(.3*f.tex*(t.texture==='smooth'?1:1.3),.3*f.tex*(t.texture==='smooth'?1:1.3)),sheen:f.sheen,sheenRoughness:.5,sheenColor:new T.Color(1,.965,.925),metalness:f.metal||0});if(nk){m.color.set('#ffffff');m.map=nakedTex(t.color,t.h,t.texture==='naked');m.normalScale.set(.18,.18)}if(om){m.color.set('#ffffff');m.vertexColors=true}if(t.prof==='heirloombase'||cascadeDepth)m.vertexColors=true;m.userData.finish=f;return warm(m,1.15)})}
 function pipeMat(c){return mkMat('pipe|'+c,()=>{const nm=TEX.fine.clone();nm.repeat.set(2,1);nm.needsUpdate=true;const m=new T.MeshPhysicalMaterial({color:c,vertexColors:true,normalMap:nm,normalScale:new V2(.18,.18),sheen:.25,sheenRoughness:.5,sheenColor:new T.Color(1,.965,.925)});m.userData.finish={rough:.25,clear:.57,clearR:.13};return warm(m,.95)})}
@@ -3031,7 +3033,7 @@ const tierMeshes=[];let totalH=0,boardR=6,tierShapes=[],boardMeshes=[],boardTopY
 let ITEMS=[],CUR_ITEM=-1;const regItem=info=>{ITEMS.push(info);return ITEMS.length-1};
 const stampItem=g=>{const n=g.attributes.position.count;g.setAttribute('iid',new T.BufferAttribute(new Float32Array(n).fill(CUR_ITEM),1));return g};
 setTimeout(()=>loadUserModels(),400);
-function build(){if(typeof invalidate==='function')invalidate(1500);try{buildCake()}catch(err){console.error(err);toast('Something in this design could not be drawn. Try Undo.')}try{updateStudioBar()}catch{}$('#loading')?.remove();refitIfGrown()}
+function build(){if(typeof invalidate==='function')invalidate(1500);MAT_GEN++;try{buildCake()}catch(err){console.error(err);toast('Something in this design could not be drawn. Try Undo.')}try{updateStudioBar()}catch{}try{if(!thumbJob)evictMats()}catch{}$('#loading')?.remove();refitIfGrown()}
 var fitTop=null;function cakeTop(){const b=new T.Box3().setFromObject(cake);return b.isEmpty()?0:b.max.y}
 function refitIfGrown(){if(!autoFit||thumbJob||fitTop===null)return;const t=cakeTop();if(Math.abs(t-fitTop)>.25)goView(autoFit)}
 // Printed patterns on a tier's side (fondant cut-outs or painted): cow spots, racing checks, polka dots. Returns 0..1 coverage.
