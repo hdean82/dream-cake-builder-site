@@ -44,6 +44,10 @@ export async function onRequest({ request, next, env }) {
     const tok = await tokenFor(env);
     key = key.trim();
     if (key && teamKey(env) && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
+    if (request.method === 'POST') {
+      const msg = '<p style="color:#b00020;margin:0 0 12px">That password did not match. You typed ' + key.length + ' characters; the saved one has ' + teamKey(env).length + '.</p>';
+      return new Response(FORM.replace('</h1>', '</h1>' + msg), { status: 401, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+    }
     return go('/coming-soon');
   }
 
