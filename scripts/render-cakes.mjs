@@ -63,7 +63,7 @@ for (const k of todo) {
       x.drawImage(c, (640 - w) / 2, (640 - h) / 2, w, h);
       return {jpg: o.toDataURL('image/jpeg', .88), webp: o.toDataURL('image/webp', .84), size: [c.width, c.height, innerWidth, innerHeight]};
     });
-    console.log(k, 'canvas', pics.size.join('x')); delete pics.size;
+    console.log(k, 'canvas', pics.size.join('x'), await page.evaluate(() => window.__dcsInfo ? window.__dcsInfo() : '')); delete pics.size;
     for (const [ext, d] of Object.entries(pics)) fs.writeFileSync(path.join(OUT, `${k}.${ext}`), Buffer.from(d.split(',')[1], 'base64'));
     manifest[k] = hash(themes.get(k));
     console.log('Rendered', k, errors.length ? `(page errors: ${errors.join(' | ').slice(0, 300)})` : '');
