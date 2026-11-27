@@ -31,6 +31,8 @@ export async function onRequest({ request, next, env }) {
 
   if (path === '/team' || path === '/team/') {
     if (url.searchParams.has('off')) return go('/', ...clear);
+    // setup check: says only whether a password is configured, never anything about it
+    if (url.searchParams.has('check')) return new Response(env && env.TEAM_KEY ? 'team password is set' : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
     const key = url.searchParams.get('key') || '', tok = await tokenFor(env);
     if (key && env.TEAM_KEY && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
     return go('/coming-soon');
