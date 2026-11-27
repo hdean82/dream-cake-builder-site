@@ -82,6 +82,7 @@ for (const k of todo) {
   } catch (e) { failed++; console.error('Could not render', k, e.message); }
   await page.close();
 }
+fs.writeFileSync(path.join(ROOT, '.rendered-cakes.json'), JSON.stringify(Object.fromEntries(todo.filter(k => manifest[k] === hash(themes.get(k))).map(k => [k, manifest[k]]))));
 fs.writeFileSync(MANIFEST, JSON.stringify(Object.fromEntries(Object.entries(manifest).sort()), null, 1) + '\n');
 await browser.close(); server.close();
 if (failed) process.exitCode = 1;

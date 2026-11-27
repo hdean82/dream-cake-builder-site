@@ -15,7 +15,7 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 80
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,13 +26,24 @@ jobs:
         run: |
           T="${{ github.event.inputs.themes }}"
           if [ "$T" = "all" ]; then node scripts/render-cakes.mjs --all; else node scripts/render-cakes.mjs $T; fi
-      - name: Point the home page at the new pictures
-        run: node scripts/sync-home-cakes.mjs index.html
       - name: Save the new pictures
         run: |
           git config user.name "cake-pictures bot"
           git config user.email "cake-pictures@users.noreply.github.com"
-          git add assets/home/cakes index.html
-          if git diff --cached --quiet; then echo "No picture changes"; exit 0; fi
-          git commit -m "Website cake pictures re-rendered from the Studio"
-          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
+          [ -f .rendered-cakes.json ] || { echo "Nothing rendered"; exit 0; }
+          mkdir -p /tmp/new && cp assets/home/cakes/* /tmp/new/ && cp .rendered-cakes.json /tmp/rendered.json
+          # Lay the new pictures on top of the latest main (other changes may have landed while rendering), then push.
+          for i in 1 2 3 4 5 6; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            node -e '
+              const fs=require("fs"),r=JSON.parse(fs.readFileSync("/tmp/rendered.json")),M="assets/home/cakes/manifest.json",m=JSON.parse(fs.readFileSync(M));
+              for(const k of Object.keys(r)){for(const n of [k+".jpg",k+".webp",k+"-pair.jpg",k+"-pair.webp"])if(fs.existsSync("/tmp/new/"+n))fs.copyFileSync("/tmp/new/"+n,"assets/home/cakes/"+n);m[k]=r[k]}
+              fs.writeFileSync(M,JSON.stringify(Object.fromEntries(Object.entries(m).sort()),null,1)+"\n")'
+            node scripts/sync-home-cakes.mjs index.html
+            git add assets/home/cakes index.html
+            if git diff --cached --quiet; then echo "No picture changes"; exit 0; fi
+            git commit -qm "Website cake pictures re-rendered from the Studio"
+            git push -q origin HEAD:main && exit 0
+            sleep $((i*7))
+          done
+          exit 1

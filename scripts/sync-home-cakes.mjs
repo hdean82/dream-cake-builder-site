@@ -6,7 +6,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const files = process.argv.slice(2).length ? process.argv.slice(2) : ['index.html'];
-const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/home/cakes/manifest.json'), 'utf8'));
+import crypto from 'node:crypto';
+// Version each picture by its own bytes, so any new render (same recipe or not) reaches visitors at once.
+const CAKES = path.join(ROOT, 'assets/home/cakes'), manifest = {};
+for (const f of fs.readdirSync(CAKES)) if (f.endsWith('.jpg') && !f.endsWith('-pair.jpg')) manifest[f.slice(0, -4)] = crypto.createHash('sha1').update(fs.readFileSync(path.join(CAKES, f))).digest('hex').slice(0, 10);
 const studio = fs.readFileSync(path.join(ROOT, 'studio.html'), 'utf8');
 const names = {};
 for (const m of studio.matchAll(/\{key:'([a-z0-9_]+)',name:'((?:[^'\\]|\\.)*)'/g)) if (!names[m[1]]) names[m[1]] = m[2].replace(/\\(.)/g, '$1');
