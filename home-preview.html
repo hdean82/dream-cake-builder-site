@@ -17,6 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/home/lambeth-hero.webp" type="image/webp">
 <link rel="stylesheet" href="assets/dcb-theme.css">
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://gcorvodfcxhumesttwvj.supabase.co" crossorigin>
 <style>
 body.hp{background:#fffaf9}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -90,6 +92,9 @@ body.hp{background:#fffaf9}
 .stage img.poster{width:100%;height:100%;object-fit:cover;transition:opacity .5s}
 .stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .stage .play{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-height:48px;padding:0 22px;border-radius:999px;font-weight:600;box-shadow:0 10px 24px #c12c7e55}
+.stage.loading::after{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;border:3px solid #fff;border-top-color:var(--rose);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.stage.loading::after{animation-duration:3s}}
 .stage .open{position:absolute;right:14px;bottom:14px;border-radius:999px}
 .picker{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:22px;max-width:520px}
 @media(min-width:900px){.picker{grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px}}
@@ -173,7 +178,7 @@ body.hp{background:#fffaf9}
     <p class="alt">Or <a href="studio.html">try the Studio now</a>. It's free and runs in your browser.</p>
    </div>
    <div class="cmpbox">
-    <div class="pair" id="cmp"><figure><picture><source id="cmpRealW" srcset="assets/home/real/peony.webp" type="image/webp"><img src="assets/home/real/peony.jpg" alt="Real Coral Peony Cascade cake by Sprinkle Me Silly" width="640" height="640" data-fallback id="cmpReal"></picture><figcaption>The real cake</figcaption></figure><figure><picture><source id="cmp3dW" srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="The same cake designed in the Studio" width="640" height="640" data-fallback id="cmp3d"></picture><figcaption>Its 3D design</figcaption></figure></div>
+    <div class="pair" id="cmp"><figure><picture><source id="cmpRealW" srcset="assets/home/real/peony.webp" type="image/webp"><img src="assets/home/real/peony.jpg" alt="The real Coral Peony Cascade cake" width="640" height="640" data-fallback id="cmpReal"></picture><figcaption>The real cake</figcaption></figure><figure><picture><source id="cmp3dW" srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="The same cake designed in the Studio" width="640" height="640" data-fallback id="cmp3d"></picture><figcaption>Its 3D design</figcaption></figure></div>
     <div class="chips" id="cmptabs" role="group" aria-label="Choose a cake to compare"><button type="button" data-c="peony" class="on">Coral Peony Cascade</button><button type="button" data-c="cow">Pink Bow Cow</button><button type="button" data-c="moneybag">Money Bag Birthday</button><button type="button" data-c="crawfish">Crawfish Boil Pot</button><button type="button" data-c="bee">Bumble Bee Garden</button><button type="button" data-c="movie">Movie Night Popcorn</button></div>
    </div>
   </div>
@@ -203,7 +208,7 @@ body.hp{background:#fffaf9}
 
  <section id="gallery">
   <div class="wrap ghead">
-   <div><h2>Start from a cake that's already designed</h2><p class="lede">Real Sprinkle Me Silly cakes, rebuilt in 3D. Open one and make it yours.</p></div>
+   <div><h2>Start from a cake that's already designed</h2><p class="lede">Real cakes, rebuilt in 3D. Open one and make it yours.</p></div>
    <a class="btn" href="studio.html">See all themes in the Studio</a>
   </div>
   <div class="row"><a href="studio.html" data-open-cake><span class="im"><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Lambeth</b></a><a href="studio.html?theme=sig_monogram"><span class="im"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Champagne Gold Art Deco</b></a><a href="studio.html?theme=sig_rosettower"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Rosette Tower</b></a><a href="studio.html?theme=sig_babysky"><span class="im"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up and Away Bears cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Up, Up and Away Bears</b></a><a href="studio.html?theme=sig_movie"><span class="im"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Movie Night Popcorn</b></a><a href="studio.html?theme=sig_bee"><span class="im"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Bumble Bee Garden</b></a><a href="studio.html?theme=sig_teal"><span class="im"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Teal Bauble Cascade</b></a><a href="studio.html?theme=sig_pastelarch"><span class="im"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="Pastel Rainbow Unicorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Pastel Rainbow Unicorn</b></a><a href="studio.html?theme=sig_sports"><span class="im"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>All-Star Sports Number</b></a><a href="studio.html?theme=sig_rosegold"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Rose Gold Jewels</b></a></div>
@@ -248,18 +253,20 @@ body.hp{background:#fffaf9}
 <nav class="mbar" id="mbar" aria-label="Quick actions"><a class="btn" href="studio.html">Try the Studio</a><a class="btn primary" href="#launch-list">Join the waitlist</a></nav>
 
 <script>
-// live 3D stage
-(function(){const st=document.getElementById('stage');if(!st)return;const poster=document.getElementById('stagePoster'),nm=document.getElementById('stageName'),play=document.getElementById('stagePlay'),open=document.getElementById('stageOpen');let cur='sig_peony',fr=null;
- const show=()=>{fr.style.opacity='1';poster.style.opacity='0'};
- const load=k=>{cur=k;const b=document.querySelector('#picker [data-k="'+k+'"]');document.querySelectorAll('#picker button').forEach(x=>x.classList.toggle('on',x===b));const n=b?b.querySelector('span').textContent:'';nm.textContent=n;poster.src='assets/home/cakes/'+k+'.jpg';poster.alt=n+' cake';open.href='studio.html?theme='+k;if(fr){poster.style.opacity='1';fr.style.opacity='0';fr.onload=()=>setTimeout(show,1600);fr.src='studio.html?theme='+k+'&view=1'}};
- const start=()=>{if(fr)return;fr=document.createElement('iframe');fr.title='Live 3D cake';fr.allow='fullscreen';fr.src='studio.html?theme='+cur+'&view=1';fr.style.opacity='0';fr.style.transition='opacity .5s';fr.onload=()=>setTimeout(show,1600);st.insertBefore(fr,play);play.style.display='none';open.style.display=''};
+// live 3D stage: loads quietly while the visitor is still above it, so it's ready on arrival
+(function(){const st=document.getElementById('stage');if(!st)return;const poster=document.getElementById('stagePoster'),nm=document.getElementById('stageName'),play=document.getElementById('stagePlay'),open=document.getElementById('stageOpen');let cur='sig_peony',fr=null,ready=false,want=false;
+ const show=()=>{ready=true;st.classList.remove('loading');if(want){fr.style.opacity='1';poster.style.opacity='0';play.style.display='none';open.style.display=''}};
+ const make=()=>{if(fr)return;fr=document.createElement('iframe');fr.title='Live 3D cake';fr.allow='fullscreen';fr.src='studio.html?theme='+cur+'&view=1';fr.style.opacity='0';fr.style.transition='opacity .5s';fr.onload=()=>setTimeout(show,1200);st.insertBefore(fr,play)};
+ const start=()=>{want=true;make();if(ready)show();else{st.classList.add('loading');play.textContent='Loading the 3D cake…'}};
+ const load=k=>{cur=k;const b=document.querySelector('#picker [data-k="'+k+'"]');document.querySelectorAll('#picker button').forEach(x=>x.classList.toggle('on',x===b));const n=b?b.querySelector('span').textContent:'';nm.textContent=n;poster.src='assets/home/cakes/'+k+'.jpg';poster.alt=n+' cake';open.href='studio.html?theme='+k;if(fr){ready=false;poster.style.opacity='1';fr.style.opacity='0';st.classList.add('loading');fr.src='studio.html?theme='+k+'&view=1'}};
+ if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();make()}},{rootMargin:'900px 0px'});io.observe(st)}
  play.addEventListener('click',start);
- document.getElementById('picker').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;load(b.dataset.k);if(!fr)start()});
+ document.getElementById('picker').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;load(b.dataset.k);start()});
 })();
 // real vs 3D compare
 (function(){const c=document.getElementById('cmp');if(!c)return;
  document.getElementById('cmptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#cmptabs button').forEach(x=>x.classList.toggle('on',x===b));const k=b.dataset.c;
-  document.getElementById('cmpRealW').srcset='assets/home/real/'+k+'.webp';document.getElementById('cmpReal').src='assets/home/real/'+k+'.jpg';document.getElementById('cmp3dW').srcset='assets/home/cakes/sig_'+k+'.webp';document.getElementById('cmp3d').src='assets/home/cakes/sig_'+k+'.jpg';document.getElementById('cmpReal').alt='Real '+b.textContent+' cake by Sprinkle Me Silly';document.getElementById('cmp3d').alt='The same '+b.textContent+' cake designed in the Studio'})})();
+  document.getElementById('cmpRealW').srcset='assets/home/real/'+k+'.webp';document.getElementById('cmpReal').src='assets/home/real/'+k+'.jpg';document.getElementById('cmp3dW').srcset='assets/home/cakes/sig_'+k+'.webp';document.getElementById('cmp3d').src='assets/home/cakes/sig_'+k+'.jpg';document.getElementById('cmpReal').alt='The real '+b.textContent+' cake';document.getElementById('cmp3d').alt='The same '+b.textContent+' cake designed in the Studio'})})();
 // phone quick bar appears once the hero is off screen
 (function(){const m=document.getElementById('mbar'),h=document.querySelector('.hero'),f=document.getElementById('launch-list');if(!m||!h||!('IntersectionObserver'in window))return;let past=false,atEnd=false;const u=()=>m.classList.toggle('on',past&&!atEnd);
  new IntersectionObserver(([x])=>{past=!x.isIntersecting;u()}).observe(h);new IntersectionObserver(([x])=>{atEnd=x.isIntersecting;u()}).observe(f)})();
