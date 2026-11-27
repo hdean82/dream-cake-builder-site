@@ -37,7 +37,7 @@ export async function onRequest({ request, next, env }) {
   if (path === '/team' || path === '/team/') {
     if (url.searchParams.has('off')) return go('/', ...clear);
     // setup check: says only whether a password is configured, never anything about it
-    if (url.searchParams.has('check')) return new Response(teamKey(env) ? 'team password is set' + (teamKey(env) !== String(env.TEAM_KEY) ? ' (extra spaces or line breaks were ignored)' : '') : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
+    if (url.searchParams.has('check')) return new Response(teamKey(env) ? 'team password is set, ' + teamKey(env).length + ' characters' + (teamKey(env) !== String(env.TEAM_KEY) ? ' (extra spaces or line breaks were ignored)' : '') : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
     let key = url.searchParams.get('key') || '';
     if (request.method === 'POST') { try { key = String((await request.formData()).get('key') || '').trim(); } catch { key = ''; } }
     else if (!key) return new Response(FORM, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
