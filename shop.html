@@ -285,6 +285,7 @@ button.rowi:hover{background:#fffafb}
 .legend span{display:inline-flex;align-items:center;gap:5px}
 @media (max-width:600px){.cgrid{gap:3px}.cday{min-height:58px;padding:3px;flex-direction:row;flex-wrap:wrap;align-content:flex-start;gap:3px}.cday .n{width:100%;font-size:11.5px}.cchip{padding:0;border:0;background:none}.cchip span{display:none}.cday .more{display:none}}
 @media (max-width:1150px){.app{grid-template-columns:210px minmax(0,1fr) 280px}}
+body.noside .app{grid-template-columns:230px minmax(0,1fr)}@media (max-width:1150px){body.noside .app{grid-template-columns:210px minmax(0,1fr)}}body.noside #side{display:none}
 @media (max-width:900px){
  html,body{height:auto}
  .app{display:block;height:auto}
@@ -2033,6 +2034,7 @@ function prefFilter(q,keep){PREFQ=q||"";const t=PREFQ.trim().toLowerCase(),root=
 function sidePrefs(){const s=S.settings;return `<div class="card white"><h3>At a glance</h3><div class="kv"><span>Next order</span><span>#${esc(s.nextNo)}</span></div><div class="kv"><span>Deposit</span><span>${esc(s.depositPct)}%</span></div><div class="kv"><span>Quotes held</span><span>${esc(s.expiry)} days</span></div><div class="kv"><span>Default tax</span><span>${esc(S.taxes.find(t=>t.id===s.defaultTax)?.name||"No tax")}</span></div></div><p class="note">Tap Save changes at the bottom when you're done.</p>`}
 
 function side(){$("side").innerHTML=({today:sideToday,calendar:sideCalendar,requests:sideRequests,bake:sideBake,money:sideMoney,customers:sideCustomers,recipes:sideRecipes,"new-order":sideOrder,orders:sideOrders,products:sideProducts,events:sideEvents,emails:sideEmails,preferences:sidePrefs,portfolio:sidePortfolio,tools:sideTools,help:sideHelp,lists:sideLists}[route]||sideOrder)()}
+const _side=side;side=function(){_side();const none=route==="customers";document.body.classList.toggle("noside",none);$("side").hidden=none};
 
 
 
