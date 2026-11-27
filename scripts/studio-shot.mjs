@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
   fs.readFile(f, (e, b) => { if (e) { res.writeHead(404).end(); return; } res.writeHead(200, { 'Content-Type': TYPES[path.extname(f)] || 'application/octet-stream' }); res.end(b); });
 }).listen(8768);
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-for (const [name, vp, scale, zoom] of [['studio-hero-desktop', { width: 1440, height: 900 }, 1, 2], ['studio-hero-phone', { width: 390, height: 844 }, 2.5, 3]]) {
+for (const [name, vp, scale, zoom] of [['studio-hero-desktop', { width: 1440, height: 900 }, 1, 1], ['studio-hero-phone', { width: 390, height: 844 }, 2.5, 4]]) {
   const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: scale, isMobile: scale > 1, hasTouch: scale > 1 });
   await ctx.addCookies([{ name: 'dcs_tour', value: '1', domain: 'localhost', path: '/' }, { name: 'dcb_team_ui', value: '1', domain: 'localhost', path: '/' }]);
   const page = await ctx.newPage();
@@ -26,7 +26,9 @@ for (const [name, vp, scale, zoom] of [['studio-hero-desktop', { width: 1440, he
   await page.waitForTimeout(40000);
   // bring the cake to the middle and closer, using the Studio's own move controls
   await page.evaluate(n => { const b = k => document.querySelector('[data-mv="' + k + '"]'); const k = x => b(x)?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); k('center'); for (let i = 0; i < n; i++) k('in'); }, zoom);
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(2500);
+  await page.evaluate(() => document.querySelector('[data-mv="center"]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  await page.waitForTimeout(3000);
   await page.evaluate(() => { document.querySelectorAll('#toast,.toast,.tour,.coach,#wlCard').forEach(e => e.remove()); });
   await page.screenshot({ path: path.join(OUT, name + '.jpg'), type: 'jpeg', quality: 90, timeout: 120000 });
   console.log('Saved', name);
