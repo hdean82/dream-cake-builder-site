@@ -248,7 +248,7 @@ button.rowi:hover{background:#fffafb}
 .mnote{border-radius:9px;padding:7px 10px;font-size:13px;margin:0 0 8px;font-weight:500}
 .mnote.good{background:#e7f5f2;color:#177d79}.mnote.warn{background:#fff4dc;color:#8a5a00}.mnote.bad{background:#fdeaee;color:#a3324f}
 .cakecard{background:#fff;border:2px dashed #e6b4c4;border-radius:14px;padding:18px 20px;max-width:420px;margin:0 auto;color:#2f1a2a;font-size:13.5px}
-.ccbrand{font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:600;color:var(--rose-ink);text-align:center}
+.cclogo{display:block;max-height:64px;max-width:180px;width:auto;margin:0 auto 6px;object-fit:contain}.ccbrand{font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:600;color:var(--rose-ink);text-align:center}
 .cctitle{font-family:Fraunces,Georgia,serif;font-size:17px;text-align:center;margin:4px 0 2px}
 .cakecard>.note{text-align:center}
 .cclines{margin:8px 0;padding-left:18px;color:var(--muted);font-size:12.5px}
@@ -688,6 +688,7 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:900px){.savebar:not(.dirty){display:none}body.hassave main{padding-bottom:96px}}
 @media(max-width:600px){.wrap>.cardhead{flex-wrap:wrap}.wrap>.cardhead>div{flex:1 1 200px;min-width:0}.wrap>.cardhead>span{flex-wrap:wrap}}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
+@media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
 .cpgrid{display:grid;gap:0 16px;grid-template-columns:minmax(0,1fr)}@media(min-width:1000px){.cpgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .cdl{display:grid;grid-template-columns:120px 1fr;gap:10px 12px;margin:6px 0 0;font-size:15px}.cdl dt{color:var(--muted)}.cdl dd{margin:0;overflow-wrap:anywhere}.cdl a{color:var(--rose-ink)}
 .nil{color:var(--muted)}.cnotes{white-space:pre-wrap;margin:0}
@@ -1170,14 +1171,21 @@ function openPfPick(){const pics=S.orders.filter(o=>(o.images||[]).length).flatM
 
 /* ---------- Cake card (allergens & serving safety) ---------- */
 const ALLERGENS=["Wheat / gluten","Milk","Eggs","Tree nuts","Peanuts","Soy","Sesame","Coconut"];
-function cardHtml(o){const s=S.settings,e=evt(o.eventId);return `<div class="cakecard" id="cardPrint"><div class="ccbrand">${esc(s.biz)}</div><div class="cctitle">${esc(o.items.map(itemTitle).join(" · ")||"Your cake")}</div>
+function cardHtml(o){const s=S.settings,e=evt(o.eventId),lg=s.doc&&s.doc.logo;return `<div class="cakecard" id="cardPrint">${lg?`<img class="cclogo" src="${esc(lg)}" alt="">`:""}<div class="ccbrand">${esc(s.biz)}</div><div class="cctitle">${esc(o.items.map(itemTitle).join(" · ")||"Your cake")}</div>
  <div class="note">For ${esc(o.customer||"our customer")}${o.date?` · ${esc(new Date(o.date+"T00:00").toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"}))}`:""}${e?` · ${esc(e.name)}`:""}</div>
  ${o.items.some(it=>itemLines(it).length)?`<ul class="cclines">${o.items.flatMap(itemLines).map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`:""}
  <div class="ccbox"><b>Contains:</b> ${(o.allergens||[]).length?esc(o.allergens.join(", ")):"No common allergens noted. Ask us if unsure."}</div>
  ${o.nonEdible?`<div class="ccbox warn"><b>Please remove before serving:</b> ${esc(o.nonEdible)}</div>`:""}
  ${(o.care??s.care)?`<div class="ccbox"><b>Care:</b> ${esc(o.care??s.care)}</div>`:""}
  <div class="note" style="margin-top:8px">${esc([s.phone,s.email].filter(Boolean).join(" · "))}</div></div>`}
-function openCard(){$("dialog").innerHTML=`<div class="dhead"><div><h2>Cake card</h2><p class="hint">Print it and tuck it in the box.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div><div class="dbody" style="background:#f6efe9;padding-top:14px">${cardHtml(draft)}</div><div class="dfoot"><button class="btn" data-a="closeM">Close</button><button class="btn primary" data-a="cardPrint">Print card</button></div>`;$("modal").classList.add("on")}
+function cardText(o){const s=S.settings,e=evt(o.eventId),L=[];L.push((o.items.map(itemTitle).join(" · ")||"Your cake"));
+ L.push("For "+(o.customer||"you")+(o.date?" · "+new Date(o.date+"T00:00").toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"}):"")+(e?" · "+e.name:""));
+ const ls=o.items.flatMap(itemLines);if(ls.length){L.push("");ls.forEach(l=>L.push("• "+l))}
+ L.push("","Contains: "+((o.allergens||[]).length?o.allergens.join(", "):"No common allergens noted. Ask us if unsure."));
+ if(o.nonEdible)L.push("","Please remove before serving: "+o.nonEdible);
+ if(o.care??s.care)L.push("","Care: "+(o.care??s.care));
+ L.push("","Enjoy your cake!",s.biz||"",[s.phone,s.email].filter(Boolean).join(" · "));return L.join("\n").trim()}
+function openCard(){const signed=CLOUD.state==="on",to=draft.email||"";$("dialog").innerHTML=`<div class="dhead"><div><h2>Cake card</h2><p class="hint">Print it and tuck it in the box, or email it to ${to?esc(to):"your customer"}.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div><div class="dbody" style="background:#f6efe9;padding-top:14px">${cardHtml(draft)}${!S.settings.doc?.logo?`<p class="hint" style="text-align:center;margin-top:10px">Add your logo in Preferences → Quote &amp; invoice look and it shows at the top of the card.</p>`:""}</div><div class="dfoot"><button class="btn" data-a="closeM">Close</button>${signed&&to?`<button class="btn" data-a="cardEmail" id="cardEmailBtn">Email card</button>`:`<a class="btn" href="mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent("Your cake card from "+(S.settings.biz||"us"))}&body=${encodeURIComponent(cardText(draft))}">Email card</a>`}<button class="btn primary" data-a="cardPrint">Print card</button></div>`;$("modal").classList.add("on")}
 
 /* ---------- Suppliers ---------- */
 const custTabs=()=>`<div class="seg" style="margin:10px 0 12px"><button type="button" class="${custTab==="customers"?"on":""}" data-a="custTab" data-v="customers">Customers <span class="note">${S.customers.length}</span></button><button type="button" class="${custTab==="suppliers"?"on":""}" data-a="custTab" data-v="suppliers">Suppliers <span class="note">${S.suppliers.length}</span></button></div>`;
@@ -1807,7 +1815,7 @@ function renderCompose(){const o=draft;
  <div class="field"><label for="cSub">Subject</label><input type="text" id="cSub" data-cm="subject" value="${esc(C.subject)}"></div>
  <div class="field"><label for="cBody">Message</label><textarea id="cBody" data-cm="body" style="min-height:240px">${esc(C.body)}</textarea></div>
  ${/\{\{[A-Z_]+\}\}|\(your quote link/.test(C.body)?`<p class="hint">Check for anything still in curly braces or marked “will go here” before sending.</p>`:""}
- ${(o.emails||[]).length?`<span class="lbl">Sent from this order</span>${o.emails.map(e=>`<div class="kv"><span>${esc((S.tpls.find(t=>t.id===e.key)||{name:e.key}).name)}</span><span>${esc(new Date(e.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span></div>`).join("")}`:""}</div>
+ ${(o.emails||[]).length?`<span class="lbl">Sent from this order</span>${o.emails.map(e=>`<div class="kv"><span>${esc((S.tpls.find(t=>t.id===e.key)||{name:e.key==="cakecard"?"Cake card":e.key}).name)}</span><span>${esc(new Date(e.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span></div>`).join("")}`:""}</div>
  ${CLOUD.state==="on"?`<p class="hint" style="margin:0">Sends from <b>${esc(S.settings.biz||"your business")}</b> &lt;hello@dreamcakebuilder.com&gt;. Replies come to ${esc(S.settings.email||"your account email")}.</p>`:`<p class="hint" style="margin:0"><a href="account.html?next=${encodeURIComponent("shop.html#"+route)}">Sign in</a> to send emails straight from here.</p>`}</div>
  <div class="dfoot"><button class="btn" data-a="cCopy">Copy</button><a class="btn" id="cMail" href="mailto:${encodeURIComponent(C.to)}?subject=${encodeURIComponent(C.subject)}&body=${encodeURIComponent(C.body)}">Email App</a>${CLOUD.state==="on"?`<button class="btn" data-a="cSent">Mark As Sent</button><button class="btn primary" data-a="cSend" id="cSendBtn">Send Email</button>`:`<button class="btn primary" data-a="cSent">Mark As Sent</button>`}</div>`;
  $("modal").classList.add("on")}
@@ -2155,6 +2163,8 @@ document.addEventListener("click",e=>{
   case"planSet":draft.plan=+b.dataset.v;render();break;
   case"jobSheet":openJob();break;
   case"safetyCard":openCard();break;
+  case"cardEmail":{const b=$("cardEmailBtn");if(!draft.email){toast("Add the customer's email first");break}b.disabled=true;b.textContent="Sending…";
+    sendEmail({to:draft.email,subject:"Your cake card from "+(S.settings.biz||"your cake artist"),text:cardText(draft),template:"cakecard",accent:S.settings.doc&&S.settings.doc.accent,copy:!!S.settings.copyMe}).then(()=>{draft.emails=draft.emails||[];draft.emails.push({key:"cakecard",to:draft.email,at:new Date().toISOString(),sent:true});if(typeof logEv==="function")logEv(draft,`Cake card emailed to ${draft.email}`);if(draft.id){const i=S.orders.findIndex(x=>x.id===draft.id);if(i>-1)S.orders[i]=draft;persist()}closeM();toast("Cake card sent")}).catch(e=>{b.disabled=false;b.textContent="Email card";toast(e.message||"The email didn't go through")});break}
   case"cardPrint":try{document.body.classList.add("printing-card");window.print();setTimeout(()=>document.body.classList.remove("printing-card"),500)}catch(e){toast("Printing isn't available here")}break;
   case"allergen":{draft.allergens=draft.allergens||[];const v=b.dataset.v,k=draft.allergens.indexOf(v);k>=0?draft.allergens.splice(k,1):draft.allergens.push(v);b.classList.toggle("on",k<0);break}
   case"compose":openCompose(b.dataset.k);break;
