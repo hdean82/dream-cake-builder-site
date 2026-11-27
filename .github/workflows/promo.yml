@@ -1,0 +1,40 @@
+name: Promo video
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "stills (a few check frames) or full (the whole video)"
+        required: true
+        default: stills
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i --no-save playwright@1.48.2 && npx playwright install --with-deps chromium && (ffmpeg -version | head -1 || (sudo apt-get update && sudo apt-get install -y ffmpeg))
+      - name: Render the cake in 3D
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "full" ]; then
+            if [ ! -f tools/promo/out/frames/.complete ]; then node tools/promo/render3d.mjs tools/promo/out/frames && touch tools/promo/out/frames/.complete; fi
+          else
+            node tools/promo/render3d.mjs tools/promo/out/frames-quick --quick
+          fi
+      - name: Film it
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "full" ]; then
+            node tools/promo/compose.mjs tools/promo/out/frames tools/promo/out
+          else
+            node tools/promo/compose.mjs tools/promo/out/frames-quick tools/promo/out/stills --stills 2.5,6.5,9,14.5,19.5,20.8,26.5,31,37.5
+          fi
+      - name: Save
+        run: |
+          git config user.name "promo bot"; git config user.email "promo@users.noreply.github.com"
+          git add tools/promo/out
+          git commit -m "Promo ${{ github.event.inputs.mode }} render" || exit 0
+          for i in 1 2 3; do git pull --rebase origin promo && git push origin HEAD:promo && break; sleep 5; done
