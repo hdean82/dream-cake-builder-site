@@ -47,7 +47,11 @@ p{margin:0}
 .head-in{max-width:var(--max);margin:0 auto;height:56px;padding:0 16px;display:flex;align-items:center;gap:14px}
 .brand{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-family:Fraunces,Georgia,serif;font-weight:600;font-size:19px;white-space:nowrap}
 .brand img{width:34px;height:34px;border-radius:9px;object-fit:contain}
-.brand span{color:var(--rose)}
+.brand .bt{display:flex;flex-direction:column;gap:1px;line-height:1.05}
+.brand .bn{color:var(--ink);white-space:nowrap}
+.brand .bn span{color:var(--rose)}
+.brand .tag{font:500 11.5px/1.2 Inter,system-ui,sans-serif;color:var(--muted);letter-spacing:.01em;white-space:nowrap}
+@media(max-width:380px){.brand .tag{font-size:10.5px}}
 .site-nav{display:flex;align-items:center;gap:2px;margin-left:auto}
 .site-nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:14px;padding:7px 11px;border-radius:9px;white-space:nowrap}
 .site-nav a:hover{background:var(--rose-soft);color:var(--ink)}
