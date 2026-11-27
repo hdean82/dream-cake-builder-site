@@ -2783,7 +2783,7 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
  else if(pat==='dots'){[[64,64],[192,192],[192,64],[64,192]].forEach(([a,b],i)=>{x.beginPath();x.arc(a,b,i<2?26:14,0,7);x.fill()})}
  else if(pat==='florentine'){x.lineCap='round';x.lineJoin='round';florentineTile(x)}
  else if(pat==='medallion'){x.lineCap='round';x.lineJoin='round';frenchMedallionTile(x)}
- else if(pat==='fleur'){const f=(cx,cy,sc)=>{x.save();x.translate(cx,cy);x.scale(sc,sc);x.beginPath();x.moveTo(0,-60);x.bezierCurveTo(22,-30,18,0,0,20);x.bezierCurveTo(-18,0,-22,-30,0,-60);x.fill();for(const s of[-1,1]){x.beginPath();x.moveTo(0,10);x.bezierCurveTo(s*30,-30,s*70,-10,s*50,20);x.bezierCurveTo(s*40,0,s*20,10,s*8,25);x.fill()}x.fillRect(-26,22,52,10);x.beginPath();x.moveTo(-8,32);x.lineTo(0,62);x.lineTo(8,32);x.fill();x.restore()};f(128,120,1);f(0,250,.6);f(256,250,.6);f(0,-6,.6);f(256,-6,.6)}
+ else if(pat==='fleur'){fleurTile(x)}
  else if(pat==='cornelli'){cornelliTile(x,256,7)}
  else if(pat==='checker'){x.fillRect(0,0,128,128);x.fillRect(128,128,128,128)}
  else if(pat==='trellis'){x.lineWidth=12;const t=(cx,cy)=>{x.beginPath();x.moveTo(cx,cy-64);x.quadraticCurveTo(cx+30,cy-64,cx+32,cy-32);x.quadraticCurveTo(cx+64,cy-30,cx+64,cy);x.quadraticCurveTo(cx+64,cy+30,cx+32,cy+32);x.quadraticCurveTo(cx+30,cy+64,cx,cy+64);x.quadraticCurveTo(cx-30,cy+64,cx-32,cy+32);x.quadraticCurveTo(cx-64,cy+30,cx-64,cy);x.quadraticCurveTo(cx-64,cy-30,cx-32,cy-32);x.quadraticCurveTo(cx-30,cy-64,cx,cy-64);x.stroke()};t(64,64);t(192,64);t(64,192);t(192,192)}
@@ -3061,6 +3061,22 @@ function printFn(kind,r,h,seed){const C=2*PI*r,fr=x=>x-Math.floor(x);
 // Royal damask: a fleur plume inside a pointed ogee cartouche with scrolls and flame tufts, half-drop repeat with small rosettes between.
 // Florentine scroll: a Renaissance running scroll (rinceau). A wavy main stem throws off volutes that alternate above and below, each curling into a rosette and dressed with acanthus leaves; seamless around the tier.
 // French medallion: scalloped oval cameo frames with a pearl ring, rosette, bow knot and drop, linked by beaded festoon swags.
+// Fleur-de-lis: spear center petal, two side petals that curl out and back, a binding band and a three-lobed foot; half-drop repeat with small cross accents.
+function fleurTile(x){
+ const fleur=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);
+  // tall central petal: spear-shaped, pointed tip
+  x.beginPath();x.moveTo(0,-62);x.bezierCurveTo(16,-44,20,-14,8,6);x.lineTo(-8,6);x.bezierCurveTo(-20,-14,-16,-44,0,-62);x.fill();
+  // side petals curl up and out, then fold back down into a curl
+  for(const sg of[1,-1]){x.beginPath();x.moveTo(sg*6,4);x.bezierCurveTo(sg*10,-24,sg*30,-40,sg*44,-30);x.bezierCurveTo(sg*56,-20,sg*50,-2,sg*38,-4);x.bezierCurveTo(sg*30,-6,sg*30,-16,sg*37,-18);x.bezierCurveTo(sg*30,-24,sg*18,-14,sg*16,6);x.closePath();x.fill()}
+  // binding band
+  x.fillRect(-20,6,40,8);
+  // foot: three short lobes below the band
+  x.beginPath();x.moveTo(-6,14);x.lineTo(6,14);x.lineTo(0,34);x.closePath();x.fill();
+  for(const sg of[1,-1]){x.beginPath();x.moveTo(sg*4,14);x.bezierCurveTo(sg*14,18,sg*26,20,sg*30,30);x.bezierCurveTo(sg*20,32,sg*12,26,sg*4,22);x.closePath();x.fill()}
+  x.restore()};
+ const S=1.25;fleur(128,128,S);for(const [cx,cy] of[[0,0],[256,0],[0,256],[256,256]])fleur(cx,cy,S);
+ for(const [cx,cy] of[[128,0],[128,256],[0,128],[256,128]]){x.beginPath();for(let k=0;k<4;k++){const a=k*Math.PI/2;x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*7,cy+Math.sin(a)*7)}x.lineWidth=3;x.stroke();x.beginPath();x.arc(cx,cy,3,0,7);x.fill()}
+}
 function frenchMedallionTile(x){
  const leaf=(cx,cy,a,l,w)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8,-l*.8,0,-l);x.bezierCurveTo(w*.8,-l*.8,w,-l*.3,0,0);x.fill();x.restore()};
  const medallion=(cx,cy)=>{
