@@ -702,6 +702,21 @@ body.hassave main{padding-bottom:84px}
 .stmtbar input[type=date]{font:inherit;padding:8px 10px;border:1px solid #e3c3d4;border-radius:10px}
 .note.paid{color:#22703c}
 .rad .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.chk{flex-wrap:wrap}
+.rxbar{display:flex;gap:4px;flex-wrap:wrap;border:1px solid #e3c3d4;border-bottom:0;border-radius:10px 10px 0 0;padding:5px;background:#fff7fb}
+.rxbar button{min-width:32px;height:30px;border:1px solid transparent;border-radius:7px;background:none;cursor:pointer;color:var(--ink);font:15px Georgia,serif;display:inline-flex;align-items:center;justify-content:center}
+.rxbar button:hover{background:#fff;border-color:#ecd0de}
+.rxed{border:1px solid #e3c3d4;border-radius:0 0 10px 10px;padding:10px 12px;background:#fff;font-size:15px;line-height:1.55;outline:none;overflow-wrap:anywhere}
+.rxed:focus{border-color:var(--rose);box-shadow:0 0 0 3px #c12c7e22}.rxed:empty:before{content:attr(data-ph);color:#a58a9c}
+.rxed ul,.rxed ol,.rich ul,.rich ol{margin:4px 0;padding-left:22px}.rxed a,.rich a{color:var(--rose-ink)}
+.dsecs{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.dsec{border:1px solid #efdde6;border-radius:12px;padding:12px 14px;background:#fffdfd;font-size:13.5px;line-height:1.55}
+.dsec h4{margin:0 0 6px;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc,#c12c7e)}
+.dthanks{text-align:center;background:none;border-style:dashed;font-style:normal;color:#5d3352}
+.dfold>summary{cursor:pointer;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc,#c12c7e);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.dfold>summary::-webkit-details-marker{display:none}.dfold>summary:after{content:"+";font-size:18px;line-height:1;font-weight:400}.dfold[open]>summary:after{content:"−"}
+.dfold .rich{margin-top:8px;color:#5d3352}
+.rqbl{display:flex;gap:8px;align-items:flex-start;margin:8px 0 2px;background:#b3261e;color:#fff;border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.4}.rqbl svg{width:18px;height:18px;flex:none;margin-top:1px}
+details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 </style>
 </head>
 <body>
@@ -1093,7 +1108,7 @@ function vRequests(){
    const q=[r.name,r.email,r.phone,r.details,e&&e.name].filter(Boolean).join(" ").toLowerCase();
    return `<details class="card rq" data-keep="rq-${esc(r.id)}"${OPEN.has("rq-"+r.id)?" open":""} data-q="${esc(q)}"><summary class="rqsum">
     <div class="rqtop"><span class="rqwhen">${esc(new Date(r.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span><span class="rqst ${st[1]}">${esc(st[0])}</span></div>
-    <b class="rqname">${esc(r.name)}</b>${blMatch(r.name,r.email)?` <span class="bltag">Blacklisted</span>`:""}
+    <b class="rqname">${esc(r.name)}</b>${blMatch(r.name,r.email)?` <span class="bltag">Blacklisted</span>`:""}${(()=>{const bc=blMatch(r.name,r.email);return bc?`<div class="rqbl">${I_STOP}<span><b>Blacklisted customer.</b> ${esc(fullName(bc))} is not allowed to order${bc.blReason?`: ${esc(bc.blReason)}`:"."}</span></div>`:""})()}
     ${e?`<div class="rqev"><i class="dot" style="background:${esc(e.color)}"></i>${esc(e.name)}</div>`:""}
     ${r.event_date?`<div class="rqdate">${cal}${esc(new Date(r.event_date+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"}))}</div>`:""}
     ${r.details?`<p class="rqprev">${esc(r.details)}</p>`:""}
@@ -1538,6 +1553,38 @@ function exampleRecipe(){const add=(name,packSize,unit,packPrice)=>{let g=S.ingr
 
 /* ---------- Customers ---------- */
 let editCust=null,custSearch="",custTab="customers";
+/* ---------- Rich text (bold, italic, underline, lists, links) for terms, footer, how to pay, cancellation policy ---------- */
+const escA=v=>String(v).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+function richClean(html){const d=new DOMParser().parseFromString("<div>"+String(html||"")+"</div>","text/html");
+ const walk=n=>{let out="";n.childNodes.forEach(c=>{if(c.nodeType===3){out+=esc(c.textContent);return}if(c.nodeType!==1)return;const t=c.tagName,inner=walk(c),st=(c.getAttribute("style")||"").toLowerCase();
+  if(t==="BR")out+="<br>";
+  else if(t==="A"){const h=c.getAttribute("href")||"";out+=/^(https?:|mailto:|tel:)/i.test(h)?`<a href="${escA(h)}" target="_blank" rel="noopener">${inner}</a>`:inner}
+  else if(t==="B"||t==="STRONG"||(t==="SPAN"&&/font-weight:\s*(bold|[6-9]00)/.test(st)))out+=`<b>${inner}</b>`;
+  else if(t==="I"||t==="EM"||(t==="SPAN"&&/font-style:\s*italic/.test(st)))out+=`<i>${inner}</i>`;
+  else if(t==="U"||(t==="SPAN"&&/underline/.test(st)))out+=`<u>${inner}</u>`;
+  else if(t==="UL"||t==="OL"||t==="LI")out+=`<${t.toLowerCase()}>${inner}</${t.toLowerCase()}>`;
+  else if(t==="P"||t==="DIV")out+=`<div>${inner||"<br>"}</div>`;
+  else out+=inner});return out};
+ return walk(d.body.firstChild).replace(/(<div><br><\/div>)+$/,"")}
+const isRich=v=>/<(b|i|u|br|div|p|ul|ol|li|a|strong|em)\b/i.test(v||"");
+const richHtml=v=>isRich(v)?richClean(v):esc(v||"").replace(/\n/g,"<br>");
+function richText(v){if(!isRich(v))return String(v||"");const d=document.createElement("div");d.innerHTML=richClean(v).replace(/<br>/g,"\n").replace(/<\/(div|li)>/g,"\n").replace(/<li>/g,"• ");return d.textContent.replace(/\n{3,}/g,"\n\n").trim()}
+const RX=[["bold","<b>B</b>","Bold"],["italic","<i>I</i>","Italic"],["underline","<u>U</u>","Underline"],["insertUnorderedList",'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>',"Bullet list"],["insertOrderedList",'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 6h10M10 12h10M10 18h10M4 5h1v3M4 11.5h2l-2 2.5h2M4 17h2l-1 1.2 1 1.3H4"/></svg>',"Numbered list"],["createLink",'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',"Add a link"],["removeFormat",'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 5h12M12 5l-3 14M4 20 20 4"/></svg>',"Clear formatting"]];
+const richGet=k=>k.startsWith("doc.")?S.settings.doc[k.slice(4)]:S.settings[k];
+const richSet=(k,v)=>{if(k.startsWith("doc."))S.settings.doc[k.slice(4)]=v;else S.settings[k]=v};
+const richEd=(k,label,ph,min=110)=>`<div class="field"><label id="rl-${k.replace(".","-")}">${label}</label><div class="rxbar" role="toolbar" aria-label="Text style">${RX.map(([c,h,l])=>`<button type="button" data-rx="${c}" title="${l}" aria-label="${l}">${h}</button>`).join("")}</div><div class="rxed" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="rl-${k.replace(".","-")}" data-rich="${k}" data-ph="${escA(ph||"")}" style="min-height:${min}px">${richHtml(richGet(k))}</div></div>`;
+document.addEventListener("mousedown",e=>{const b=e.target.closest("[data-rx]");if(b)e.preventDefault()});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-rx]");if(!b)return;const ed=b.closest(".field").querySelector(".rxed");ed.focus();const c=b.dataset.rx;
+ if(c==="createLink"){const u=prompt("Link address (https://…)","https://");if(!u||!/^(https?:\/\/|mailto:|tel:)\S+$/i.test(u.trim()))return;document.execCommand("createLink",false,u.trim())}else document.execCommand(c,false,null);ed.dispatchEvent(new Event("input",{bubbles:true}))});
+document.addEventListener("input",e=>{const ed=e.target.closest&&e.target.closest("[data-rich]");if(!ed)return;const v=richClean(ed.innerHTML);richSet(ed.dataset.rich,ed.textContent.trim()?v:"");save()});
+document.addEventListener("paste",e=>{const ed=e.target.closest&&e.target.closest("[data-rich]");if(!ed)return;e.preventDefault();const h=e.clipboardData.getData("text/html"),t=e.clipboardData.getData("text/plain");document.execCommand("insertHTML",false,h?richClean(h):esc(t).replace(/\n/g,"<br>"))});
+const docSecs=(payNote,payExtra,footer,cancel,terms)=>{const sec=[];
+ if(payNote||payExtra)sec.push(`<section class="dsec"><h4>How to pay</h4>${payNote?`<div class="rich">${richHtml(payNote)}</div>`:""}${payExtra||""}</section>`);
+ if(footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(footer)}</div></section>`);
+ if(cancel)sec.push(`<details class="dsec dfold"><summary>Cancellation policy</summary><div class="rich">${richHtml(cancel)}</div></details>`);
+ if(terms)sec.push(`<details class="dsec dfold"><summary>Terms &amp; conditions</summary><div class="rich">${richHtml(terms)}</div></details>`);
+ return sec.length?`<div class="dsecs">${sec.join("")}</div>`:""};
+
 /* ---------- Customers: first & last names, blacklist ---------- */
 const splitName=n=>{const p=String(n||"").trim().split(/\s+/).filter(Boolean);return{first:p[0]||"",last:p.slice(1).join(" ")}};
 const fullName=c=>[c.first,c.last].filter(Boolean).join(" ").trim()||c.name||"";
@@ -1729,7 +1776,8 @@ function parseCsv(t){const rows=[];let row=[],cell="",q=false;t=t.replace(/^﻿/
   if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++}else q=false}else cell+=c}
   else if(c==='"')q=true;else if(c===","||c===";"&&!t.includes(",")){row.push(cell);cell=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(cell);rows.push(row);row=[];cell=""}else cell+=c}
  if(cell||row.length){row.push(cell);rows.push(row)}return rows.filter(r=>r.some(x=>x.trim()))}
-function sideCustomers(){const top=S.customers.map(c=>({c,t:S.orders.filter(o=>o.customerId===c.id&&o.status!=="Cancelled").reduce((a,o)=>a+totals(o).total,0)})).sort((a,b)=>b.t-a.t).slice(0,5);
+function sideCustomers(){const top=S.customers.map(c=>({c,t:S.orders.filter(o=>o.customerId===c.id&&o.status!=="Cancelled").reduce((a,o)=>a+totals(o).total,0)})).filter(x=>x.t>0).sort((a,b)=>b.t-a.t).slice(0,5);if(editCust||!top.length)return"";return `<div class="card white"><h3>Top customers</h3>${top.map(x=>`<div class="kv"><span>${esc(fullName(x.c))}</span><span>${money(x.t)}</span></div>`).join("")}</div>`}
+function sideCustomersOld2(){const top=S.customers.map(c=>({c,t:S.orders.filter(o=>o.customerId===c.id&&o.status!=="Cancelled").reduce((a,o)=>a+totals(o).total,0)})).sort((a,b)=>b.t-a.t).slice(0,5);
  return `<div class="card white"><h3>Customers</h3><div class="big">${S.customers.length}</div>${top.length&&top[0].t?`<span class="lbl" style="margin-top:8px">Top customers</span>${top.filter(x=>x.t).map(x=>`<div class="kv"><span>${esc(x.c.name)}</span><span>${money(x.t)}</span></div>`).join("")}`:""}</div>`}
 function linkCustomer(o){const nm=o.customer.trim();let c=o.customerId&&S.customers.find(x=>x.id===o.customerId);if(!c)c=S.customers.find(x=>lc(fullName(x))===lc(nm)&&(!o.email||!x.email||x.email.toLowerCase()===o.email.toLowerCase()));
  if(!c){c=fixCustomer({id:uid(),...splitName(nm),phone:o.phone||"",email:o.email||"",notes:""});S.customers.push(c)}else{if(nm&&lc(nm)!==lc(fullName(c))){Object.assign(c,splitName(nm));fixCustomer(c)}if(o.phone&&!c.phone)c.phone=o.phone;else if(o.phone)c.phone=o.phone;if(o.email)c.email=o.email}o.customerId=c.id}
@@ -1744,7 +1792,7 @@ async function openCompose(key){const o=draft;
  const v=orderVars(o);const def=key||(o.status==="Cancelled"?"cancel":o.kind==="Quote"?"quote":(totals(o).bal>0.005?"invoice":"receipt"));const t=S.tpls.find(x=>x.id===def)||S.tpls[0];
  let body=fillReal(t.body,v);const link=o.share&&o.share.token&&!o.share.off?shareUrl(o.share.token):"";
  if(!link)body=body.replace(/^.*\(your quote link will go here\).*(\n|$)/m,"");else if(["quote","invoice","reminder","balance"].includes(t.id)&&!body.includes(link))body+=`\n\nView ${o.kind==="Quote"?"and approve your quote":"your invoice"} here: ${link}`;
- C={key:t.id,to:o.email||"",subject:fillReal(t.subject,v),body:body+(S.settings.footer?"\n\n"+S.settings.footer:"")};renderCompose()}
+ C={key:t.id,to:o.email||"",subject:fillReal(t.subject,v),body:body+(S.settings.footer?"\n\n"+richText(S.settings.footer):"")};renderCompose()}
 function renderCompose(){const o=draft;
  $("dialog").innerHTML=`<div class="dhead"><div><h2>Email ${esc(o.customer||"customer")}</h2><p class="hint">Filled in from this order. Edit anything before sending.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
  <div class="dbody"><div class="field"><label for="cTpl">Template</label><select id="cTpl">${["manual","auto"].map(g=>`<optgroup label="${g==="manual"?"Sent by you":"Automatic"}">${S.tpls.filter(t=>t.group===g).map(t=>`<option value="${esc(t.id)}"${t.id===C.key?" selected":""}>${esc(t.name)}</option>`).join("")}</optgroup>`).join("")}</select></div>
@@ -1771,7 +1819,7 @@ function docData(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
   items:o.items.map(it=>({title:itemTitle(it),lines:itemLines(it),qty:String(it.qty),price:money(it.price),total:money(itemSub(it))})),
   sub:money(t.sub),tax:t.tax?money(t.tax):"",fee:t.fee?money(t.fee):"",total:money(t.total),paid:t.paid?money(t.paid):"",depLabel:isQ?"Deposit to book":"Deposit due",dep:money(t.depLeft),bal:money(t.bal),
   images:o.imagesOnDoc?(o.images||[]).filter(x=>String(x).startsWith("sb:")).map(x=>x.slice(3)):[],notes:o.notes||"",payNote:L.payNote||"",payLink:/^https:\/\/\S+$/.test(L.payLink||"")?L.payLink:"",
-  terms:L.showTerms&&s.terms?s.terms:"",footer:s.footer||"",cancelled:o.status==="Cancelled"?{at:o.cancel&&o.cancel.at||"",note:o.cancel&&o.cancel.clientNote||""}:null}}
+  terms:L.showTerms&&s.terms?s.terms:"",footer:s.footer||"",cancelPolicy:s.showCancel!==false&&s.cancelPolicy?s.cancelPolicy:"",cancelled:o.status==="Cancelled"?{at:o.cancel&&o.cancel.at||"",note:o.cancel&&o.cancel.clientNote||""}:null}}
 async function shareOrder(o,quiet){if(CLOUD.state!=="on")throw new Error("Sign in to share a link");if(!o.id)throw new Error("Save the order first");
  try{await uploadPending()}catch{}
  {const saved=S.orders.find(x=>x.id===o.id);if(saved&&saved!==o&&(saved.images||[]).length===(o.images||[]).length)o.images=saved.images.slice()}
@@ -1822,9 +1870,7 @@ function docHtml(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
  <div class="dtot"><div class="kv"><span>Subtotal</span><span>${money(t.sub)}</span></div>${t.tax?`<div class="kv"><span>Tax</span><span>${money(t.tax)}</span></div>`:""}${t.fee?`<div class="kv"><span>Delivery</span><span>${money(t.fee)}</span></div>`:""}<div class="kv tot"><span>Total</span><span>${money(t.total)}</span></div>${t.paid?`<div class="kv"><span>Paid</span><span>${money(t.paid)}</span></div>`:""}<div class="kv"><span>${isQ?"Deposit to book":"Deposit due"}</span><span>${money(t.depLeft)}</span></div><div class="kv tot"><span>Balance due</span><span>${money(t.bal)}</span></div></div>
  ${o.imagesOnDoc&&(o.images||[]).length?`<span class="lbl">Inspiration</span><div class="dpics">${o.images.map(src=>imgTag(src,"")).join("")}</div>`:""}
  ${o.notes?`<span class="lbl">Notes</span><p class="note" style="white-space:pre-wrap">${esc(o.notes)}</p>`:""}
- ${L.payNote?`<span class="lbl">How to pay</span><p class="note" style="white-space:pre-wrap">${esc(L.payNote)}</p>`:""}
- ${L.showTerms&&s.terms?`<span class="lbl">Terms</span><p class="note" style="white-space:pre-wrap">${esc(s.terms)}</p>`:""}
- ${s.footer?`<p class="docfoot">${esc(s.footer)}</p>`:""}</div>`}
+ ${docSecs(L.payNote,"",s.footer,s.showCancel!==false?s.cancelPolicy:"",L.showTerms?s.terms:"")}</div>`}
 
 function jobHtml(o){const s=S.settings,e=evt(o.eventId),f=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
  const allergens=Array.isArray(o.allergens)?o.allergens:(o.allergens&&typeof o.allergens==="object"?Object.keys(o.allergens).filter(k=>o.allergens[k]):[]);
@@ -1917,7 +1963,7 @@ function sideEmails(){const t=editTpl&&S.tpls.find(x=>x.id===editTpl);
  if(!t)return `<div class="card white"><h3>Automatic emails</h3><div class="big">${S.tpls.filter(x=>x.group==="auto"&&x.on).length} on</div><p class="hint">Open a template to edit its wording and see a live preview.</p></div>`;
  return `<h3>Preview</h3><div class="mail" id="mailPrev">${mailHtml(t)}</div>`}
 const emailLogo=()=>S.settings.emailLogo!==false&&S.settings.doc&&S.settings.doc.logo&&S.settings.doc.logo.length<300000?S.settings.doc.logo:"";
-const mailHtml=t=>`<div class="mh">To: <b>Maya Thompson</b><br>Subject: <b>${fill(t.subject)}</b></div>${emailLogo()?`<div class="mlogo"><img src="${esc(emailLogo())}" alt="Your logo"></div>`:""}<div class="mb">${fill(t.body,true)}${S.settings.footer?`\n\n<span class="note">${esc(S.settings.footer)}</span>`:""}</div>`;
+const mailHtml=t=>`<div class="mh">To: <b>Maya Thompson</b><br>Subject: <b>${fill(t.subject)}</b></div>${emailLogo()?`<div class="mlogo"><img src="${esc(emailLogo())}" alt="Your logo"></div>`:""}<div class="mb">${fill(t.body,true)}${S.settings.footer?`\n\n<span class="note">${richHtml(S.settings.footer)}</span>`:""}</div>`;
 
 /* ---------- Preferences ---------- */
 function vPrefs(){
@@ -1944,15 +1990,17 @@ function vPrefs(){
   +row("expiry",IC.clock,"Quote expiry",`${esc(s.expiry)} days`,f("expiry","Quote expires after (days)","number",'min="0"'))
   +row("deposit",IC.pct,"Deposit",`${esc(s.depositPct)}%`,f("depositPct","Deposit (%)","number",'min="0" max="100"'))
   +row("plan",IC.plan,"Payment plan",esc(plans[+s.instalments]||plans[1]),`<p class="hint">How new orders are split. The deposit uses the percentage above; the rest is spread before the event.</p><div class="seg">${[[1,"Deposit, then balance"],[2,"Deposit + 1 payment"],[3,"Deposit + 2 payments"],[4,"Deposit + 3 payments"]].map(([n,l])=>`<button type="button" class="${+s.instalments===n?"on":""}" data-a="sset" data-k="instalments" data-v="${n}">${l}</button>`).join("")}</div>`)
-  +row("terms",IC.doc,"Order terms & conditions",set(s.terms),`<div class="field"><label for="s-terms">Order terms</label><textarea id="s-terms" data-s="terms">${esc(s.terms)}</textarea></div>`)
-  +row("footer",IC.foot,"Order footer",set(s.footer),`<div class="field"><label for="s-footer">Footer on quotes, invoices and emails</label><textarea id="s-footer" data-s="footer" style="min-height:90px">${esc(s.footer)}</textarea></div>`)
+  +row("footer",IC.foot,"Order footer",set(s.footer),`<p class="hint" style="margin-top:0">A thank-you note under the prices on quotes and invoices, and at the end of emails.</p>${richEd("footer","Order footer","Thank you for choosing us for your celebration!",90)}`)
+  +row("cancel",IC.doc,"Cancellation policy",set(s.cancelPolicy),`<p class="hint" style="margin-top:0">Shows as a tap-to-open section on quotes and invoices, after the footer.</p>${richEd("cancelPolicy","Cancellation policy","e.g. Cancel 14 or more days before your event for a credit toward a future order…",120)}<label class="toggle"><div><div class="t">Show on quotes and invoices</div></div><span class="sw2"><input type="checkbox" data-s="showCancel"${s.showCancel!==false?" checked":""}><i></i></span></label>`)
+  +row("terms",IC.doc,"Order terms & conditions",set(s.terms),`<p class="hint" style="margin-top:0">Shows last, as a tap-to-open section on quotes and invoices. Customers tick a box saying they read them before approving.</p>${richEd("terms","Order terms & conditions","",140)}`)
+
   +row("tax",IC.tax,"Tax rates",`${esc(dtax.name)} (${esc(dtax.rate)}%)`,`<div class="field" style="margin-top:0"><label for="s-deftax">Default rate for new items <span class="note">you can change it on any item</span></label><select id="s-deftax" data-s="defaultTax">${S.taxes.map(t=>`<option value="${esc(t.id)}"${s.defaultTax===t.id?" selected":""}>${esc(t.name)} (${esc(t.rate)}%)</option>`).join("")}</select></div><details data-keep="taxes"${OPEN.has("taxes")?" open":""}><summary class="note" style="cursor:pointer">Edit or add rates (${S.taxes.length})</summary>
  ${S.taxes.map((t,i)=>`<div class="li"><input type="text" class="nm" data-tx="${i}:name" value="${esc(t.name)}" aria-label="Tax name"${t.id==="none"?" readonly":""}><input type="number" data-tx="${i}:rate" value="${esc(t.rate)}" step="0.01" min="0" style="width:90px" aria-label="Rate %"${t.id==="none"?" readonly":""}><span class="note">%</span>${t.id==="none"?`<span style="width:30px"></span>`:`<button class="mv del" data-a="taxDel" data-i="${i}" aria-label="Delete">✕</button>`}</div>`).join("")}
  <button class="btn sm" data-a="taxAdd" style="margin-top:8px">+ Add tax rate</button></details>`)
   +row("look",IC.palette,"Quote & invoice look",`<i class="pdot" style="background:${esc(s.doc.accent)}"></i>`,`<span class="lbl">Logo</span><div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">${s.doc.logo?`<img src="${esc(s.doc.logo)}" alt="Your logo" style="height:56px;max-width:160px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #eee;padding:4px">`:`<span class="hint">No logo yet. It shows at the top of quotes, invoices and job sheets.</span>`}<label class="btn sm" style="cursor:pointer">${s.doc.logo?"Change logo":"Upload logo"}<input type="file" accept="image/*" id="logoIn" hidden></label>${s.doc.logo?`<button class="btn sm" data-a="logoDel">Remove</button>`:""}</div>
  <span class="lbl">Accent color</span><div class="colors">${["#c12c7e","#9a1b5f","#177d79","#6b6bd9","#e98a3c","#4b103d"].map(c=>`<button type="button" class="${s.doc.accent===c?"on":""}" style="background:${c}" data-a="docAccent" data-c="${c}" aria-label="Accent ${c}"></button>`).join("")}<input type="color" data-docc="accent" value="${esc(s.doc.accent)}" aria-label="Custom accent color"></div>
  <div class="grid2" style="margin-top:6px"><div class="field"><label>Quote title</label><input type="text" data-doc="quoteTitle" value="${esc(s.doc.quoteTitle)}" maxlength="30"></div><div class="field"><label>Invoice title</label><input type="text" data-doc="invoiceTitle" value="${esc(s.doc.invoiceTitle)}" maxlength="30"></div></div>
- <div class="field"><label>Online payment link <span class="note">optional · Square, Stripe, PayPal or Venmo link. Shows a Pay button on the customer link</span></label><input type="url" data-doc="payLink" value="${esc(s.doc.payLink||"")}" placeholder="https://…"></div><div class="field"><label>How to pay (shown on quotes and invoices)</label><textarea data-doc="payNote" style="min-height:60px" placeholder="e.g. Cash App $YourShop · Venmo @YourShop · Cash at pickup">${esc(s.doc.payNote)}</textarea></div>
+ <div class="field"><label>Online payment link <span class="note">optional · Square, Stripe, PayPal or Venmo link. Shows a Pay button on the customer link</span></label><input type="url" data-doc="payLink" value="${esc(s.doc.payLink||"")}" placeholder="https://…"></div>${richEd("doc.payNote","How to pay (shown on quotes and invoices)","e.g. Cash App $YourShop · Venmo @YourShop · Cash at pickup",80)}
  <label class="toggle"><div><div class="t">Show order terms</div><div class="d">Prints your terms at the bottom of each quote and invoice.</div></div><span class="sw2"><input type="checkbox" data-docb="showTerms"${s.doc.showTerms?" checked":""}><i></i></span></label>
  <button type="button" class="btn sm" data-a="docSample">Preview a sample</button>`,"Colours, titles, how to pay"))}
  ${sec("Orders & planning","",
@@ -2087,7 +2135,7 @@ document.addEventListener("click",e=>{
   case"useBizAddr":draft.address=S.settings.address;render();break;
   case"delPic":draft.images.splice(i,1);render();break;
   case"addPay":{const amt=+$("p-amt").value||+$("p-amt").placeholder||0;if(!amt){toast("Enter the payment amount");$("p-amt").focus();break}draft.payments=draft.payments||[];logEv(draft,`Payment of ${money(amt)} recorded (${$("p-method").value})`);draft.payments.push({id:uid(),amount:Math.round(amt*100)/100,method:$("p-method").value,date:$("p-date").value||new Date().toISOString().slice(0,10)});render();toast(`${money(amt)} recorded. Save the order to keep it`);
-   {const tp=S.tpls.find(t=>t.id==="paythanks");if(S.settings.autoSend&&tp&&tp.on!==false&&!mailSkip(draft,"paythanks")&&CLOUD.state==="on"&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(draft.email||"")){const v=orderVars(draft);const body=fillReal(tp.body,v).replace(/^.*\(your quote link will go here\).*(\n|$)/m,"")+(S.settings.footer?"\n\n"+S.settings.footer:"");
+   {const tp=S.tpls.find(t=>t.id==="paythanks");if(S.settings.autoSend&&tp&&tp.on!==false&&!mailSkip(draft,"paythanks")&&CLOUD.state==="on"&&/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(draft.email||"")){const v=orderVars(draft);const body=fillReal(tp.body,v).replace(/^.*\(your quote link will go here\).*(\n|$)/m,"")+(S.settings.footer?"\n\n"+richText(S.settings.footer):"");
     sendEmail({to:draft.email,subject:fillReal(tp.subject,v),text:body,template:"paythanks",accent:S.settings.doc&&S.settings.doc.accent,copy:!!S.settings.copyMe}).then(()=>{logEv(draft,`Payment thank-you emailed to ${draft.email}`);draft.emails=draft.emails||[];draft.emails.push({key:"paythanks",to:draft.email,at:new Date().toISOString(),sent:true});toast(`${money(amt)} recorded and a thank-you was emailed`)}).catch(()=>{})}}
    break}
   case"delPay":logEv(draft,`Payment of ${money(draft.payments[i].amount)} removed`);draft.payments.splice(i,1);render();break;
@@ -2134,7 +2182,7 @@ document.addEventListener("click",e=>{
    case"cxDo":{const mail=$("cxMail")&&$("cxMail").checked;draft.cancel={at:new Date().toISOString(),reason:$("cxReason").value,note:$("cxPriv").value.trim(),clientNote:$("cxClient").value.trim()};draft.status="Cancelled";logEv(draft,`Cancelled: ${draft.cancel.reason}`);
    if(draft.id){const k=S.orders.findIndex(x=>x.id===draft.id);if(k>=0){S.orders[k]=clone(draft);save()}}closeM();render();if(mail)openCompose("cancel");else toast(draft.id?"Cancelled and saved":"Marked cancelled. Save to keep it");break}
   case"openStudio":{if(draft.studio&&draft.studio.code){try{localStorage.setItem("dcs-open-code",draft.studio.code)}catch{}}location.href="studio.html";break}
-  case"rqQuote":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;const en=rqEvent(r.event_type_id)?.name;const le=S.events.find(e=>en&&e.name.toLowerCase()===en.toLowerCase());
+  case"rqQuote":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;{const bc=blMatch(r.name,r.email);if(bc&&!confirm(`${fullName(bc)} is blacklisted${bc.blReason?" ("+bc.blReason+")":""}. Make a quote anyway?`))break}const en=rqEvent(r.event_type_id)?.name;const le=S.events.find(e=>en&&e.name.toLowerCase()===en.toLowerCase());
    draft=blankOrder();Object.assign(draft,{customer:r.name,email:r.email,phone:r.phone||"",date:r.event_date||"",kind:"Quote",status:"Inquiry",eventId:le?le.id:draft.eventId,notes:[r.details,r.servings?`Servings: ${r.servings}`:"",...(r.answers||[]).map(x=>`${x.q} ${x.a}`)].filter(Boolean).join("\n\n"),requestId:r.id});logEv(draft,"Started from an online request");
    const c=S.customers.find(x=>x.email&&x.email.toLowerCase()===r.email.toLowerCase());if(c)draft.customerId=c.id;
    rqPatch(r.id,{status:"converted"}).catch(()=>{});go("new-order");toast("Request copied into a new quote. Add items and prices");break}
@@ -2192,7 +2240,7 @@ document.addEventListener("click",e=>{
   case"cSent":logEv(draft,`Emailed “${(S.tpls.find(t=>t.id===C.key)||{name:C.key}).name}”${C.to?" to "+C.to:""}`);draft.emails=draft.emails||[];draft.emails.push({key:C.key,to:C.to,at:new Date().toISOString()});if(draft.kind==="Quote"&&draft.status==="Inquiry"&&C.key==="quote")draft.status="Quote sent";closeM();render();toast(draft.id?"Logged. Save the order to keep it":"Logged on this order");break;
   case"docAccent":S.settings.doc.accent=b.dataset.c;save();render();break;
   case"docSample":{const keep=draft;draft={...blankOrder(),no:S.settings.nextNo,customer:"Maya Thompson",email:"maya@example.com",date:new Date(Date.now()+12*864e5).toISOString().slice(0,10),time:"11:00",items:[{id:"s1",typeId:(S.types[0]||{}).id,typeName:(S.types[0]||{name:"Cakes"}).name,qty:1,price:180,cost:"",tax:S.settings.defaultTax,notes:"Two-tier blush cake with sugar roses",opts:{}}]};openDoc();draft=keep;break}
-  case"docPrint":try{document.body.classList.add("printing");window.print();setTimeout(()=>document.body.classList.remove("printing"),500)}catch(e){toast("Printing isn't available here")}break;
+  case"docPrint":try{document.querySelectorAll("#docPrint details").forEach(d=>d.open=true);document.body.classList.add("printing");window.print();setTimeout(()=>document.body.classList.remove("printing"),500)}catch(e){toast("Printing isn't available here")}break;
   case"custAdd":{const c={id:uid(),first:"",last:"",name:"",phone:"",email:"",notes:""};S.customers.push(c);save();editCust=c.id;custEditing=true;custTab="customers";render();break}
   case"custEdit":editCust=b.dataset.id;custEditing=false;render();window.scrollTo(0,0);break;
   case"custEditOn":custEditing=true;render();break;

@@ -31,6 +31,13 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .dpics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
 .pre{white-space:pre-wrap;margin:0;font-size:14px}
 .dcancel{border:2px solid #b3261e;color:#b3261e;border-radius:10px;padding:8px 12px;margin:10px 0;font-size:13px}.dcancel b{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.dsecs{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.dsec{border:1px solid #efdde6;border-radius:12px;padding:12px 14px;background:#fffdfd;font-size:14px;line-height:1.55}
+.dsec h4{margin:0 0 6px;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc,#c12c7e)}
+.dthanks{text-align:center;background:none;border-style:dashed}
+.dfold>summary{cursor:pointer;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc,#c12c7e);list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:28px}
+.dfold>summary::-webkit-details-marker{display:none}.dfold>summary:after{content:"+";font-size:20px;line-height:1;font-weight:400}.dfold[open]>summary:after{content:"−"}
+.dfold .rich{margin-top:8px}.rich ul,.rich ol{margin:4px 0;padding-left:22px}.rich a{color:var(--acc,#c12c7e)}
 .docfoot{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 0}
 .answer{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .answer h2{font-size:20px;margin:0 0 4px}
@@ -76,6 +83,15 @@ const SB='https://gcorvodfcxhumesttwvj.supabase.co',KEY='sb_publishable_6ruYyVr_
 const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Artist-written text with simple styling (bold, italic, underline, lists, links). Anything else is removed.
+function richClean(html){const d=new DOMParser().parseFromString('<div>'+String(html||'')+'</div>','text/html');
+ const walk=n=>{let out='';n.childNodes.forEach(c=>{if(c.nodeType===3){out+=esc(c.textContent);return}if(c.nodeType!==1)return;const t=c.tagName,inner=walk(c);
+  if(t==='BR')out+='<br>';else if(t==='A'){const h=c.getAttribute('href')||'';out+=/^(https?:|mailto:|tel:)/i.test(h)?`<a href="${esc(h)}" target="_blank" rel="noopener noreferrer">${inner}</a>`:inner}
+  else if(t==='B'||t==='STRONG')out+=`<b>${inner}</b>`;else if(t==='I'||t==='EM')out+=`<i>${inner}</i>`;else if(t==='U')out+=`<u>${inner}</u>`;
+  else if(t==='UL'||t==='OL'||t==='LI')out+=`<${t.toLowerCase()}>${inner}</${t.toLowerCase()}>`;else if(t==='DIV'||t==='P')out+=`<div>${inner||'<br>'}</div>`;else out+=inner});return out};
+ return walk(d.body.firstChild)}
+const richHtml=v=>/<(b|i|u|br|div|p|ul|ol|li|a|strong|em)\b/i.test(v||'')?richClean(v):esc(v||'').replace(/\n/g,'<br>');
+addEventListener('beforeprint',()=>document.querySelectorAll('details.dfold').forEach(x=>x.open=true));
 const app=$('app');
 const token=(new URLSearchParams(location.search).get('t')||'').trim();
 let Q=null,urls={};
@@ -102,9 +118,12 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
    <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv tot"><span>Balance due</span><span>${esc(d.bal)}</span></div></div>
   ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
   ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
-  ${d.payNote||safeLink(d.payLink)?`<span class="lbl">How to pay</span>${d.payNote?`<p class="pre">${esc(d.payNote)}</p>`:''}${safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:''}`:''}
-  ${d.terms?`<span class="lbl">Terms</span><p class="pre note">${esc(d.terms)}</p>`:''}
-  ${d.footer?`<p class="docfoot">${esc(d.footer)}</p>`:''}
+  ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
+   if(d.payNote||pay)sec.push(`<section class="dsec"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
+   if(d.footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(d.footer)}</div></section>`);
+   if(d.cancelPolicy)sec.push(`<details class="dsec dfold"><summary>Cancellation policy</summary><div class="rich">${richHtml(d.cancelPolicy)}</div></details>`);
+   if(d.terms)sec.push(`<details class="dsec dfold"><summary>Terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
+   return sec.length?`<div class="dsecs">${sec.join('')}</div>`:''})()}
  </div>
  ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b> ${esc(d.biz)} will see your answer in their orders.${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</div>${answerBox(true)}`
   :st==='declined'?`<div class="state no"><b>You declined this ${isQ?'quote':'invoice'}${when?' on '+esc(when):''}.</b> Changed your mind? Send ${esc(d.biz)} a message below.</div>${answerBox(true)}`
