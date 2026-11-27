@@ -467,7 +467,10 @@ function updateUndo(){$('#undo').disabled=!hist.length;$('#redo').disabled=!fut.
 // ---------------------------------------------------------------- Renderer & scene
 const view=$('#view');
 const R=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-R.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.5:2));R.outputColorSpace=T.SRGBColorSpace;R.toneMapping=T.ACESFilmicToneMapping;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFShadowMap;
+// Phones and low-memory devices get lighter fur, smaller shadow maps and a lower pixel ratio so the Studio stays smooth.
+var LITE=(()=>{try{return matchMedia('(pointer:coarse)').matches||(navigator.deviceMemory||8)<=4||(navigator.hardwareConcurrency||8)<=4}catch{return false}})();
+function maxPR(){return LITE?((navigator.deviceMemory||8)<=4?1.25:1.5):2}
+R.setPixelRatio(Math.min(devicePixelRatio,maxPR()));R.outputColorSpace=T.SRGBColorSpace;R.toneMapping=T.ACESFilmicToneMapping;R.shadowMap.enabled=true;R.shadowMap.type=T.PCFShadowMap;
 view.appendChild(R.domElement);
 const S=new T.Scene();S.background=new T.Color('#efe4e6');
 // Logo watermark: drawn into the scene background, so it sits behind the cake and appears in photos.
@@ -515,7 +518,7 @@ function setContact(hx,hz,cr,tight=false){const key=[hx,hz,cr].map(v=>v.toFixed(
  x.putImageData(img,0,0);contact.material.map.needsUpdate=true;contact.scale.set(W,H,1)}
 S.add(contact);
 const amb=new T.AmbientLight('#ffffff',.05);S.add(amb);
-const key=new T.DirectionalLight('#fff6ec',3);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-20,bottom:-20,right:20,top:20,near:2,far:100});key.target.position.set(0,4,0);key.shadow.bias=-.0003;key.shadow.normalBias=.02;S.add(key);S.add(key.target);
+const key=new T.DirectionalLight('#fff6ec',3);key.castShadow=true;key.shadow.mapSize.set(LITE?1024:2048,LITE?1024:2048);Object.assign(key.shadow.camera,{left:-20,bottom:-20,right:20,top:20,near:2,far:100});key.target.position.set(0,4,0);key.shadow.bias=-.0003;key.shadow.normalBias=.02;S.add(key);S.add(key.target);
 const fillL=new T.DirectionalLight('#ffeef3',.3);fillL.position.set(10,8,-8);S.add(fillL);
 const rim=new T.DirectionalLight('#ffffff',1.2);rim.position.set(6,12,-16);S.add(rim);
 const useAO=()=>innerWidth>=900;
@@ -1842,7 +1845,7 @@ SCULPT.bee={
   // garden: piped grass all around the base, then small sugar blossoms and leaves along the front
   const P=[],N=[],C=[],g1=new T.Color('#1d7f38'),g2=new T.Color('#3cb04e'),cc=new T.Color(),Dv=new V3(),Uv=new V3(),Vv=new V3();
   const blade=(B,D,L,w,k)=>{Dv.copy(D).normalize();Uv.set(0,1,0).cross(Dv);if(Uv.lengthSq()<1e-4)Uv.set(1,0,0);Uv.normalize();Vv.crossVectors(Dv,Uv);const tip=B.clone().addScaledVector(Dv,L),ph=q()*6.28;cc.copy(g1).lerp(g2,k);for(let e=0;e<3;e++){const a0=ph+e/3*2*PI,a1=ph+(e+1)/3*2*PI;for(const[aa,isTip]of[[a0,0],[a1,0],[(a0+a1)/2,1]]){const p=isTip?tip:B.clone().addScaledVector(Uv,Math.cos(aa)*w).addScaledVector(Vv,Math.sin(aa)*w);P.push(p.x,p.y,p.z);const n=Uv.clone().multiplyScalar(Math.cos(aa)).addScaledVector(Vv,Math.sin(aa)).multiplyScalar(.5).add(new V3(0,.6,0)).normalize();N.push(n.x,n.y,n.z);const f=isTip?1.08:.62;C.push(cc.r*f,cc.g*f,cc.b*f)}}};
-  const gw=t.grassW??.95,rows=Math.round(gw/.075);for(let row=0;row<rows;row++){const rr=r-.12+row/rows*gw,cols=Math.round(2*PI*rr/.06);for(let j=0;j<cols;j++){const a=(j+q())/cols*2*PI,rad=radial(a),B=rad.clone().multiplyScalar(rr+(q()-.5)*.06).setY(y+.01),out=row/rows,lean=.25+out*.5+q()*.25,D=new V3(0,1,0).multiplyScalar(Math.cos(lean)).addScaledVector(rad,Math.sin(lean)).addScaledVector(new V3(-Math.sin(a),0,Math.cos(a)),(q()-.5)*.5);blade(B,D,(.62+q()*.4)*(1-out*.3),.034,q())}}
+  const gw=t.grassW??.95,rows=Math.round(gw/.075);for(let row=0;row<rows;row++){const rr=r-.12+row/rows*gw,cols=Math.round(2*PI*rr/(LITE?.08:.06));for(let j=0;j<cols;j++){const a=(j+q())/cols*2*PI,rad=radial(a),B=rad.clone().multiplyScalar(rr+(q()-.5)*.06).setY(y+.01),out=row/rows,lean=.25+out*.5+q()*.25,D=new V3(0,1,0).multiplyScalar(Math.cos(lean)).addScaledVector(rad,Math.sin(lean)).addScaledVector(new V3(-Math.sin(a),0,Math.cos(a)),(q()-.5)*.5);blade(B,D,(.62+q()*.4)*(1-out*.3),.034,q())}}
   const gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(P,3));gg.setAttribute('normal',new T.Float32BufferAttribute(N,3));gg.setAttribute('color',new T.Float32BufferAttribute(C,3));add(pipeMat('#ffffff'),gg);
   const pal=t.blooms??['#e7a7bd','#f5de78','#a1d8dc','#ef946f','#dbcee7'],byCol={},ctr=[],lv=[];
   const nB=t.bloomN??16;for(let k=0;k<nB;k++){const a=PI/2+(k/(nB-1)-.5)*2.5+(q()-.5)*.08,rad=radial(a),rr=r+.12+(k%3)*.16,base=rad.clone().multiplyScalar(rr).setY(y+.42+(k%2)*.12+q()*.06),nrm=rad.clone().multiplyScalar(.82).add(new V3(0,.55,0)).normalize(),s=.85+(k*7%5)*.07,col=pal[k%pal.length];
@@ -2746,7 +2749,7 @@ const tierMeshes=[];let totalH=0,boardR=6,tierShapes=[],boardMeshes=[],boardTopY
 let ITEMS=[],CUR_ITEM=-1;const regItem=info=>{ITEMS.push(info);return ITEMS.length-1};
 const stampItem=g=>{const n=g.attributes.position.count;g.setAttribute('iid',new T.BufferAttribute(new Float32Array(n).fill(CUR_ITEM),1));return g};
 setTimeout(()=>loadUserModels(),400);
-function build(){try{buildCake()}catch(err){console.error(err);toast('Something in this design could not be drawn. Try Undo.')}try{updateStudioBar()}catch{}$('#loading')?.remove();refitIfGrown()}
+function build(){if(typeof invalidate==='function')invalidate(1500);try{buildCake()}catch(err){console.error(err);toast('Something in this design could not be drawn. Try Undo.')}try{updateStudioBar()}catch{}$('#loading')?.remove();refitIfGrown()}
 var fitTop=null;function cakeTop(){const b=new T.Box3().setFromObject(cake);return b.isEmpty()?0:b.max.y}
 function refitIfGrown(){if(!autoFit||thumbJob||fitTop===null)return;const t=cakeTop();if(Math.abs(t-fitTop)>.25)goView(autoFit)}
 // Printed patterns on a tier's side (fondant cut-outs or painted): cow spots, racing checks, polka dots. Returns 0..1 coverage.
@@ -3133,7 +3136,7 @@ function buildCake(){
     if(!next){const g=base.clone(),cs=Math.max(.55,Math.min(1,(R+step*.5)/rad))*sc;g.scale(cs,cs*.85,cs);g.translate(0,y+h-.06,0);add(mat,g)}}
    curPart='piping'}
   // Piped grass / fur all over (grass tip 233): thousands of short tapered strands. Grass stands up and fans out; fur is denser, shorter and lies down the sides.
-  if(t.texture==='grass'||t.texture==='fur'){curPart='fur';const FUR=t.texture==='fur',lk=(t.furLen??100)/100,sp=(FUR?.06:.072)*Math.max(.8,Math.min(1.25,lk)),c1=new T.Color(t.color),c2=new T.Color(t.ombre?(t.ombreColor||'#fbf7f1'):t.color),cc=new T.Color(),P=[],N=[],C=[],U=new V3(),Vv=new V3(),D=new V3(),Bc=new V3(),Ns=new V3(),tmp=new V3();
+  if(t.texture==='grass'||t.texture==='fur'){curPart='fur';const FUR=t.texture==='fur',lk=(t.furLen??100)/100,sp=(FUR?.06:.072)*Math.max(.8,Math.min(1.25,lk))*(LITE?1.3:1),c1=new T.Color(t.color),c2=new T.Color(t.ombre?(t.ombreColor||'#fbf7f1'):t.color),cc=new T.Color(),P=[],N=[],C=[],U=new V3(),Vv=new V3(),D=new V3(),Bc=new V3(),Ns=new V3(),tmp=new V3();
    const FH=(t.sculpt&&typeof SCULPT!=='undefined'&&SCULPT[t.sculpt]?.fur)?SCULPT[t.sculpt].fur(t,{r,h,y,R_at}):null;const strand=(B,Dir,Nsurf,L,w,k)=>{D.copy(Dir).normalize();U.set(0,1,0);if(Math.abs(D.y)>.9)U.set(1,0,0);U.cross(D).normalize();Vv.crossVectors(D,U);const tip=B.clone().addScaledVector(D,L);cc.copy(c1).lerp(c2,k);if(FH&&FH(B,cc)===0)return;const dark=.7+q()*.12,lite=1.02+q()*.12;const ph=q()*6.28;for(let e=0;e<3;e++){const a0=ph+e/3*2*PI,a1=ph+(e+1)/3*2*PI;for(const[pt,isTip,aa]of[[null,false,a0],[null,false,a1],[tip,true,(a0+a1)/2]]){const p=isTip?tip:B.clone().addScaledVector(U,Math.cos(aa)*w).addScaledVector(Vv,Math.sin(aa)*w);P.push(p.x,p.y,p.z);tmp.copy(U).multiplyScalar(Math.cos(aa)).addScaledVector(Vv,Math.sin(aa)).multiplyScalar(.45).addScaledVector(Nsurf,.75).normalize();N.push(tmp.x,tmp.y,tmp.z);const f=isTip?lite:dark;C.push(cc.r*f,cc.g*f,cc.b*f)}}};
    // Sides
    const rows=Math.max(3,Math.round(h/sp)),cols=Math.max(24,Math.round(2*PI*r/sp));for(let row=0;row<rows;row++){const yy=y+(row+.3+q()*.4)*h/rows;for(let jj=0;jj<cols;jj++){const a=(jj+(row%2?.5:0)+(q()-.5)*.6)/cols*2*PI;const R=R_at(a,yy)-.02;Ns.copy(radial(a));Bc.copy(Ns).multiplyScalar(R).setY(yy);if(t.prof){const sl=(R_at(a,yy+.06)-R_at(a,yy-.06))/.12;Ns.setY(-sl).normalize()}const tilt=FUR?-(.55+q()*.5):(.25+q()*.55),sw=(q()-.5)*(FUR?.5:.8);D.copy(Ns).multiplyScalar(Math.cos(tilt)).add(tmp.set(0,Math.sin(tilt),0)).addScaledVector(new V3(-Math.sin(a),0,Math.cos(a)),sw);const L=(FUR?.17+q()*.1:.22+q()*.16)*lk;strand(Bc.clone(),D.clone(),Ns.clone(),L,(FUR?.032:.028)*Math.min(1.3,lk+.2),(yy-y)/h)}}
@@ -3324,7 +3327,7 @@ Object.values(MSG_FONTS).forEach(f=>document.fonts?.load((f.w||'')+' 80px '+f.cs
 
 // ---------------------------------------------------------------- Scene / lighting
 const lerp=(a,b,t)=>a+(b-a)*t;
-function applyScene(){const sc=design.scene,p=PRESETS[sc.preset]||PRESETS.soft,st=sc.strength/100;WARM.value=sc.preset==='neutral'?0:.135;
+function applyScene(){if(typeof invalidate==='function')invalidate(1500);const sc=design.scene,p=PRESETS[sc.preset]||PRESETS.soft,st=sc.strength/100;WARM.value=sc.preset==='neutral'?0:.135;
  makeBackground();
  key.color.set(p.key);key.position.set(...p.pos);key.intensity=p.k*lerp(.6,1.3,st);fillL.color.set(p.fill);fillL.intensity=p.f*lerp(2,.45,st);amb.intensity=lerp(.22,.04,st);S.environmentIntensity=lerp(.78,.45,st);
  const peonyDepth=['sig_peony','sig_ruffles',...STUDIO_BATCH].includes(design.themeKey)&&sc.preset==='soft';
@@ -4185,13 +4188,17 @@ $('#loadCode').onclick=()=>{try{const raw=$('#codeBox').value.trim().replace(/^D
 $('#photoBtn').onclick=()=>{const guides=cake.children.filter(o=>o.material?.userData?.guide);guides.forEach(o=>o.visible=false);render();guides.forEach(o=>o.visible=true);$('#photoImg').src=R.domElement.toDataURL('image/png');openModal('#photoModal')};
 
 // ---------------------------------------------------------------- Loop
-function resize(){const w=view.clientWidth,h=view.clientHeight;if(!w||!h)return;const pr=Math.min(devicePixelRatio,matchMedia('(pointer:coarse)').matches?1.5:2);R.setPixelRatio(pr);R.setSize(w,h,false);comp.setPixelRatio(pr);comp.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();makeBackground()}
+function resize(){const w=view.clientWidth,h=view.clientHeight;if(!w||!h)return;const pr=Math.min(devicePixelRatio,maxPR());R.setPixelRatio(pr);R.setSize(w,h,false);comp.setPixelRatio(pr);comp.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();makeBackground()}
 new ResizeObserver(resize).observe(view);resize();
 function syncBoardShadow(){contact.rotation.z=cake.rotation.y}
 var pipTick;function render(){syncBoardShadow();if(useAO())comp.render();else R.render(S,cam);if(pipTick)pipTick()}
 let showSizes=false;const sizeLayer=document.getElementById('sizeLayer');
 function updateSizes(){if(!showSizes){if(sizeLayer.childElementCount)sizeLayer.innerHTML='';return}const D=design,w=view.clientWidth,h=view.clientHeight,v=new V3();let html='';if(D.cakeType==='number'){v.set(0,totalH+.8,0).project(cam);html='<div class="szl tot" style="left:'+((v.x*.5+.5)*w).toFixed(0)+'px;top:'+((-v.y*.5+.5)*h).toFixed(0)+'px">"'+((D.number||{}).text||'1')+'" · '+numSize.d.toFixed(0)+'" tall × '+numSize.w.toFixed(0)+'" wide · serves about '+numServings()+'</div>';if(sizeLayer.innerHTML!==html)sizeLayer.innerHTML=html;return}tierShapes.forEach((ts,i)=>{if(!ts||ts.y0===undefined)return;const t=D.tiers[i];v.set(ts.r+.35,ts.y0+ts.h*.5,0).project(cam);if(v.z>1)return;const x=(v.x*.5+.5)*w,y=(-v.y*.5+.5)*h;html+='<div class="szl" style="left:'+x.toFixed(0)+'px;top:'+y.toFixed(0)+'px"><b>Tier '+tierNo(i,D)+'</b> '+t.d+'" × '+(+t.h).toFixed(1)+'"</div>'});v.set(0,totalH+.6,0).project(cam);html+='<div class="szl tot" style="left:'+((v.x*.5+.5)*w).toFixed(0)+'px;top:'+((-v.y*.5+.5)*h).toFixed(0)+'px">'+D.tiers.reduce((n,t)=>n+t.h,0).toFixed(1)+'" tall · serves about '+D.tiers.reduce((n,t)=>n+servings(t),0)+'</div>';if(sizeLayer.innerHTML!==html)sizeLayer.innerHTML=html}
-R.setAnimationLoop(()=>{updateSizes();if(tween){tween.f=Math.min(1,tween.f+.03);const e=tween.f<.5?2*tween.f*tween.f:1-Math.pow(-2*tween.f+2,2)/2;ctl.target.lerpVectors(tween.t0,tween.t1,e);cam.position.lerpVectors(tween.p0,tween.p1,e);cake.rotation.y=tween.r0+(tween.r1-tween.r0)*e;if(tween.f>=1)tween=null}if(spin&&turnX===null)cake.rotation.y-=.0035;ctl.update();if(hlMeshes.length)hlMat.opacity=.3+.18*Math.sin(performance.now()/170);render()});
+// Draw only when something can change: camera moves, spins, tweens, highlights, edits or loads. A slow heartbeat catches anything else.
+var dirtyUntil=0,lastDraw=0;function invalidate(ms){dirtyUntil=Math.max(dirtyUntil,performance.now()+(ms||700))}
+['pointerdown','pointermove','wheel','keydown','input','change','click','touchstart','touchmove'].forEach(e=>addEventListener(e,()=>invalidate(),{passive:true,capture:true}));
+T.DefaultLoadingManager.onLoad=()=>invalidate(1200);new MutationObserver(()=>invalidate()).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+R.setAnimationLoop(()=>{const now=performance.now();updateSizes();if(tween){tween.f=Math.min(1,tween.f+.03);const e=tween.f<.5?2*tween.f*tween.f:1-Math.pow(-2*tween.f+2,2)/2;ctl.target.lerpVectors(tween.t0,tween.t1,e);cam.position.lerpVectors(tween.p0,tween.p1,e);cake.rotation.y=tween.r0+(tween.r1-tween.r0)*e;if(tween.f>=1)tween=null}if(spin&&turnX===null)cake.rotation.y-=.0035;const moved=ctl.update();if(hlMeshes.length)hlMat.opacity=.3+.18*Math.sin(performance.now()/170);if(moved||tween||spin||turnX!==null||hlMeshes.length||pipTick||now<dirtyUntil||now-lastDraw>1000){lastDraw=now;render()}});
 sceneReady=true;applyScene();renderPanels();renderSummary();updateUndo();build();
 </script>
 <style>
