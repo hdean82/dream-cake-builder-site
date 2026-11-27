@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
 for (const [name, vp, scale] of [['studio-hero-desktop', { width: 1440, height: 900 }, 1], ['studio-hero-phone', { width: 390, height: 844 }, 2.5]]) {
   const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: scale, isMobile: scale > 1, hasTouch: scale > 1 });
-  await ctx.addCookies([{ name: 'dcs_tour', value: '1', domain: 'localhost', path: '/' }]);
+  await ctx.addCookies([{ name: 'dcs_tour', value: '1', domain: 'localhost', path: '/' }, { name: 'dcb_team_ui', value: '1', domain: 'localhost', path: '/' }]);
   const page = await ctx.newPage();
   await page.addInitScript(c => { try { localStorage.setItem('dcs-open-code', c); } catch (e) {} }, code);
   await page.goto('http://localhost:8768/studio.html', { waitUntil: 'domcontentloaded', timeout: 120000 });
