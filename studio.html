@@ -1579,7 +1579,8 @@ const sgMat={
  sugar:c=>dmat(c,{r:.45,cc:.35,ccr:.2,sh:.35})};
 // Bend a flat "face" piece around a tier of radius R (local units) so wide pieces hug the cake.
 function sgBend(g,R){if(!R||R<=0)return g;const p=g.attributes.position,n=g.attributes.normal;if(!n)g.computeVertexNormals();const nn=g.attributes.normal;for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),th=x/R,c=Math.cos(th),s=Math.sin(th);p.setX(i,(R+y)*s);p.setY(i,(R+y)*c-R);const nx=nn.getX(i),ny=nn.getY(i);nn.setXYZ(i,nx*c+ny*s,-nx*s+ny*c,nn.getZ(i))}p.needsUpdate=true;nn.needsUpdate=true;return g}
-const sgR=(dc)=>dc&&dc.R?dc.R/((dc.size??100)/100):0;
+// Side pieces are bent onto the real tier wall when placed (conformSide), so they are built flat here; pre-bending them too doubled the curve.
+const sgR=()=>0;
 const sgOval=(x,y,rx,ry,depth,lift=0)=>{const pts=[];for(let i=0;i<72;i++){const a=i/72*2*PI;pts.push(new T.Vector2(x+rx*Math.cos(a),y+ry*Math.sin(a)))}return flatShape(new T.Shape(pts),depth,lift)};
 // ---------- sports balls ----------
 function soccerParts(q){const R=.42,g=new T.SphereGeometry(R,48,32),ico=new T.IcosahedronGeometry(1,0),ip=ico.attributes.position,dirs=[];for(let i=0;i<ip.count;i++){const v=new V3(ip.getX(i),ip.getY(i),ip.getZ(i)).normalize();if(!dirs.some(d=>d.distanceTo(v)<.01))dirs.push(v)}
@@ -1672,18 +1673,18 @@ function cowEarParts(q,c){const e=new T.SphereGeometry(1,28,18);e.scale(.5,.78,.
 function cowFaceParts(q,c,mode,dc){const black=[],white=[],pink=[],dark=[],red=[],tongue=[];
  const rov=(x,y,rx,ry,rot,d)=>{const pts=[],cr=Math.cos(rot),sr=Math.sin(rot);for(let i=0;i<72;i++){const a=i/72*2*PI,u=rx*Math.cos(a),v=ry*Math.sin(a);pts.push(new T.Vector2(x+u*cr-v*sr,y+u*sr+v*cr))}return flatShape(new T.Shape(pts),d,0)};
  // eyes: left smaller and lower, right bigger and higher, pupils looking up and right
- const E=[[-.55,.34,.26,.395,-.12,.24],[.22,.53,.30,.44,.18,.3]];
+ const E=[[-.52,.5,.25,.36,-.1,.24],[.24,.66,.29,.4,.14,.3]];
  for(const[x,y,rx,ry,r,pr]of E){black.push(rov(x,y,rx+.045,ry+.045,r,.03));white.push(rov(x,y,rx,ry,r,.04));black.push(rov(x+rx*.28,y+ry*.12,rx*.66,ry*.74,r,.055));white.push(rov(x+rx*.1,y+ry*.45,.05,.05,0,.065));white.push(rov(x+rx*.23,y+ry*.29,.018,.021,0,.067));
   const l=new T.Shape();l.moveTo(x-rx*.9,y-ry*1.05);l.quadraticCurveTo(x+rx*.3,y-ry*1.45,x+rx*1.5,y-ry*.95);l.quadraticCurveTo(x+rx*.3,y-ry*1.3,x-rx*.9,y-ry*1.05);black.push(flatShape(l,.035,0))}
  // muzzle
- black.push(rov(.12,-.52,.9,.64,.22,.03));pink.push(rov(.12,-.52,.84,.58,.22,.05));
- for(const[x,y]of[[-.28,-.24],[.43,-.06]]){black.push(rov(x,y,.085,.065,.2,.06));dark.push(rov(x,y,.055,.038,.2,.07))}
+ black.push(rov(.1,-.6,.88,.54,.14,.03));pink.push(rov(.1,-.6,.82,.48,.14,.05));
+ for(const[x,y]of[[-.3,-.36],[.44,-.24]]){black.push(rov(x,y,.085,.065,.2,.06));dark.push(rov(x,y,.055,.038,.2,.07))}
  // big open smile: straight top lip, round bottom
  const M=k=>{const cx=.12,cy=-.62,P=(x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k];const s=new T.Shape();s.moveTo(...P(-.42,-.52));s.quadraticCurveTo(...P(.1,-.42),...P(.66,-.26));s.bezierCurveTo(...P(.72,-.75),...P(.25,-1.05),...P(-.12,-.92));s.quadraticCurveTo(...P(-.38,-.8),...P(-.42,-.52));return s};
  black.push(flatShape(M(.92),.06,0));red.push(flatShape(M(.82),.07,0));
  const tg=new T.Shape();tg.absellipse(.2,-.8,.18,.08,0,2*PI,false,.15);tongue.push(flatShape(tg,.075,0));
  {const k=.82,cx=.12,cy=-.62,P=(x,y)=>[cx+(x-cx)*k,cy+(y-cy)*k],q=(u,a,c,d)=>(1-u)*(1-u)*a+2*u*(1-u)*c+u*u*d,A=P(-.42,-.52),C=P(.1,-.42),D=P(.66,-.26),top=[],bot=[];for(let i=0;i<=16;i++){const u=.06+.86*i/16,x=q(u,A[0],C[0],D[0]),y=q(u,A[1],C[1],D[1]);top.push(new T.Vector2(x,y-.01));bot.push(new T.Vector2(x,y-.15-.03*Math.sin(u*PI)))}const th=new T.Shape([...top,...bot.reverse()]);white.push(flatShape(th,.08,0))}
- const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.35,cc:.5}),B(black)],[dmat('#ffffff',{r:.35,cc:.4}),B(white)],[dmat(c,{r:.4,cc:.4}),B(pink)],[dmat('#a0475c',{r:.4,cc:.4}),B(dark)],[dmat('#8a2338',{r:.45,cc:.4}),B(red)],[dmat('#e77f96',{r:.45,cc:.4}),B(tongue)]]}
+ const R=sgR(dc),B=l=>sgBend(mg(l),R);return[[dmat('#1d1b1f',{r:.42,cc:.25,sh:.15}),B(black)],[dmat('#fbf8f3',{r:.5,cc:.08,sh:.3}),B(white)],[dmat(c,{r:.55,cc:.06,sh:.35}),B(pink)],[dmat('#a0475c',{r:.5,cc:.1}),B(dark)],[dmat('#8a2338',{r:.5,cc:.12}),B(red)],[dmat('#e77f96',{r:.5,cc:.12,sh:.3}),B(tongue)]]}
 // ---------- baby shower ----------
 function teddyParts(q,c){const S=(sx,sy,sz,x,y,z)=>{const g=new T.SphereGeometry(1,20,14);g.scale(sx,sy,sz);g.translate(x,y,z);return g};
  const fur=[S(.34,.36,.3,0,.36,0),S(.28,.26,.26,0,.92,0),S(.1,.1,.06,-.2,1.14,0),S(.1,.1,.06,.2,1.14,0),S(.12,.1,.1,-.3,.42,.16),S(.12,.1,.1,.3,.42,.16),S(.13,.12,.18,-.18,.1,.26),S(.13,.12,.18,.18,.1,.26)];
