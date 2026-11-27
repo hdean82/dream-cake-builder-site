@@ -1644,6 +1644,69 @@ for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k
 {const c=DECOR_CATS.find(x=>x.key==='signature');c.items.push(...MX.map(m=>'mx_'+m[0]))}
 // ---- hide 3D toppers whose files were lost with the old Studio host (they no longer load) ----
 queueMicrotask(()=>{for(const k in MODELS){if(!modelLive(MODELS[k])&&DECOR['m_'+k])DECOR['m_'+k].hidden=true}})
+// ===================================================================================================
+// Sculpted cakes: a tier with t.sculpt set gets hand-modelled details built right onto its surface.
+// Coordinates are "front view" inches: fx left/right, fy up from the tier bottom, front of the cake is +Z.
+// ===================================================================================================
+const SCULPT={};
+function sculptKit(ctx){const{r,h,y,R_at}=ctx,FR=PI/2;
+ const zAt=(fx,fy)=>{const R=R_at(FR,y+Math.max(0,Math.min(h,fy)));return Math.sqrt(Math.max(0,R*R-fx*fx))};
+ const nAt=(fx,fy)=>{const e=.04,p=new V3(fx,y+fy,zAt(fx,fy)),a=new V3(fx+e,y+fy,zAt(fx+e,fy)).sub(p),b=new V3(fx,y+fy+e,zAt(fx,fy+e)).sub(p);const n=new V3().crossVectors(a,b).normalize();if(n.z<0)n.negate();return n};
+ const pt=(fx,fy,lift)=>new V3(fx,y+fy,zAt(fx,fy)).addScaledVector(nAt(fx,fy),lift||0);
+ // A raised patch: polar grid over an ellipse (or part of one), height above the cake given by lift(fx,fy,s).
+ const patch=(cx,cy,rx,ry,lift,o={})=>{const a0=o.a0??0,a1=o.a1??2*PI,I=o.I||56,J=o.J||12,full=a1-a0>6.28,P=[],idx=[];
+  for(let j=0;j<=J+1;j++)for(let i=0;i<=I;i++){const s=Math.min(1,j/J),a=a0+(a1-a0)*i/I,fx=cx+rx*s*Math.cos(a),fy=cy+ry*s*Math.sin(a),l=j>J?(o.wall??-.06):lift(fx,fy,s);const p=pt(fx,fy,l);P.push(p.x,p.y,p.z)}
+  for(let j=0;j<=J;j++)for(let i=0;i<I;i++){const A=j*(I+1)+i,B=A+I+1;idx.push(A,A+1,B,A+1,B+1,B)}
+  if(!full){const base=(J+1)*(I+1);for(let j=0;j<=J;j++){const fx=cx+rx*(j/J)*Math.cos(a0),fy=cy+ry*(j/J)*Math.sin(a0),p=pt(fx,fy,o.wall??-.06);P.push(p.x,p.y,p.z)}
+   for(let j=0;j<=J;j++){const fx=cx+rx*(j/J)*Math.cos(a1),fy=cy+ry*(j/J)*Math.sin(a1),p=pt(fx,fy,o.wall??-.06);P.push(p.x,p.y,p.z)}
+   const b2=base+J+1;for(let j=0;j<J;j++){const A=j*(I+1),B=(j+1)*(I+1);idx.push(A,base+j,B,B,base+j,base+j+1);const C=j*(I+1)+I,D=(j+1)*(I+1)+I;idx.push(C,D,b2+j,D,b2+j+1,b2+j)}}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setIndex(idx);g.computeVertexNormals();return norm(g)};
+ const tube=(pts,rad,seg)=>norm(new T.TubeGeometry(new T.CatmullRomCurve3(pts),seg||64,rad,10,false));
+ const cap=(p,rad)=>{const g=new T.SphereGeometry(rad,12,8);g.translate(p.x,p.y,p.z);return norm(g)};
+ return{zAt,nAt,pt,patch,tube,cap}}
+// ---- Garden Bee (Heather's bee): fuzzy piped dome, yellow stripes, sleepy face, scrolled wings, garden ----
+SCULPT.bee={
+ face:t=>({cx:0,cy:t.faceY??2.15,rx:t.faceW??2.95,ry:t.faceH??2.2}),
+ fur(t,ctx){const F=this.face(t),{r,y}=ctx,st=(t.stripes??[.6,.47,.34,-.12,-.52]).map(v=>v*r),w=(t.stripeW??.022)*r,yel=new T.Color(t.accent||'#f3d31d');
+  const tn=-(t.turn??0)*PI/180,cs=Math.cos(tn),sn=Math.sin(tn),Bq=new V3();
+  return(B0,cc)=>{const B=Bq.set(B0.x*cs+B0.z*sn,B0.y,-B0.x*sn+B0.z*cs);if(B.z>0){const ex=B.x/F.rx,ey=(B.y-y-F.cy)/F.ry;if(ex*ex+ey*ey<.94)return 0}for(const s of st)if(Math.abs(B.z-s)<w){cc.copy(yel);break}}},
+ build(t,ctx){const K=sculptKit(ctx),{r,h,y,q}=ctx,turn=(t.turn??0)*PI/180,add=(m,g)=>{g.rotateY(turn);ctx.add(m,g)},F=this.face(t),yel=t.accent||'#f3d31d',ink='#16191a';
+  const faceLift=(fx,fy,s)=>.16+.22*Math.sqrt(Math.max(0,1-s*s));
+  const fl=(fx,fy)=>{const ex=fx/F.rx,ey=(fy-F.cy)/F.ry;return faceLift(fx,fy,Math.min(1,Math.hypot(ex,ey)))};
+  add(dmat(yel,{r:.42,cc:.35,ccr:.25,sh:.3}),K.patch(F.cx,F.cy,F.rx,F.ry,faceLift,{wall:-.1,J:16,I:72}));
+  // eyes: bulging sugar eyeballs, half-closed yellow lids, pupils glancing down and to the side
+  const E=t.eyes??{x:1.32,y:.32,rx:.82,ry:.86,bulge:.38};const W=[],L=[],Pu=[],Hl=[],Rim=[];
+  for(const sd of[-1,1]){const cx=sd*E.x,cy=F.cy+E.y,eb=(fx,fy)=>{const ex=(fx-cx)/E.rx,ey=(fy-cy)/E.ry,s2=ex*ex+ey*ey;return fl(fx,fy)+E.bulge*Math.sqrt(Math.max(0,1-s2))};
+   W.push(K.patch(cx,cy,E.rx,E.ry,(fx,fy)=>eb(fx,fy),{wall:fl(cx,cy)-.12,J:14}));
+   const px=cx+(sd<0?-.06:.2),py=cy-.36,pr=.3;Pu.push(K.patch(px,py,pr,pr*1.06,(fx,fy)=>eb(fx,fy)+.025,{wall:eb(px,py)-.06,J:8,I:40}));
+   Hl.push(K.patch(px+.1,py+.1,.075,.075,(fx,fy)=>eb(fx,fy)+.05,{J:4,I:16}));
+   const lr=1.07,lidY=cy-.05;L.push(K.patch(cx,lidY,E.rx*lr,E.ry*lr*1.02,(fx,fy)=>eb(fx,Math.max(fy,lidY))+.06,{a0:-.12,a1:PI+.12,wall:fl(cx,cy)-.1,J:12}));
+   const rim=[];for(let k=0;k<=24;k++){const a=-.12+(PI+.24)*k/24,fx=cx+E.rx*lr*Math.cos(a),fy=lidY+E.ry*lr*1.02*Math.sin(a)*(k===0||k===24?1:0);if(k===0||k===24)rim.push(K.pt(fx,fy,eb(fx,Math.max(fy,lidY))+.03))}
+   const lipPts=[];for(let k=0;k<=20;k++){const fx=cx-E.rx*lr*.99+2*E.rx*lr*.99*k/20,fy=lidY-.06*Math.sin(PI*k/20);lipPts.push(K.pt(fx,fy,eb(fx,lidY)+.07))}Rim.push(K.tube(lipPts,.055,40))}
+  add(dmat('#f6f1e6',{r:.3,cc:.6,ccr:.08}),mg(W));add(dmat(ink,{r:.22,cc:.8,ccr:.05}),mg(Pu));add(dmat('#ffffff',{r:.15,cc:1}),mg(Hl));
+  add(dmat(yel,{r:.4,cc:.45,ccr:.18,sh:.3}),mg([...L,...Rim]));
+  // smile: one rolled sugar cord
+  const sm=[];for(let k=0;k<=24;k++){const u=k/24*2-1,fx=u*1.22,fy=F.cy-.78-.42*(1-u*u);sm.push(K.pt(fx,fy,fl(fx,fy)+.04))}add(dmat(ink,{r:.3,cc:.6}),K.tube(sm,.085,48));
+  // antennae: two short looped cords planted in the fur
+  const ant=[];for(const sd of[-1,1]){const xc=sd*(t.antX??1.95),fyB=t.antY??3.75,rho=.62,L0=K.pt(xc-rho,fyB,-.12),R0=K.pt(xc+rho,fyB-.35,-.12),Nn=K.nAt(xc,fyB),U=new V3(0,1,0);
+   const pk=L0.clone().add(R0).multiplyScalar(.5).addScaledVector(U,1.15).addScaledVector(Nn,.35);ant.push(K.tube([L0,L0.clone().addScaledVector(U,.6).addScaledVector(Nn,.12),pk,R0.clone().addScaledVector(U,.6).addScaledVector(Nn,.16),R0],.1,48))}
+  add(dmat(ink,{r:.3,cc:.55}),mg(ant));
+  // wings: upright sugar-sheet ovals with a black scroll piped on the front
+  const wing=[],sc=[];for(const sd of[-1,1]){const g=new T.SphereGeometry(1,40,24);g.scale(.78,1.62,.1);const sp=[];for(let k=0;k<=90;k++){const th=k/90*2.15*2*PI,rr=.05+.46*k/90,dx=Math.cos(th+PI)*rr*sd,dy=.38+Math.sin(th+PI)*rr*1.05;sp.push(new V3(dx,dy,.1*Math.sqrt(Math.max(0,1-(dx/.78)**2-(dy/1.62)**2))+.035))}const s=new T.TubeGeometry(new T.CatmullRomCurve3(sp),140,.06,8,false);
+   for(const gg of[g,s]){gg.rotateZ(-sd*.13);gg.rotateX(-.1);gg.translate(sd*(t.wingX??2.05),y+h+.95,t.wingZ??-.55)}wing.push(norm(g));sc.push(norm(s))}
+  add(dmat('#ebe2d2',{r:.5,cc:.25,sh:.4}),mg(wing));add(dmat(ink,{r:.3,cc:.6}),mg(sc));
+  // garden: piped grass all around the base, then small sugar blossoms and leaves along the front
+  const P=[],N=[],C=[],g1=new T.Color('#1d7f38'),g2=new T.Color('#3cb04e'),cc=new T.Color(),Dv=new V3(),Uv=new V3(),Vv=new V3();
+  const blade=(B,D,L,w,k)=>{Dv.copy(D).normalize();Uv.set(0,1,0).cross(Dv);if(Uv.lengthSq()<1e-4)Uv.set(1,0,0);Uv.normalize();Vv.crossVectors(Dv,Uv);const tip=B.clone().addScaledVector(Dv,L),ph=q()*6.28;cc.copy(g1).lerp(g2,k);for(let e=0;e<3;e++){const a0=ph+e/3*2*PI,a1=ph+(e+1)/3*2*PI;for(const[aa,isTip]of[[a0,0],[a1,0],[(a0+a1)/2,1]]){const p=isTip?tip:B.clone().addScaledVector(Uv,Math.cos(aa)*w).addScaledVector(Vv,Math.sin(aa)*w);P.push(p.x,p.y,p.z);const n=Uv.clone().multiplyScalar(Math.cos(aa)).addScaledVector(Vv,Math.sin(aa)).multiplyScalar(.5).add(new V3(0,.6,0)).normalize();N.push(n.x,n.y,n.z);const f=isTip?1.08:.62;C.push(cc.r*f,cc.g*f,cc.b*f)}}};
+  const gw=t.grassW??.95,rows=Math.round(gw/.075);for(let row=0;row<rows;row++){const rr=r-.12+row/rows*gw,cols=Math.round(2*PI*rr/.06);for(let j=0;j<cols;j++){const a=(j+q())/cols*2*PI,rad=radial(a),B=rad.clone().multiplyScalar(rr+(q()-.5)*.06).setY(y+.01),out=row/rows,lean=.25+out*.5+q()*.25,D=new V3(0,1,0).multiplyScalar(Math.cos(lean)).addScaledVector(rad,Math.sin(lean)).addScaledVector(new V3(-Math.sin(a),0,Math.cos(a)),(q()-.5)*.5);blade(B,D,(.62+q()*.4)*(1-out*.3),.034,q())}}
+  const gg=new T.BufferGeometry();gg.setAttribute('position',new T.Float32BufferAttribute(P,3));gg.setAttribute('normal',new T.Float32BufferAttribute(N,3));gg.setAttribute('color',new T.Float32BufferAttribute(C,3));add(pipeMat('#ffffff'),gg);
+  const pal=t.blooms??['#e7a7bd','#f5de78','#a1d8dc','#ef946f','#dbcee7'],byCol={},ctr=[],lv=[];
+  const nB=t.bloomN??16;for(let k=0;k<nB;k++){const a=PI/2+(k/(nB-1)-.5)*2.5+(q()-.5)*.08,rad=radial(a),rr=r+.12+(k%3)*.16,base=rad.clone().multiplyScalar(rr).setY(y+.42+(k%2)*.12+q()*.06),nrm=rad.clone().multiplyScalar(.82).add(new V3(0,.55,0)).normalize(),s=.85+(k*7%5)*.07,col=pal[k%pal.length];
+   const ux=new V3(0,1,0).cross(nrm).normalize(),uy=new V3().crossVectors(nrm,ux),spin=q()*6.28;(byCol[col]=byCol[col]||[]);for(let p=0;p<5;p++){const g=new T.SphereGeometry(.19,12,8);g.scale(1,.64,.34);g.translate(.19,0,0);g.rotateZ(spin+p/5*2*PI);g.applyMatrix4(new T.Matrix4().makeBasis(ux,uy,nrm).setPosition(base));g.scale(1,1,1);byCol[col].push(norm(g))}
+   const c=new T.SphereGeometry(.08,10,8);c.applyMatrix4(new T.Matrix4().makeBasis(ux,uy,nrm).setPosition(base.clone().addScaledVector(nrm,.04)));ctr.push(norm(c))}
+  for(const col in byCol)add(dmat(col,{r:.45,cc:.3,sh:.4}),mg(byCol[col]));add(dmat('#fff0af',{r:.4,cc:.3}),mg(ctr));
+  for(let k=0;k<9;k++){const a=PI/2+(k/8-.5)*2.3+.09,rad=radial(a),base=rad.clone().multiplyScalar(r+.35).setY(y+.36),g=new T.SphereGeometry(.24,14,8);g.scale(1,.18,.42);g.rotateY(-a+(k%2?.9:-.9));g.rotateZ(.35);g.translate(base.x,base.y,base.z);lv.push(norm(g))}
+  add(dmat('#2f7442',{r:.45,cc:.3}),mg(lv))}};
 
 // ---------- Signature cakes: Sprinkle Me Silly's real cakes, rebuilt in the Studio ----------
 const SIG='Signature Cakes';
@@ -1699,9 +1762,8 @@ THEMES.unshift(
   newTier(7.8,8.4,{color:'#fbf7f1',finish:'fondant',prof:'bucket',stencil:{pattern:'stripes',color:'#d62839',size:1.3,height:8.2},top:'rope',pipe:'#fbf7f1',bottom:'none',decor:[DC('poplabel','band',1,{color:'#d62839',size:200,R:3.7,rot:55,y:.6}),DC('popcorn','cluster',120,{color:'#f8efd4',size:260}),DC('mx_ticket','cluster',1,{size:480,center:true,face:55}),DC('stars','cluster',5,{mix:['#f38ab0','#5fc8d8','#f2c230'],size:240})]})]}},
  {key:'sig_crawfish',name:'Crawfish Boil Pot',tag:SIG,blurb:'A brushed silver stock pot cake with a tilted lid and loop handles, spilling over with crawfish and corn, with potatoes and corn on the board.',d:{board:'white',boardColor:'#ece5d3',topper:'none',tiers:[
   newTier(8,7,{color:'#c4c8ce',finish:'fondant',texture:'brushed',top:'rope',pipe:'#aeb2b8',bottom:'rope',bottomColor:'#aeb2b8',decor:[DC('pothandle','band',2,{color:'#c9ccd2',size:160,y:2,rot:95}),DC('potlid2','cluster',1,{color:'#c9ccd2',size:300,center:true}),DC('mx_crawfish','crown',12,{size:380}),DC('mx_corn_cob','crown',3,{size:190,rot:60}),DC('mx_corn_round','cluster',3,{size:170,where:'board',seed:3}),DC('mx_corn_cob','cluster',3,{size:230,where:'board',seed:9}),DC('mx_potato','cluster',5,{size:180,where:'board'})]})]}},
- {key:'sig_bee',name:'Bumble Bee Garden',tag:SIG,blurb:'A fuzzy black piped bee dome with a big round yellow face, googly eyes and a smile, swirl wings and curly antennae, in a garden of piped grass and sugar flowers.',d:{board:'white',boardColor:'#c9d96a',topper:'none',tiers:[
-  newTier(13,1.6,{color:'#4fa340',texture:'grass',furLen:160,top:'none',bottom:'none',decor:[DC('daisies','scatter',22,{color:'#fbf7f1',size:150}),DC('blossoms','scatter',34,{mix:['#f3a6c0','#f2c230','#7fb0e8','#e8475f','#b77fc4'],size:150})]}),
-  newTier(10,6,{color:'#1d1b1f',texture:'grass',furLen:150,prof:'half',top:'none',bottom:'none',decor:[DC('beeface','band',1,{color:'#ffd21f',size:405,R:4.3,rot:55,y:-.15}),DC('beetop','cluster',1,{color:'#ffd21f',size:260,center:true,face:95})]})]}},
+ {key:'sig_bee',name:'Garden Bee',tag:SIG,blurb:'A sculpted dome piped in dense black fur with yellow stripes, a big sleepy sugar face, curled antennae, scrolled sugar wings, and a garden of piped grass and little blossoms.',d:{board:'white',boardColor:'#9aa53c',topper:'none',tiers:[
+  newTier(9,4.9,{color:'#17191a',texture:'grass',furLen:88,prof:'half',top:'none',bottom:'none',sculpt:'bee',turn:35,accent:'#f3d31d'})]}},
  {key:'sig_moneybag',name:'Money Bag Birthday',tag:SIG,blurb:'A red money bag cake gathered up like a real sack, tied at the neck with a thick black rope knot and hanging ties, a big gold dollar sign, and cash and gold dollar signs spilling out of the ruffled opening.',d:{board:'white',boardColor:'#e9eaec',topper:'none',tiers:[
   newTier(9.4,7.4,{color:'#b5321f',finish:'royal',prof:'sack',texture:'gathers',top:'none',bottom:'none',decor:[DC('dollarface','band',1,{color:'#d4ae5a',size:320,R:4.7,rot:55,y:-.5}),DC('mx_cash_bundle','cluster',2,{size:320,where:'board',seed:6})]}),
   newTier(4.2,1,{color:'#a82e1c',finish:'royal',texture:'gathers',gFull:true,top:'rope',pipe:'#1d1b1f',bottom:'rope',bottomColor:'#1d1b1f',decor:[DC('ropeknot','band',1,{color:'#1d1b1f',size:200,rot:92,y:.1})]}),
@@ -2082,12 +2144,13 @@ function buildCake(){
    curPart='piping'}
   // Piped grass / fur all over (grass tip 233): thousands of short tapered strands. Grass stands up and fans out; fur is denser, shorter and lies down the sides.
   if(t.texture==='grass'||t.texture==='fur'){curPart='fur';const FUR=t.texture==='fur',lk=(t.furLen??100)/100,sp=(FUR?.06:.072)*Math.max(.8,Math.min(1.25,lk)),c1=new T.Color(t.color),c2=new T.Color(t.ombre?(t.ombreColor||'#fbf7f1'):t.color),cc=new T.Color(),P=[],N=[],C=[],U=new V3(),Vv=new V3(),D=new V3(),Bc=new V3(),Ns=new V3(),tmp=new V3();
-   const strand=(B,Dir,Nsurf,L,w,k)=>{D.copy(Dir).normalize();U.set(0,1,0);if(Math.abs(D.y)>.9)U.set(1,0,0);U.cross(D).normalize();Vv.crossVectors(D,U);const tip=B.clone().addScaledVector(D,L);cc.copy(c1).lerp(c2,k);const dark=.7+q()*.12,lite=1.02+q()*.12;const ph=q()*6.28;for(let e=0;e<3;e++){const a0=ph+e/3*2*PI,a1=ph+(e+1)/3*2*PI;for(const[pt,isTip,aa]of[[null,false,a0],[null,false,a1],[tip,true,(a0+a1)/2]]){const p=isTip?tip:B.clone().addScaledVector(U,Math.cos(aa)*w).addScaledVector(Vv,Math.sin(aa)*w);P.push(p.x,p.y,p.z);tmp.copy(U).multiplyScalar(Math.cos(aa)).addScaledVector(Vv,Math.sin(aa)).multiplyScalar(.45).addScaledVector(Nsurf,.75).normalize();N.push(tmp.x,tmp.y,tmp.z);const f=isTip?lite:dark;C.push(cc.r*f,cc.g*f,cc.b*f)}}};
+   const FH=(t.sculpt&&typeof SCULPT!=='undefined'&&SCULPT[t.sculpt]?.fur)?SCULPT[t.sculpt].fur(t,{r,h,y,R_at}):null;const strand=(B,Dir,Nsurf,L,w,k)=>{D.copy(Dir).normalize();U.set(0,1,0);if(Math.abs(D.y)>.9)U.set(1,0,0);U.cross(D).normalize();Vv.crossVectors(D,U);const tip=B.clone().addScaledVector(D,L);cc.copy(c1).lerp(c2,k);if(FH&&FH(B,cc)===0)return;const dark=.7+q()*.12,lite=1.02+q()*.12;const ph=q()*6.28;for(let e=0;e<3;e++){const a0=ph+e/3*2*PI,a1=ph+(e+1)/3*2*PI;for(const[pt,isTip,aa]of[[null,false,a0],[null,false,a1],[tip,true,(a0+a1)/2]]){const p=isTip?tip:B.clone().addScaledVector(U,Math.cos(aa)*w).addScaledVector(Vv,Math.sin(aa)*w);P.push(p.x,p.y,p.z);tmp.copy(U).multiplyScalar(Math.cos(aa)).addScaledVector(Vv,Math.sin(aa)).multiplyScalar(.45).addScaledVector(Nsurf,.75).normalize();N.push(tmp.x,tmp.y,tmp.z);const f=isTip?lite:dark;C.push(cc.r*f,cc.g*f,cc.b*f)}}};
    // Sides
    const rows=Math.max(3,Math.round(h/sp)),cols=Math.max(24,Math.round(2*PI*r/sp));for(let row=0;row<rows;row++){const yy=y+(row+.3+q()*.4)*h/rows;for(let jj=0;jj<cols;jj++){const a=(jj+(row%2?.5:0)+(q()-.5)*.6)/cols*2*PI;const R=R_at(a,yy)-.02;Ns.copy(radial(a));Bc.copy(Ns).multiplyScalar(R).setY(yy);if(t.prof){const sl=(R_at(a,yy+.06)-R_at(a,yy-.06))/.12;Ns.setY(-sl).normalize()}const tilt=FUR?-(.55+q()*.5):(.25+q()*.55),sw=(q()-.5)*(FUR?.5:.8);D.copy(Ns).multiplyScalar(Math.cos(tilt)).add(tmp.set(0,Math.sin(tilt),0)).addScaledVector(new V3(-Math.sin(a),0,Math.cos(a)),sw);const L=(FUR?.17+q()*.1:.22+q()*.16)*lk;strand(Bc.clone(),D.clone(),Ns.clone(),L,(FUR?.032:.028)*Math.min(1.3,lk+.2),(yy-y)/h)}}
    // Top: sunflower spiral so the strands spread evenly, leaving room for the next tier.
    if(t.furTop!==false&&!t.prof){const inner=nr?nr-.1:0,area=PI*(r*r-inner*inner),M=Math.round(area/(sp*sp)),GA=PI*(3-Math.sqrt(5));Ns.set(0,1,0);for(let k=0;k<M;k++){const rr=Math.sqrt(inner*inner+(r*r-inner*inner)*(k+.5)/M)*.985,a=k*GA,yy=y+h;Bc.copy(radial(a)).multiplyScalar(rr).setY(yy-.02);const edge=Math.max(0,(rr-(r-.5))/.5),lean=(FUR?.5:.3)+q()*(FUR?.6:.5)+edge*.6,dir=a+(q()-.5)*1.2;D.set(Math.cos(dir)*Math.sin(lean),Math.cos(lean),Math.sin(dir)*Math.sin(lean));const L=(FUR?.15+q()*.1:.22+q()*.16)*lk;strand(Bc.clone(),D.clone(),Ns.clone(),L,(FUR?.032:.028)*Math.min(1.3,lk+.2),1)}}
    const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(P,3));g.setAttribute('normal',new T.Float32BufferAttribute(N,3));g.setAttribute('color',new T.Float32BufferAttribute(C,3));add(pipeMat('#ffffff'),g);curPart='piping'}
+  if(t.sculpt&&typeof SCULPT!=='undefined'&&SCULPT[t.sculpt]){const cp=curPart;curPart='sculpt';try{SCULPT[t.sculpt].build(t,{r,h,y,R_at,add,q})}catch(err){console.error('Sculpt skipped',err)}curPart=cp}
   if(t.stencil?.pattern){try{buildStencil(t,{r,h,y,R_at,add})}catch(err){console.error('Stencil skipped',err)}}
   if(t.topImg||t.sideImg){try{buildEdibles(t,{r,h,y,R_at,add,SHf,q})}catch(err){console.error('Edible image skipped',err)}}
   curPart='piping';ROUND_PLACED.length=0;(t.decor||[]).forEach(dc=>{if(dc.off)return;try{placeDecor(dc,{i,r,h,y,nr,R_at,add,SH:SHf,BY:bh,BR:boardR,R0:reach})}catch(err){console.error('Decoration skipped',dc.type,err)}});
@@ -2621,7 +2684,7 @@ function renderLayers(){const p=$('#p-layers');if(!p)return;p.innerHTML='';p.app
 function showTab(name){$$('.tab').forEach(x=>x.classList.toggle('on',x.dataset.tab===name));$$('.pane').forEach(x=>x.classList.toggle('on',x.id==='p-'+name))}
 $$('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 const FOCUS={stencil:['frost','stencil'],seam:['frost','stencil'],custom:['msg','custom'],plaque:['msg','plaque'],rosettes:['frost','frost-color'],edibleTop:['msg','edible'],edibleSide:['msg','edible'],number:['tiers','number'],kisses:['tiers','number'],face:['decor','topper'],ganache:['frost','ganache'],surface:['frost','frost-color'],top:['pipe','top','top'],bottom:['pipe','bottom','bottom'],side:['pipe','side','side'],pearl:['pipe','pearl','side'],rope:['pipe','rope','side'],drop:['decor','drop'],bow:['decor','bow'],gold:['decor','gold'],topper:['decor','topper'],board:['tiers','board'],message:['msg','message']};
-const PART_NAMES={stencil:'Stencil',seam:'Stencil Seam',custom:'Custom Piece',plaque:'Name Plaque',rosettes:'Rosettes',edibleTop:'Edible Image',edibleSide:'Edible Side Image',number:'Number Cake',kisses:'Cream Kisses',face:'Unicorn Eyes',ganache:'Drip',surface:'Frosting',top:'Top Border',bottom:'Bottom Border',side:'Side Piping',pearl:'Pearls',rope:'Lambeth Rope',drop:'Royal Icing Drops',bow:'Bows',gold:'Gold Leaf',topper:'Topper',board:'Cake Board',message:'Message',piping:'Piping'};
+const PART_NAMES={sculpt:'Sculpted Details',stencil:'Stencil',seam:'Stencil Seam',custom:'Custom Piece',plaque:'Name Plaque',rosettes:'Rosettes',edibleTop:'Edible Image',edibleSide:'Edible Side Image',number:'Number Cake',kisses:'Cream Kisses',face:'Unicorn Eyes',ganache:'Drip',surface:'Frosting',top:'Top Border',bottom:'Bottom Border',side:'Side Piping',pearl:'Pearls',rope:'Lambeth Rope',drop:'Royal Icing Drops',bow:'Bows',gold:'Gold Leaf',topper:'Topper',board:'Cake Board',message:'Message',piping:'Piping'};
 function partName(u){if(String(u.part).startsWith('deco')){const dc=(design.tiers[u.tier]?.decor||[]).find(z=>'deco'+z.id===u.part);return dc&&DECOR[dc.type]?decName(dc.type):'decoration'}return PART_NAMES[u.part]||u.part}
 // Turn the cake so a decoration faces you, then zoom in on it.
 function focusOnPart(part,tier){const box=new T.Box3();let n=0;cake.updateMatrixWorld(true);cake.children.forEach(o=>{const u=o.userData;if(u&&!u.hl&&u.part===part&&u.tier===tier&&o.geometry){o.geometry.computeBoundingBox();const b=o.geometry.boundingBox.clone();b.applyMatrix4(o.matrix);box.union(b);n++}});if(!n||box.isEmpty())return;
