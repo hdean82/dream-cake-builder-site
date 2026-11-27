@@ -25,10 +25,10 @@ for (const [name, vp, scale, zoom] of [['studio-hero-desktop', { width: 1440, he
   await page.goto('http://localhost:8768/studio.html', { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.waitForTimeout(40000);
   // bring the cake to the middle and closer, using the Studio's own move controls
-  await page.evaluate(n => { const b = k => document.querySelector('[data-mv="' + k + '"]'); b('center')?.click(); for (let i = 0; i < n; i++) b('in')?.click(); }, zoom);
+  await page.evaluate(n => { const b = k => document.querySelector('[data-mv="' + k + '"]'); const k = x => b(x)?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); k('center'); for (let i = 0; i < n; i++) k('in'); }, zoom);
   await page.waitForTimeout(4000);
   await page.evaluate(() => { document.querySelectorAll('#toast,.toast,.tour,.coach,#wlCard').forEach(e => e.remove()); });
-  await page.screenshot({ path: path.join(OUT, name + '.jpg'), type: 'jpeg', quality: 90 });
+  await page.screenshot({ path: path.join(OUT, name + '.jpg'), type: 'jpeg', quality: 90, timeout: 120000 });
   console.log('Saved', name);
   await ctx.close();
 }
