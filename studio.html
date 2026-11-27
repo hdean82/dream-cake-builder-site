@@ -2782,7 +2782,7 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
  if(pat==='custom'&&img){const e=edImg(img);if(!(e&&e.tex&&e.tex.image)){return new T.CanvasTexture(c)}x.drawImage(e.tex.image,0,0,S,S);try{const id=x.getImageData(0,0,S,S),d=id.data;let opaque=0;for(let i=3;i<d.length;i+=4)if(d[i]>250)opaque++;const photo=opaque>S*S*.9;for(let i=0;i<d.length;i+=4){const lum=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255,a=photo?Math.max(0,Math.min(1,(.78-lum)*2.2)):d[i+3]/255;d[i]=d[i+1]=d[i+2]=255;d[i+3]=Math.round(a*255)}x.putImageData(id,0,0)}catch(err){}}
  else if(pat==='dots'){[[64,64],[192,192],[192,64],[64,192]].forEach(([a,b],i)=>{x.beginPath();x.arc(a,b,i<2?26:14,0,7);x.fill()})}
  else if(pat==='florentine'){x.lineCap='round';x.lineJoin='round';florentineTile(x)}
- else if(pat==='medallion'){x.lineWidth=8;x.beginPath();x.arc(128,128,70,0,7);x.stroke();x.beginPath();x.arc(128,128,40,0,7);x.stroke();for(let k=0;k<12;k++){const a=k/12*Math.PI*2;x.beginPath();x.ellipse(128+Math.cos(a)*55,128+Math.sin(a)*55,12,6,a,0,7);x.fill()}x.beginPath();x.arc(128,128,14,0,7);x.fill();for(const[a,b]of[[0,0],[256,0],[0,256],[256,256]]){x.beginPath();x.arc(a,b,30,0,7);x.stroke()}}
+ else if(pat==='medallion'){x.lineCap='round';x.lineJoin='round';frenchMedallionTile(x)}
  else if(pat==='fleur'){const f=(cx,cy,sc)=>{x.save();x.translate(cx,cy);x.scale(sc,sc);x.beginPath();x.moveTo(0,-60);x.bezierCurveTo(22,-30,18,0,0,20);x.bezierCurveTo(-18,0,-22,-30,0,-60);x.fill();for(const s of[-1,1]){x.beginPath();x.moveTo(0,10);x.bezierCurveTo(s*30,-30,s*70,-10,s*50,20);x.bezierCurveTo(s*40,0,s*20,10,s*8,25);x.fill()}x.fillRect(-26,22,52,10);x.beginPath();x.moveTo(-8,32);x.lineTo(0,62);x.lineTo(8,32);x.fill();x.restore()};f(128,120,1);f(0,250,.6);f(256,250,.6);f(0,-6,.6);f(256,-6,.6)}
  else if(pat==='cornelli'){cornelliTile(x,256,7)}
  else if(pat==='checker'){x.fillRect(0,0,128,128);x.fillRect(128,128,128,128)}
@@ -3060,6 +3060,26 @@ function printFn(kind,r,h,seed){const C=2*PI*r,fr=x=>x-Math.floor(x);
 // Leaf damask: a mirror-symmetric medallion (open teardrop vase, C-scrolls, acanthus leaves, crown finial, pointed drop) in a half-drop repeat with small dot fillers.
 // Royal damask: a fleur plume inside a pointed ogee cartouche with scrolls and flame tufts, half-drop repeat with small rosettes between.
 // Florentine scroll: a Renaissance running scroll (rinceau). A wavy main stem throws off volutes that alternate above and below, each curling into a rosette and dressed with acanthus leaves; seamless around the tier.
+// French medallion: scalloped oval cameo frames with a pearl ring, rosette, bow knot and drop, linked by beaded festoon swags.
+function frenchMedallionTile(x){
+ const leaf=(cx,cy,a,l,w)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8,-l*.8,0,-l);x.bezierCurveTo(w*.8,-l*.8,w,-l*.3,0,0);x.fill();x.restore()};
+ const medallion=(cx,cy)=>{
+  // scalloped oval frame
+  x.lineWidth=7;x.beginPath();for(let k=0;k<=96;k++){const a=k/96*Math.PI*2,sc=1+.06*Math.cos(a*16);const X=cx+Math.cos(a)*46*sc,Y=cy+Math.sin(a)*60*sc;k?x.lineTo(X,Y):x.moveTo(X,Y)}x.closePath();x.stroke();
+  x.lineWidth=4;x.beginPath();x.ellipse(cx,cy,34,47,0,0,Math.PI*2);x.stroke();
+  // pearl ring
+  for(let k=0;k<20;k++){const a=k/20*Math.PI*2;x.beginPath();x.arc(cx+Math.cos(a)*40,cy+Math.sin(a)*53.5,2.6,0,7);x.fill()}
+  // central rosette
+  for(let k=0;k<8;k++)leaf(cx,cy,k/8*Math.PI*2,26,11);x.save();x.globalCompositeOperation='destination-out';x.beginPath();x.arc(cx,cy,8,0,7);x.fill();x.restore();x.beginPath();x.arc(cx,cy,4.5,0,7);x.fill();
+  // bow knot on top
+  const by=cy-66;x.lineWidth=5;for(const s of[-1,1]){x.beginPath();x.moveTo(cx,by);x.bezierCurveTo(cx+s*22,by-20,cx+s*30,by+4,cx,by);x.stroke();x.beginPath();x.moveTo(cx,by);x.quadraticCurveTo(cx+s*10,by+10,cx+s*18,by+26);x.stroke()}x.beginPath();x.arc(cx,by,4,0,7);x.fill();
+  // small leaf drop below
+  leaf(cx,cy+64,Math.PI,22,8);x.beginPath();x.arc(cx,cy+90,4,0,7);x.fill();
+ };
+ // festoon swags of beads hanging between medallions
+ const swag=(x0,x1,y0)=>{for(let k=0;k<=24;k++){const t=k/24,X=x0+(x1-x0)*t,Y=y0+Math.sin(Math.PI*t)*62;x.beginPath();x.arc(X,Y,4,0,7);x.fill()}x.lineWidth=4;x.beginPath();x.moveTo(x0,y0);x.quadraticCurveTo((x0+x1)/2,y0+104,x1,y0);x.stroke();x.lineWidth=3;x.beginPath();x.moveTo(x0+6,y0+4);x.quadraticCurveTo((x0+x1)/2,y0+128,x1-6,y0+4);x.stroke();const mx=(x0+x1)/2,my=y0+66;leaf(mx,my,Math.PI,26,8);leaf(mx,my,Math.PI-.6,20,7);leaf(mx,my,Math.PI+.6,20,7);x.beginPath();x.arc(mx,my+30,5,0,7);x.fill();for(const t of[.25,.75])leaf(x0+(x1-x0)*t,y0+Math.sin(Math.PI*t)*62+6,Math.PI,16,6)};
+ for(const ox of[0,256,-256]){medallion(128+ox,128);swag(166+ox,346+ox,80)}
+}
 function florentineTile(x){
  const leaf=(cx,cy,a,l,w,c=0)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8+c,-l*.8,c*1.6,-l);x.bezierCurveTo(w*.6+c,-l*.78,w*.9,-l*.32,0,0);x.fill();x.restore()};
  const stem=X=>128+62*Math.sin(2*Math.PI*X/256);
