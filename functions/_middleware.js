@@ -10,7 +10,9 @@ async function sha256(text) {
   return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 const same = (a, b) => { if (!a || !b || a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; };
-const tokenFor = env => env && env.TEAM_KEY ? sha256('dcb-team|' + env.TEAM_KEY) : Promise.resolve('');
+// trimmed because a password pasted into Cloudflare's box often brings a stray space or line break
+const teamKey = env => String((env && env.TEAM_KEY) || '').trim();
+const tokenFor = env => teamKey(env) ? sha256('dcb-team|' + teamKey(env)) : Promise.resolve('');
 function cookie(req, name) {
   const m = (req.headers.get('Cookie') || '').match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
   return m ? decodeURIComponent(m[1]) : '';
@@ -35,12 +37,13 @@ export async function onRequest({ request, next, env }) {
   if (path === '/team' || path === '/team/') {
     if (url.searchParams.has('off')) return go('/', ...clear);
     // setup check: says only whether a password is configured, never anything about it
-    if (url.searchParams.has('check')) return new Response(env && env.TEAM_KEY ? 'team password is set' : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
+    if (url.searchParams.has('check')) return new Response(teamKey(env) ? 'team password is set' + (teamKey(env) !== String(env.TEAM_KEY) ? ' (extra spaces or line breaks were ignored)' : '') : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
     let key = url.searchParams.get('key') || '';
     if (request.method === 'POST') { try { key = String((await request.formData()).get('key') || '').trim(); } catch { key = ''; } }
     else if (!key) return new Response(FORM, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
     const tok = await tokenFor(env);
-    if (key && env.TEAM_KEY && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
+    key = key.trim();
+    if (key && teamKey(env) && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
     return go('/coming-soon');
   }
 
