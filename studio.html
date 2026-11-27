@@ -2772,7 +2772,7 @@ function buildPlaque(D,add){const P=D.plaque;if(!P||!(P.text||'').trim())return;
 
 
 // ---------------------------------------------------------------- Stencils: a repeating pattern applied around the side, in royal icing or metallic, with an exact back seam
-const STENCILS={cinemaTrim:'Raised Black & White Fondant Checks',decoTiles:'Art Deco Blue & White Triangles',cinemaStripes:'Wide Cinema Stripes',heirloomDamask:'Heirloom Leaf Damask',damask:'Damask',lace:'Lace',dots:'Polka Dots',stripes:'Stripes',quatrefoil:'Quatrefoil',chevron:'Art Deco Chevron',stars:'Stars'};Object.assign(STENCILS,{geo:'Geometric Gold Lines',harlequin:'Harlequin Diamonds',pleats:'Fondant Pleats',sequins:'Gold Sugar Sequins',brassPanels:'Brass Art Deco Panels',vpleats:'Chevron Pleats',florentine:'Florentine Scroll',medallion:'French Medallion',fleur:'Fleur-De-Lis',cornelli:'Cornelli Lace',checker:'Checkerboard',trellis:'Moroccan Trellis',honeycomb:'Honeycomb',scales:'Mermaid Scales',herringbone:'Herringbone',greekkey:'Greek Key',hearts:'Hearts',snowflakes:'Snowflakes',swissdots:'Swiss Dots'});
+const STENCILS={cinemaTrim:'Raised Fondant Checks',decoTiles:'Art Deco Blue & White Triangles',cinemaStripes:'Wide Cinema Stripes',heirloomDamask:'Heirloom Leaf Damask',damask:'Damask',lace:'Lace',dots:'Polka Dots',stripes:'Stripes',quatrefoil:'Quatrefoil',chevron:'Art Deco Chevron',stars:'Stars'};Object.assign(STENCILS,{geo:'Geometric Gold Lines',harlequin:'Harlequin Diamonds',pleats:'Fondant Pleats',sequins:'Gold Sugar Sequins',brassPanels:'Brass Art Deco Panels',vpleats:'Chevron Pleats',florentine:'Florentine Scroll',medallion:'French Medallion',fleur:'Fleur-De-Lis',cornelli:'Cornelli Lace',checker:'Checkerboard',trellis:'Moroccan Trellis',honeycomb:'Honeycomb',scales:'Mermaid Scales',herringbone:'Herringbone',greekkey:'Greek Key',hearts:'Hearts',snowflakes:'Snowflakes',swissdots:'Swiss Dots'});
 const STEN_TEX=new Map();
 function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))return STEN_TEX.get(key);const S=256,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.fillStyle='#fff';x.strokeStyle='#fff';x.lineCap='round';
  if(pat==='custom'&&img){const e=edImg(img);if(!(e&&e.tex&&e.tex.image)){return new T.CanvasTexture(c)}x.drawImage(e.tex.image,0,0,S,S);try{const id=x.getImageData(0,0,S,S),d=id.data;let opaque=0;for(let i=3;i<d.length;i+=4)if(d[i]>250)opaque++;const photo=opaque>S*S*.9;for(let i=0;i<d.length;i+=4){const lum=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255,a=photo?Math.max(0,Math.min(1,(.78-lum)*2.2)):d[i+3]/255;d[i]=d[i+1]=d[i+2]=255;d[i+3]=Math.round(a*255)}x.putImageData(id,0,0)}catch(err){}}
@@ -2869,7 +2869,7 @@ function buildStencil(t,ctx){const ST=t.stencil;if(!ST||!ST.pattern)return;const
  if(ST.pattern==='cinemaTrim'){
   // Four rows of separate, lightly beveled sugar squares follow the tier, not a printed stencil.
   const n=Math.max(18,2*Math.round(circ/(ST.size||1.06))),cell=circ/n, step=2*PI/n, hh=Math.min(cell*.83,H*.12),inset=.026;
-  const dark=ST.color||'#17151a',mat=[dmat('#fff9ec',{r:.64,sh:.19,cc:.055}),dmat(dark,{r:.59,sh:.14,cc:.065})],forms=[[],[]];
+  const dark=ST.color||'#17151a',mat=[dmat(ST.fill||'#fff9ec',{r:.64,sh:.19,cc:.055}),dmat(dark,{r:.59,sh:.14,cc:.065})],forms=[[],[]];
   const w=cell-inset,shape=roundRectShape(w,hh-inset,.050);
   const base=new T.ExtrudeGeometry(shape,{depth:.045,bevelEnabled:true,bevelThickness:.014,bevelSize:.014,bevelSegments:2,curveSegments:5});
   for(let band=0;band<2;band++)for(let row=0;row<2;row++)for(let i=0;i<n;i++){
