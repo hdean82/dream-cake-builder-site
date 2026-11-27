@@ -233,6 +233,16 @@
   body{padding-bottom:76px}
 }
 @media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.garrow{display:none}.track a{width:124px}.track img{width:124px;height:124px}}
+.hcake{position:relative;border-radius:24px;overflow:hidden;background:#e1ddde;aspect-ratio:1400/1017;align-self:center;perspective:900px;box-shadow:0 24px 50px -30px #4b103d66}
+.hcake picture,.hcake img.poster{display:block;width:100%;height:100%}
+.hcake img.poster{object-fit:contain;transition:transform .25s ease-out,opacity .5s;transform-origin:50% 60%}
+.hcake iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .5s}
+.hcake .hcplay{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);border-radius:999px;min-height:46px;padding:0 22px;font-weight:600;box-shadow:0 10px 24px #c12c7e55;text-transform:none}
+.hcake .hchint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#fffffff0;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
+.hcake.loading::after{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;border:3px solid #fff;border-top-color:var(--rose);animation:hcspin .9s linear infinite}
+@keyframes hcspin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.hcake{order:-1}}
+@media(prefers-reduced-motion:reduce){.hcake img.poster{transition:none}}
 </style>
 </head>
 <body>
@@ -272,7 +282,7 @@
     </form>
     <div class="halt"><a class="btn" href="studio.html">Try The Studio Now</a><span class="muted">No download. Works on any phone or computer.</span></div>
    </div>
-   <div class="mosaic"><a class="tile t0" href="studio.html" data-open-cake><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth cake designed in Dream Cake Studio" data-fallback width="640" height="640"></picture><span class="lbl"><b>Blush Lambeth</b><i>Wedding</i></span><span class="go">Open In Studio →</span></a><a class="tile t1" href="studio.html?theme=sig_peony"><picture><source srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade cake rebuilt in 3D in Dream Cake Studio" data-fallback width="640" height="640"></picture><span class="lbl"><b>Coral Peony Cascade</b><i>Wedding</i></span><span class="go">Open In Studio →</span></a><a class="tile t2" href="studio.html?theme=sig_moneybag"><picture><source srcset="assets/home/cakes/sig_moneybag.webp" type="image/webp"><img src="assets/home/cakes/sig_moneybag.jpg" alt="Money Bag Birthday cake rebuilt in 3D in Dream Cake Studio" data-fallback width="640" height="640"></picture><span class="lbl"><b>Money Bag Birthday</b><i>Birthday</i></span><span class="go">Open In Studio →</span></a><a class="tile t3" href="studio.html?theme=sig_cow"><picture><source srcset="assets/home/cakes/sig_cow.webp" type="image/webp"><img src="assets/home/cakes/sig_cow.jpg" alt="Pink Bow Cow cake rebuilt in 3D in Dream Cake Studio" data-fallback width="640" height="640"></picture><span class="lbl"><b>Pink Bow Cow</b><i>Kids</i></span><span class="go">Open In Studio →</span></a><a class="tile t4" href="studio.html?theme=sig_crawfish"><picture><source srcset="assets/home/cakes/sig_crawfish.webp" type="image/webp"><img src="assets/home/cakes/sig_crawfish.jpg" alt="Crawfish Boil Pot cake rebuilt in 3D in Dream Cake Studio" data-fallback width="640" height="640"></picture><span class="lbl"><b>Crawfish Boil Pot</b><i>Statement</i></span><span class="go">Open In Studio →</span></a></div>
+   <div class="hcake" id="hcake"><picture><source srcset="assets/home/lambeth-hero.webp" type="image/webp"><img class="poster" id="hcPoster" src="assets/home/lambeth-hero.jpg" alt="A two-tier blush Lambeth cake with pink bows, designed in Dream Cake Studio" width="1400" height="1017" data-fallback></picture><button class="btn primary hcplay" id="hcPlay" type="button">Spin it in 3D</button><span class="hchint" id="hcHint" hidden>Drag to turn the cake</span></div>
   </div>
  </section>
 
@@ -415,6 +425,14 @@
 </footer>
 <nav class="mbar" aria-label="Quick actions"><a class="btn" href="studio.html">Try The Studio</a><a class="btn primary" href="#launch-list">Join Waitlist</a></nav>
 <script>
+const LAMBETH='DCS1:eyJuYW1lIjoiQmx1c2ggTGFtYmV0aCIsInRpZXJzIjpbeyJkIjoxMCwiaCI6NC40LCJjb2xvciI6IiNmOGRkZTQiLCJmaW5pc2giOiJidXR0ZXJjcmVhbSIsInRleHR1cmUiOiJzbW9vdGgiLCJ0b3AiOiJwZWFybHMiLCJib3R0b20iOiJzaGVsbHMiLCJzaWRlIjoibGFtYmV0aCIsInBpcGUiOiIjZmJmN2YxIiwiYWNjZW50IjoiI2U5YTZiYSIsInBlYXJsQ29sb3IiOm51bGwsImJvd3MiOnRydWUsImJvd0NvbG9yIjoiI2YyOWJiNCIsImdvbGRMZWFmIjpmYWxzZSwiZHJvcHMiOmZhbHNlfSx7ImQiOjcsImgiOjQsImNvbG9yIjoiI2ZiZjdmMSIsImZpbmlzaCI6ImJ1dHRlcmNyZWFtIiwidGV4dHVyZSI6InNtb290aCIsInRvcCI6InNoZWxscyIsImJvdHRvbSI6InNoZWxscyIsInNpZGUiOiJsYW1iZXRoIiwicGlwZSI6IiNmYmY3ZjEiLCJhY2NlbnQiOiIjZTlhNmJhIiwicGVhcmxDb2xvciI6bnVsbCwiYm93cyI6dHJ1ZSwiYm93Q29sb3IiOiIjZjI5YmI0IiwiZ29sZExlYWYiOmZhbHNlLCJkcm9wcyI6ZmFsc2V9XSwiYm9hcmQiOiJ3aGl0ZSIsImJvYXJkQ29sb3IiOiIjZjI5YmI0IiwidG9wcGVyIjoicm9zZXMiLCJ0b3BwZXJDb2xvciI6IiNmM2Q2ZGMiLCJtZXNzYWdlIjp7InRleHQiOiIiLCJ0aWVyIjowLCJjb2xvciI6IiNjMjVkN2QifSwiY2hhcmFjdGVyIjo3MCwic2NlbmUiOnsicHJlc2V0Ijoic29mdCIsInNoaW5lIjo4NSwic29mdG5lc3MiOjEwMCwic3RyZW5ndGgiOjEwMCwiY3JldmljZSI6NTMsImJyaWdodCI6ODF9LCJub3RlcyI6IiJ9';
+// hero cake: tilts toward the pointer, then turns into the real 3D Studio cake when tapped
+(function(){const h=document.getElementById('hcake');if(!h)return;const img=document.getElementById('hcPoster'),play=document.getElementById('hcPlay'),hint=document.getElementById('hcHint'),still=matchMedia('(prefers-reduced-motion: reduce)').matches;let fr=null;
+ if(!still)h.addEventListener('pointermove',e=>{if(fr)return;const r=h.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;img.style.transform='rotateY('+(x*10)+'deg) rotateX('+(-y*6)+'deg) scale(1.03)'});
+ h.addEventListener('pointerleave',()=>{img.style.transform=''});
+ play.addEventListener('click',()=>{if(fr)return;try{localStorage.setItem('dcs-open-code',LAMBETH)}catch(e){}fr=document.createElement('iframe');fr.title='The Blush Lambeth cake in 3D';fr.src='studio.html?view=1';h.classList.add('loading');play.hidden=true;img.style.transform='';
+  fr.onload=()=>setTimeout(()=>{fr.style.opacity='1';img.style.opacity='0';h.classList.remove('loading');hint.hidden=false;setTimeout(()=>hint.hidden=true,4000)},2200);h.appendChild(fr)});
+})();
 // gallery filters
 
 document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.toggle('on',x===b));const f=b.dataset.f;document.querySelectorAll('.gcard').forEach(c=>c.hidden=f!=='all'&&c.dataset.cat!==f)}));
