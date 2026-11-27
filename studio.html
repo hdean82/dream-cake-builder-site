@@ -1731,7 +1731,7 @@ function gloveParts(q,c){const palm=new T.SphereGeometry(1,24,16);palm.scale(.55
 function batParts(q,c){const b=new T.CylinderGeometry(.11,.04,1.9,18);b.rotateZ(PI/2);b.translate(.1,.12,0);const k=new T.SphereGeometry(.07,12,8);k.translate(-.88,.12,0);return[[dmat(c,{r:.5,cc:.3}),mg([b,k])]]}
 // ---- monogram hoop: floral hoop with a gold M inside ----
 function monoHoopBase(q,c){const R=.95,cy=R+1.05,ring=new T.TorusGeometry(R,.035,10,80);ring.translate(0,cy,0);const stick=[];for(const x of[-.35,.35]){const s=new T.CylinderGeometry(.02,.02,1.2,8);s.translate(x,.6,0);stick.push(s)}
- const roses=[],lv=[],spots=[[.3,.46],[1.13,.44],[1.33,.38],[1.86,.27]];
+ const roses=[],lv=[],spots=[[.29,.46],[1.22,.42],[1.39,.47],[1.77,.3],[1.85,.22]];
  for(const[f,sc]of spots){const a=PI*f,r=roseGeo(q);r.scale(sc,sc,sc);r.rotateX(-PI/2);r.translate(Math.cos(a)*R,cy+Math.sin(a)*R,.07);roses.push(norm(r));
   for(const d of[-1,1]){const L=leafGeo(.3*sc/.4,.11*sc/.4);L.rotateX(-PI/2);L.rotateZ(a+d*1.1+PI/2*(d>0?0:2));const b=a+d*.2*(.4/sc)*.5;L.translate(Math.cos(b)*R*1.02,cy+Math.sin(b)*R*1.02,-.01);lv.push(norm(L))}}
  return[[sgMat.metal(c),mg([ring,...stick])],[dm.rose('#fbf7f1'),mergeGeometries(roses)],[dm.leaf(),mergeGeometries(lv)]]}
@@ -2464,11 +2464,11 @@ THEMES.unshift(
     ['cascaderanunc',34,3.51,212,'#b84c79',13,-25],['cascadesprig',73,2.83,146,'#fff5dc',-7,14],['cascadesprig',67,2.36,186,'#fff0d5'],['cascadesprig',61,3.98,133,'#f7efdc'],
     ['cascadesprig',43,.65,98,'#f9edce']])}),
   newTier(5.68,4.87,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none'})]}},
- {key:'sig_monogram',name:'Champagne Gold Art Deco',tag:SIG,blurb:'Champagne hexagons with raised brass art deco panels and gold sugar sequins, a pleated ivory tier, a gold leaf top and a floral monogram hoop.',d:{board:'gold',topper:'none',tiers:[
-  newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#9a6a33',height:5.1},bottom:'pearls',bottomColor:'#c99a4e'}),
-  newTier(11,5.2,{shape:'hexagon',color:'#c8964a',finish:'metallic',top:'none',bottom:'none',coat:{type:'sequins',color:'#d4ae5a',size:.19}}),
-  newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',size:9.8,height:5.4,folds:6}}),
-  newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
+ {key:'sig_monogram',name:'Champagne Gold Art Deco',tag:SIG,blurb:'A brass art deco hexagon, a hexagon of gold sugar sequins, a pleated ivory tier with fanned ribbons, a satin champagne gold top and a floral monogram hoop.',d:{board:'gold',topper:'none',tiers:[
+  newTier(12.8,5,{shape:'hexagon',color:'#d9b177',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#9d6732',height:4.9}}),
+  newTier(10.8,5,{shape:'hexagon',color:'#b18143',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'sequins',color:'#d4ae5a',size:.116}}),
+  newTier(8.1,5.4,{color:'#f4eee0',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',height:5.3,fans:3,folds:5}}),
+  newTier(6.5,5,{color:'#c99c55',finish:'metallic',texture:'brushed',top:'none',bottom:'pearls',bottomColor:'#9d6732',decor:[DC('monohoop','cluster',1,{color:'#b28242',size:360,center:true,face:95})]})]}},
  {key:'sig_rosettower',name:'Blush Rosette Tower',tag:SIG,blurb:'Ivory rosette tiers around a blush tier with diagonal fondant pleats, and a tall smooth blush top tier on a gold board.',d:{board:'gold',topper:'none',tiers:[
   newTier(10,5.6,{texture:'rosettes',roseSize:170,roseTip:'2D',color:'#fbf3ea',top:'none',bottom:'none'}),
   newTier(8.8,5.4,{color:'#f1cfcf',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'pleats',color:'#d9a7aa',size:1.4,height:5.4}}),
@@ -2931,38 +2931,40 @@ function buildScales(t,ctx,ST,yb,H){const{r,R_at,add}=ctx,sp=Math.max(.35,Math.m
    idx.push(base,base+1+K,tl+1,base,tl+1,tl,base,tl,base+1)}}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  const sh=ST.shine||'pearl';add(dmat('#ffffff',sh==='metal'?{r:.28,metal:.55,cc:.7,ccr:.08}:sh==='matte'?{r:.75,cc:0}:{r:.42,sh:.7,cc:.35,ccr:.12}),g,'stencil')}
-function buildSequins(t,ctx,ST){const{r,h,y,R_at,add}=ctx,sp=Math.max(.12,ST.size||.19),rad=sp*.56,circ=2*PI*r,N=Math.max(24,Math.round(circ/sp)),top=y+h-.06,bot=y+.06,rows=Math.max(2,Math.floor((top-bot)/(sp*.87)));
- const K=8,pos=[],col=[],idx=[],up=new V3(0,1,0),v=new V3();let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
- for(let j=0;j<=rows;j++){const yy=bot+(top-bot)*j/rows,off=(j%2)*.5;for(let i=0;i<N;i++){
-  const a=2*PI*(i+off)/N,{p,tg,n}=surfFrame(a,yy,R_at),tx=(rnd()-.5)*.55,ty=(rnd()-.5)*.55,nn=n.clone().addScaledVector(tg,tx).addScaledVector(up,ty).normalize(),bt=new V3().crossVectors(nn,tg).normalize(),tt=new V3().crossVectors(bt,nn);
-  const base=pos.length/3,lift=.012+rnd()*.008,k=.82+rnd()*.3;
-  v.copy(p).addScaledVector(n,lift+rad*.16);pos.push(v.x,v.y,v.z);col.push(k*1.06,k*1.06,k*1.06);
-  for(let q=0;q<K;q++){const th=q/K*2*PI;v.copy(p).addScaledVector(n,lift).addScaledVector(tt,Math.cos(th)*rad).addScaledVector(bt,Math.sin(th)*rad);pos.push(v.x,v.y,v.z);col.push(k,k,k);idx.push(base,base+1+q,base+1+(q+1)%K)}
- }}
+function buildSequins(t,ctx,ST){const{r,h,y,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(6,Math.round(2*PI*r/(ST.size||5))),fw=2*PI/faces;
+ // From the Champagne Gold Art Deco source: staggered domed sequins, ~0.116" apart, six golds mixed at set odds, with a fine seam at mid height.
+ const pal=(ST.palette||['#bb8545','#d0a05c','#deb374','#a56b37','#c2955b','#e2c18b']).map(c=>new T.Color(c)),odds=[4,9,11,13,17,18];
+ let seed=1835;const rnd=()=>(seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296;
+ const side=hex?r:2*PI*r/faces,cols=Math.max(2,Math.round(side/(ST.size||.116))),rows=Math.max(2,Math.round((h-.14)/.113)),K=7,pos=[],col=[],idx=[],up=new V3(0,1,0),q=new V3();
+ for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw;
+  for(let row=0;row<rows;row++){const yy=(row+.55)*(h-.1)/rows;if(Math.abs(yy-h*.5)<.042)continue;
+   for(let c=0;c<cols;c++){const u=(c+(row%2?.31:.67))/cols-.5,x=u*side,Y=y+.053+yy;
+    let a,R,n;if(hex){const ap=R_at(a0,Y);a=a0+Math.atan2(x,ap);R=Math.hypot(x,ap);n=radial(a0)}else{a=a0+x/r;R=R_at(a,Y);n=radial(a)}
+    const p=radial(a).multiplyScalar(R+.012).setY(Y),tg=new V3().crossVectors(up,n).normalize(),rad=.047+.011*rnd(),pk=rnd()*18,ci=Math.max(0,odds.findIndex(w=>pk<w)),cc=pal[ci],base=pos.length/3;
+    q.copy(p).addScaledVector(n,.023);pos.push(q.x,q.y,q.z);col.push(cc.r*1.05,cc.g*1.05,cc.b*1.05);
+    for(let k=0;k<K;k++){const th=k/K*2*PI;q.copy(p).addScaledVector(tg,Math.cos(th)*rad).addScaledVector(up,Math.sin(th)*rad);pos.push(q.x,q.y,q.z);col.push(cc.r,cc.g,cc.b);idx.push(base,base+1+k,base+1+(k+1)%K)}}}}
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- add(dmat(ST.color||'#d4ae5a',{r:.2,metal:1,cc:.5,ccr:.08}),g,'stencil')}
-function buildBrassPanels(t,ctx,ST,yb,H){const{r,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(4,Math.round(2*PI*r/(ST.size||4))),fw=2*PI/faces,w=Math.max(.04,ST.weight||.065),dep=.04,parts=[];
- const W=(hex?r:r*fw)*.94,cy0=yb+H/2,hw=W/2,hh=H/2;
- // art deco linework per face, in -1..1 face units, mirrored on every other face like the proof
- const LINES=[[-1,.72,1,-1],[-1,-.28,.22,1],[-.05,-.02,1,-.02],[.38,-1,1,-.42],[-1,.98,1,.98],[-1,-.98,1,-.98]],MARKS=[[-.52,.36],[.62,-.62]];
- const seg=(f,x1,y1,x2,y2,wd)=>{const L=Math.hypot(x2-x1,y2-y1);if(L<.02)return;const g=new T.BoxGeometry(L+wd*.4,wd,dep,Math.max(1,Math.ceil(L/.2)),1,1);g.rotateZ(Math.atan2(y2-y1,x2-x1));g.translate((x1+x2)/2,(y1+y2)/2,dep/2);f.push(g)};
- for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw+(ST.seam||0)*PI/180,m=f%2?-1:1,bars=[];
-  for(const[x1,y1,x2,y2]of LINES)seg(bars,m*x1*hw,y1*hh,m*x2*hw,y2*hh,w);
-  for(const[mx,my]of MARKS)for(const dx of[-.07,.07])seg(bars,m*mx*hw+dx,my*hh-.22,m*mx*hw+dx+.1,my*hh+.22,w*.9);
-  for(const g0 of bars){const g=g0.index?g0.toNonIndexed():g0,p=g.attributes.position;for(let j=0;j<p.count;j++){const x=p.getX(j),yy=cy0+p.getY(j),z=p.getZ(j);
-   let a=a0+x/r,Rr;if(hex){const ap=R_at(a0,yy),ang=Math.atan2(x,ap);a=a0+ang;Rr=Math.hypot(x,ap)}else Rr=R_at(a,yy);
-   const q=radial(a).multiplyScalar(Rr+.008),nrm=hex?radial(a0):radial(a);q.addScaledVector(nrm,z);p.setXYZ(j,q.x,yy,q.z)}
-   g.computeVertexNormals();tint(g,.92+.06*Math.cos(f*1.7));parts.push(g)}}
- add(dmat(ST.color||'#a8743a',{r:.3,metal:1,cc:.3,ccr:.12}),mg(parts),'stencil')}
+ add(dmat('#ffffff',{r:.3,metal:.55,cc:.3,ccr:.1}),g,'stencil');
+ const ym=y+h/2,seam=sweep(s=>{const a=2*PI*s;return radial(a).multiplyScalar(R_at(a,ym)+.02).setY(ym)},s=>radial(2*PI*s),hex?240:160,8,()=>[.037,.037]);
+ add(dmat(ST.seamColor||'#9d6732',{r:.29,metal:.77,cc:.3}),seam,'stencil')}
+function buildBrassPanels(t,ctx,ST,yb,H){const{r,h,y,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(4,Math.round(2*PI*r/(ST.size||4))),fw=2*PI/faces,parts=[];
+ // Linework copied from the Champagne Gold Art Deco source: a framed face, crossing diagonals and small paired marks, mirrored on every other face.
+ const PATHS=[[[.012,.022],[.988,.022],[.988,.978],[.012,.978],[.012,.022]],[[0,.12],[.75,1]],[[.18,0],[1,.62]],[[0,.72],[.76,0]],[[.44,1],[1,.47]],[[.56,.95],[.56,.78]],[[.62,.95],[.62,.74]],[[.35,.57],[.53,.40]],[[.40,.65],[.58,.49]],[[.47,.39],[.52,.46]]];
+ const side=hex?r:2*PI*r/faces,y0=y+.13,hh=h-.26;
+ for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw+(ST.seam||0)*PI/180,m=f%2;
+  const at=(u,w)=>{const x=(.019+.962*(m?1-u:u)-.5)*side,Y=y0+hh*w;let a,R,n;if(hex){const ap=R_at(a0,Y);a=a0+Math.atan2(x,ap);R=Math.hypot(x,ap);n=radial(a0)}else{a=a0+x/r;R=R_at(a,Y);n=radial(a)}return radial(a).multiplyScalar(R).setY(Y).addScaledVector(n,.038)};
+  PATHS.forEach((path,i)=>{const rad=i===0?.053:.036;for(let k=1;k<path.length;k++){const p0=at(...path[k-1]),p1=at(...path[k]),L=p0.distanceTo(p1),g=new T.CylinderGeometry(rad,rad,L,8,1,true);g.translate(0,L/2,0);g.applyQuaternion(new T.Quaternion().setFromUnitVectors(new V3(0,1,0),p1.clone().sub(p0).normalize()));g.translate(p0.x,p0.y,p0.z);parts.push(g);
+    if(i===0){const sph=new T.SphereGeometry(rad,8,6);sph.translate(p0.x,p0.y,p0.z);parts.push(sph)}}})}
+ add(dmat(ST.color||'#9d6732',{r:.29,metal:.77,cc:.3,ccr:.12}),mg(parts),'stencil')}
 function j0(g){return g.attributes.position.count%7}
-function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{r,R_at,add}=ctx,circ=2*PI*r,n=Math.max(1,Math.round(circ/(ST.size||9.8))),hw=PI/n,K=Math.max(3,ST.folds||6),parts=[],top=yb+H,front=seam+PI;
- // draped fan folds: upright at the top, sweeping into a V at the bottom centre of each panel
- for(let p=0;p<n;p++){const c=front+p*2*PI/n;for(const sg of[-1,1])for(let k=0;k<K;k++){
-  const o0=hw*(k+.55)/K,o1=.018+k*.016/Math.max(1,r/4);
-  const P=s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7),a=c+sg*off,yy=top-.04-tt*(H-.08);return radial(a).multiplyScalar(R_at(a,yy)+.004).setY(yy)};
-  const g=sweep(P,s=>{const tt=s,off=o0-(o0-o1)*Math.pow(tt,1.7);return radial(c+sg*off)},40,8,s=>{const e=Math.min(1,s/.04,(1-s)/.06);return[.07*e,.09*Math.max(.3,1-s*.45)*e]});
-  tint(g,.9+.08*((k%2)?1:0));parts.push(g)}}
- add(dmat(ST.color||t.color||'#fbf7f1',{r:.6,sh:.25,cc:.05}),mg(parts),'stencil')}
+function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{r,h,y,R_at,add}=ctx,parts=[],fans=ST.fans||3,per=ST.folds||5;
+ // Thirty tapered raised ribbons in mirrored fans, as in the Champagne Gold Art Deco source: close together at the bottom, opening out toward the top.
+ for(let fan=0;fan<fans;fan++)for(const sd of[-1,1])for(let j=0;j<per;j++){const center=PI/2+2*PI*fan/fans,R=8,C=38,pos=[],idx=[];
+  for(let i=0;i<=C;i++){const tt=i/C,taper=Math.max(.04,Math.sin(PI*tt)**.35),Y=y+.12+(h-.24)*tt;
+   for(let k=0;k<=R;k++){const qq=k/R,a=center-sd*(.055+j*.103+(.34+j*.027)*tt**1.49+(qq-.5)*.139*taper),rr=R_at(a,Y)-.007+.178*Math.sin(PI*qq)**1.05*taper*(.73+.27*qq),p=radial(a).multiplyScalar(rr);pos.push(p.x,Y,p.z)}}
+  for(let i=0;i<C;i++)for(let k=0;k<R;k++){const a=i*(R+1)+k,b=a+R+1;sd>0?idx.push(a,b,a+1,a+1,b,b+1):idx.push(a,a+1,b,a+1,b+1,b)}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();tint(g,.97);parts.push(g)}
+ add(dmat(ST.color||t.color||'#f4eee0',{r:.38,sh:.2,cc:.04}),mg(parts),'stencil')}
 
 // ---------------------------------------------------------------- Materials
 const matCache=new Map();
