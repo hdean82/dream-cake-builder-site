@@ -56,11 +56,14 @@ for (const k of todo) {
     await page.waitForTimeout(3000);
     const pics = await page.evaluate(() => {
       const c = [...document.querySelectorAll('canvas')].sort((a, b) => b.width * b.height - a.width * a.height)[0];
-      const s = Math.min(c.width, c.height), o = document.createElement('canvas'); o.width = o.height = 640;
+      // Fit the whole canvas into the square (never crop), on the Studio's soft background.
+      const o = document.createElement('canvas'); o.width = o.height = 640;
       const x = o.getContext('2d'); x.fillStyle = '#efe7e9'; x.fillRect(0, 0, 640, 640);
-      x.drawImage(c, (c.width - s) / 2, (c.height - s) / 2, s, s, 0, 0, 640, 640);
-      return {jpg: o.toDataURL('image/jpeg', .88), webp: o.toDataURL('image/webp', .84)};
+      const k = 640 / Math.max(c.width, c.height), w = c.width * k, h = c.height * k;
+      x.drawImage(c, (640 - w) / 2, (640 - h) / 2, w, h);
+      return {jpg: o.toDataURL('image/jpeg', .88), webp: o.toDataURL('image/webp', .84), size: [c.width, c.height, innerWidth, innerHeight]};
     });
+    console.log(k, 'canvas', pics.size.join('x')); delete pics.size;
     for (const [ext, d] of Object.entries(pics)) fs.writeFileSync(path.join(OUT, `${k}.${ext}`), Buffer.from(d.split(',')[1], 'base64'));
     manifest[k] = hash(themes.get(k));
     console.log('Rendered', k, errors.length ? `(page errors: ${errors.join(' | ').slice(0, 300)})` : '');
