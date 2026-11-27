@@ -4156,7 +4156,7 @@ wireClose(document);$$('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$$('.modal.on').forEach(m=>m.classList.remove('on'));const tag=e.target.tagName;if(tag==='INPUT'||tag==='TEXTAREA')return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo()}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo()}});
 $('#undo').onclick=undo;$('#redo').onclick=redo;
 $('#projName').onchange=e=>commit(d=>{d.name=e.target.value.trim()||'Untitled Cake'},{rebuild:false});
-$('#newBtn').onclick=()=>commit(d=>{const keepScene=d.scene,keepWm=d.watermark;Object.assign(d,blankDesign(),{scene:keepScene,watermark:keepWm});delete d.themeKey;sel=0;openCard='top'});
+$('#newBtn').onclick=()=>{selectItem(null);commit(d=>{const keepScene=d.scene,keepWm=d.watermark;Object.keys(d).forEach(k=>delete d[k]);Object.assign(d,blankDesign(),{scene:keepScene,watermark:keepWm});delete d.themeKey;sel=0;openCard='top'})};
 $('#sumBtn').onclick=()=>{if(innerWidth>1180){document.querySelector('.app').classList.toggle('nosum');setTimeout(resize,30);return}openModal('#sumModal');renderSummary()};
 function savedList(){return store.get('dcs-designs')||[]}
 $('#saveBtn').onclick=()=>{const list=savedList().filter(x=>x.name!==design.name);list.unshift({name:design.name,at:Date.now(),design:JSON.parse(snap())});store.set('dcs-designs',list.slice(0,60))?(toast('Saved "'+design.name+'" to your Cake Box'+(CB.on?' and your account':'')),cbPush(list[0])):toast('This browser blocked saving. Use a design code instead.')};
