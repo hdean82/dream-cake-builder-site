@@ -377,6 +377,15 @@ header,.float.bottom,.libchips,.edstrip,#themeTags,.sizechips,.seg{overscroll-be
 .selbtns .sacts button{min-width:30px!important;height:30px!important;padding:0!important;font-size:15px!important;border-radius:9px!important}
 @media (max-width:600px){.selbtns .sgrp em{min-width:0;font-size:9.5px}}
 </style>
+<style>
+.selrot{display:grid;gap:4px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+.selrot[hidden]{display:none}
+.selrot label{display:grid;grid-template-columns:38px 1fr 40px;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.selrot input{width:100%;accent-color:var(--rose)}
+.selrot output{font-size:11.5px;text-align:right;color:var(--ink)}
+.selrot .hint{margin:2px 0 0;font-size:11px}
+#selRotBtn.on{background:var(--rose-soft)!important;border-color:var(--rose)!important}
+</style>
 </head>
 <body>
 <div class="app">
@@ -425,8 +434,9 @@ header,.float.bottom,.libchips,.edstrip,#themeTags,.sizechips,.seg{overscroll-be
    <div class="sgrp"><button type="button" data-act="tipb" title="Tip back" aria-label="Tip back">⤒</button><em>Tip</em><button type="button" data-act="tipf" title="Tip forward" aria-label="Tip forward">⤓</button></div>
    <div class="sgrp"><button type="button" data-act="lower" title="Move down" aria-label="Move down">↓</button><em>Height</em><button type="button" data-act="raise" title="Move up" aria-label="Move up">↑</button></div>
    <div class="sgrp" id="selDepth"><button type="button" data-act="in" title="In: push it into the side, or toward the middle when it is on top" aria-label="Move in">⇥</button><em>Depth</em><button type="button" data-act="out" title="Out: pull it away from the side, or toward the edge when it is on top" aria-label="Move out">⇤</button></div>
-   <div class="sacts"><button type="button" data-act="dup" title="Duplicate: add a copy you can move on its own" aria-label="Duplicate">⧉</button><button type="button" data-act="hide" title="Hide this piece" aria-label="Hide">⦸</button><button type="button" data-act="reset" title="Reset to where it started" aria-label="Reset">⟲</button><button type="button" data-act="match" title="Select every piece like this one" aria-label="All like this">☰</button></div>
+   <div class="sacts"><button type="button" data-act="dup" title="Duplicate: add a copy you can move on its own" aria-label="Duplicate">⧉</button><button type="button" data-act="hide" title="Hide this piece" aria-label="Hide">⦸</button><button type="button" data-act="reset" title="Reset to where it started" aria-label="Reset">⟲</button><button type="button" data-act="match" title="Select every piece like this one" aria-label="All like this">☰</button><button type="button" id="selRotBtn" title="Free rotate: turn, tilt and tip to any angle" aria-label="Free rotate">🔄</button></div>
   </div>
+  <div id="selRot" class="selrot" hidden><label><span>Turn</span><input type="range" min="-180" max="180" step="1" data-ax="rot"><output></output></label><label><span>Tilt</span><input type="range" min="-180" max="180" step="1" data-ax="tz"><output></output></label><label><span>Tip</span><input type="range" min="-180" max="180" step="1" data-ax="tx"><output></output></label><p class="hint">Drag the sliders, or hold Shift and use the arrow keys. All three together reach any angle.</p></div>
   <div class="selmulti" hidden><p class="plabel" style="margin:6px 2px">Color or material for all selected</p><div class="selcolors"></div></div>
  </div>
  <div id="movePad" class="movepad" role="toolbar" aria-label="Move the camera">
@@ -3603,13 +3613,21 @@ function refreshSel(){if(!SELI)return;if(SELM){const id=ITEMS.findIndex(x=>x.key
  let cx=0,cz=0,n=tri.length/3;for(let i=0;i<tri.length;i+=3){cx+=tri[i];cz+=tri[i+2]}cx/=n;cz/=n;const a=Math.hypot(cx,cz)>.3?Math.atan2(cz,cx):PI/2,tx=-Math.sin(a),tz=Math.cos(a);let w0=1e9,w1=-1e9,h0=1e9,h1=-1e9,d0=1e9,d1=-1e9;
  for(let i=0;i<tri.length;i+=3){const x=tri[i],y=tri[i+1],z=tri[i+2],u=x*tx+z*tz,v=x*Math.cos(a)+z*Math.sin(a);w0=Math.min(w0,u);w1=Math.max(w1,u);h0=Math.min(h0,y);h1=Math.max(h1,y);d0=Math.min(d0,v);d1=Math.max(d1,v)}
  const it=ITEMS[id],nm=it.label||(it.kind==='deco'&&it.dtype?decName(it.dtype):null)||KIND_NAMES[it.kind]||'Piece';$('#selName').textContent=nm+(it.kind==='pearl'||it.kind==='bow'?' '+(+it.key.split(':').pop()+(it.kind==='bow'?1:0)):'');$('#selDims').textContent=' · '+(w1-w0).toFixed(1)+'" wide × '+(h1-h0).toFixed(1)+'" tall';
- $('#selBar [data-act="hide"]').title=(it.kind==='custom'||it.kind==='plaque')?'Remove this piece':'Hide this piece';$('#selDepth').hidden=it.kind!=='deco';$('#selBar [data-act="dup"]').hidden=it.kind!=='deco';SELC={c:new V3(cx,(h0+h1)/2,cz),a,top:it.kind==='deco'&&(d1-d0)<(h1-h0)*.2?false:null};$('#selHint').textContent=canDrag(it)?'Drag it on the cake to move it anywhere.':'Use the buttons below to adjust it.'}
+ $('#selBar [data-act="hide"]').title=(it.kind==='custom'||it.kind==='plaque')?'Remove this piece':'Hide this piece';$('#selDepth').hidden=it.kind!=='deco';$('#selBar [data-act="dup"]').hidden=it.kind!=='deco';SELC={c:new V3(cx,(h0+h1)/2,cz),a,top:it.kind==='deco'&&(d1-d0)<(h1-h0)*.2?false:null};$('#selHint').textContent=canDrag(it)?'Drag it on the cake to move it anywhere.':'Use the buttons below to adjust it.';try{window.__syncSelRot&&window.__syncSelRot()}catch(e){}}
 function nudge(act){if(!SELI)return;if(act==='dup'){if(SELI.kind!=='deco'||!SELI.dc){toast('This piece can not be duplicated. Try a decoration.');return}const ti=SELI.tier,did=SELI.dc,nid=newId();let nm='';commit(D=>{const x=D.tiers[ti];if(!x)return;const dc=(x.decor||[]).find(z=>z.id===did);if(!dc)return;nm=decName(dc.type);const c=JSON.parse(JSON.stringify(dc));c.id=nid;c.seed=Math.floor(Math.random()*1e6);if(c.fixedTop)c.fixedTop=[c.fixedTop[0]+.6,c.fixedTop[1]+.6];else if(!c.center)c.rot=((c.rot||0)+30)%360;x.decor.splice(x.decor.indexOf(dc)+1,0,c);const A=x.adj;if(A)for(const k of Object.keys(A))if(k.startsWith('d:'+did+':')){const v=JSON.parse(JSON.stringify(A[k]));if(v.at&&v.at.a!==undefined)v.at.a+=.5;A['d:'+nid+k.slice(did.length+2)]=v}});selectItem(null);if(nm)toast(nm+' duplicated next to the original. Drag the copy where you want it.');return}if(act==='match'){if(SELM){endMulti();refreshSel()}else{const id=ITEMS.findIndex(x=>x.key===SELI.key&&x.tier===SELI.tier);if(id>=0)showMulti(ITEMS[id])}return}if(act==='close'){endMulti();return selectItem(null)}const st=selStep,mv=.1*st,rt=15,sc=1.1;if(act==='close')return selectItem(null);if(act==='fine'){selStep=selStep===1?.25:1;return refreshSel()}
  commit(d=>{if(act==='hide'&&SELI.kind==='custom'){d.customs=(d.customs||[]).filter(c=>c.id!==SELI.cid);return}if(act==='hide'&&SELI.kind==='plaque'){d.plaque=null;return}const a=adjOf(d,SELI);if(!a)return;
   if(act==='reset'){if(SELI.kind==='custom'||SELI.kind==='plaque'){a.u=a.v=0;a.rot=0;if(SELI.kind==='plaque')a.s=1}else{const t=d.tiers[SELI.tier];delete t.adj[SELI.key]}return}
   if(act==='left')a.u=(a.u||0)-mv;if(act==='right')a.u=(a.u||0)+mv;if(act==='up')a.v=(a.v||0)+mv;if(act==='down')a.v=(a.v||0)-mv;if(act==='leanl')a.tz=((a.tz||0)+10*st);if(act==='leanr')a.tz=((a.tz||0)-10*st);if(act==='tipf')a.tx=((a.tx||0)+10*st);if(act==='tipb')a.tx=((a.tx||0)-10*st);if(act==='raise')a.lift=Math.min(6,+((a.lift||0)+.1*st).toFixed(3));if(act==='lower')a.lift=Math.max(-3,+((a.lift||0)-.1*st).toFixed(3));if(act==='in')a.n=Math.min(3,+((a.n||0)+.1*st).toFixed(3));if(act==='out')a.n=Math.max(-3,+((a.n||0)-.1*st).toFixed(3));if(act==='rotl')a.rot=(a.rot||0)+rt;if(act==='rotr')a.rot=(a.rot||0)-rt;if(SELI.kind==='custom'&&(act==='bigger'||act==='smaller')){a.w=Math.max(.3,Math.min(24,(a.w||4)*(act==='bigger'?sc:1/sc)));if(a.lock===false&&a.h)a.h=Math.max(.3,a.h*(act==='bigger'?sc:1/sc))}else{if(act==='bigger')a.s=Math.min(4,(a.s||1)*sc);if(act==='smaller')a.s=Math.max(.2,(a.s||1)/sc)}if(act==='hide')a.hide=true});
  if(act==='hide'&&(SELI.kind==='custom'||SELI.kind==='plaque'))selectItem(null)}
 $$('#selBar [data-act]').forEach(b=>b.onclick=()=>nudge(b.dataset.act));
+// Free rotate: three sliders (turn, tilt, tip) for the selected piece, each a full circle.
+{const box=document.getElementById('selRot'),btn=document.getElementById('selRotBtn');if(box&&btn){let tmr=0;
+ const cur=()=>{if(!SELI||SELI.kind!=='deco')return{};const t=design.tiers[SELI.tier];return(t&&t.adj&&t.adj[SELI.key])||{}};
+ const sync=()=>{const a=cur();box.querySelectorAll('input').forEach(i=>{const v=Math.round(((+(a[i.dataset.ax]||0)+540)%360)-180);i.value=v;i.nextElementSibling.textContent=v+'°'})};
+ btn.onclick=()=>{box.hidden=!box.hidden;btn.classList.toggle('on',!box.hidden);if(!box.hidden)sync()};
+ box.querySelectorAll('input').forEach(i=>{i.oninput=()=>{i.nextElementSibling.textContent=i.value+'°';clearTimeout(tmr);tmr=setTimeout(()=>{if(!SELI)return;commit(d=>{const a=adjOf(d,SELI);if(a)box.querySelectorAll('input').forEach(x=>{a[x.dataset.ax]=+x.value})})},90)}});
+ window.__syncSelRot=()=>{if(!box.hidden)sync();const dc=SELI&&SELI.kind==='deco';btn.hidden=!dc;if(!dc){box.hidden=true;btn.classList.remove('on')}}}}
+
 addEventListener('keydown',e=>{if(!SELI||SELM||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName||''))return;if(e.shiftKey){const sk={ArrowLeft:'leanl',ArrowRight:'leanr',ArrowUp:'tipb',ArrowDown:'tipf'}[e.key];if(sk){e.preventDefault();nudge(sk);return}}const k={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down',Escape:'close',Delete:'hide',Backspace:'hide','[':'in',']':'out'}[e.key];if(!k)return;e.preventDefault();nudge(k)});
 // ---------------------------------------------------------------- Drag a selected piece anywhere on its tier: around the sides, up and down, or onto the top.
 let pieceDrag=null;
