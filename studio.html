@@ -2866,7 +2866,7 @@ function buildStencil(t,ctx){const ST=t.stencil;if(!ST||!ST.pattern)return;const
  if(design.showSeams!==false){const gm=mkMat('seamguide',()=>{const m=new T.MeshBasicMaterial({color:'#ff3d7f',toneMapped:false});m.userData.noShadow=true;m.userData.guide=true;return m});const sg=sweep(s=>{const yy=yb-.08+s*(H+.16);return radial(seam).multiplyScalar(R_at(seam,yy)+.03).setY(yy)},()=>radial(seam),8,6,()=>[.012,.012]);add(gm,sg,'seam')}}
 
 // Champagne Gold Art Deco relief: sugar sequins, raised brass panels and chevron pleats are real geometry.
-function surfFrame(a,yy,R_at){const R=R_at(a,yy),d=.002,p=radial(a).multiplyScalar(R),p2=radial(a+d).multiplyScalar(R_at(a+d,yy)),tg=p2.sub(p).normalize(),n=new V3(tg.z,0,-tg.x);if(n.dot(radial(a))<0)n.negate();return{p,tg,n}}
+function surfFrame(a,yy,R_at){const R=R_at(a,yy),d=.002,p=radial(a).multiplyScalar(R),p2=radial(a+d).multiplyScalar(R_at(a+d,yy)),tg=p2.sub(p).normalize(),n=new V3(tg.z,0,-tg.x);if(n.dot(radial(a))<0)n.negate();p.y=yy;return{p,tg,n}}
 function buildSequins(t,ctx,ST){const{r,h,y,R_at,add}=ctx,sp=Math.max(.12,ST.size||.19),rad=sp*.56,circ=2*PI*r,N=Math.max(24,Math.round(circ/sp)),top=y+h-.06,bot=y+.06,rows=Math.max(2,Math.floor((top-bot)/(sp*.87)));
  const K=8,pos=[],col=[],idx=[],up=new V3(0,1,0),v=new V3();let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
  for(let j=0;j<=rows;j++){const yy=bot+(top-bot)*j/rows,off=(j%2)*.5;for(let i=0;i<N;i++){
