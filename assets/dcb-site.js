@@ -278,7 +278,7 @@
 
 // Owner and team devices: a "Private" menu with every locked page, so they're one tap away from anywhere on the site.
 (() => {
-  const LINKS = [['shop.html#today', 'Today'], ['shop.html#orders', 'Orders'], ['shop.html#calendar', 'Calendar'], ['request.html', 'Cake request form'], ['quote.html', 'Quote page'], ['portfolio.html', 'Cake gallery'], ['beta-admin', 'Beta admin'], ['beta-board', 'Beta board']];
+  const LINKS = [['shop.html#today', 'Today'], ['shop.html#orders', 'Orders'], ['shop.html#calendar', 'Calendar'], ['request.html', 'Cake request form'], ['quote.html', 'Quote page'], ['portfolio.html', 'Cake gallery'], ['beta-admin', 'Beta admin'], ['beta-board', 'Beta board'], ['pricing', 'Pricing (draft)']];
   function add() {
     if (!document.documentElement.classList.contains('team') || document.querySelector('.dcb-priv')) return;
     const st = document.createElement('style');

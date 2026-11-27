@@ -17,7 +17,10 @@
     "/beta-admin",
     "/beta-admin.html",
     "/beta-admin/",
-    "/team/auth"
+    "/team/auth",
+    "/pricing",
+    "/pricing.html",
+    "/pricing/"
   ],
   "exclude": []
 }

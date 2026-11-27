@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing · Dream Cake Builder</title>
+<link rel="canonical" href="https://www.dreamcakebuilder.com/pricing">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dream Cake Builder">
+<meta property="og:title" content="Pricing · Dream Cake Builder">
+<meta property="og:description" content="Simple pricing for cake artists: design cakes in 3D, get client approval and run your orders. 0% transaction fees.">
+<meta property="og:url" content="https://www.dreamcakebuilder.com/pricing">
+<meta property="og:image" content="https://www.dreamcakebuilder.com/assets/home/lambeth-hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Simple pricing for cake artists: design cakes in 3D, get client approval and run your orders. 0% transaction fees.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+h1,h2,h3,.btn,summary{text-transform:none}
+.pr{max-width:1100px;margin:0 auto;padding:30px 20px 80px}
+.phero{text-align:center;max-width:760px;margin:0 auto}
+.pill{display:inline-flex;font-size:13.5px;font-weight:600;color:var(--rose-ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.phero h1{font-size:clamp(32px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:14px 0 0}
+.phero .lede{font-size:17px;line-height:1.6;color:var(--muted);margin:14px auto 0;max-width:56ch}
+.bill{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px;margin-top:22px}
+.bill button{border:0;background:none;font:600 15px Inter,system-ui,sans-serif;color:var(--ink);padding:10px 18px;border-radius:999px;cursor:pointer}
+.bill button span{font-size:12px;font-weight:700;color:#177d4a;background:#e3f5ea;border-radius:999px;padding:2px 7px;margin-left:4px}
+.bill button.on{background:var(--ink);color:#fff}.bill button.on span{background:#ffffff26;color:#c9f3d9}
+.found{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;margin:34px 0 22px;padding:22px 26px;border-radius:26px;color:#fff;background:#4b103d url(assets/home/mascot-bg.png) center/210px auto;background-blend-mode:soft-light;box-shadow:0 30px 60px -34px #4b103d}
+.fbadge{width:84px;height:84px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 0 0 6px #f9a8cc55}
+.ftag{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.04em;color:#4b103d;background:#f9a8cc;border-radius:999px;padding:4px 11px}
+.found h2{color:#fff;font-size:clamp(24px,3vw,32px);margin:8px 0 4px}.found p{color:#f6dbe9;line-height:1.55;margin:0;max-width:56ch}
+.fact{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.fprice{display:flex;align-items:baseline;gap:6px}.fprice s{color:#e8b8cf;font-size:20px}.fprice b{font:600 48px/1 Fraunces,Georgia,serif}.fprice span{color:#f6dbe9}
+.found .btn.primary{background:#f9a8cc;border-color:#f9a8cc;color:#4b103d;font-weight:700;min-height:46px;padding:0 20px}
+@media(max-width:820px){.found{grid-template-columns:1fr;text-align:center;justify-items:center}}
+.plans{display:grid;gap:16px;align-items:stretch}@media(min-width:900px){.plans{grid-template-columns:1fr 1.08fr 1fr}}
+.plan{position:relative;background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px 22px;display:flex;flex-direction:column}
+.plan h3{font:600 24px Fraunces,Georgia,serif;margin:0}.plan .for{color:var(--muted);margin:6px 0 14px;min-height:2.6em;line-height:1.45}
+.price{display:flex;align-items:baseline;gap:4px}.price b{font:600 50px/1 Fraunces,Georgia,serif;letter-spacing:-.02em}.price span{color:var(--muted)}
+.bnote{font-size:13.5px;color:var(--muted);margin:4px 0 16px;min-height:1.3em}
+.plan .btn{min-height:48px;font-weight:600;justify-content:center;display:flex;align-items:center}
+.plan ul{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:10px}
+.plan li,.cmp td{font-size:15px;line-height:1.45}.plan li{display:flex;gap:10px;align-items:flex-start}
+.plan li svg,.cmp td svg{width:20px;height:20px;flex:none;margin-top:1px}
+.plan.star{border:2px solid var(--rose);box-shadow:0 30px 60px -34px #c12c7e;transform:translateY(-6px)}
+.pop{position:absolute;top:-13px;left:22px;background:var(--rose);color:#fff;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 12px}
+.pop.soon{background:#f3e7ee;color:var(--rose-ink)}.plan.soon{background:#fffafc}
+.zero{display:grid;gap:12px;margin:34px 0}@media(min-width:760px){.zero{grid-template-columns:repeat(3,1fr)}}
+.zero div{background:#fff;border:1px dashed #e7bfd3;border-radius:18px;padding:16px 18px;display:flex;gap:12px;align-items:center}
+.zero b{flex:none;font:600 30px Fraunces,Georgia,serif;color:var(--rose-ink);white-space:nowrap}.zero span{color:var(--muted);line-height:1.45;font-size:14.5px}
+.cmp h2,.faq h2{font-size:clamp(26px,3.2vw,34px);margin:0 0 14px}
+.tw{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:20px}
+.cmp table{border-collapse:collapse;width:100%;min-width:560px}
+.cmp th,.cmp td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:center}
+.cmp tbody th{text-align:left;font-weight:500}.cmp thead th{font:600 16px Fraunces,Georgia,serif;vertical-align:bottom}
+.cmp thead small{display:block;font:500 13px Inter,system-ui,sans-serif;color:var(--muted);margin-top:2px}
+.cmp thead th.hl,.cmp td:nth-child(3){background:#fff5fa}.cmp td.no{color:#c9b3c0}.cmp td svg{margin:0 auto;display:block}
+.cmp tbody tr:last-child th,.cmp tbody tr:last-child td{border-bottom:0}
+.faq{margin-top:40px;max-width:780px}.faq details{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-bottom:10px}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px}.faq p{color:var(--muted);line-height:1.6;margin:8px 0 0}
+.end{text-align:center;margin-top:44px;background:#fff;border:1px solid var(--line);border-radius:26px;padding:30px 20px}
+.end h2{font-size:clamp(26px,3.2vw,34px);margin:0}.end p{color:var(--muted);margin:8px 0 16px}.end div{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.end .btn{min-height:48px;padding:0 22px;font-weight:600}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="index.html">Home</a>
+   <a href="index.html#how-it-works">How It Works</a>
+   <a href="studio.html">Studio</a>
+   <a href="shop.html#orders" data-team>Orders</a>
+   <a href="shop.html#calendar" data-team>Calendar</a>
+   <a href="contact.html" aria-current="page">Contact</a>
+   <a href="account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="index.html#launch-list">Join Waitlist</a>
+  </nav>
+  <details class="menu">
+   <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How It Works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html" aria-current="page">Contact</a><a href="account.html" data-acct>Sign In</a><a href="index.html#launch-list">Join Waitlist</a></div>
+  </details>
+ </div>
+</header>
+
+<main class="pr">
+ <section class="phero">
+  <span class="pill">Pricing</span>
+  <h1>See it before you bake it, for less than one cake a month</h1>
+  <p class="lede">Design the cake in 3D, get your client's yes, and run every order in one place. Try everything free for 14 days, with no card needed.</p>
+  <div class="bill" role="group" aria-label="Billing"><button type="button" class="on" data-b="m" aria-pressed="true">Monthly</button><button type="button" data-b="y" aria-pressed="false">Yearly <span>2 months free</span></button></div>
+ </section>
+
+ <section class="found" aria-labelledby="fT">
+  <div class="fbadge"><img src="lilac/assets/favicon.svg" alt="" width="64" height="64"></div>
+  <div class="fbody"><span class="ftag">Founding Beta Artist</span><h2 id="fT">$19 a month, locked in for life</h2><p>For our beta artists and the first 100 artists to join. You get everything in Studio + Orders, and your price never goes up for as long as you stay.</p></div>
+  <div class="fact"><div class="fprice"><s>$24</s><b>$19</b><span>/month</span></div><a class="btn primary" href="beta#apply">Claim a founding spot</a></div>
+ </section>
+
+ <section class="plans">
+  <article class="plan">
+   <h3>Studio</h3><p class="for">For artists who want to show clients the cake.</p>
+   <div class="price" data-m="14" data-y="140"><b>$14</b><span>/month</span></div><p class="bnote" data-mt="Billed monthly" data-yt="$140 billed yearly">Billed monthly</p>
+   <a class="btn" href="index.html#launch-list">Start free trial</a>
+   <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The 3D Studio with every theme cake</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Unlimited saved designs</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Photos and printable proofs</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your logo as a watermark</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Send for review: clients approve the design from a link</span></li></ul>
+  </article>
+  <article class="plan star">
+   <span class="pop">Most popular</span>
+   <h3>Studio + Orders</h3><p class="for">Design, approval and your whole order book.</p>
+   <div class="price" data-m="24" data-y="240"><b>$24</b><span>/month</span></div><p class="bnote" data-mt="Billed monthly" data-yt="$240 billed yearly">Billed monthly</p>
+   <a class="btn primary" href="index.html#launch-list">Start free trial</a>
+   <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Studio</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Quotes and invoices with your logo and policies</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Customers, statements and a blacklist</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Calendar, cake requests and your online order form</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Automatic emails and payment reminders</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Recipe costing and shopping lists</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Bring everything over from BakeGenie</span></li></ul>
+  </article>
+  <article class="plan soon">
+   <span class="pop soon">Coming soon</span>
+   <h3>Business</h3><p class="for">For cake shops with a team.</p>
+   <div class="price" data-m="39" data-y="390"><b>$39</b><span>/month</span></div><p class="bnote" data-mt="Billed monthly" data-yt="$390 billed yearly">Billed monthly</p>
+   <a class="btn" href="index.html#launch-list">Get notified</a>
+   <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Everything in Studio + Orders</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Logins for your team</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your gallery on your own web address</span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Priority help</span></li></ul>
+  </article>
+ </section>
+
+ <section class="zero">
+  <div><b>0%</b><span>transaction fees. Customers pay you the way you already get paid.</span></div>
+  <div><b>14</b><span>days free on any plan, no card needed.</span></div>
+  <div><b>1 click</b><span>to cancel, any time. Your designs and orders stay yours.</span></div>
+ </section>
+
+ <section class="cmp">
+  <h2>Compare plans</h2>
+  <div class="tw"><table><thead><tr><th></th><th scope="col">Studio<small>$14</small></th><th scope="col" class="hl">Studio + Orders<small>$24</small></th><th scope="col">Business<small>$39</small></th></tr></thead><tbody><tr><th scope="row">3D cake Studio</th><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Client approval links</th><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Photos and proofs</th><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Quotes and invoices</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Customers and statements</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Calendar and cake requests</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Automatic emails</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Recipe costing</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Import from BakeGenie</th><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Team logins</th><td class="no">–</td><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Your own web address</th><td class="no">–</td><td class="no">–</td><td><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.3 3 4.5 6.6 4.5c2.1 0 3.6 1.2 5.4 3.2 1.8-2 3.3-3.2 5.4-3.2 3.6 0 5.7 3.8 4.2 7.2C19.5 16.4 12 21 12 21z" fill="#f9a8cc"/><path d="M8.2 12.4l2.6 2.6 5-5.2" fill="none" stroke="#4b103d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></td></tr><tr><th scope="row">Transaction fees</th><td><b>0%</b></td><td><b>0%</b></td><td><b>0%</b></td></tr></tbody></table></div>
+ </section>
+
+ <section class="faq">
+  <h2>Questions</h2>
+  <details><summary>Can I try it before I pay?</summary><p>Yes. Every plan starts with 14 days free, and you don't need a card to start. Anyone can also try the Studio for 15 minutes without an account.</p></details>
+  <details><summary>Do you take a cut of my sales?</summary><p>No. There are no transaction fees. Add your own payment link, Venmo, Cash App or whatever you already use, and customers pay you directly.</p></details>
+  <details><summary>Can I switch plans later?</summary><p>Any time. Move up or down from your account page and the price changes from your next bill.</p></details>
+  <details><summary>I use BakeGenie. Can I bring my customers over?</summary><p>Yes. Studio + Orders imports your customers, past invoices, supplies and recipes from a BakeGenie export or any spreadsheet.</p></details>
+  <details><summary>What is the Founding Beta Artist price?</summary><p>Beta artists and the first 100 artists to join pay $19 a month for Studio + Orders, and that price stays the same for as long as you're subscribed.</p></details>
+ </section>
+
+ <section class="end"><h2>Ready to show clients their cake?</h2><p>Join the waitlist and we'll tell you the moment plans open.</p><div><a class="btn primary" href="index.html#launch-list">Join the waitlist</a><a class="btn" href="studio.html">Try the Studio</a></div></section>
+</main>
+
+<footer class="site-foot">
+ <div class="foot-in">
+  <a class="brand" href="index.html"><span class="bn">Dream <span>Cake</span> Builder</span></a>
+  <span>Made for creative cake artists.</span>
+  <nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a><a href="beta">Beta Artists</a><a href="privacy.html">Privacy</a><a href="https://www.instagram.com/dreamcakebuilder/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder" target="_blank" rel="noopener">Facebook</a></nav>
+  <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
+ </div>
+</footer>
+<script>
+(function(){const bs=document.querySelectorAll('.bill button');bs.forEach(b=>b.addEventListener('click',()=>{const y=b.dataset.b==='y';bs.forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b)});
+ document.querySelectorAll('.price').forEach(p=>{const m=+p.dataset.m,yr=+p.dataset.y;p.querySelector('b').textContent='$'+(y?(Math.round(yr/12*100)/100).toFixed(2).replace(/\.00$/,''):m)});
+ document.querySelectorAll('.bnote').forEach(n=>n.textContent=y?n.dataset.yt:n.dataset.mt)}))})();
+</script>
+<script src="assets/dcb-site.js" defer></script>
