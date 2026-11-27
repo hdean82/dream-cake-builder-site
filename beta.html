@@ -46,6 +46,17 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
 .send{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .send .btn{min-height:48px;padding:0 24px;font-weight:600}
 .st{font-size:14px}.st.bad{color:#b3261e}.st.good{color:#22703c}
+.chips{border:0;padding:0;margin:0}
+.chips legend{font-weight:600;font-size:14px;margin-bottom:8px;padding:0}.chips legend i{font-style:normal;font-weight:400;color:var(--muted)}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;flex-direction:row!important;font-weight:500!important}
+.chip input{position:absolute;opacity:0;width:1px;height:1px}
+.chip span{display:inline-flex;align-items:center;gap:7px;border:1px solid #e3c3d4;background:#fff;border-radius:999px;padding:9px 15px;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s}
+.chip span::before{content:"";width:14px;height:14px;border-radius:50%;border:1.5px solid #d6a9c1;flex:none}
+.chip input:checked+span{background:#4b103d;border-color:#4b103d;color:#fff}
+.chip input:checked+span::before{border-color:#f9a8cc;background:#f9a8cc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3.5 7.2l2.3 2.3 4.7-5' fill='none' stroke='%234b103d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.chip input:focus-visible+span{outline:2px solid #c12c7e;outline-offset:2px}
+.note{font-size:13.5px;color:var(--muted)}
 .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .welcome{background:var(--ink);color:#fff;border-radius:24px;padding:26px;margin-bottom:28px}
 .welcome h2{color:#fff;font-size:28px}.welcome p{color:#f3d9e6;margin-top:8px;line-height:1.6}
@@ -78,8 +89,8 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
 <main class="bwrap">
  <section class="welcome" id="bWelcome" hidden>
   <h2 id="bHi">You're in the beta!</h2>
-  <p>This device is now set up. A <b>Report a problem</b> button sits in the bottom corner of every page. Use it whenever something is confusing, broken or missing, and tell us what you expected to happen.</p>
-  <div class="acts"><a class="btn primary" href="studio.html">Open the Studio</a><a class="btn" href="shop.html#today">Open Orders</a></div>
+  <p>This device is now set up. A <b>Report a problem</b> button sits in the bottom corner of every page. Use it whenever something is confusing, broken or missing. Your <b>Beta board</b> shows everything that's been reported, so you can add a “me too” instead of writing it again, and follow each report from sent to done.</p>
+  <div class="acts"><a class="btn primary" href="beta-board">Open your Beta board</a><a class="btn" href="studio.html">Open the Studio</a><a class="btn" href="shop.html#today">Open Orders</a></div>
  </section>
  <p class="st bad" id="bErr" hidden></p>
  <section class="bhero">
@@ -92,7 +103,7 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
  </section>
  <section class="perks">
   <div class="perk"><b>Early access</b><p>Design cakes in 3D, send them to clients for approval and run your orders before anyone else.</p></div>
-  <div class="perk"><b>Report in seconds</b><p>A Report a problem button on every page sends us what happened and where, so you don't have to write long emails.</p></div>
+  <div class="perk"><b>Report in seconds</b><p>A Report a problem button on every page sends us what happened and where. Your Beta board shows each report moving from sent to done.</p></div>
   <div class="perk"><b>You shape what's next</b><p>Tell us what you need. Beta artists' ideas go to the top of our list.</p></div>
  </section>
  <section class="card bform" id="apply">
@@ -100,9 +111,11 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
   <p class="sub">Spots are limited. We'll email you if there's a place for you.</p>
   <form id="bForm" class="fgrid" novalidate>
    <div class="row2"><label>Your name<input name="name" autocomplete="name" maxlength="100" required></label><label>Your email<input name="email" type="email" autocomplete="email" maxlength="254" required></label></div>
-   <div class="row2"><label>Business name <i>(optional)</i><input name="business" maxlength="120" autocomplete="organization"></label><label>Instagram or website <i>(optional)</i><input name="social" maxlength="200" placeholder="@yourbakery"></label></div>
-   <div class="row2"><label>What cakes do you make most?<input name="cakes" maxlength="500" placeholder="Weddings, birthdays, kids' cakes…"></label><label>What will you use it on?<select name="devices"><option value="">Choose one</option><option>Phone</option><option>Tablet</option><option>Computer</option><option>A mix</option></select></label></div>
-   <label>Why do you want to try it? <i>(optional)</i><textarea name="why" maxlength="1500" placeholder="Tell us how you show clients their cake today, and what you'd love to be easier."></textarea></label>
+   <div class="row2"><label>Business name<input name="business" maxlength="120" autocomplete="organization" required></label><label>Instagram or website<input name="social" maxlength="200" placeholder="@yourbakery" required></label></div>
+   <fieldset class="chips"><legend>What cakes do you make most? <i>Pick all that fit.</i></legend><div class="chipset"><label class="chip"><input type="checkbox" name="cakes" value="Wedding"><span>Wedding</span></label><label class="chip"><input type="checkbox" name="cakes" value="Birthday"><span>Birthday</span></label><label class="chip"><input type="checkbox" name="cakes" value="Kids and baby"><span>Kids and baby</span></label><label class="chip"><input type="checkbox" name="cakes" value="Sculpted and 3D"><span>Sculpted and 3D</span></label><label class="chip"><input type="checkbox" name="cakes" value="Cupcakes and treats"><span>Cupcakes and treats</span></label><label class="chip"><input type="checkbox" name="cakes" value="Cookies"><span>Cookies</span></label><label class="chip"><input type="checkbox" name="cakes" value="Holiday and seasonal"><span>Holiday and seasonal</span></label><label class="chip"><input type="checkbox" name="cakes" value="Something else"><span>Something else</span></label></div></fieldset>
+   <fieldset class="chips"><legend>What will you use it on?</legend><div class="chipset"><label class="chip"><input type="radio" name="devices" value="Phone" required><span>Phone</span></label><label class="chip"><input type="radio" name="devices" value="Tablet" required><span>Tablet</span></label><label class="chip"><input type="radio" name="devices" value="Computer" required><span>Computer</span></label><label class="chip"><input type="radio" name="devices" value="A mix" required><span>A mix</span></label></div></fieldset>
+   <label>Why do you want to try it?<textarea name="why" maxlength="1500" required placeholder="Tell us how you show clients their cake today, and what you'd love to be easier."></textarea></label>
+   <p class="note">Everything here is saved to your Dream Cake Builder account if you join, so you won't need to tell us twice.</p>
    <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
    <div class="send"><button class="btn primary" type="submit">Ask to join the beta</button><p class="st" id="bStatus" role="status" aria-live="polite"></p></div>
   </form>
@@ -125,9 +138,14 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
    else{E.textContent=j.error||"This beta link isn't active.";E.hidden=false}}).catch(()=>{E.textContent="We couldn't check your beta link. Check your connection and open it again.";E.hidden=false})}
  else{try{if(localStorage.getItem('dcb-beta-code')){W.hidden=false;document.getElementById('apply').hidden=true}}catch(e){}}
  const f=document.getElementById('bForm'),st=document.getElementById('bStatus'),btn=f.querySelector('button');const say=(t,c)=>{st.textContent=t;st.className='st '+(c||'')};
- f.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));d.action='apply';
+ f.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(f),d=Object.fromEntries(fd);d.cakes=fd.getAll('cakes');d.action='apply';
   if(!d.name.trim())return say('Add your name.','bad'),f.name.focus();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim()))return say('Check your email address.','bad'),f.email.focus();
+  if(!d.business.trim())return say('Add your business name.','bad'),f.business.focus();
+  if(!d.social.trim())return say('Add your Instagram or website.','bad'),f.social.focus();
+  if(!d.cakes.length)return say('Pick at least one kind of cake you make.','bad'),f.querySelector('[name=cakes]').focus();
+  if(!d.devices)return say("Pick what you'll use it on.",'bad'),f.querySelector('[name=devices]').focus();
+  if(d.why.trim().length<10)return say("Tell us a little about why you'd like to try it.",'bad'),f.why.focus();
   btn.disabled=true;say('Sending…');
   try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}),j=await r.json().catch(()=>({}));
    if(r.ok&&j.ok){f.reset();say("Thanks! We've got your request and we'll email you soon.",'good')}else say(j.error||"Your request couldn't be sent. Please email support@dreamcakebuilder.com.",'bad')}

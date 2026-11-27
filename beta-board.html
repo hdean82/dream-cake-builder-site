@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beta board · Dream Cake Builder</title>
+<link rel="canonical" href="https://www.dreamcakebuilder.com/beta-board">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dream Cake Builder">
+<meta property="og:title" content="Beta board · Dream Cake Builder">
+<meta property="og:description" content="Every beta report and where it stands.">
+<meta property="og:url" content="https://www.dreamcakebuilder.com/beta-board">
+<meta property="og:image" content="https://www.dreamcakebuilder.com/assets/home/lambeth-hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="description" content="Every beta report and where it stands.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+h1,h2,h3,label,.btn,summary{text-transform:none}
+.bb{max-width:980px;margin:0 auto;padding:26px 18px 80px}
+.bbhead{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between}
+.bbhead h1{font-size:clamp(30px,4.6vw,46px);line-height:1.05;letter-spacing:-.02em;margin:0}
+.bbhead p{color:var(--muted);margin-top:8px;max-width:56ch;line-height:1.55}
+.bbhead .btn{min-height:48px;padding:0 22px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 18px}
+@media(max-width:640px){.tally{grid-template-columns:repeat(2,1fr)}}
+.tal{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.tal b{font:600 26px Fraunces,Georgia,serif;display:flex;align-items:center;gap:6px}
+.tal span{font-size:13px;color:var(--muted)}
+.find{position:sticky;top:0;z-index:5;background:var(--cream,#fff7f2);padding:10px 0 12px;margin:0 -2px}
+.sbox{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #e3c3d4;border-radius:14px;padding:0 14px;box-shadow:0 10px 24px -18px #4b103d66}
+.sbox:focus-within{border-color:#c12c7e}
+.sbox input{flex:1;border:0;outline:0;font:16px Inter,system-ui,sans-serif;padding:14px 0;background:transparent;color:var(--ink)}
+.sbox svg{flex:none;color:#b06a92}
+.hint{font-size:13px;color:var(--muted);margin-top:7px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;font:600 14px Inter,system-ui,sans-serif;color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:#4b103d;color:#fff}
+.bar select{font:500 14px Inter,system-ui,sans-serif;border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:#fff;color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.rep{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 16px 14px}
+.rep.done{border-color:#f6c4dd;background:linear-gradient(#fff,#fff8fb)}
+.rtop{display:flex;gap:10px;align-items:flex-start}
+.rtop h3{font:600 17.5px/1.3 Inter,system-ui,sans-serif;margin:0;flex:1;min-width:0;letter-spacing:0}
+.rtop h3 small{color:var(--muted);font-weight:500;margin-right:4px}
+.tag{font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap;background:#f6eef3;color:#6c3b5f}
+.tag.bug{background:#fde8ec;color:#9b1c3a}.tag.idea{background:#eaf3ff;color:#244d84}.tag.question{background:#fff2d6;color:#7a5410}
+.meta{font-size:13px;color:var(--muted);margin-top:4px}
+.track{display:grid;grid-template-columns:repeat(4,1fr);margin:14px 2px 4px;position:relative}
+.stp{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:#a58a9c;position:relative;text-align:center}
+.stp::before{content:"";position:absolute;top:9px;left:-50%;width:100%;height:3px;background:#f0dbe6;z-index:0}
+.stp:first-child::before{display:none}
+.stp i{width:20px;height:20px;border-radius:50%;background:#fff;border:2.5px solid #ebd2df;z-index:1;display:grid;place-items:center}
+.stp.on{color:var(--ink);font-weight:600}.stp.on::before{background:#c12c7e}.stp.on i{border-color:#c12c7e;background:#c12c7e}
+.stp.now i{box-shadow:0 0 0 5px #c12c7e26}
+.stp.heart i{border:0;background:none;width:24px;height:24px;margin-top:-2px}
+.wont{font-size:13px;margin-top:10px;color:#6c3b5f;background:#f6eef3;border-radius:10px;padding:8px 10px}
+.rep details{margin-top:8px}
+.rep summary{cursor:pointer;font-size:14px;font-weight:600;color:#9a1b5f;list-style:none;display:inline-block}
+.rep summary::-webkit-details-marker{display:none}
+.body{margin-top:8px;font-size:14.5px;line-height:1.55;white-space:pre-wrap}
+.body b{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+.note{margin-top:10px;background:#fff4f8;border:1px solid #f3d6e5;border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.5}
+.note b{display:block;font-size:12.5px;color:#9a1b5f;margin-bottom:2px}
+.ract{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.metoo{display:inline-flex;align-items:center;gap:7px;border:1px solid #e3c3d4;background:#fff;border-radius:999px;padding:8px 14px;font:600 14px Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.metoo[aria-pressed=true]{background:#4b103d;border-color:#4b103d;color:#fff}
+.metoo:disabled{cursor:default;opacity:.7}
+.empty{text-align:center;padding:36px 16px;background:#fff;border:1px dashed #e3c3d4;border-radius:18px}
+.empty b{display:block;font:600 20px Fraunces,Georgia,serif;margin-bottom:6px}
+.empty p{color:var(--muted);margin-bottom:14px}
+.gate{max-width:560px;margin:40px auto;text-align:center;background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px 24px}
+.gate h1{font-size:32px;margin-bottom:8px}.gate p{color:var(--muted);line-height:1.6;margin-bottom:16px}
+.how{margin-top:34px;display:grid;gap:12px}
+@media(min-width:760px){.how{grid-template-columns:repeat(3,1fr)}}
+.how div{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
+.how b{display:block;font:600 17px Fraunces,Georgia,serif;margin-bottom:4px}.how p{font-size:14px;color:var(--muted);line-height:1.5}
+.dcb-heart{display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body data-beta-board="1">
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="index.html">Home</a>
+   <a href="index.html#how-it-works">How It Works</a>
+   <a href="studio.html">Studio</a>
+   <a href="shop.html#orders" data-team>Orders</a>
+   <a href="shop.html#calendar" data-team>Calendar</a>
+   <a href="contact.html">Contact</a>
+   <a href="account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="index.html#launch-list">Join Waitlist</a>
+  </nav>
+  <details class="menu">
+   <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How It Works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="index.html#launch-list">Join Waitlist</a></div>
+  </details>
+ </div>
+</header>
+
+<main class="bb" id="bb" aria-busy="true">
+ <section id="gate" class="gate" hidden>
+  <h1>The Beta board is for beta artists</h1>
+  <p>Open the invite link from your beta email once on this device, or sign in with the email you were invited with. Not in the beta yet? Ask to join.</p>
+  <p style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0"><a class="btn primary" href="beta#apply">Ask to join</a><a class="btn" href="account.html?next=/beta-board">Sign in</a></p>
+ </section>
+ <div id="board" hidden>
+  <div class="bbhead">
+   <div><h1 id="hi">Your Beta board</h1><p>Every problem, idea and question beta artists have sent, and where each one stands. Search first. If it's already here, tap <b>Me too</b> so we know it matters to you.</p></div>
+   <button class="btn primary" type="button" data-report><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Report something</button>
+  </div>
+  <div class="tally" id="tally"></div>
+  <div class="find">
+   <label class="sbox"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search reports, e.g. sequins, calendar, sign in" aria-label="Search reports" autocomplete="off"></label>
+   <div class="bar">
+    <div class="seg" role="group" aria-label="Whose reports"><button type="button" data-who="all" aria-pressed="true">Everyone's</button><button type="button" data-who="mine" aria-pressed="false">Yours</button></div>
+    <select id="fs" aria-label="Status"><option value="">Any status</option><option value="sent">Sent</option><option value="reviewing">Reviewing</option><option value="in_progress">In progress</option><option value="completed">Completed</option><option value="wontfix">Not planned</option></select>
+    <select id="fk" aria-label="Type"><option value="">All types</option><option value="bug">Problems</option><option value="idea">Ideas</option><option value="question">Questions</option></select>
+    <select id="fa" aria-label="Where"><option value="">Anywhere</option></select>
+   </div>
+  </div>
+  <div class="list" id="list" aria-live="polite"></div>
+  <section class="how" aria-label="How the board works">
+   <div><b>1. Search first</b><p>Type a word or two above. If someone already sent it, tap Me too. The more me toos, the sooner we fix it.</p></div>
+   <div><b>2. Report it</b><p>Tap Report something, or use the button in the corner of any page. We add the page and your device for you.</p></div>
+   <div><b>3. Follow along</b><p>Each report moves from Sent to Reviewing, In progress and Completed. When it's done you'll see a pink heart, and we'll email you.</p></div>
+  </section>
+ </div>
+</main>
+
+<footer class="site-foot">
+ <div class="foot-in">
+  <a class="brand" href="index.html"><span class="bn">Dream <span>Cake</span> Builder</span></a>
+  <span>Made for creative cake artists.</span>
+  <nav aria-label="Footer"><a href="index.html">Home</a><a href="studio.html">Studio</a><a data-team href="shop.html#orders">Orders</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="https://www.instagram.com/dreamcakebuilder/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder" target="_blank" rel="noopener">Facebook</a></nav>
+  <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
+ </div>
+</footer>
+<script src="assets/dcb-auth.js"></script>
+<script src="assets/dcb-site.js"></script>
+<script>
+(function(){
+ const $=s=>document.querySelector(s),B=()=>window.DCBBeta;let all=[],me=null,who='all';
+ const ago=t=>{const s=(Date.now()-new Date(t))/1000;if(s<3600)return Math.max(1,Math.round(s/60))+' min ago';if(s<86400)return Math.round(s/3600)+' h ago';const d=Math.round(s/86400);return d<30?d+(d===1?' day ago':' days ago'):new Date(t).toLocaleDateString()};
+ const kindName={bug:'Problem',idea:'Idea',question:'Question'};
+ function track(st){const B_=B();if(st==='wontfix')return '<p class="wont">We looked at this and it isn’t planned for now. The note below says why.</p>';const i=B_.STEPS.findIndex(x=>x[0]===st);return '<div class="track" aria-label="Status: '+B_.statusLabel(st)+'">'+B_.STEPS.map(([k,l],n)=>{const done=k==='completed'&&st==='completed';return '<div class="stp'+(n<=i?' on':'')+(n===i?' now':'')+(done?' heart':'')+'"><i>'+(done?B_.heart(24):'')+'</i>'+l+'</div>'}).join('')+'</div>'}
+ function card(r){const e=B().esc;return '<article class="rep'+(r.status==='completed'?' done':'')+'"><div class="rtop"><h3><small>#'+r.id+'</small>'+e(r.title)+(r.status==='completed'?' '+B().heart(18):'')+'</h3><span class="tag '+r.kind+'">'+kindName[r.kind]+'</span></div>'+
+  '<p class="meta">'+(r.mine?'You':e(r.by))+' · '+(r.area?e(r.area)+' · ':'')+ago(r.created_at)+(r.votes?' · '+r.votes+' me too':'')+'</p>'+track(r.status)+
+  (r.team_note?'<div class="note"><b>From the team</b>'+e(r.team_note)+'</div>':'')+
+  '<details><summary>Read the details</summary><div class="body">'+e(r.what)+(r.expected?'<b>'+(r.kind==='bug'?'Expected':'Why it helps')+'</b>'+e(r.expected):'')+'</div></details>'+
+  '<div class="ract">'+(r.mine?'<span class="meta" style="margin:0">Your report</span>':'<button class="metoo" type="button" data-v="'+r.id+'" aria-pressed="'+r.voted+'">'+(r.voted?'Me too ✓':'Me too')+(r.votes?' · '+r.votes:'')+'</button>')+'</div></article>'}
+ function render(){
+  const q=$('#q').value.trim(),fs=$('#fs').value,fk=$('#fk').value,fa=$('#fa').value;
+  let rows=all.filter(r=>(who==='all'||r.mine)&&(!fs||r.status===fs)&&(!fk||r.kind===fk)&&(!fa||r.area===fa));
+  if(q){const hit=new Set(B().similar(q,rows,99).map(r=>r.id)),lq=q.toLowerCase();rows=rows.filter(r=>hit.has(r.id)||(r.title+' '+r.what+' #'+r.id).toLowerCase().includes(lq))}
+  const mine=all.filter(r=>r.mine);
+  $('#tally').innerHTML=[[mine.length,'reports you sent'],[mine.filter(r=>['reviewing','in_progress'].includes(r.status)).length,'being worked on'],[mine.filter(r=>r.status==='completed').length,'of yours completed',1],[all.length,'reports from everyone']].map(([n,l,h])=>'<div class="tal"><b>'+n+(h?B().heart(22):'')+'</b><span>'+l+'</span></div>').join('');
+  $('#list').innerHTML=rows.length?rows.map(card).join(''):(q?'<div class="empty"><b>No one has reported that yet</b><p>You’d be the first. Send it and we’ll take a look.</p><button class="btn primary" type="button" data-report>Report “'+B().esc(q.slice(0,40))+'”</button></div>':'<div class="empty"><b>'+(who==='mine'?'You haven’t sent anything yet':'Nothing here yet')+'</b><p>Spotted something confusing, broken or missing? Tell us.</p><button class="btn primary" type="button" data-report>Report something</button></div>');
+ }
+ async function load(){try{const j=await B().call('board');all=j.reports;me=j.me;$('#hi').textContent=me.name?me.name+'’s Beta board':'Your Beta board';if($('#fa').options.length<2)$('#fa').insertAdjacentHTML('beforeend',j.areas.map(a=>'<option>'+a+'</option>').join(''));$('#board').hidden=false;render()}catch(e){$('#gate').hidden=false}finally{$('#bb').removeAttribute('aria-busy')}}
+ document.addEventListener('click',async e=>{
+  const r=e.target.closest('[data-report]');if(r){B().open({title:$('#q').value.trim()});return}
+  const w=e.target.closest('[data-who]');if(w){who=w.dataset.who;document.querySelectorAll('[data-who]').forEach(b=>b.setAttribute('aria-pressed',b===w));render();return}
+  const v=e.target.closest('.metoo[data-v]');if(v){v.disabled=true;try{const j=await B().call('vote',{id:+v.dataset.v});const x=all.find(x=>x.id===+v.dataset.v);x.voted=j.voted;x.votes+=j.voted?1:-1;render()}catch(err){alert(err.message)}}
+ });
+ ['input','change'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest('.find'))render()}));
+ window.addEventListener('dcb-beta-sent',()=>setTimeout(load,400));
+ const go=async()=>{if(await B().tester())load();else{$('#gate').hidden=false;$('#bb').removeAttribute('aria-busy')}};
+ go();
+})();
+</script>
+</body>
+</html>
