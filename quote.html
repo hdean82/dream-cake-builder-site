@@ -121,8 +121,8 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
    if(d.payNote||pay)sec.push(`<section class="dsec"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
    if(d.footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(d.footer)}</div></section>`);
-   if(d.cancelPolicy)sec.push(`<details class="dsec dfold"><summary>Cancellation policy</summary><div class="rich">${richHtml(d.cancelPolicy)}</div></details>`);
-   if(d.terms)sec.push(`<details class="dsec dfold"><summary>Terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
+   (Array.isArray(d.policies)?d.policies:d.cancelPolicy?[{t:'Cancellation policy',h:d.cancelPolicy}]:[]).forEach(p=>{if(p&&p.h)sec.push(`<details class="dsec dfold"><summary>${esc(p.t||'Policy')}</summary><div class="rich">${richHtml(p.h)}</div></details>`)});
+   if(d.terms)sec.push(`<details class="dsec dfold"><summary>Full terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
    return sec.length?`<div class="dsecs">${sec.join('')}</div>`:''})()}
  </div>
  ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b> ${esc(d.biz)} will see your answer in their orders.${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</div>${answerBox(true)}`
@@ -136,7 +136,7 @@ function answerBox(msgOnly){const isQ=Q.doc.kind==='quote';
   <p class="note" style="margin:0">${msgOnly?`Your message goes straight to ${esc(Q.doc.biz)}.`:isQ?`Approve to let ${esc(Q.doc.biz)} know you'd like to go ahead, or send a question first.`:`Let ${esc(Q.doc.biz)} know if anything needs changing.`}</p>
   <div class="field"><label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="120" value="${esc(Q.responder_name||Q.doc.customer||'')}"></div>
   <div class="field"><label for="a-msg">Message <span class="note">optional</span></label><textarea id="a-msg" maxlength="2000" placeholder="Anything you'd like to add or change"></textarea></div>
-  ${!msgOnly&&isQ&&Q.doc.terms?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-terms" style="margin-top:3px"> I've read the terms above.</label>`:''}
+  ${!msgOnly&&isQ&&Q.doc.terms?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-terms" style="margin-top:3px"> I've read the terms and policies above.</label>`:''}
   <div class="acts">${msgOnly?`<button class="btn primary" type="button" data-act="message">Send Message</button>`:`${isQ?`<button class="btn primary" type="button" data-act="approve">Approve Quote</button>`:''}<button class="btn" type="button" data-act="message">Send A Question</button>${isQ?`<button class="btn" type="button" data-act="decline">Decline</button>`:''}`}</div>
   <p class="msg" id="a-out" role="status"></p></form>`}
 

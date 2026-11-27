@@ -1578,11 +1578,14 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-rx]");if(!
  if(c==="createLink"){const u=prompt("Link address (https://…)","https://");if(!u||!/^(https?:\/\/|mailto:|tel:)\S+$/i.test(u.trim()))return;document.execCommand("createLink",false,u.trim())}else document.execCommand(c,false,null);ed.dispatchEvent(new Event("input",{bubbles:true}))});
 document.addEventListener("input",e=>{const ed=e.target.closest&&e.target.closest("[data-rich]");if(!ed)return;const v=richClean(ed.innerHTML);richSet(ed.dataset.rich,ed.textContent.trim()?v:"");save()});
 document.addEventListener("paste",e=>{const ed=e.target.closest&&e.target.closest("[data-rich]");if(!ed)return;e.preventDefault();const h=e.clipboardData.getData("text/html"),t=e.clipboardData.getData("text/plain");document.execCommand("insertHTML",false,h?richClean(h):esc(t).replace(/\n/g,"<br>"))});
-const docSecs=(payNote,payExtra,footer,cancel,terms)=>{const sec=[];
+const POLICIES=[["cancelPolicy","Cancellation policy","e.g. Cancel 14 or more days before your event for a credit toward a future order…"],["respPolicy","Client responsibility policy","e.g. Once your cake is picked up, it's in your care. Keep it cool, flat and out of the sun…"],["pickupPolicy","Pickup & delivery policy","e.g. Pickups are at your scheduled time. Delivery is available within 20 miles for a fee…"],["allergyPolicy","Allergy policy","e.g. Our kitchen handles wheat, milk, eggs, soy and nuts. We can't promise any item is allergen-free…"]];
+const polOn=(k,s=S.settings)=>k==="cancelPolicy"?s.showCancel!==false:((s.showPol||{})[k]!==false);
+const polList=(s=S.settings)=>POLICIES.filter(([k])=>s[k]&&polOn(k,s)).map(([k,l])=>[l,s[k]]);
+const docSecs=(payNote,payExtra,footer,pols,terms)=>{const sec=[];
  if(payNote||payExtra)sec.push(`<section class="dsec"><h4>How to pay</h4>${payNote?`<div class="rich">${richHtml(payNote)}</div>`:""}${payExtra||""}</section>`);
  if(footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(footer)}</div></section>`);
- if(cancel)sec.push(`<details class="dsec dfold"><summary>Cancellation policy</summary><div class="rich">${richHtml(cancel)}</div></details>`);
- if(terms)sec.push(`<details class="dsec dfold"><summary>Terms &amp; conditions</summary><div class="rich">${richHtml(terms)}</div></details>`);
+ (pols||[]).forEach(([t,h])=>sec.push(`<details class="dsec dfold"><summary>${esc(t)}</summary><div class="rich">${richHtml(h)}</div></details>`));
+ if(terms)sec.push(`<details class="dsec dfold"><summary>Full terms &amp; conditions</summary><div class="rich">${richHtml(terms)}</div></details>`);
  return sec.length?`<div class="dsecs">${sec.join("")}</div>`:""};
 
 /* ---------- Customers: first & last names, blacklist ---------- */
@@ -1819,7 +1822,7 @@ function docData(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
   items:o.items.map(it=>({title:itemTitle(it),lines:itemLines(it),qty:String(it.qty),price:money(it.price),total:money(itemSub(it))})),
   sub:money(t.sub),tax:t.tax?money(t.tax):"",fee:t.fee?money(t.fee):"",total:money(t.total),paid:t.paid?money(t.paid):"",depLabel:isQ?"Deposit to book":"Deposit due",dep:money(t.depLeft),bal:money(t.bal),
   images:o.imagesOnDoc?(o.images||[]).filter(x=>String(x).startsWith("sb:")).map(x=>x.slice(3)):[],notes:o.notes||"",payNote:L.payNote||"",payLink:/^https:\/\/\S+$/.test(L.payLink||"")?L.payLink:"",
-  terms:L.showTerms&&s.terms?s.terms:"",footer:s.footer||"",cancelPolicy:s.showCancel!==false&&s.cancelPolicy?s.cancelPolicy:"",cancelled:o.status==="Cancelled"?{at:o.cancel&&o.cancel.at||"",note:o.cancel&&o.cancel.clientNote||""}:null}}
+  terms:L.showTerms&&s.terms?s.terms:"",footer:s.footer||"",policies:polList().map(([t,h])=>({t,h})),cancelled:o.status==="Cancelled"?{at:o.cancel&&o.cancel.at||"",note:o.cancel&&o.cancel.clientNote||""}:null}}
 async function shareOrder(o,quiet){if(CLOUD.state!=="on")throw new Error("Sign in to share a link");if(!o.id)throw new Error("Save the order first");
  try{await uploadPending()}catch{}
  {const saved=S.orders.find(x=>x.id===o.id);if(saved&&saved!==o&&(saved.images||[]).length===(o.images||[]).length)o.images=saved.images.slice()}
@@ -1870,7 +1873,7 @@ function docHtml(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
  <div class="dtot"><div class="kv"><span>Subtotal</span><span>${money(t.sub)}</span></div>${t.tax?`<div class="kv"><span>Tax</span><span>${money(t.tax)}</span></div>`:""}${t.fee?`<div class="kv"><span>Delivery</span><span>${money(t.fee)}</span></div>`:""}<div class="kv tot"><span>Total</span><span>${money(t.total)}</span></div>${t.paid?`<div class="kv"><span>Paid</span><span>${money(t.paid)}</span></div>`:""}<div class="kv"><span>${isQ?"Deposit to book":"Deposit due"}</span><span>${money(t.depLeft)}</span></div><div class="kv tot"><span>Balance due</span><span>${money(t.bal)}</span></div></div>
  ${o.imagesOnDoc&&(o.images||[]).length?`<span class="lbl">Inspiration</span><div class="dpics">${o.images.map(src=>imgTag(src,"")).join("")}</div>`:""}
  ${o.notes?`<span class="lbl">Notes</span><p class="note" style="white-space:pre-wrap">${esc(o.notes)}</p>`:""}
- ${docSecs(L.payNote,"",s.footer,s.showCancel!==false?s.cancelPolicy:"",L.showTerms?s.terms:"")}</div>`}
+ ${docSecs(L.payNote,"",s.footer,polList(),L.showTerms?s.terms:"")}</div>`}
 
 function jobHtml(o){const s=S.settings,e=evt(o.eventId),f=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
  const allergens=Array.isArray(o.allergens)?o.allergens:(o.allergens&&typeof o.allergens==="object"?Object.keys(o.allergens).filter(k=>o.allergens[k]):[]);
@@ -1991,8 +1994,8 @@ function vPrefs(){
   +row("deposit",IC.pct,"Deposit",`${esc(s.depositPct)}%`,f("depositPct","Deposit (%)","number",'min="0" max="100"'))
   +row("plan",IC.plan,"Payment plan",esc(plans[+s.instalments]||plans[1]),`<p class="hint">How new orders are split. The deposit uses the percentage above; the rest is spread before the event.</p><div class="seg">${[[1,"Deposit, then balance"],[2,"Deposit + 1 payment"],[3,"Deposit + 2 payments"],[4,"Deposit + 3 payments"]].map(([n,l])=>`<button type="button" class="${+s.instalments===n?"on":""}" data-a="sset" data-k="instalments" data-v="${n}">${l}</button>`).join("")}</div>`)
   +row("footer",IC.foot,"Order footer",set(s.footer),`<p class="hint" style="margin-top:0">A thank-you note under the prices on quotes and invoices, and at the end of emails.</p>${richEd("footer","Order footer","Thank you for choosing us for your celebration!",90)}`)
-  +row("cancel",IC.doc,"Cancellation policy",set(s.cancelPolicy),`<p class="hint" style="margin-top:0">Shows as a tap-to-open section on quotes and invoices, after the footer.</p>${richEd("cancelPolicy","Cancellation policy","e.g. Cancel 14 or more days before your event for a credit toward a future order…",120)}<label class="toggle"><div><div class="t">Show on quotes and invoices</div></div><span class="sw2"><input type="checkbox" data-s="showCancel"${s.showCancel!==false?" checked":""}><i></i></span></label>`)
-  +row("terms",IC.doc,"Order terms & conditions",set(s.terms),`<p class="hint" style="margin-top:0">Shows last, as a tap-to-open section on quotes and invoices. Customers tick a box saying they read them before approving.</p>${richEd("terms","Order terms & conditions","",140)}`)
+  +POLICIES.map(([k,l,ph])=>row("pol-"+k,IC.doc,l,set(s[k]),`<p class="hint" style="margin-top:0">Shows as a tap-to-open section on quotes and invoices, after the footer.</p>${richEd(k,l,ph,120)}<label class="toggle"><div><div class="t">Show on quotes and invoices</div></div><span class="sw2"><input type="checkbox" data-pol="${k}"${polOn(k)?" checked":""}><i></i></span></label>`)).join("")
+  +row("terms",IC.doc,"Full terms & conditions",set(s.terms),`<p class="hint" style="margin-top:0">Shows last, as a tap-to-open section on quotes and invoices. Customers tick a box saying they read them before approving.</p>${richEd("terms","Full terms & conditions","",140)}`)
 
   +row("tax",IC.tax,"Tax rates",`${esc(dtax.name)} (${esc(dtax.rate)}%)`,`<div class="field" style="margin-top:0"><label for="s-deftax">Default rate for new items <span class="note">you can change it on any item</span></label><select id="s-deftax" data-s="defaultTax">${S.taxes.map(t=>`<option value="${esc(t.id)}"${s.defaultTax===t.id?" selected":""}>${esc(t.name)} (${esc(t.rate)}%)</option>`).join("")}</select></div><details data-keep="taxes"${OPEN.has("taxes")?" open":""}><summary class="note" style="cursor:pointer">Edit or add rates (${S.taxes.length})</summary>
  ${S.taxes.map((t,i)=>`<div class="li"><input type="text" class="nm" data-tx="${i}:name" value="${esc(t.name)}" aria-label="Tax name"${t.id==="none"?" readonly":""}><input type="number" data-tx="${i}:rate" value="${esc(t.rate)}" step="0.01" min="0" style="width:90px" aria-label="Rate %"${t.id==="none"?" readonly":""}><span class="note">%</span>${t.id==="none"?`<span style="width:30px"></span>`:`<button class="mv del" data-a="taxDel" data-i="${i}" aria-label="Delete">✕</button>`}</div>`).join("")}
@@ -2326,6 +2329,7 @@ document.addEventListener("change",e=>{
  if(el.dataset.im!=null){IMP.map[el.dataset.im]=el.value===""?null:+el.value;renderImport();return}
  if(el.id==="impFill"){IMP.fill=el.checked;return}
  if(a==="blTog"){const c=S.customers.find(x=>x.id===editCust);if(c){c.blacklisted=el.checked;if(el.checked)c.blAt=new Date().toISOString();save();render();if(el.checked)setTimeout(()=>{const r=$("cf-blReason");if(r)r.focus()},30)}return}
+ if(el.dataset.pol){const k=el.dataset.pol;if(k==="cancelPolicy")S.settings.showCancel=el.checked;else{S.settings.showPol=S.settings.showPol||{};S.settings.showPol[k]=el.checked}save();return}
  if(el.dataset.ep){const c=S.customers.find(x=>x.id===editCust);if(c){c.emailSkip=c.emailSkip||{};c.emailSkip[el.dataset.ep]=el.value==="skip";persist();toast(el.value==="skip"?"Won't send that one to "+(c.first||"them"):"Will send that one to "+(c.first||"them"))}return}
  if(el.dataset.cb){const c=S.customers.find(x=>x.id===editCust);if(c){c[el.dataset.cb]=el.checked;save()}return}
  if(el.dataset.c&&el.tagName==="SELECT"){const c=S.customers.find(x=>x.id===editCust);c[el.dataset.c]=el.value;save();return}
