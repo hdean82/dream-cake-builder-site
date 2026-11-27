@@ -46,7 +46,14 @@ for (const k of todo) {
   page.on('pageerror', e => errors.push(String(e)));
   try {
     await page.goto(`http://localhost:8765/studio.html?theme=${k}&view=1&shot=1`, {waitUntil: 'networkidle', timeout: 120000});
-    await page.waitForTimeout(17000); // the viewer re-fits the camera until ~14s
+    // Wait until the cake is built, give its 3D pieces time to arrive, then frame it from the front.
+    await page.waitForFunction(() => typeof window.__dcsFrame === 'function' && !document.getElementById('loading'), null, {timeout: 120000});
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(20000);
+    await page.evaluate(() => window.__dcsFrame());
+    await page.waitForTimeout(4000);
+    await page.evaluate(() => window.__dcsFrame());
+    await page.waitForTimeout(3000);
     const pics = await page.evaluate(() => {
       const c = [...document.querySelectorAll('canvas')].sort((a, b) => b.width * b.height - a.width * a.height)[0];
       const s = Math.min(c.width, c.height), o = document.createElement('canvas'); o.width = o.height = 640;
