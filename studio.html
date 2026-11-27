@@ -4,6 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Studio · Dream Cake Builder</title>
+<link rel="canonical" href="https://www.dreamcakebuilder.com/studio.html">
+<meta name="description" content="Design a cake in 3D, choose tiers, frosting, piping and toppers, and send your client a link to approve it before you bake.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dream Cake Builder">
+<meta property="og:title" content="Dream Cake Studio · Design Real-Looking Cakes In 3D">
+<meta property="og:description" content="Design a cake in 3D, choose tiers, frosting, piping and toppers, and send your client a link to approve it before you bake.">
+<meta property="og:url" content="https://www.dreamcakebuilder.com/studio.html">
+<meta property="og:image" content="https://www.dreamcakebuilder.com/assets/home/lambeth-hero.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=Great+Vibes&family=Dancing+Script:wght@600&family=Pacifico&family=Parisienne&family=Playfair+Display:ital,wght@1,600&family=Fredoka:wght@600&family=Cinzel:wght@600&family=Allura&family=Alex+Brush&family=Sacramento&family=Satisfy&family=Kaushan+Script&family=Baloo+2:wght@800&family=Chewy&family=Lobster&family=Amatic+SC:wght@700&family=Cormorant+Garamond:wght@600&family=Abril+Fatface&family=Montserrat:wght@600&family=Bebas+Neue&family=Righteous&family=Monoton&display=swap" rel="stylesheet">
 <style>
@@ -283,6 +294,45 @@ html.client .float.bottom{bottom:calc(var(--rbh,150px) + 10px)}
 .reviewbar .rb-msg{margin:6px 0 0;font-size:13px;color:var(--rose-ink);min-height:0}.reviewbar .rb-ok{background:#e3f4f2;color:#0f5f5b;border-radius:10px;padding:8px 10px;font-size:13.5px;margin-top:8px}
 .rvlink{display:flex;gap:6px;margin:8px 0}.rvlink input{flex:1;min-width:0;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:7px 9px}
 .rvstat{font-size:11.5px;font-weight:600;border-radius:999px;padding:1px 8px;margin-left:6px;background:var(--rose-soft);color:var(--rose-ink)}.rvstat.ok{background:#dff3f1;color:#177d79}
+
+/* ===== part of the site: same header look, logo menu, frosting drip, page transitions ===== */
+@view-transition{navigation:auto}
+.app>header{view-transition-name:dcb-head;background:linear-gradient(105deg,#fff6f8,#fff7ef 52%,#f5eefb)}
+::view-transition-group(dcb-head){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,0,0,1)}
+::view-transition-old(root){animation:dcb-out .2s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(root){animation:dcb-in .4s cubic-bezier(0,0,.2,1) .05s both}
+@keyframes dcb-out{to{opacity:0;transform:translateY(-6px)}}
+@keyframes dcb-in{from{opacity:0;transform:translateY(10px)}}
+@keyframes dcb-pop{from{opacity:0;transform:translateY(-4px)}}
+html.dcb-fade .app>:not(header){animation:dcb-in .4s cubic-bezier(0,0,.2,1) both}
+html.dcb-leaving .app>:not(header){opacity:0;transition:opacity .17s}
+.dcb-sitemenu{position:relative;display:flex!important;align-items:center;flex-shrink:0}
+.dcb-sitemenu>summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px 4px 4px;margin-left:-4px;border-radius:11px;color:var(--ink);transition:background-color .15s}
+.dcb-sitemenu>summary::-webkit-details-marker{display:none}
+.dcb-sitemenu>summary:hover,.dcb-sitemenu[open]>summary{background:var(--rose-soft)}
+.dcb-sitemenu img{width:30px;height:30px;border-radius:8px;flex-shrink:0}
+.dcb-sitemenu .bw span{color:var(--rose)}
+.dcb-sitemenu .here{font:600 11px/1 Inter,system-ui,sans-serif;letter-spacing:.02em;padding:4px 8px;border-radius:999px;background:var(--rose-soft);color:var(--rose-ink)}
+.dcb-sitemenu>summary:hover .here,.dcb-sitemenu[open] .here{background:#fff}
+.dcb-sitemenu .caret{width:14px;height:14px;color:var(--muted);transition:transform .2s}
+.dcb-sitemenu[open] .caret{transform:rotate(180deg)}
+.dcb-menu-panel{position:fixed;left:12px;top:60px;z-index:80;display:flex;flex-direction:column;min-width:220px;padding:8px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 40px #4b103d26;font:500 14px/1.4 Inter,system-ui,sans-serif;letter-spacing:0;animation:dcb-pop .16s ease-out}
+.dcb-menu-panel a{padding:10px 12px;border-radius:9px;text-decoration:none;color:var(--ink);transition:background-color .15s,color .15s}
+.dcb-menu-panel a:hover,.dcb-menu-panel a[aria-current=page]{background:var(--rose-soft);color:var(--rose-ink)}
+.dcb-drip{position:absolute;left:0;right:0;top:-2px;height:23px;pointer-events:none;background:url("assets/drip.svg") 0 0/230px 23px repeat-x;filter:drop-shadow(0 2px 2px #da6aa33a)}
+.loading{animation:dcb-breathe 1.3s ease-in-out infinite alternate}
+@keyframes dcb-breathe{from{opacity:.55}to{opacity:1}}
+@media (min-width:821px) and (max-width:1100px){.dcb-sitemenu .bw{display:none}.dcb-sitemenu .here{display:inline!important}}
+@media (max-width:820px),(orientation:landscape) and (max-height:560px){.dcb-sitemenu .bw,.dcb-sitemenu .here{display:none!important}.dcb-sitemenu>summary{padding:3px 4px;gap:4px;margin-left:0}.dcb-sitemenu img{width:28px;height:28px}.dcb-drip{display:none}}
+@media (orientation:landscape) and (max-height:560px){.dcb-menu-panel{top:46px}}
+html.client .dcb-sitemenu .caret,html.client .dcb-sitemenu .here,html.client .dcb-menu-panel{display:none!important}
+html.client .dcb-sitemenu>summary{cursor:default;background:none!important}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.loading{animation:none}}
+@media print{.dcb-drip,.dcb-menu-panel{display:none!important}}
+.dcb-menu-panel{max-height:calc(100dvh - 76px);overflow-y:auto;min-width:240px}
+.dcb-menu-panel .mp-sec{text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:600;color:#a27f97;margin:10px 12px 4px}
+.dcb-menu-panel .mp-sec:first-child{margin-top:4px}
+.dcb-menu-panel a{padding:8px 12px}
 </style>
 <style>
 .movepad{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border-radius:16px;background:color-mix(in srgb,#fffaf5 88%,transparent);border:1px solid #eed3e3;box-shadow:0 6px 18px #4b103d1f;backdrop-filter:blur(6px)}
@@ -298,8 +348,7 @@ html.viewer .movepad{display:none}
 <body>
 <div class="app">
 <header>
- <a class="homelink" href="index.html" title="Back to the Dream Cake Builder website" aria-label="Dream Cake Builder website home"><img src="lilac/assets/favicon.svg" alt="" width="30" height="30"><span class="hl-t">Home</span></a>
- <a class="brand" href="index.html" title="Dream Cake Builder home">Dream Cake <span>Studio</span></a><a id="siteHome" href="index.html" hidden></a><a id="siteHow" href="index.html#how-it-works" hidden></a><a id="siteContact" href="contact.html" hidden></a><a id="siteAccount" href="account.html" hidden></a>
+ <details class="brand dcb-sitemenu"><summary aria-label="Dream Cake Builder menu" title="Dream Cake Builder menu"><img src="lilac/assets/favicon.svg" alt="" width="30" height="30"><span class="bw">Dream Cake <span>Builder</span></span><span class="here">Studio</span><svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></summary><nav class="dcb-menu-panel" aria-label="Dream Cake Builder"><div class="mp-sec" data-team>Overview</div><a href="shop.html#today" data-team>Today</a><div class="mp-sec" data-team>Orders</div><a href="shop.html#orders" data-team>Orders & Quotes</a><a href="shop.html#new-order" data-team>New Order</a><a href="shop.html#calendar" data-team>Calendar</a><a href="shop.html#requests" data-team>Requests</a><div class="mp-sec">Design</div><a href="studio.html" aria-current="page">Studio</a><a href="shop.html#portfolio" data-team>Portfolio</a><div class="mp-sec" data-team>Customers</div><a href="shop.html#customers" data-team>Customers</a><div class="mp-sec" data-team>Settings</div><a href="shop.html#preferences" data-team>Preferences</a><div class="mp-sec">Website</div><a href="index.html">Home</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign in</a></nav></details>
  <input id="projName" value="Untitled cake" aria-label="Design name">
  <span class="savestate" id="saveState" aria-live="polite">Saved</span>
  <div class="spacer"></div>
@@ -328,7 +377,7 @@ html.viewer .movepad{display:none}
 </aside>
 
 <main>
- <div id="view"><div class="loading" id="loading">Preheating the studio...</div></div><div id="sizeLayer" aria-hidden="true"></div><div id="refCard" hidden><div class="refbar"><span>Tap photo to pick a color</span><input type="range" min="20" max="100" value="100" aria-label="Photo visibility"><button type="button" class="refsz" data-sz="-1" aria-label="Smaller photo">−</button><button type="button" class="refsz" data-sz="1" aria-label="Larger photo">+</button><button type="button" class="refx" aria-label="Hide photo">×</button></div><div class="refwrap"><img alt="Inspiration photo"></div><p class="refhint">Pinch or scroll on the photo to zoom in, drag to move around, double-tap to reset.</p></div>
+ <div id="view"><div class="loading" id="loading">Preheating the studio...</div></div><div class="dcb-drip" aria-hidden="true"></div><div id="sizeLayer" aria-hidden="true"></div><div id="refCard" hidden><div class="refbar"><span>Tap photo to pick a color</span><input type="range" min="20" max="100" value="100" aria-label="Photo visibility"><button type="button" class="refsz" data-sz="-1" aria-label="Smaller photo">−</button><button type="button" class="refsz" data-sz="1" aria-label="Larger photo">+</button><button type="button" class="refx" aria-label="Hide photo">×</button></div><div class="refwrap"><img alt="Inspiration photo"></div><p class="refhint">Pinch or scroll on the photo to zoom in, drag to move around, double-tap to reset.</p></div>
  <div id="studioBar" class="studiobar" hidden><span class="sbtxt">Studio theme: <b id="sbName"></b></span><button type="button" class="btn sm primary" id="sbSave">Save for all artists</button><details class="sbmore"><summary aria-label="More theme options">⋯</summary><div class="sbmenu"><button type="button" id="sbRestore">Restore the original design</button><button type="button" id="sbHide">Hide from artists</button><button type="button" id="sbClose">Close this bar</button></div></details></div>
  <div class="float top">
   <span class="chip" id="selChip">Editing <b>Tier 1</b></span>
@@ -430,7 +479,7 @@ html.viewer .movepad{display:none}
 
 <script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.163.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.163.0/examples/jsm/"}}</script>
 <style>.homelink{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;text-decoration:none;color:var(--muted,#79536e);font-weight:600;font-size:13px;padding:3px 8px 3px 3px;border-radius:10px;border:1px solid transparent}.homelink:hover{border-color:var(--line,#eed3e3);background:#fff;color:var(--rose,#c12c7e)}.homelink img{width:30px;height:30px;border-radius:8px;object-fit:contain}@media (max-width:820px){.homelink .hl-t{display:none}.homelink{padding:3px}}.msitem.site b{color:var(--rose,#c12c7e)}</style>
-<script>(function(){if(!/(?:^|; )dcb_team=/.test(document.cookie))document.documentElement.classList.add('teaser')})()</script><style>html.teaser #sendShopBtn,html.teaser #shopLink{display:none!important}</style>
+<script>(function(){if(!/(?:^|; )dcb_team(?:_ui)?=/.test(document.cookie))document.documentElement.classList.add('teaser')})()</script><style>html.teaser #sendShopBtn,html.teaser #shopLink{display:none!important}</style>
 <script>(function(){var t=new URLSearchParams(location.search).get('review');if(!/^[0-9a-f-]{36}$/i.test(t||''))return;window.DCS_REVIEW=t.toLowerCase();document.documentElement.classList.add('client');
  try{document.cookie='dcs_tour=1; max-age=31536000; path=/; SameSite=Lax'}catch(e){}
  var o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(String(k).indexOf('dcs-')===0)return;return o.call(this,k,v)};
@@ -438,6 +487,7 @@ html.viewer .movepad{display:none}
 <script>(function(){if(new URLSearchParams(location.search).get('view')!=='1')return;document.documentElement.classList.add('viewer');window.DCS_VIEWER=1;try{document.cookie='dcs_tour=1; max-age=31536000; path=/; SameSite=Lax'}catch(e){}var o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(String(k).indexOf('dcs-')===0)return;return o.call(this,k,v)}})()</script>
 <style>html.viewer,html.viewer body{background:transparent!important;overflow:hidden}html.viewer body>*:not(.app){display:none!important}html.viewer .app>*:not(main){display:none!important}html.viewer .app{display:block!important;height:100vh}html.viewer main{position:fixed!important;inset:0!important}html.viewer main>*:not(#view){display:none!important}html.viewer #view{position:absolute;inset:0;width:100%!important;height:100%!important}</style>
 <script src="assets/dcb-auth.js"></script>
+<script src="assets/dcb-site.js" defer></script>
 <script type="module">
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -4258,7 +4308,7 @@ html.client #wlCard{display:none!important}
 // Launch tease: invite Studio visitors to the waitlist once, after they've had time to play
 (function(){
   try{
-    if(window.DCS_REVIEW||/(?:^|; )dcb_team=/.test(document.cookie))return;
+    if(window.DCS_REVIEW||/(?:^|; )dcb_team(?:_ui)?=/.test(document.cookie))return;
     if(localStorage.getItem('dcb-wl-card'))return;
   }catch(e){return}
   const LIVE=['dreamcakebuilder.com','www.dreamcakebuilder.com','dream-cake-builder-site.pages.dev'];

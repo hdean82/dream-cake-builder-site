@@ -1,14 +1,63 @@
 /* Dream Cake Builder — shared site script: menu, image fallback, waitlist form */
 {
   // team devices (unlocked at /team?key=…) also see the Orders links
-  if (/(?:^|; )dcb_team=/.test(document.cookie)) document.documentElement.classList.add('team');
+  if (/(?:^|; )dcb_team(?:_ui)?=/.test(document.cookie)) document.documentElement.classList.add('team');
 
   // close the phone menu after choosing a link or tapping outside
-  const menu = document.querySelector('.menu');
-  if (menu) {
+  // (works for the site menu and the Studio's logo menu)
+  document.querySelectorAll('details.menu, details.dcb-sitemenu').forEach(menu => {
     menu.addEventListener('click', e => { if (e.target.closest('a')) menu.open = false; });
     document.addEventListener('click', e => { if (menu.open && !menu.contains(e.target)) menu.open = false; });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.open = false; });
+  });
+
+  // smooth page changes: modern browsers use CSS view transitions (see dcb-theme.css);
+  // older ones get a short fade out / fade in here instead
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!('onpagereveal' in window) && !calm) {
+    const root = document.documentElement;
+    root.classList.add('dcb-fade');
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href]');
+      if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if ((a.target && a.target !== '_self') || a.hasAttribute('download')) return;
+      const u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || (u.pathname === location.pathname && u.search === location.search)) return;
+      e.preventDefault();
+      root.classList.add('dcb-leaving');
+      setTimeout(() => { location.href = u.href; }, 170);
+    });
+    addEventListener('pageshow', e => { if (e.persisted) root.classList.remove('dcb-leaving'); });
+  }
+
+  // inside the Orders app (shop.html#orders → #calendar …) sections switch with the same soft fade
+  if (document.startViewTransition && !calm) {
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a[href*="#"]');
+      if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || u.pathname !== location.pathname || u.search !== location.search) return;
+      const id = decodeURIComponent(u.hash.slice(1));
+      if (!id || u.hash === location.hash || document.getElementById(id)) return; // real in-page anchors just scroll
+      e.preventDefault();
+      document.startViewTransition(() => new Promise(done => {
+        addEventListener('hashchange', () => requestAnimationFrame(done), { once: true });
+        setTimeout(done, 400);
+        location.hash = u.hash;
+      }));
+    });
+  }
+
+  // load the next page early when someone points at a link, so it opens instantly
+  if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules') && !document.querySelector('script[type=speculationrules]')) {
+    const light = ['/', '/index.html', '/contact.html', '/privacy.html'];
+    const rules = document.createElement('script');
+    rules.type = 'speculationrules';
+    rules.textContent = JSON.stringify({
+      prerender: [{ where: { or: light.map(h => ({ href_matches: h })) }, eagerness: 'moderate' }],
+      prefetch: [{ where: { and: [{ href_matches: '/*' }, { not: { or: light.map(h => ({ href_matches: h })) } }] }, eagerness: 'moderate' }]
+    });
+    document.head.append(rules);
   }
 
   // soft placeholder if a picture can't load

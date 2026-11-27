@@ -106,3 +106,24 @@ h1,h2,h3,h4,.btn,.eyebrow,.site-nav a,.menu-panel a,label,.lbl,.filters button,s
 html:not(.team) [data-team]{display:none!important}
 
 [hidden]{display:none!important}
+/* =====================================================================
+   Page transitions — pages glide into each other instead of blinking.
+   Header stays put (it morphs into the Studio's header), content fades/slides.
+   Browsers without support get a lighter fade from dcb-site.js.
+   ===================================================================== */
+@view-transition{navigation:auto}
+.site-head{view-transition-name:dcb-head}
+.site-foot{view-transition-name:dcb-foot}
+::view-transition-group(dcb-head){animation-duration:.38s;animation-timing-function:cubic-bezier(.2,0,0,1)}
+::view-transition-old(root){animation:dcb-out .2s cubic-bezier(.4,0,1,1) both}
+::view-transition-new(root){animation:dcb-in .4s cubic-bezier(0,0,.2,1) .05s both}
+@keyframes dcb-out{to{opacity:0;transform:translateY(-6px)}}
+@keyframes dcb-in{from{opacity:0;transform:translateY(10px)}}
+html.dcb-fade body>main{animation:dcb-in .4s cubic-bezier(0,0,.2,1) both}
+html.dcb-leaving body>main{opacity:0;transform:translateY(-6px);transition:opacity .17s,transform .17s}
+.site-nav a,.menu-panel a,.btn{transition:background-color .15s,color .15s,border-color .15s,transform .15s}
+.menu[open] .menu-panel{animation:dcb-pop .16s ease-out}
+@keyframes dcb-pop{from{opacity:0;transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){
+  ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
+}

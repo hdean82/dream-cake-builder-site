@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page Not Found · Dream Cake Builder</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="/lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/dcb-theme.css">
+<style>
+.contact{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--gap);align-items:start}
+.c-main{padding:20px 22px}
+.c-main h1{margin:4px 0 6px}
+.c-main .lead{color:var(--muted);font-size:16px;max-width:520px}
+.ways{display:grid;gap:8px;margin-top:14px}
+.way{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;text-decoration:none;color:var(--ink)}
+.way:hover{border-color:#e2b4ca;background:#fffafb}
+.way .wi{width:38px;height:38px;border-radius:10px;background:var(--rose-soft);color:var(--rose-ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.way .wi svg{width:20px;height:20px}
+.way b{display:block}
+.way span{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.copy{margin-left:auto}
+.c-side{padding:16px 18px}
+.c-side h2{font-size:20px;margin-bottom:8px}
+.c-side ul{margin:0;padding-left:18px;color:var(--muted)}
+.c-side li{margin:4px 0}
+.c-side .note{font-size:13px;color:var(--muted);margin-top:10px}
+#copied{font-size:13px;color:var(--teal);min-height:1em;margin-top:6px}
+@media (max-width:860px){.contact{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="/index.html" aria-label="Dream Cake Builder home"><img src="/lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34">Dream <span>Cake</span> Builder</a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="/index.html">Home</a>
+   <a href="/index.html#how-it-works">How It Works</a>
+   <a href="/studio.html">Studio</a>
+   <a href="/shop.html#orders" data-team>Orders</a>
+   <a href="/shop.html#calendar" data-team>Calendar</a>
+   <a href="/contact.html">Contact</a>
+   <a href="/account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="/index.html#launch-list">Join Waitlist</a>
+  </nav>
+  <details class="menu">
+   <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="/index.html">Home</a><a href="/index.html#how-it-works">How It Works</a><a href="/studio.html">Studio</a><a href="/shop.html#orders" data-team>Orders</a><a href="/shop.html#calendar" data-team>Calendar</a><a href="/contact.html">Contact</a><a href="/account.html" data-acct>Sign In</a><a href="/index.html#launch-list">Join Waitlist</a></div>
+  </details>
+ </div>
+</header>
+
+<main>
+<section class="band"><div class="wrap" style="max-width:640px;text-align:center">
+<div class="card" style="padding:36px 28px">
+<div style="font-size:56px;line-height:1" aria-hidden="true">🧁</div>
+<h1 style="margin-top:12px">This Page Wandered Off</h1>
+<p class="muted" style="margin:10px auto 18px;max-width:420px">We couldn't find that page. It may have moved, or the link may be missing a letter.</p>
+<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><a class="btn primary" href="/index.html">Go to the home page</a><a class="btn" href="/studio.html">Open the Studio</a><a class="btn" href="/contact.html">Contact us</a></div>
+</div>
+</div></section>
+</main>
+<footer class="site-foot">
+ <div class="foot-in">
+  <a class="brand" href="/index.html">Dream <span>Cake</span> Builder</a>
+  <span>Made for creative cake artists.</span>
+  <nav aria-label="Footer"><a href="/index.html">Home</a><a href="/studio.html">Studio</a><a data-team href="/shop.html#orders">Orders</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="https://www.instagram.com/dreamcakebuilder/" target="_blank" rel="noopener">Instagram</a><a href="https://www.facebook.com/Dreamcakebuilder" target="_blank" rel="noopener">Facebook</a></nav>
+  <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
+ </div>
+</footer>
+<script src="/assets/dcb-site.js" defer></script>
+<script>
+{
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(!b)return;e.preventDefault();e.stopPropagation();const out=document.getElementById('copied');
+  (navigator.clipboard?navigator.clipboard.writeText(b.dataset.copy):Promise.reject()).then(()=>{out.textContent='Email address copied.'},()=>{out.textContent='Our address is '+b.dataset.copy});});
+}
+</script>
+</body>
+</html>

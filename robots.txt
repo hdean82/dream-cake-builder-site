@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /shop
+Disallow: /team
+Disallow: /quote
+Disallow: /calendar
+Disallow: /account.html
+Disallow: /leave-list.html
+
+Sitemap: https://www.dreamcakebuilder.com/sitemap.xml
