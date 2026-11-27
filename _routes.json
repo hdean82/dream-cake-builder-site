@@ -16,7 +16,8 @@
     "/calendar.html",
     "/beta-admin",
     "/beta-admin.html",
-    "/beta-admin/"
+    "/beta-admin/",
+    "/team/auth"
   ],
   "exclude": []
 }

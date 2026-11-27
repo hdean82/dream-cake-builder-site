@@ -179,3 +179,24 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();
   window.addEventListener('dcb-beta', build);
 })();
+
+// Signed in with the owner account: this device unlocks the private pages automatically (no team password needed).
+(() => {
+  if (/(?:^|; )dcb_team_ui=/.test(document.cookie)) return;
+  try { if (sessionStorage.getItem('dcb-team-tried')) return; } catch (e) {}
+  const token = async () => {
+    try { if (window.DCBAuth) { const s = await window.DCBAuth.session(); if (s && s.access_token) return s.access_token; } } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem('sb-gcorvodfcxhumesttwvj-auth-token')); if (s && s.access_token && (!s.expires_at || s.expires_at > Date.now() / 1000 + 30)) return s.access_token; } catch (e) {}
+    return '';
+  };
+  const run = async () => {
+    const t = await token(); if (!t) return;
+    try { sessionStorage.setItem('dcb-team-tried', '1'); } catch (e) {}
+    const r = await fetch('/team/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: t }) }).catch(() => null);
+    if (!r || !r.ok) return;
+    document.documentElement.classList.add('team');
+    if (/coming-soon/.test(location.pathname)) location.replace('/shop');
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  window.addEventListener('dcb-auth', () => { try { sessionStorage.removeItem('dcb-team-tried'); } catch (e) {} run(); });
+})();

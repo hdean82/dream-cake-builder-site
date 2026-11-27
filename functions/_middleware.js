@@ -34,6 +34,24 @@ export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
   const path = url.pathname;
 
+  // Signed in with a site admin account: unlock this device without the team password.
+  if (path === '/team/auth') {
+    if (request.method !== 'POST') return new Response('Not found', { status: 404 });
+    const body = await request.json().catch(() => ({}));
+    const token = typeof body.token === 'string' ? body.token.slice(0, 4000) : '';
+    let admin = false;
+    if (token) {
+      const r = await fetch('https://gcorvodfcxhumesttwvj.supabase.co/rest/v1/rpc/is_site_admin', {
+        method: 'POST', headers: { apikey: 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb', Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: '{}'
+      }).catch(() => null);
+      admin = !!(r && r.ok && (await r.json().catch(() => false)) === true);
+    }
+    const tok = await tokenFor(env);
+    if (!admin || !tok) return new Response(JSON.stringify({ ok: false }), { status: 403, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+    const h = new Headers({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    h.append('Set-Cookie', keyCookie(tok)); h.append('Set-Cookie', uiCookie);
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: h });
+  }
   if (path === '/team' || path === '/team/') {
     if (url.searchParams.has('off')) return go('/', ...clear);
     // setup check: says only whether a password is configured, never anything about it
