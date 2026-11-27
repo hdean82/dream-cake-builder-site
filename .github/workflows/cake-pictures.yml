@@ -12,9 +12,6 @@ on:
         default: ""
 permissions:
   contents: write
-concurrency:
-  group: cake-pictures
-  cancel-in-progress: false
 jobs:
   render:
     runs-on: ubuntu-latest
