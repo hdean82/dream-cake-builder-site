@@ -21,7 +21,7 @@ starts.forEach(([k, i], n) => { if (!themes.has(k)) themes.set(k, studio.slice(i
 const hash = t => crypto.createHash('sha1').update(t).digest('hex').slice(0, 12);
 
 const manifest = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
-const pictured = fs.readdirSync(OUT).filter(f => f.endsWith('.jpg')).map(f => f.slice(0, -4));
+const pictured = fs.readdirSync(OUT).filter(f => f.endsWith('.jpg') && !f.endsWith('-pair.jpg')).map(f => f.slice(0, -4));
 let todo = (only.length ? only : pictured).filter(k => themes.has(k));
 if (!force && !only.length) todo = todo.filter(k => manifest[k] !== hash(themes.get(k)));
 if (!todo.length) { console.log('All cake pictures are up to date.'); process.exit(0); }
@@ -54,17 +54,29 @@ for (const k of todo) {
     await page.waitForTimeout(4000);
     await page.evaluate(() => window.__dcsFrame());
     await page.waitForTimeout(3000);
-    const pics = await page.evaluate(() => {
+    const pics = await page.evaluate(pair => {
       const c = [...document.querySelectorAll('canvas')].sort((a, b) => b.width * b.height - a.width * a.height)[0];
       // Fit the whole canvas into the square (never crop), on the Studio's soft background.
       const o = document.createElement('canvas'); o.width = o.height = 640;
       const x = o.getContext('2d'); x.fillStyle = '#efe7e9'; x.fillRect(0, 0, 640, 640);
       const k = 640 / Math.max(c.width, c.height), w = c.width * k, h = c.height * k;
       x.drawImage(c, (640 - w) / 2, (640 - h) / 2, w, h);
-      return {jpg: o.toDataURL('image/jpeg', .88), webp: o.toDataURL('image/webp', .84), size: [c.width, c.height, innerWidth, innerHeight]};
-    });
+      const out = {jpg: o.toDataURL('image/jpeg', .88), webp: o.toDataURL('image/webp', .84), size: [c.width, c.height, innerWidth, innerHeight]};
+      // A second, closer picture for the home page's before-and-after: the cake fills the same share of the frame as the photo beside it.
+      if (pair && window.__dcsBox) {
+        const [x0, y0, x1, y1] = window.__dcsBox(), cw = c.width, ch = c.height;
+        const s = Math.min(.84 / Math.max(.05, y1 - y0), .9 / Math.max(.05, x1 - x0) * (cw / ch));
+        const side = ch / s, cx = (x0 + x1) / 2 * cw, cy = (y0 + y1) / 2 * ch;
+        const p = document.createElement('canvas'); p.width = p.height = 640;
+        const q = p.getContext('2d'); q.fillStyle = '#efe7e9'; q.fillRect(0, 0, 640, 640);
+        q.drawImage(c, cx - side / 2, cy - side / 2, side, side, 0, 0, 640, 640);
+        out.pairJpg = p.toDataURL('image/jpeg', .88); out.pairWebp = p.toDataURL('image/webp', .84);
+      }
+      return out;
+    }, k.startsWith('sig_'));
     console.log(k, 'canvas', pics.size.join('x'), await page.evaluate(() => window.__dcsInfo ? window.__dcsInfo() : '')); delete pics.size;
-    for (const [ext, d] of Object.entries(pics)) fs.writeFileSync(path.join(OUT, `${k}.${ext}`), Buffer.from(d.split(',')[1], 'base64'));
+    const NAMES = {jpg: `${k}.jpg`, webp: `${k}.webp`, pairJpg: `${k}-pair.jpg`, pairWebp: `${k}-pair.webp`};
+    for (const [ext, d] of Object.entries(pics)) fs.writeFileSync(path.join(OUT, NAMES[ext]), Buffer.from(d.split(',')[1], 'base64'));
     manifest[k] = hash(themes.get(k));
     console.log('Rendered', k, errors.length ? `(page errors: ${errors.join(' | ').slice(0, 300)})` : '');
   } catch (e) { failed++; console.error('Could not render', k, e.message); }

@@ -26,11 +26,13 @@ jobs:
         run: |
           T="${{ github.event.inputs.themes }}"
           if [ "$T" = "all" ]; then node scripts/render-cakes.mjs --all; else node scripts/render-cakes.mjs $T; fi
+      - name: Point the home page at the new pictures
+        run: node scripts/sync-home-cakes.mjs index.html
       - name: Save the new pictures
         run: |
           git config user.name "cake-pictures bot"
           git config user.email "cake-pictures@users.noreply.github.com"
-          git add assets/home/cakes
+          git add assets/home/cakes index.html
           if git diff --cached --quiet; then echo "No picture changes"; exit 0; fi
           git commit -m "Website cake pictures re-rendered from the Studio"
           for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
