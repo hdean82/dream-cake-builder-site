@@ -2425,9 +2425,9 @@ THEMES.unshift(
     ['cascadesprig',43,.65,98,'#f9edce']])}),
   newTier(5.68,4.87,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none'})]}},
  {key:'sig_monogram',name:'Champagne Gold Art Deco',tag:SIG,blurb:'Champagne hexagons with raised brass art deco panels and gold sugar sequins, a pleated ivory tier, a gold leaf top and a floral monogram hoop.',d:{board:'gold',topper:'none',tiers:[
-  newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'geo',color:'#8a5a2b',size:4.4,height:4.4,y:.3},bottom:'pearls',bottomColor:'#c99a4e'}),
-  newTier(11,5.2,{shape:'hexagon',color:'#c8964a',finish:'metallic',texture:'golf',top:'none',bottom:'none'}),
-  newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'pleats',color:'#ddd2c4',size:2.2,height:5.6}}),
+  newTier(12,5.4,{shape:'hexagon',color:'#e6cc9f',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#a8743a',height:4.6,y:.1},bottom:'pearls',bottomColor:'#c99a4e'}),
+  newTier(11,5.2,{shape:'hexagon',color:'#c8964a',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'sequins',color:'#d4ae5a',size:.19}}),
+  newTier(9.4,5.6,{color:'#fbf7f1',finish:'fondant',top:'none',bottom:'none',stencil:{pattern:'vpleats',size:2.4,height:5.4,spacing:.36,depth:1.1}}),
   newTier(9,5.4,{color:'#c9a25a',finish:'metallic',texture:'brushed',top:'pearls',pipe:'#d4ae5a',bottom:'pearls',bottomColor:'#d4ae5a',decor:[DC('monohoop','cluster',1,{color:'#d4ae5a',size:360,center:true,face:95})]})]}},
  {key:'sig_rosettower',name:'Blush Rosette Tower',tag:SIG,blurb:'Ivory rosette tiers around a blush tier with diagonal fondant pleats, and a tall smooth blush top tier on a gold board.',d:{board:'gold',topper:'none',tiers:[
   newTier(10,5.6,{texture:'rosettes',roseSize:170,roseTip:'2D',color:'#fbf3ea',top:'none',bottom:'none'}),
@@ -2727,7 +2727,7 @@ function buildPlaque(D,add){const P=D.plaque;if(!P||!(P.text||'').trim())return;
 
 
 // ---------------------------------------------------------------- Stencils: a repeating pattern applied around the side, in royal icing or metallic, with an exact back seam
-const STENCILS={cinemaTrim:'Raised Black & White Fondant Checks',decoTiles:'Art Deco Blue & White Triangles',cinemaStripes:'Wide Cinema Stripes',heirloomDamask:'Heirloom Leaf Damask',damask:'Damask',lace:'Lace',dots:'Polka Dots',stripes:'Stripes',quatrefoil:'Quatrefoil',chevron:'Art Deco Chevron',stars:'Stars'};Object.assign(STENCILS,{geo:'Geometric Gold Lines',harlequin:'Harlequin Diamonds',pleats:'Fondant Pleats',florentine:'Florentine Scroll',medallion:'French Medallion',fleur:'Fleur-De-Lis',cornelli:'Cornelli Lace',checker:'Checkerboard',trellis:'Moroccan Trellis',honeycomb:'Honeycomb',scales:'Mermaid Scales',herringbone:'Herringbone',greekkey:'Greek Key',hearts:'Hearts',snowflakes:'Snowflakes',swissdots:'Swiss Dots'});
+const STENCILS={cinemaTrim:'Raised Black & White Fondant Checks',decoTiles:'Art Deco Blue & White Triangles',cinemaStripes:'Wide Cinema Stripes',heirloomDamask:'Heirloom Leaf Damask',damask:'Damask',lace:'Lace',dots:'Polka Dots',stripes:'Stripes',quatrefoil:'Quatrefoil',chevron:'Art Deco Chevron',stars:'Stars'};Object.assign(STENCILS,{geo:'Geometric Gold Lines',harlequin:'Harlequin Diamonds',pleats:'Fondant Pleats',sequins:'Gold Sugar Sequins',brassPanels:'Brass Art Deco Panels',vpleats:'Chevron Pleats',florentine:'Florentine Scroll',medallion:'French Medallion',fleur:'Fleur-De-Lis',cornelli:'Cornelli Lace',checker:'Checkerboard',trellis:'Moroccan Trellis',honeycomb:'Honeycomb',scales:'Mermaid Scales',herringbone:'Herringbone',greekkey:'Greek Key',hearts:'Hearts',snowflakes:'Snowflakes',swissdots:'Swiss Dots'});
 const STEN_TEX=new Map();
 function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))return STEN_TEX.get(key);const S=256,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.fillStyle='#fff';x.strokeStyle='#fff';x.lineCap='round';
  if(pat==='custom'&&img){const e=edImg(img);if(!(e&&e.tex&&e.tex.image)){return new T.CanvasTexture(c)}x.drawImage(e.tex.image,0,0,S,S);try{const id=x.getImageData(0,0,S,S),d=id.data;let opaque=0;for(let i=3;i<d.length;i+=4)if(d[i]>250)opaque++;const photo=opaque>S*S*.9;for(let i=0;i<d.length;i+=4){const lum=(d[i]*.3+d[i+1]*.59+d[i+2]*.11)/255,a=photo?Math.max(0,Math.min(1,(.78-lum)*2.2)):d[i+3]/255;d[i]=d[i+1]=d[i+2]=255;d[i+3]=Math.round(a*255)}x.putImageData(id,0,0)}catch(err){}}
@@ -2762,6 +2762,9 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
    for(const s of [-1,1]){leaf(cx,cy-9,s*.38,53,17);leaf(cx+s*2,cy+12,s*.67,64,22);leaf(cx+s*3,cy+27,s*1.12,58,20);leaf(cx+s*3,cy+39,s*1.69,37,14);leaf(cx+s*53,cy-69,s*.45,26,11);}
    x.beginPath();x.arc(cx,cy-88,6,0,7);x.fill();
   }}
+ else if(pat==='sequins'){for(let j=0;j<8;j++)for(let i=0;i<8;i++){x.beginPath();x.arc(16+i*32+(j%2)*16,16+j*32,13,0,7);x.fill()}}
+ else if(pat==='brassPanels'){x.lineWidth=12;x.strokeRect(14,14,228,228);x.lineWidth=7;x.strokeRect(40,40,176,176);for(const u of[-1,-.55,-.2,.2,.55,1]){x.beginPath();x.moveTo(128,216);x.lineTo(128+u*88,84);x.stroke()}x.beginPath();x.moveTo(40,84);x.lineTo(216,84);x.stroke();for(const px of[80,90,123,133,166,176]){x.beginPath();x.moveTo(px,50);x.lineTo(px,76);x.stroke()}}
+ else if(pat==='vpleats'){x.lineWidth=12;for(let k=-1;k<6;k++){x.beginPath();x.moveTo(0,k*48);x.lineTo(128,k*48+70);x.lineTo(256,k*48);x.stroke()}}
  else if(pat==='pleats'){x.lineWidth=10;for(let k=-2;k<4;k++){x.beginPath();x.moveTo(k*96,256);x.quadraticCurveTo(k*96+70,128,k*96+150,0);x.stroke()}}
  else{x.lineWidth=9;const fl=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);for(const sg of[1,-1]){x.beginPath();x.moveTo(0,-90);x.bezierCurveTo(sg*60,-70,sg*70,-10,sg*20,10);x.bezierCurveTo(sg*-10,25,sg*10,60,sg*45,55);x.stroke();x.beginPath();x.moveTo(0,90);x.bezierCurveTo(sg*50,70,sg*80,30,sg*55,0);x.stroke()}x.beginPath();x.ellipse(0,0,14,30,0,0,7);x.fill();x.beginPath();x.arc(0,-95,9,0,7);x.fill();x.restore()};fl(128,128,1);fl(0,0,.55);fl(256,0,.55);fl(0,256,.55);fl(256,256,.55)}
  const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;STEN_TEX.set(key,t);return t}
@@ -2850,12 +2853,55 @@ function buildStencil(t,ctx){const ST=t.stencil;if(!ST||!ST.pattern)return;const
   }
   add(red,mg(parts),'stencil');return;
  }
+ if(ST.pattern==='sequins'){buildSequins(t,ctx,ST);return}
+ if(ST.pattern==='brassPanels'){buildBrassPanels(t,ctx,ST,yb,H);return}
+ if(ST.pattern==='vpleats'){buildVPleats(t,ctx,ST,yb,H,seam,reps);return}
  if(ST.pattern==='decoTiles'){buildDecoTriangles(ctx,ST,yb,H,seam);return}
  if(t.prof==='heirloombase'&&ST.pattern==='heirloomDamask'){buildHeirloomRelief(t,ctx,ST);return}
  const col=ST.color||'#fbf7f1',tex=stencilTex(ST.pattern,ST.img),key='sten|'+col+'|'+ST.pattern+'|'+(ST.img||''),mat=mkMat(key,()=>{const m=new T.MeshPhysicalMaterial({color:col,alphaMap:tex,transparent:true,alphaTest:.4,metalness:METALS[col]?1:0,roughness:METALS[col]?.25:.55,clearcoat:METALS[col]?.4:.15,polygonOffset:true,polygonOffsetFactor:-1,depthWrite:true});return METALS[col]?m:warm(m,1.05)});
  const closeDiamond=t.texture==='diamond'&&ST.pattern==='harlequin',segs=Math.max(closeDiamond?540:120,reps*12),rows=closeDiamond?105:12,pos=[],uv=[],idx=[];for(let j=0;j<=rows;j++){const yy=yb+H*j/rows;for(let i=0;i<=segs;i++){const a=seam+2*PI*i/segs,rp=radial(a).multiplyScalar(R_at(a,yy)+(closeDiamond?.021:.008));pos.push(rp.x,yy,rp.z);uv.push((1-i/segs)*reps,j/rows*vreps)}}
  for(let j=0;j<rows;j++)for(let i=0;i<segs;i++){const a=j*(segs+1)+i,b=a+segs+1;idx.push(a,b,a+1,a+1,b,b+1)}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();add(mat,g,'stencil');
  if(design.showSeams!==false){const gm=mkMat('seamguide',()=>{const m=new T.MeshBasicMaterial({color:'#ff3d7f',toneMapped:false});m.userData.noShadow=true;m.userData.guide=true;return m});const sg=sweep(s=>{const yy=yb-.08+s*(H+.16);return radial(seam).multiplyScalar(R_at(seam,yy)+.03).setY(yy)},()=>radial(seam),8,6,()=>[.012,.012]);add(gm,sg,'seam')}}
+
+// Champagne Gold Art Deco relief: sugar sequins, raised brass panels and chevron pleats are real geometry.
+function surfFrame(a,yy,R_at){const R=R_at(a,yy),d=.002,p=radial(a).multiplyScalar(R),p2=radial(a+d).multiplyScalar(R_at(a+d,yy)),tg=p2.sub(p).normalize(),n=new V3(tg.z,0,-tg.x);if(n.dot(radial(a))<0)n.negate();return{p,tg,n}}
+function buildSequins(t,ctx,ST){const{r,h,y,R_at,add}=ctx,sp=Math.max(.12,ST.size||.19),rad=sp*.56,circ=2*PI*r,N=Math.max(24,Math.round(circ/sp)),top=y+h-.06,bot=y+.06,rows=Math.max(2,Math.floor((top-bot)/(sp*.87)));
+ const K=8,pos=[],col=[],idx=[],up=new V3(0,1,0),v=new V3();let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+ for(let j=0;j<=rows;j++){const yy=bot+(top-bot)*j/rows,off=(j%2)*.5;for(let i=0;i<N;i++){
+  const a=2*PI*(i+off)/N,{p,tg,n}=surfFrame(a,yy,R_at),tx=(rnd()-.5)*.55,ty=(rnd()-.5)*.55,nn=n.clone().addScaledVector(tg,tx).addScaledVector(up,ty).normalize(),bt=new V3().crossVectors(nn,tg).normalize(),tt=new V3().crossVectors(bt,nn);
+  const base=pos.length/3,lift=.012+rnd()*.008,k=.82+rnd()*.3;
+  v.copy(p).addScaledVector(n,lift+rad*.16);pos.push(v.x,v.y,v.z);col.push(k*1.06,k*1.06,k*1.06);
+  for(let q=0;q<K;q++){const th=q/K*2*PI;v.copy(p).addScaledVector(n,lift).addScaledVector(tt,Math.cos(th)*rad).addScaledVector(bt,Math.sin(th)*rad);pos.push(v.x,v.y,v.z);col.push(k,k,k);idx.push(base,base+1+q,base+1+(q+1)%K)}
+ }}
+ const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('color',new T.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+ add(dmat(ST.color||'#d4ae5a',{r:.2,metal:1,cc:.5,ccr:.08}),g,'stencil')}
+function buildBrassPanels(t,ctx,ST,yb,H){const{r,R_at,add}=ctx,hex=t.shape==='hexagon',faces=hex?6:Math.max(4,Math.round(2*PI*r/(ST.size||4))),fw=2*PI/faces,bars=[],w=Math.max(.09,(ST.weight||.12)),dep=.07;
+ const W=r*fw*(hex?.86:.82),Hh=H,cx0=0,cy0=yb+H/2;
+ const seg=(x1,y1,x2,y2,wd=w)=>{const L=Math.hypot(x2-x1,y2-y1);if(L<.02)return;const g=new T.BoxGeometry(L+wd*.5,wd,dep,Math.max(1,Math.ceil(L/.25)),1,1);g.rotateZ(Math.atan2(y2-y1,x2-x1));g.translate((x1+x2)/2,(y1+y2)/2,dep/2);bars.push(g)};
+ const L=-W/2,R=W/2,B=-Hh/2,Tp=Hh/2;
+ for(let f=0;f<faces;f++){const a0=(hex?PI/6:0)+f*fw+(ST.seam||0)*PI/180,parts=[];bars.length=0;
+  // outer frame and inner frame
+  seg(L,B,R,B);seg(R,B,R,Tp);seg(R,Tp,L,Tp);seg(L,Tp,L,B);
+  const i1=W*.11;seg(L+i1,B+i1,R-i1,B+i1,w*.6);seg(R-i1,B+i1,R-i1,Tp-i1,w*.6);seg(R-i1,Tp-i1,L+i1,Tp-i1,w*.6);seg(L+i1,Tp-i1,L+i1,B+i1,w*.6);
+  // deco fan: lines rising from the bottom centre to the top of the inner frame
+  const fy=B+i1,ty=Tp-i1-Hh*.17;for(const u of[-1,-.55,-.2,.2,.55,1])seg(0,fy,u*(W/2-i1),ty,w*.62);
+  seg(L+i1,ty,R-i1,ty,w*.6);
+  // little "II" marks in the top band
+  for(const sx of[-1,1])for(const dx of[-.06,.06])seg(sx*W*.22+dx,ty+Hh*.04,sx*W*.22+dx,Tp-i1-Hh*.04,w*.55);
+  seg(-.06,ty+Hh*.04,-.06,Tp-i1-Hh*.04,w*.55);seg(.06,ty+Hh*.04,.06,Tp-i1-Hh*.04,w*.55);
+  for(const g0 of bars){const g=g0.index?g0.toNonIndexed():g0,p=g.attributes.position;for(let j=0;j<p.count;j++){const x=p.getX(j),yy=cy0+p.getY(j),z=p.getZ(j);
+   // map face-local x onto the flat hexagon face (or the round wall) and lift by z
+   let a=a0+x/r,Rr;if(hex){const ap=R_at(a0,yy),ang=Math.atan2(x,ap);a=a0+ang;Rr=Math.hypot(x,ap)}else Rr=R_at(a,yy);
+   const q=radial(a).multiplyScalar(Rr+.01),nrm=hex?radial(a0):radial(a);q.addScaledVector(nrm,z);p.setXYZ(j,q.x,yy,q.z)}
+   g.computeVertexNormals();tint(g,.9+.08*Math.cos(f*1.7+j0(g)));parts.push(g)}
+  add(dmat(ST.color||'#a8743a',{r:.28,metal:1,cc:.35,ccr:.12}),mg(parts),'stencil')}}
+function j0(g){return g.attributes.position.count%7}
+function buildVPleats(t,ctx,ST,yb,H,seam,reps){const{R_at,add}=ctx,sp=Math.max(.18,ST.spacing||.34),rows=Math.max(3,Math.round(H/sp)),amp=Math.min(H*.42,(ST.depth||1.1)),parts=[],peaks=Math.max(4,reps);
+ for(let j=-Math.ceil(amp/sp);j<=rows;j++){const y0=yb+j*H/rows;
+  const P=s=>{const a=seam+2*PI*s,tri=Math.abs(((s*peaks)%1)*2-1),yy=y0+amp*(1-tri);const yc=Math.max(yb,Math.min(yb+H,yy));return radial(a).multiplyScalar(R_at(a,yc)+.006).setY(yc)};
+  const g=sweep(P,(s,p)=>radial(seam+2*PI*s),peaks*28,8,(s,th)=>{const p=P(s),inb=p.y>yb+.01&&p.y<yb+H-.01?1:.001;return[.055*inb,.085*inb]},(q,s,th)=>{});
+  tint(g,.93+.05*Math.cos(j*1.3));parts.push(g)}
+ add(dmat(ST.color||t.color||'#fbf7f1',{r:.6,sh:.25,cc:.05}),mg(parts),'stencil')}
 
 // ---------------------------------------------------------------- Materials
 const matCache=new Map();
