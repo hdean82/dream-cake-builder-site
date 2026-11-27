@@ -23,6 +23,9 @@ const go = (url, ...cookies) => {
 // the token cookie is HttpOnly so page scripts can never read it; dcb_team_ui only says "show the Orders links"
 const keyCookie = tok => `dcb_team=${tok}; Path=/; Max-Age=${YEAR}; Secure; HttpOnly; SameSite=Lax`;
 const uiCookie = `dcb_team_ui=1; Path=/; Max-Age=${YEAR}; Secure; SameSite=Lax`;
+const FORM = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Team sign-in · Dream Cake Builder</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px system-ui,sans-serif;background:#fdf3f6;color:#3b1d2e}form{background:#fff;padding:28px;border-radius:18px;box-shadow:0 10px 30px #c2185b22;width:min(340px,88vw)}h1{font-size:20px;margin:0 0 14px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #e3c3d2;border-radius:10px;font-size:16px}button{margin-top:12px;width:100%;padding:12px;border:0;border-radius:10px;background:#c2185b;color:#fff;font-size:16px;font-weight:600}</style></head>
+<body><form method="post" action="/team"><h1>Team sign-in</h1><input type="password" name="key" placeholder="Team password" autocomplete="current-password" autofocus required><button>Unlock this device</button></form></body></html>`;
 const clear = ['dcb_team=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax', 'dcb_team_ui=; Path=/; Max-Age=0; Secure; SameSite=Lax'];
 
 export async function onRequest({ request, next, env }) {
@@ -33,7 +36,10 @@ export async function onRequest({ request, next, env }) {
     if (url.searchParams.has('off')) return go('/', ...clear);
     // setup check: says only whether a password is configured, never anything about it
     if (url.searchParams.has('check')) return new Response(env && env.TEAM_KEY ? 'team password is set' : 'team password is NOT set', { headers: { 'Content-Type': 'text/plain', 'Cache-Control': 'no-store' } });
-    const key = url.searchParams.get('key') || '', tok = await tokenFor(env);
+    let key = url.searchParams.get('key') || '';
+    if (request.method === 'POST') { try { key = String((await request.formData()).get('key') || '').trim(); } catch { key = ''; } }
+    else if (!key) return new Response(FORM, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+    const tok = await tokenFor(env);
     if (key && env.TEAM_KEY && same(await sha256('dcb-team|' + key), tok)) return go('/shop', keyCookie(tok), uiCookie);
     return go('/coming-soon');
   }
