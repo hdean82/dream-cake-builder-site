@@ -9,6 +9,7 @@ import { STAGES, shotList, frameName } from './plan.mjs';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
 const OUT = path.resolve(process.argv[2] || 'promo-frames');
 const QUICK = process.argv.includes('--quick');
+const pa = process.argv.indexOf('--part'), [PART, PARTS] = pa > 0 ? process.argv[pa + 1].split('/').map(Number) : [0, 1];
 fs.mkdirSync(OUT, { recursive: true });
 
 // The Blush Lambeth design from the home page, and the stages that lead up to it.
@@ -42,6 +43,8 @@ const order = ['final', ...STAGES.map(s => s.key).filter(k => k !== 'final')];
 for (const key of order) {
   let angles = shots[key] || [];
   if (QUICK) angles = angles.filter((a, i) => i % 25 === 0 || a === 0);
+  angles = angles.filter((a, i) => i % PARTS === PART);
+  if (!angles.length && key !== 'final') continue;
   const page = await ctx.newPage();
   page.on('pageerror', e => console.log('page error', key, String(e).slice(0, 200)));
   await page.addInitScript(c => { try { localStorage.setItem('dcs-open-code', c); } catch (e) {} }, encode(designs[key]));
