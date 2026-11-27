@@ -362,6 +362,21 @@ header,.float.bottom,.libchips,.edstrip,#themeTags,.sizechips,.seg{overscroll-be
 .fpswitch button{flex:1;height:32px;border:0;border-radius:999px;background:transparent;font:600 13px/1 Inter,system-ui,sans-serif;color:var(--muted);cursor:pointer}
 .fpswitch button.on{background:#fff;color:var(--rose-ink);box-shadow:0 1px 4px #4b103d22}
 </style>
+<style>
+.selbar{padding:6px 8px 7px!important;max-width:min(560px,calc(100% - 16px))!important}
+.selinfo{display:flex;align-items:center;gap:8px;margin:0 2px 5px!important}
+.seltxt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+.selhint{display:none}
+.seldone{flex:none;height:28px;padding:0 12px;border:0;border-radius:999px;background:var(--rose);color:#fff;font:600 12.5px/1 Inter,system-ui,sans-serif;cursor:pointer}
+.selbtns{display:flex!important;flex-wrap:wrap;gap:4px!important;justify-content:center;align-items:center}
+.selbtns .sgrp{display:flex;align-items:center;gap:0;padding:0;border:1px solid var(--line);border-radius:10px;background:#fdf8fa;overflow:hidden}
+.selbtns .sgrp em{font-style:normal;font-size:10.5px;color:var(--muted);padding:0 3px;min-width:34px;text-align:center}
+.selbtns .sgrp button{min-width:30px!important;height:30px!important;border:0!important;border-radius:0!important;background:transparent!important;font-size:15px!important;padding:0!important}
+.selbtns .sgrp button:hover{background:var(--rose-soft)!important}
+.selbtns .sacts{display:flex;gap:3px;width:auto!important}
+.selbtns .sacts button{min-width:30px!important;height:30px!important;padding:0!important;font-size:15px!important;border-radius:9px!important}
+@media (max-width:600px){.selbtns .sgrp em{min-width:0;font-size:9.5px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -402,13 +417,13 @@ header,.float.bottom,.libchips,.edstrip,#themeTags,.sizechips,.seg{overscroll-be
   <span class="chip hide-sm">Drag to turn · right-drag or two fingers to slide · scroll to zoom · or use the move buttons</span>
  </div>
  <div id="selBar" class="selbar" hidden role="toolbar" aria-label="Adjust selected piece">
-  <div class="selinfo"><b id="selName"></b><span id="selDims"></span><em class="selhint" id="selHint">Drag it on the cake to move it anywhere.</em></div>
+  <div class="selinfo"><div class="seltxt"><b id="selName"></b><span id="selDims"></span><em class="selhint" id="selHint">Drag it on the cake to move it anywhere.</em></div><button type="button" data-act="close" class="seldone" title="Done" aria-label="Done">✓ Done</button></div>
   <div class="selbtns">
-   <div class="sgrp"><em>Size</em><button type="button" data-act="smaller" title="Smaller" aria-label="Smaller">−</button><button type="button" data-act="bigger" title="Bigger" aria-label="Bigger">+</button></div>
-   <div class="sgrp"><em>Turn</em><button type="button" data-act="rotl" title="Turn left" aria-label="Turn left">↺</button><button type="button" data-act="rotr" title="Turn right" aria-label="Turn right">↻</button></div>
-   <div class="sgrp"><em>Up/Down</em><button type="button" data-act="raise" title="Move up" aria-label="Move up">↑</button><button type="button" data-act="lower" title="Move down" aria-label="Move down">↓</button></div>
-   <div class="sgrp" id="selDepth"><em>Depth</em><button type="button" data-act="in" title="Push it into the cake" aria-label="Push into the cake">In</button><button type="button" data-act="out" title="Pull it out from the cake" aria-label="Pull out from the cake">Out</button></div>
-   <div class="sacts"><button type="button" data-act="dup" class="wide" title="Add a copy you can move on its own">Duplicate</button><button type="button" data-act="hide" class="wide">Hide</button><button type="button" data-act="reset" class="wide" title="Put it back where it started">Reset</button><button type="button" data-act="match" class="wide" title="Select every piece like this one and change them together">All like this</button><button type="button" data-act="close" class="wide done">Done</button></div>
+   <div class="sgrp"><button type="button" data-act="smaller" title="Smaller" aria-label="Smaller">−</button><em>Size</em><button type="button" data-act="bigger" title="Bigger" aria-label="Bigger">+</button></div>
+   <div class="sgrp"><button type="button" data-act="rotl" title="Turn left" aria-label="Turn left">↺</button><em>Turn</em><button type="button" data-act="rotr" title="Turn right" aria-label="Turn right">↻</button></div>
+   <div class="sgrp"><button type="button" data-act="lower" title="Move down" aria-label="Move down">↓</button><em>Height</em><button type="button" data-act="raise" title="Move up" aria-label="Move up">↑</button></div>
+   <div class="sgrp" id="selDepth"><button type="button" data-act="in" title="Push it into the cake" aria-label="Push into the cake">⇥</button><em>Depth</em><button type="button" data-act="out" title="Pull it out from the cake" aria-label="Pull out from the cake">⇤</button></div>
+   <div class="sacts"><button type="button" data-act="dup" title="Duplicate: add a copy you can move on its own" aria-label="Duplicate">⧉</button><button type="button" data-act="hide" title="Hide this piece" aria-label="Hide">⦸</button><button type="button" data-act="reset" title="Reset to where it started" aria-label="Reset">⟲</button><button type="button" data-act="match" title="Select every piece like this one" aria-label="All like this">☰</button></div>
   </div>
   <div class="selmulti" hidden><p class="plabel" style="margin:6px 2px">Color or material for all selected</p><div class="selcolors"></div></div>
  </div>
@@ -3537,8 +3552,8 @@ function refreshSel(){if(!SELI)return;if(SELM){const id=ITEMS.findIndex(x=>x.key
  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(tri,3));selMesh=new T.Mesh(g,hlMat);selMesh.renderOrder=6;selMesh.userData={hl:true};cake.add(selMesh);
  let cx=0,cz=0,n=tri.length/3;for(let i=0;i<tri.length;i+=3){cx+=tri[i];cz+=tri[i+2]}cx/=n;cz/=n;const a=Math.hypot(cx,cz)>.3?Math.atan2(cz,cx):PI/2,tx=-Math.sin(a),tz=Math.cos(a);let w0=1e9,w1=-1e9,h0=1e9,h1=-1e9,d0=1e9,d1=-1e9;
  for(let i=0;i<tri.length;i+=3){const x=tri[i],y=tri[i+1],z=tri[i+2],u=x*tx+z*tz,v=x*Math.cos(a)+z*Math.sin(a);w0=Math.min(w0,u);w1=Math.max(w1,u);h0=Math.min(h0,y);h1=Math.max(h1,y);d0=Math.min(d0,v);d1=Math.max(d1,v)}
- const it=ITEMS[id],nm=it.label||KIND_NAMES[it.kind]||'Piece';$('#selName').textContent=nm+(it.kind==='pearl'||it.kind==='bow'?' '+(+it.key.split(':').pop()+(it.kind==='bow'?1:0)):'');$('#selDims').textContent=' · '+(w1-w0).toFixed(1)+'" wide × '+(h1-h0).toFixed(1)+'" tall';
- $('#selBar [data-act="hide"]').textContent=(it.kind==='custom'||it.kind==='plaque')?'Remove':'Hide';$('#selDepth').hidden=it.kind!=='deco';$('#selBar [data-act="dup"]').hidden=it.kind!=='deco';SELC={c:new V3(cx,(h0+h1)/2,cz),a,top:it.kind==='deco'&&(d1-d0)<(h1-h0)*.2?false:null};$('#selHint').textContent=canDrag(it)?'Drag it on the cake to move it anywhere.':'Use the buttons below to adjust it.'}
+ const it=ITEMS[id],nm=it.label||(it.kind==='deco'&&it.dtype?decName(it.dtype):null)||KIND_NAMES[it.kind]||'Piece';$('#selName').textContent=nm+(it.kind==='pearl'||it.kind==='bow'?' '+(+it.key.split(':').pop()+(it.kind==='bow'?1:0)):'');$('#selDims').textContent=' · '+(w1-w0).toFixed(1)+'" wide × '+(h1-h0).toFixed(1)+'" tall';
+ $('#selBar [data-act="hide"]').title=(it.kind==='custom'||it.kind==='plaque')?'Remove this piece':'Hide this piece';$('#selDepth').hidden=it.kind!=='deco';$('#selBar [data-act="dup"]').hidden=it.kind!=='deco';SELC={c:new V3(cx,(h0+h1)/2,cz),a,top:it.kind==='deco'&&(d1-d0)<(h1-h0)*.2?false:null};$('#selHint').textContent=canDrag(it)?'Drag it on the cake to move it anywhere.':'Use the buttons below to adjust it.'}
 function nudge(act){if(!SELI)return;if(act==='dup'){if(SELI.kind!=='deco'||!SELI.dc){toast('This piece can not be duplicated. Try a decoration.');return}const ti=SELI.tier,did=SELI.dc,nid=newId();let nm='';commit(D=>{const x=D.tiers[ti];if(!x)return;const dc=(x.decor||[]).find(z=>z.id===did);if(!dc)return;nm=decName(dc.type);const c=JSON.parse(JSON.stringify(dc));c.id=nid;c.seed=Math.floor(Math.random()*1e6);if(c.fixedTop)c.fixedTop=[c.fixedTop[0]+.6,c.fixedTop[1]+.6];else if(!c.center)c.rot=((c.rot||0)+30)%360;x.decor.splice(x.decor.indexOf(dc)+1,0,c);const A=x.adj;if(A)for(const k of Object.keys(A))if(k.startsWith('d:'+did+':')){const v=JSON.parse(JSON.stringify(A[k]));if(v.at&&v.at.a!==undefined)v.at.a+=.5;A['d:'+nid+k.slice(did.length+2)]=v}});selectItem(null);if(nm)toast(nm+' duplicated next to the original. Drag the copy where you want it.');return}if(act==='match'){if(SELM){endMulti();refreshSel()}else{const id=ITEMS.findIndex(x=>x.key===SELI.key&&x.tier===SELI.tier);if(id>=0)showMulti(ITEMS[id])}return}if(act==='close'){endMulti();return selectItem(null)}const st=selStep,mv=.1*st,rt=15,sc=1.1;if(act==='close')return selectItem(null);if(act==='fine'){selStep=selStep===1?.25:1;return refreshSel()}
  commit(d=>{if(act==='hide'&&SELI.kind==='custom'){d.customs=(d.customs||[]).filter(c=>c.id!==SELI.cid);return}if(act==='hide'&&SELI.kind==='plaque'){d.plaque=null;return}const a=adjOf(d,SELI);if(!a)return;
   if(act==='reset'){if(SELI.kind==='custom'||SELI.kind==='plaque'){a.u=a.v=0;a.rot=0;if(SELI.kind==='plaque')a.s=1}else{const t=d.tiers[SELI.tier];delete t.adj[SELI.key]}return}
@@ -3567,11 +3582,11 @@ function matchSet(it){if(it.kind==='deco'){const ty=it.dtype;return ITEMS.map((x
 function showMulti(it){const set=matchSet(it);if(set.length<2){toast('There is only one of these on the cake');return}SELM={kind:it.kind,dtype:it.dtype,count:set.length,tiers:new Set(set.map(([x])=>x.tier)).size};
  if(selMesh){cake.remove(selMesh);selMesh.geometry.dispose();selMesh=null}const tri=[];set.forEach(([,i])=>tri.push(...itemTris(i)));const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(tri,3));selMesh=new T.Mesh(g,hlMat);selMesh.renderOrder=6;selMesh.userData={hl:true};cake.add(selMesh);
  const nm=it.kind==='deco'?(DECOR[it.dtype]?.label||'Decorations'):it.kind==='bow'?'bows':'pearls';$('#selName').textContent=set.length+' '+nm+' selected';$('#selDims').textContent=' · on '+SELM.tiers+' tier'+(SELM.tiers>1?'s':'');
- $$('#selBar .selbtns button').forEach(b=>{b.hidden=!['close','match'].includes(b.dataset.act)});$('#selBar [data-act="match"]').lastChild.textContent='Back to one piece';
+ $$('#selBar .selbtns button').forEach(b=>{b.hidden=!['close','match'].includes(b.dataset.act)});$('#selBar [data-act="match"]').textContent='↩';
  const cols=it.kind==='deco'?(DECOR[it.dtype]?.colors||[]):MATCH_COLORS[it.kind]||[],box=$('#selBar .selcolors');box.innerHTML='';$('#selBar .selmulti').hidden=!cols.length;if(!cols.length)$('#selDims').textContent+=' · this decoration uses natural colors';
  box.appendChild(swatches(cols,'',c=>applyMulti(c)))}
 function applyMulti(c){if(!SELM)return;const{kind,dtype}=SELM;commit(d=>{d.tiers.forEach(t=>{if(kind==='bow'&&t.bows)t.bowColor=c;if(kind==='pearl'&&t.side!=='none')t.pearlColor=c;if(kind==='deco')(t.decor||[]).forEach(x=>{if(x.type===dtype){x.color=c;x.mix=null}})})});toast('Changed all '+SELM.count+' together. One Undo restores them.')}
-function endMulti(){SELM=null;$$('#selBar .selbtns button').forEach(b=>b.hidden=false);$('#selBar .selmulti').hidden=true;$('#selBar [data-act="match"]').lastChild.textContent='All like this'}
+function endMulti(){SELM=null;$$('#selBar .selbtns button').forEach(b=>b.hidden=false);$('#selBar .selmulti').hidden=true;$('#selBar [data-act="match"]').textContent='☰'}
 
 // ---------------------------------------------------------------- Part highlight (shows what a control affects)
 const hlMat=new T.MeshBasicMaterial({color:'#ff3d7f',transparent:true,opacity:.4,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-8,toneMapped:false});
