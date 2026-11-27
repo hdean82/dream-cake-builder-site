@@ -2441,33 +2441,35 @@ const baseBaubles=(rows)=>rows.map(([x,z,size,color,rise=0,metal=false],i)=>DC('
 const STUDIO_BATCH=['sig_moneybag','sig_crawfish','sig_movie','sig_cow','sig_teal','sig_pastelarch','sig_blocks','sig_sports'];
 const BATCH_SCENE={table:false,preset:'soft',strength:86,bright:76,crevice:47,softness:71};
 const GF=(h,arr)=>arr.map(([type,rot,y,size,color,tilt=0,lean=0,depth=0],i)=>DC(type,'band',1,{rot,y:y-h*.5,size,color,tilt,lean,depth,seed:89+i*41+Math.round(h*17)}));
+// Fuller version for the Coral Peony Cascade: bigger blooms that sit further out, like the real cake, plus extra blooms after the original ones.
+const GFP=(h,arr,extra=[])=>[...arr.map(([type,rot,y,size,color,tilt=0,lean=0,depth=0])=>{const big=type==='cascadeopen'||type==='cascaderanunc';return[type,rot,y,Math.round(size*(big?1.3:type==='cascadesprig'?1.2:1.15)),color,tilt,lean,depth+(big?.03:0)]}),...extra].map(([type,rot,y,size,color,tilt=0,lean=0,depth=0],i)=>DC(type,'band',1,{rot,y:y-h*.5,size,color,tilt,lean,depth,seed:89+i*41+Math.round(h*17)}));
 THEMES.unshift(
- {key:'sig_peony',name:'Coral Peony Cascade',tag:SIG,blurb:'Five ivory tiers on a low silver pedestal, with soft buttercream ridges, hand-piped Swiss dots and individually editable garden flowers.',d:{board:'silver',boardShape:'round',boardSize:15.1,boardStand:'rolledSilver',boardContact:'close',topper:'none',character:13,scene:{table:false,preset:'soft',strength:84,bright:76,crevice:51,softness:66},watermark:{on:false,opacity:14,size:120},tiers:[
+ {key:'sig_peony',name:'Coral Peony Cascade',tag:SIG,blurb:'Five ivory tiers on a low silver pedestal, with soft buttercream ridges, hand-piped Swiss dots and a full cascade of coral and lilac peonies.',d:{board:'silver',boardShape:'round',boardSize:15.1,boardStand:'rolledSilver',boardContact:'close',topper:'none',character:13,scene:{table:false,preset:'soft',strength:84,bright:76,crevice:51,softness:66},watermark:{on:false,opacity:14,size:120},tiers:[
   newTier(12.3,5.3,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none',decor:[
    DC('cascadefoliage','crown',26,{where:'board',size:159,color:'#30472f',seed:766}),
-   ...GF(5.3,[
+   ...GFP(5.3,[
     ['cascadefoliage',88,.62,167,'#3c4b30'],['cascadefoliage',53,3.8,145,'#46613f'],
     ['cascaderanunc',98,.75,248,'#bb79ae',-13,16,.035],['cascadeopen',79,1.36,395,'#e06a7b',-15,10,.05],
     ['cascadeopen',51,3.70,322,'#e47b89',-17,-20,.05],['cascadesprig',61,2.27,160,'#fff4df'],
-    ['cascadesprig',92,1.66,164,'#fbefcf'],['cascaderanunc',72,3.24,194,'#a64171',9,-18],['cascaderanunc',56,2.47,173,'#c97198',8,-22],['cascadesprig',87,2.61,144,'#fff2df',-9,9],['cascadesprig',58,4.9,186,'#f8edce'],['cascadesprig',73,4.65,154,'#fff2dd'],['cascadefoliage',67,4.62,153,'#49623b']])]}),
-  newTier(10.85,5.2,{color:'#fbf6eb',texture:'swissdots',top:'none',bottom:'none',decor:GF(5.2,[
+    ['cascadesprig',92,1.66,164,'#fbefcf'],['cascaderanunc',72,3.24,194,'#a64171',9,-18],['cascaderanunc',56,2.47,173,'#c97198',8,-22],['cascadesprig',87,2.61,144,'#fff2df',-9,9],['cascadesprig',58,4.9,186,'#f8edce'],['cascadesprig',73,4.65,154,'#fff2dd'],['cascadefoliage',67,4.62,153,'#49623b']],[['cascadeopen',62,1.2,430,'#e8707d',-6,4,.07],['cascadeopen',94,2.0,300,'#b98bc9',-10,10,.05],['cascaderanunc',40,2.2,250,'#c79bd3',8,-12,.04],['cascadesprig',75,3.1,180,'#fff6e2']])]}),
+  newTier(10.85,5.2,{color:'#fbf6eb',texture:'swissdots',top:'none',bottom:'none',decor:GFP(5.2,[
     ['cascadefoliage',49,1.7,163,'#476035'],['cascadefoliage',71,4.00,139,'#526742'],
     ['cascaderanunc',84,.78,280,'#cd79ad',-17,19,.029],['cascaderanunc',56,.72,216,'#d081a6'],['cascadesprig',75,1.72,184,'#f9efd8'],['cascaderanunc',71,2.91,181,'#aa558c'],['cascadefoliage',62,2.94,202,'#536741'],
     ['cascadeopen',46,2.50,285,'#9c3268',-10,-22,.027],['cascadesprig',65,2.64,237,'#f9efdc'],
     ['cascadesprig',70,3.79,194,'#e7e6af'],['cascaderanunc',54,4.64,135,'#df8c42'],
-    ['cascadeopen',41,4.65,245,'#c45483',12,-25],['cascadesprig',81,3.45,150,'#f9edce',10,22]])}),
-  newTier(9.45,5.25,{color:'#faf5ea',texture:'softcomb',top:'none',bottom:'none',decor:GF(5.25,[
+    ['cascadeopen',41,4.65,245,'#c45483',12,-25],['cascadesprig',81,3.45,150,'#f9edce',10,22]],[['cascadeopen',70,2.0,400,'#ec7f8d',-8,6,.06],['cascaderanunc',95,3.2,240,'#c9a1d6',-6,8,.04],['cascadesprig',50,3.6,170,'#eef0b0']])}),
+  newTier(9.45,5.25,{color:'#faf5ea',texture:'softcomb',top:'none',bottom:'none',decor:GFP(5.25,[
     ['cascadefoliage',48,3.7,160,'#3c5335'],['cascadefoliage',72,2.70,181,'#3c5636'],
     ['cascaderanunc',64,1.05,246,'#d182ac'],['cascadeopen',41,1.65,297,'#cb4f7a',-12,-27,.03],
     ['cascadeopen',65,3.10,465,'#eb7788',-12,10,.065],['cascaderanunc',43,3.86,239,'#992f60',12,-18],['cascaderanunc',77,1.85,192,'#d987b1',-15,12],['cascadesprig',86,2.03,150,'#fff5e0',-7,15],
     ['cascadesprig',46,4.83,169,'#fff3df'],['cascadesprig',73,4.35,129,'#f4e8cf'],
-    ['cascadesprig',42,.62,165,'#fff3dd'],['cascadesprig',57,4.91,172,'#f8efdc'],['cascaderanunc',34,4.83,176,'#913265']])}),
-  newTier(7.95,5,{color:'#fbf6eb',texture:'swissdots',top:'none',bottom:'none',decor:GF(5,[
+    ['cascadesprig',42,.62,165,'#fff3dd'],['cascadesprig',57,4.91,172,'#f8efdc'],['cascaderanunc',34,4.83,176,'#913265']],[['cascadeopen',80,3.9,360,'#e66f81',-6,8,.06],['cascaderanunc',55,1.0,230,'#bf93cf',4,-8,.04]])}),
+  newTier(7.95,5,{color:'#fbf6eb',texture:'swissdots',top:'none',bottom:'none',decor:GFP(5,[
     ['cascadefoliage',47,2.09,139,'#4a633d'],['cascadefoliage',63,3.43,158,'#3f5436'],
     ['cascadeopen',50,1.18,363,'#e77986',-14,-16,.035],['cascaderanunc',51,3.21,259,'#db82af',-8,-22,.021],
     ['cascaderanunc',34,3.51,212,'#b84c79',13,-25],['cascadesprig',73,2.83,146,'#fff5dc',-7,14],['cascadesprig',67,2.36,186,'#fff0d5'],['cascadesprig',61,3.98,133,'#f7efdc'],
-    ['cascadesprig',43,.65,98,'#f9edce']])}),
-  newTier(5.68,4.87,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none'})]}},
+    ['cascadesprig',43,.65,98,'#f9edce']],[['cascadeopen',75,3.9,320,'#e9798a',-8,6,.05],['cascaderanunc',88,1.9,220,'#c79bd3',-5,6,.04]])}),
+  newTier(5.68,4.87,{color:'#faf5e9',texture:'softcomb',top:'none',bottom:'none',decor:GFP(4.87,[],[['cascadeopen',62,.7,280,'#e9798a',-10,6,.05],['cascadefoliage',46,.9,120,'#4a633d'],['cascadesprig',76,1.5,120,'#fff5dc']])})]}},
  {key:'sig_monogram',name:'Champagne Gold Art Deco',tag:SIG,blurb:'A brass art deco hexagon, a hexagon of gold sugar sequins, a pleated ivory tier with fanned ribbons, a satin champagne gold top and a floral monogram hoop.',d:{board:'gold',topper:'none',tiers:[
   newTier(12.8,5,{shape:'hexagon',color:'#d9b177',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'brassPanels',color:'#9d6732',height:4.9}}),
   newTier(10.8,5,{shape:'hexagon',color:'#b18143',finish:'metallic',top:'none',bottom:'none',stencil:{pattern:'sequins',color:'#d4ae5a',size:.116}}),
