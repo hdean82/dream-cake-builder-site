@@ -401,6 +401,7 @@ html body aside.left>#selBar{position:relative!important;left:auto!important;rig
 html body aside.left>#selBar[hidden]{display:none!important}
 .tcount{display:flex;align-items:center;gap:6px;margin:4px 0 10px;padding:4px 6px;border:1px solid var(--line);border-radius:12px;background:#fdf8fa}.tcount .tcl{font-size:12.5px;font-weight:600;color:var(--ink);margin-right:2px}.tcount .tcb{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:#fff;font:600 17px/1 Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer;padding:0}.tcount .tcb:disabled{opacity:.35;cursor:default}.tcount .tcn{min-width:18px;text-align:center;font-size:15px}.tcount .tcs{margin-left:auto;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stlswitch{display:flex;gap:4px;background:#f6edf1;border-radius:999px;padding:3px;margin:2px 0 10px}.stlswitch button{flex:1;border:0;background:none;border-radius:999px;padding:7px 8px;font:600 12.5px/1 Inter,system-ui,sans-serif;color:var(--muted);cursor:pointer}.stlswitch button.on{background:#fff;color:var(--rose-ink,#8a2357);box-shadow:0 1px 4px rgba(80,40,50,.15)}.stldot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--rose);vertical-align:2px;font-style:normal}
+.ptools{margin:2px 0 10px}.ptbar{display:flex;flex-wrap:wrap;gap:5px}.ptb{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 10px;font:600 12px/1.1 Inter,system-ui,sans-serif;color:var(--ink);cursor:pointer}.ptb.set{border-color:#e6b4c4;background:var(--rose-soft)}.ptb.open{border-color:var(--rose);box-shadow:0 0 0 1px var(--rose) inset}.ptbody{margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:#fdf8fa}
 </style>
 </head>
 <body>
@@ -3902,9 +3903,16 @@ function renderPanels(){const t=T_(),asideEl=$('aside.left'),keepScroll=asideEl.
  const dropT=p.appendChild(toggle('Royal icing drops',t.drops,v=>setT('drops',v)));dropT.dataset.focus='drop';dropT.onpointerenter=()=>highlightParts(['drop']);dropT.onpointerleave=()=>clearHighlight();
  if(t.drops){const box=p.appendChild(el('<div class="subbox"></div>'));colorGroup(box,'Drop color','drop',PCOL,t.dropColor||t.pipe,v=>setT('dropColor',v))}
  const goldT=p.appendChild(toggle('Gold leaf',t.goldLeaf,v=>setT('goldLeaf',v)));goldT.dataset.focus='gold';goldT.onpointerenter=()=>highlightParts(['gold']);goldT.onpointerleave=()=>clearHighlight();
- {// Less-used tools tucked away so the main list stays short: pipe on part of the tier, faux cut-out, copy to all tiers.
-  const more=p.appendChild(el('<details class="pmore"><summary>More piping tools</summary><div class="pmorebody"></div></details>')),mb=more.querySelector('.pmorebody');if(window.pipeMoreOpen||openCard==='cut'||(t.pipeArc&&t.pipeArc.span<360))more.open=true;more.addEventListener('toggle',()=>{window.pipeMoreOpen=more.open});
-  arcNodes.forEach(n=>mb.appendChild(n));if(cutCard)mb.appendChild(cutCard);mb.appendChild(copyAll)}
+ {// Piping tools strip right under the Piping heading: pipe on part of the tier, faux cut-out, copy to all tiers.
+  const part=t.pipeArc&&t.pipeArc.span<360,cutOn=t.cutout?.type&&t.cutout.type!=='none',st=window.pipeTool===undefined?((part||openCard==='cut')?(part?'arc':'cut'):null):window.pipeTool;
+  const wrap=el('<div class="ptools"><div class="ptbar"></div><div class="ptbody"></div></div>'),bar=wrap.querySelector('.ptbar'),body=wrap.querySelector('.ptbody');
+  const mk=(k,txt,on)=>{const b=el('<button type="button" class="ptb"></button>');b.textContent=txt;if(on)b.classList.add('set');if(st===k)b.classList.add('open');b.onclick=()=>{window.pipeTool=st===k?null:k;if(window.pipeTool==='cut')openCard='cut';renderPanels()};bar.appendChild(b)};
+  mk('arc','\u25d1 Pipe on: '+(part?'part of tier':'whole tier'),part);mk('cut','\u2702 Faux cut-out'+(cutOn?': '+(CUTS[t.cutout.type]||'on'):''),cutOn);
+  const cp=el('<button type="button" class="ptb">\u29c9 Copy to all tiers</button>');cp.title="Copy this tier's piping to every tier";cp.onclick=()=>{copyAll.onclick();toast('Piping copied to every tier.')};bar.appendChild(cp);
+  arcNodes[0]&&arcNodes[0].remove();if(st==='arc')arcNodes.slice(1).forEach(n=>body.appendChild(n));else arcNodes.slice(1).forEach(n=>n.remove());
+  if(st==='cut'&&cutCard){body.appendChild(cutCard);cutCard.classList.add('open')}else if(cutCard)cutCard.remove();
+  if(!body.children.length)body.remove();
+  p.insertBefore(wrap,p.children[1]||null)}
  // Decor
  p=$('#p-decor');p.innerHTML='';const libStart=p.childNodes.length;
  p.append(H3('Add a decoration','Tap one to add it to tier '+tierNo(sel)+'. Choose top, side or board in its settings.'));
