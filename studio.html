@@ -2791,7 +2791,7 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
  else if(pat==='trellis'){x.lineWidth=12;const t=(cx,cy)=>{x.beginPath();x.moveTo(cx,cy-64);x.quadraticCurveTo(cx+30,cy-64,cx+32,cy-32);x.quadraticCurveTo(cx+64,cy-30,cx+64,cy);x.quadraticCurveTo(cx+64,cy+30,cx+32,cy+32);x.quadraticCurveTo(cx+30,cy+64,cx,cy+64);x.quadraticCurveTo(cx-30,cy+64,cx-32,cy+32);x.quadraticCurveTo(cx-64,cy+30,cx-64,cy);x.quadraticCurveTo(cx-64,cy-30,cx-32,cy-32);x.quadraticCurveTo(cx-30,cy-64,cx,cy-64);x.stroke()};t(64,64);t(192,64);t(64,192);t(192,192)}
  else if(pat==='honeycomb'){x.lineWidth=9;const hx=(cx,cy,r)=>{x.beginPath();for(let k=0;k<=6;k++){const a=k/6*Math.PI*2+Math.PI/6;x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r)}x.stroke()};const r=128/Math.sqrt(3);for(const[cx,cy]of[[0,0],[128,0],[256,0],[64,111],[192,111],[0,222],[128,222],[256,222],[64,333],[192,333],[64,-111],[192,-111]])hx(cx,cy*256/222/1.0,r)}
  else if(pat==='scales'){x.lineWidth=9;for(let row=-1;row<5;row++)for(let k=-1;k<5;k++){const cx=k*64+(row%2?32:0),cy=row*64;x.beginPath();x.arc(cx,cy,32,0,Math.PI);x.stroke()}}
- else if(pat==='herringbone'){x.lineWidth=14;for(let k=-4;k<8;k++){x.beginPath();x.moveTo(0,k*48);x.lineTo(64,k*48+40);x.moveTo(128,k*48+40);x.lineTo(64,k*48+80);x.moveTo(128,k*48);x.lineTo(192,k*48+40);x.moveTo(256,k*48+40);x.lineTo(192,k*48+80);x.stroke()}}
+ else if(pat==='herringbone'){herringboneTile(x)}
  else if(pat==='greekkey'){x.lineWidth=12;x.lineCap='square';x.beginPath();x.moveTo(0,200);x.lineTo(0,80);x.lineTo(96,80);x.lineTo(96,160);x.lineTo(48,160);x.lineTo(48,120);x.moveTo(128,200);x.lineTo(128,80);x.lineTo(224,80);x.lineTo(224,160);x.lineTo(176,160);x.lineTo(176,120);x.stroke();x.fillRect(0,30,256,10);x.fillRect(0,222,256,10)}
  else if(pat==='hearts'){const hh=(cx,cy,r)=>{x.beginPath();x.moveTo(cx,cy+r*.9);x.bezierCurveTo(cx-r*1.4,cy-r*.1,cx-r*.6,cy-r*1.2,cx,cy-r*.4);x.bezierCurveTo(cx+r*.6,cy-r*1.2,cx+r*1.4,cy-r*.1,cx,cy+r*.9);x.fill()};hh(64,70,34);hh(192,190,34);hh(192,64,18);hh(64,192,18)}
  else if(pat==='snowflakes'){x.lineWidth=6;const sf=(cx,cy,r)=>{for(let k=0;k<6;k++){const a=k/6*Math.PI*2;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);for(const t of[.5,.75]){const bx=cx+Math.cos(a)*r*t,by=cy+Math.sin(a)*r*t;for(const s of[-1,1]){x.moveTo(bx,by);x.lineTo(bx+Math.cos(a+s*.7)*r*.25,by+Math.sin(a+s*.7)*r*.25)}}x.stroke()}};sf(70,70,52);sf(190,186,40);sf(200,50,18);sf(56,200,18)}
@@ -3064,6 +3064,14 @@ function printFn(kind,r,h,seed){const C=2*PI*r,fr=x=>x-Math.floor(x);
 // Florentine scroll: a Renaissance running scroll (rinceau). A wavy main stem throws off volutes that alternate above and below, each curling into a rosette and dressed with acanthus leaves; seamless around the tier.
 // French medallion: scalloped oval cameo frames with a pearl ring, rosette, bow knot and drop, linked by beaded festoon swags.
 // Fleur-de-lis: spear center petal, two side petals that curl out and back, a binding band and a three-lobed foot; half-drop repeat with small cross accents.
+// Herringbone: 2:1 rectangular planks laid at right angles so each plank's end butts the side of the next, forming V-shaped zigzag columns (parquet herringbone); seamless.
+function herringboneTile(x){
+ const n=3,u=256/(2*Math.SQRT2*n),g=2.2;x.save();x.lineWidth=4.5;x.lineJoin='miter';
+ // 2:1 bricks on a square grid (cells with (c-r) mod 4 = 0 start a horizontal brick, = 3 start a vertical one), turned 45 degrees: classic parquet herringbone that repeats seamlessly
+ const R=v=>[(v[0]+v[1])/Math.SQRT2,(v[1]-v[0])/Math.SQRT2],poly=pts=>{x.beginPath();pts.map(R).forEach(([X,Y],i)=>i?x.lineTo(X,Y):x.moveTo(X,Y));x.closePath();x.stroke()};
+ for(let c=-30;c<=30;c++)for(let r=-30;r<=30;r++){const d=((c-r)%4+4)%4,X=c*u,Y=r*u;let w,h;if(d===0){w=2*u;h=u}else if(d===3){w=u;h=2*u}else continue;
+  const pts=[[X+g,Y+g],[X+w-g,Y+g],[X+w-g,Y+h-g],[X+g,Y+h-g]],ok=pts.map(R).some(([a,b])=>a>-60&&a<316&&b>-60&&b<316);if(ok)poly(pts)}
+ x.restore()}
 function fleurTile(x){
  const fleur=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);
   // tall central petal: spear-shaped, pointed tip
