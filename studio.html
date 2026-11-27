@@ -397,6 +397,8 @@ html body .selbar .selbtns .sacts{width:auto!important;flex-wrap:nowrap}
 html body .selbar .selbtns .sgrp em{display:inline;font-size:9px;min-width:0;padding:0 2px}
 html body .selbar .selbtns .sgrp button,html body .selbar .selbtns .sacts button{min-width:30px!important;height:30px!important;font-size:14px!important}}
 @media (max-width:820px){body:has(#selBar:not([hidden])) #movePad{display:none!important}}
+html body aside.left>#selBar{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;transform:none!important;max-width:none!important;width:auto;margin:0;border-radius:0!important;border:0!important;border-bottom:1px solid var(--line)!important;box-shadow:none!important;background:#fff;z-index:3}
+html body aside.left>#selBar[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -4522,5 +4524,6 @@ html.client #wlCard{display:none!important}
 })();
 </script>
 <script>document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('button,.selbar,.movepad,#view'))e.preventDefault()},{capture:true});document.addEventListener('selectstart',e=>{if(e.target.closest&&e.target.closest('button,.selbar,.movepad'))e.preventDefault()},{capture:true})</script>
+<script>(()=>{const sb=document.getElementById('selBar');if(!sb)return;const home=sb.parentElement,next=sb.nextSibling,mq=matchMedia('(max-width:820px)');const place=()=>{const aside=document.querySelector('aside.left');if(mq.matches&&aside){if(sb.parentElement!==aside)aside.prepend(sb)}else if(sb.parentElement!==home){home.insertBefore(sb,next&&next.parentNode===home?next:null)}};place();mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place);new MutationObserver(()=>{if(!sb.hidden&&mq.matches){const r=sb.getBoundingClientRect();if(r.top>innerHeight-60||r.bottom<0)sb.scrollIntoView({block:'nearest',behavior:'smooth'})}}).observe(sb,{attributes:true,attributeFilter:['hidden']})})()</script>
 </body>
 </html>
