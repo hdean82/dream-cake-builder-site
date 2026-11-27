@@ -2798,15 +2798,7 @@ function stencilTex(pat,img){const key=pat+'|'+(img||'');if(STEN_TEX.has(key))re
  else if(pat==='lace'){x.lineWidth=7;for(let i=0;i<4;i++){x.beginPath();x.arc(32+i*64,60,32,0,PI);x.stroke();x.beginPath();x.arc(32+i*64,60,18,0,PI);x.stroke()}for(let i=0;i<8;i++){x.beginPath();x.arc(16+i*32,110,6,0,7);x.fill()}x.lineWidth=5;x.beginPath();for(let i=0;i<=16;i++)x.lineTo(i*16,170+(i%2?14:-14));x.stroke();for(let i=0;i<4;i++){x.beginPath();x.arc(32+i*64,230,10,0,7);x.fill()}}
  else if(pat==='geo'){x.lineWidth=7;const L=(a,b,c2,d)=>{x.beginPath();x.moveTo(a,b);x.lineTo(c2,d);x.stroke()};L(0,40,256,40);L(0,216,256,216);L(40,40,40,216);L(216,40,216,216);L(40,90,216,90);L(110,90,110,216);L(110,150,216,150);L(40,40,110,90);L(160,90,216,40);L(160,90,160,150);L(40,170,110,216);L(110,150,160,216);x.lineWidth=4;L(128,0,128,40);L(128,216,128,256)}
  else if(pat==='harlequin'){x.beginPath();x.moveTo(128,0);x.lineTo(256,128);x.lineTo(128,256);x.lineTo(0,128);x.closePath();x.fill()}
- else if(pat==='heirloomDamask'){
-  const leaf=(cx,cy,a,l,w)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.31,-w*.7,-l*.78,0,-l);x.bezierCurveTo(w*.7,-l*.78,w,-l*.31,0,0);x.fill();x.restore()};
-  x.lineWidth=5;
-  for(const [cx,cy] of [[128,163],[0,37],[256,37],[0,293],[256,293]]){
-   x.beginPath();x.moveTo(cx,cy+53);x.quadraticCurveTo(cx-9,cy+14,cx,cy-72);x.stroke();
-   leaf(cx,cy-37,0,37,15);
-   for(const s of [-1,1]){leaf(cx,cy-9,s*.38,53,17);leaf(cx+s*2,cy+12,s*.67,64,22);leaf(cx+s*3,cy+27,s*1.12,58,20);leaf(cx+s*3,cy+39,s*1.69,37,14);leaf(cx+s*53,cy-69,s*.45,26,11);}
-   x.beginPath();x.arc(cx,cy-88,6,0,7);x.fill();
-  }}
+ else if(pat==='heirloomDamask'){x.lineCap='round';x.lineJoin='round';damaskTile(x)}
  else if(pat==='sequins'){for(let j=0;j<8;j++)for(let i=0;i<8;i++){x.beginPath();x.arc(16+i*32+(j%2)*16,16+j*32,13,0,7);x.fill()}}
  else if(pat==='brassPanels'){x.lineWidth=12;x.strokeRect(14,14,228,228);x.lineWidth=7;x.strokeRect(40,40,176,176);for(const u of[-1,-.55,-.2,.2,.55,1]){x.beginPath();x.moveTo(128,216);x.lineTo(128+u*88,84);x.stroke()}x.beginPath();x.moveTo(40,84);x.lineTo(216,84);x.stroke();for(const px of[80,90,123,133,166,176]){x.beginPath();x.moveTo(px,50);x.lineTo(px,76);x.stroke()}}
  else if(pat==='vpleats'){x.lineWidth=12;for(let k=-1;k<6;k++){x.beginPath();x.moveTo(0,k*48);x.lineTo(128,k*48+70);x.lineTo(256,k*48);x.stroke()}}
@@ -3054,6 +3046,37 @@ function printFn(kind,r,h,seed){const C=2*PI*r,fr=x=>x-Math.floor(x);
  return(a,yy)=>{let best=0;for(const[sa,sy,rx,ry,p1,p2]of sp){let da=a-sa;da-=Math.round(da/(2*PI))*2*PI;const du=da*r,dv=yy-sy;if(Math.abs(du)>rx*1.5||Math.abs(dv)>ry*1.5)continue;const an=Math.atan2(dv/ry,du/rx),k=Math.hypot(du/rx,dv/ry)/(1+.22*Math.sin(3*an+p1)+.12*Math.sin(5*an+p2));const v=smooth(1.03,.97,k);if(v>best)best=v;if(best>=1)break}return best}}
 // Printed patterns drawn as smooth vector shapes into a side-wall color map, so edges stay crisp up close.
 // Cornelli lace: one smooth meandering line of R and S curves that never crosses or touches itself, evenly spaced and seamless across tile edges.
+// Leaf damask: a mirror-symmetric medallion (open teardrop vase, C-scrolls, acanthus leaves, crown finial, pointed drop) in a half-drop repeat with small dot fillers.
+function damaskTile(x){
+ const leaf=(cx,cy,a,l,w,curl=0)=>{x.save();x.translate(cx,cy);x.rotate(a);x.beginPath();x.moveTo(0,0);x.bezierCurveTo(-w,-l*.3,-w*.8+curl,-l*.8,curl*1.6,-l);x.bezierCurveTo(w*.6+curl,-l*.78,w*.9,-l*.32,0,0);x.fill();x.restore()};
+ const half=()=>{
+  // outer C-scroll rising from the base, curling outward at the top
+  x.lineWidth=7;x.beginPath();x.moveTo(4,58);x.bezierCurveTo(46,52,64,18,52,-18);x.bezierCurveTo(44,-40,22,-44,20,-26);x.bezierCurveTo(19,-14,32,-12,34,-22);x.stroke();
+  // lower reverse scroll
+  x.lineWidth=6;x.beginPath();x.moveTo(6,66);x.bezierCurveTo(38,74,70,64,78,40);x.bezierCurveTo(84,22,68,14,62,24);x.bezierCurveTo(58,32,68,36,72,30);x.stroke();
+  // acanthus leaves fanning down and out at the base
+  leaf(8,70,2.35,46,16,-6);leaf(10,72,2.75,40,14,-5);leaf(18,64,1.95,36,12,-4);
+  // leaves sweeping up the sides
+  leaf(40,-6,.55,40,13,5);leaf(30,18,.95,34,12,4);leaf(56,30,1.35,26,10,3);
+  // upper side sprays toward the crown
+  leaf(10,-58,.35,40,12,4);leaf(14,-48,.85,30,10,3);
+  // small curl
+  x.lineWidth=5;x.beginPath();x.moveTo(6,-70);x.bezierCurveTo(26,-80,36,-96,24,-104);x.bezierCurveTo(16,-108,10,-100,16,-96);x.stroke();
+ };
+ const motif=(cx,cy,s)=>{x.save();x.translate(cx,cy);x.scale(s,s);
+  // central vase / teardrop body with an open center
+  x.beginPath();x.moveTo(0,-60);x.bezierCurveTo(22,-40,26,10,0,40);x.bezierCurveTo(-26,10,-22,-40,0,-60);x.fill();
+  x.save();x.globalCompositeOperation='destination-out';x.beginPath();x.moveTo(0,-38);x.bezierCurveTo(11,-24,12,4,0,22);x.bezierCurveTo(-12,4,-11,-24,0,-38);x.fill();x.restore();
+  x.beginPath();x.moveTo(0,-24);x.bezierCurveTo(5,-16,5,0,0,8);x.bezierCurveTo(-5,0,-5,-16,0,-24);x.fill();
+  // crown finial
+  leaf(0,-62,0,34,10);leaf(0,-64,-.5,26,8);leaf(0,-64,.5,26,8);x.beginPath();x.arc(0,-104,6,0,7);x.fill();
+  // pointed base drop
+  x.beginPath();x.moveTo(-10,44);x.quadraticCurveTo(0,60,0,96);x.quadraticCurveTo(0,60,10,44);x.closePath();x.fill();x.beginPath();x.arc(0,100,5,0,7);x.fill();
+  half();x.scale(-1,1);half();x.restore()};
+ const filler=(cx,cy)=>{for(const [dx,dy] of[[0,-9],[0,9],[-9,0],[9,0]]){x.beginPath();x.arc(cx+dx,cy+dy,3.6,0,7);x.fill()}x.beginPath();x.arc(cx,cy,2.5,0,7);x.fill()};
+ const S=.92;motif(128,128,S);for(const [cx,cy] of[[0,0],[256,0],[0,256],[256,256]])motif(cx,cy,S);
+ for(const [cx,cy] of[[128,0],[128,256],[0,128],[256,128]])filler(cx,cy);
+}
 function cornelliTile(x,N,seed){const lw=3.6,cell=2.5,G=Math.round(N/cell),occ=new Int32Array(G*G).fill(-1);let s=seed>>>0||1;const q=()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296};
  const W=v=>((v%N)+N)%N,ci=(px,py)=>{const gx=Math.floor(W(px)/cell)%G,gy=Math.floor(W(py)/cell)%G;return gy*G+gx};
  let step=0;const R=7,RECENT=14;
