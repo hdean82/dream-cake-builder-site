@@ -30,7 +30,7 @@ body{font-family:Inter,system-ui,sans-serif;color:#4b103d;position:relative}
 #dots i{width:22px;height:22px;border-radius:50%;background:#f0c9da}
 #dots i.on{background:#c12c7e}
 /* phone */
-#phone{position:absolute;left:300px;top:560px;width:560px;height:1130px;background:#2b1424;border-radius:86px;padding:22px;box-shadow:0 60px 100px -50px #4b103dcc}
+#phone{position:absolute;left:440px;top:560px;width:560px;height:1130px;background:#2b1424;border-radius:86px;padding:22px;box-shadow:0 60px 100px -50px #4b103dcc}
 #scr{position:relative;width:100%;height:100%;background:#fff;border-radius:66px;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:70px 34px 40px;gap:24px}
 #scr .nm{font:600 44px Fraunces,Georgia,serif;color:#4b103d}
 #scr .sub{font:500 26px Inter;color:#79536e;margin-top:-14px}
@@ -39,7 +39,7 @@ body{font-family:Inter,system-ui,sans-serif;color:#4b103d;position:relative}
 #ap{background:#c12c7e;color:#fff}
 #ap.ok{background:#22703c}
 #rc{border:3px solid #eed3e3;color:#4b103d}
-#msg{position:absolute;left:60px;top:1020px;width:470px;background:#fff;border:3px solid #f3c9da;border-radius:40px 40px 40px 10px;padding:30px 34px;box-shadow:0 30px 60px -30px #4b103d88;font:500 32px/1.35 Inter}
+#msg{position:absolute;left:50px;top:700px;width:440px;background:#fff;border:3px solid #f3c9da;border-radius:40px 40px 40px 10px;padding:30px 34px;box-shadow:0 30px 60px -30px #4b103d88;font:500 32px/1.35 Inter}
 #msg b{display:block;font:700 36px Inter;margin-bottom:6px}
 #msg u{display:block;text-decoration:none;color:#c12c7e;font:700 30px Inter;margin-top:8px}
 #tap{position:absolute;width:120px;height:120px;border-radius:50%;background:#ffffffaa;border:6px solid #fff;box-shadow:0 10px 30px #0004}
@@ -116,7 +116,7 @@ const io = (t, a, b, fade = 0.35) => Math.min(ease((t - a) / fade), ease((b - t)
 const set = (el, o, tf = '') => { el = typeof el === 'string' ? $(el) : el; el.style.opacity = Math.max(0, o).toFixed(3); el.style.transform = tf; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; };
 const FR = new URLSearchParams(location.search).get('frames') || '../../promo-frames/';
 const imgs = new Map();
-const img = (stage, angle) => imgs.get(frameName(stage, angle));
+const img = (stage, angle) => { const n = imgs.get(frameName(stage, angle)); if (n && n.naturalWidth) return n; let best = null, bd = 1e9; for (const [k, v] of imgs) if (k.startsWith(stage + '_') && v.naturalWidth) { const a = +k.slice(stage.length + 1, -5) / 10, d = Math.abs(a - angle); if (d < bd) { bd = d; best = v; } } return best; };
 window.preload = async names => { await Promise.all(names.map(n => new Promise(r => { const i = new Image(); i.onload = i.onerror = () => r(); i.src = FR + n; imgs.set(n, i); }))); await document.fonts.ready; $('phImg').src = FR + frameName('final', 0); $('prImg').src = FR + frameName('final', 0); await Promise.all([$('phImg'), $('prImg')].map(i => i.decode().catch(() => {}))); };
 const cx = $('cake').getContext('2d'), fx = $('confetti').getContext('2d');
 const confetti = Array.from({ length: 140 }, (_, i) => { const r = k => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); }; return { x: 540 + (r(1) - .5) * 300, y: 1260, vx: (r(2) - .5) * 1500, vy: -900 - r(3) * 1300, s: 14 + r(4) * 18, rot: r(5) * 6, vr: (r(6) - .5) * 14, c: ['#c12c7e', '#f7a8cb', '#c9a24e', '#7fd1c7', '#ffd166', '#b98bc9'][i % 6] }; });

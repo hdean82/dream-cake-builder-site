@@ -48,7 +48,7 @@ for (const key of order) {
   await page.goto('http://localhost:8766/studio.html?view=1&shot=1', { waitUntil: 'networkidle', timeout: 120000 });
   await page.waitForFunction(() => typeof window.__dcsTurn === 'function' && !document.getElementById('loading'), null, { timeout: 120000 });
   await page.waitForTimeout(18000); // the cake's 3D pieces arrive and the viewer stops re-fitting
-  if (!cam) { await page.evaluate(() => window.__dcsFrame()); await page.waitForTimeout(1500); cam = await page.evaluate(() => window.__dcsCam()); }
+  if (!cam) { await page.evaluate(() => window.__dcsFrame()); await page.waitForTimeout(1500); cam = await page.evaluate(() => window.__dcsCam()); const d = cam.cam.map((v, i) => v - cam.tgt[i]); cam.tgt[1] += 0.6; cam.cam = cam.tgt.map((v, i) => v + d[i] * 0.84); }
   await page.evaluate(v => window.__dcsCam(v), cam);
   await page.waitForTimeout(800);
   let n = 0;
