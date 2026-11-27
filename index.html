@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dream Cake Studio · Design Cakes In 3D, Get Client Approval</title>
+<title>Dream Cake Studio · Show your client the cake before you bake it</title>
 <link rel="canonical" href="https://www.dreamcakebuilder.com/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="Dream Cake Studio lets cake artists design real-looking cakes in 3D — Lambeth piping, bows, frosting and lighting — then send the client a link to approve it before you bake.">
@@ -16,242 +16,174 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="assets/home/lambeth-hero.webp" type="image/webp">
 <link rel="stylesheet" href="assets/dcb-theme.css">
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://gcorvodfcxhumesttwvj.supabase.co" crossorigin>
 <style>
-/* ---------- home page ---------- */
-@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
-.band:first-of-type{padding-top:34px}
-
+body.hp{background:#fffaf9}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hp h1,.hp h2,.hp h3,.hp .btn,.hp summary,.hp label{text-transform:none}
+.hp main{--pad:clamp(56px,9vw,112px)}
+.hp .wrap{max-width:1120px;padding:0 20px}
+.hp section{padding:var(--pad) 0}
+.hp h2{font-size:clamp(28px,3.6vw,40px);letter-spacing:-.01em;max-width:18ch}
+.hp .lede{font-size:17px;line-height:1.6;color:var(--muted);max-width:54ch;margin-top:12px}
 /* hero */
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:var(--gap);align-items:stretch}
-.hero-copy{padding:26px 28px;display:flex;flex-direction:column;justify-content:center;gap:14px}
-.hero-copy h1{font-size:clamp(34px,4.8vw,54px)}
-.hero-copy h1 em{font-style:italic;font-weight:400;color:var(--rose)}
-.hero-copy .lead{font-size:17px;color:var(--muted);max-width:480px}
-.hero-actions{display:flex;flex-wrap:wrap;gap:8px}
-.hero-actions .btn{min-height:44px;padding:10px 18px;font-size:15px}
-.soon{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-size:13px;font-weight:600;color:var(--rose-ink);text-transform:capitalize}
-.soon i{width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 0 4px var(--rose-soft);margin-left:4px;animation:pulse 2s infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 7px #fde3f000}}
-.proof-row{display:flex;flex-wrap:wrap;gap:6px}
-
-.stage{position:relative;margin:0;padding:0;overflow:hidden;min-height:440px;background:#e1ddde}
-.stage picture,.stage img{position:absolute;inset:0;width:100%;height:100%}
-.stage img{object-fit:cover;object-position:50% 55%}
-.stage .made{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;color:var(--rose-ink)}
-.stage .spec{position:absolute;display:flex;flex-direction:column;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:12px;padding:7px 11px;font-size:12px;color:var(--muted);box-shadow:0 6px 18px #4b103d1a;line-height:1.3}
-.stage .spec b{font:600 15px Fraunces,Georgia,serif;color:var(--ink)}
-.stage .s1{right:12px;top:14%}
-.stage .s2{left:12px;top:46%}
-.stage .bar{position:absolute;left:12px;right:12px;bottom:12px;display:flex;gap:8px;align-items:center;justify-content:space-between;background:rgba(255,250,245,.94);backdrop-filter:blur(6px);border:1px solid #fff;border-radius:12px;padding:8px 8px 8px 14px}
-.stage .bar b{font:600 16px Fraunces,Georgia,serif;display:block}
-.stage .bar span{font-size:12.5px;color:var(--muted)}
-
-/* quick facts */
-.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
-.fact{display:flex;gap:12px;align-items:flex-start;padding:12px 14px}
-.fact .ic{flex:0 0 36px;height:36px;border-radius:10px;background:var(--rose-soft);color:var(--rose-ink);display:flex;align-items:center;justify-content:center}
-.fact .ic svg{width:20px;height:20px}
-.fact b{font:600 16px Fraunces,Georgia,serif;display:block;margin-bottom:2px}
-.fact span{font-size:13.5px;color:var(--muted)}
-
-/* how it works */
-.steps{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--gap);list-style:none;margin:0;padding:0}
-.step{display:flex;flex-direction:column;overflow:hidden}
-.step.w3{grid-column:span 3}.step.w2{grid-column:span 2}
-.step .txt{padding:12px 14px 10px;display:flex;flex-direction:column;gap:5px}
-.step .top{display:flex;align-items:center;gap:8px}
-.step .num{font:600 12px Inter,sans-serif;background:var(--ink);color:#fff;border-radius:999px;padding:2px 9px}
-.step h3{font-size:19px}
-.step p{font-size:14px;color:var(--muted)}
-.step .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
-.shot{position:relative;margin:auto 10px 10px;border-radius:10px;overflow:hidden;border:1px solid #efdbe6;background:#f4edf1;box-shadow:0 4px 14px #4b103d12}
-.shot img{width:100%;height:100%;object-fit:cover}
-.w3 .shot{aspect-ratio:16/9.6}
-.w3 .shot img{object-position:0 0}
-.w2 .shot{aspect-ratio:4/4.3}
-.shot.phone{background:linear-gradient(150deg,#fde3f0,#efe4fb 60%,#dff3f1);display:flex;justify-content:center;align-items:flex-start;padding-top:16px}
-.shot.phone .device{width:56%;max-width:210px;border-radius:26px;border:6px solid #3a1030;overflow:hidden;box-shadow:0 14px 30px #4b103d33;background:#fff}
-.shot.phone .device img{height:auto}
-.shot.proof img{object-position:50% 0}
-.shot .cap{position:absolute;right:8px;bottom:8px;background:#fff;border:1px solid var(--line);border-radius:12px 12px 4px 12px;padding:4px 9px;font-size:12px;font-weight:600;color:var(--teal);box-shadow:0 3px 10px #4b103d1a}
-
-/* features */
-.feats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
-.feat{padding:12px 14px;display:flex;flex-direction:column;gap:3px}
-.feat b{font:600 15.5px Fraunces,Georgia,serif}
-.feat span{font-size:13.5px;color:var(--muted)}
-.feat .k{font-size:11.5px;font-weight:600;color:var(--rose-ink);text-transform:capitalize}
-
-/* waitlist + faq */
-.lower{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:var(--gap);align-items:start}
-.faq{padding:14px 16px}
-.faq h2{margin-bottom:6px}
-.faq details{border-top:1px solid var(--line)}
-.faq details:first-of-type{border-top:0}
-.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 2px;font-weight:600}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";color:var(--rose);font-weight:600;font-size:18px;line-height:1}
-.faq details[open] summary::after{content:"–"}
-.faq details p{padding:0 2px 12px;color:var(--muted);font-size:14px}
-.join{padding:18px;position:sticky;top:76px;background:linear-gradient(160deg,#fff,#fff6fa 60%,#f7f0ff)}
-.join h2{margin:2px 0 4px}
-.join form{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.join label{font-size:13px;color:var(--muted)}
-.join input[type=email]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;margin-top:4px}
-.join .check{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:13.5px;text-transform:none}
-.join .check input{accent-color:var(--rose);width:17px;height:17px;margin-top:2px}
-.join .btn{width:100%;min-height:44px}
-.join .fine{font-size:12px;color:var(--muted)}
-.join #launchStatus{font-size:13.5px;font-weight:500;color:var(--teal);min-height:1em}
-.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-
-@media (max-width:1020px){
-  .feats{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .step.w3,.step.w2{grid-column:span 3}
-  .steps>.step:last-child{grid-column:span 6}
-  .steps>.step:last-child .shot{aspect-ratio:16/8}
-}
-@media (max-width:860px){
-  .hero,.lower{grid-template-columns:minmax(0,1fr)}
-  .stage{min-height:0;aspect-ratio:1/1.02;order:-1}
-  .facts{grid-template-columns:minmax(0,1fr)}
-  .join{position:static}
-}
-@media (max-width:640px){
-  .steps{grid-template-columns:minmax(0,1fr)}
-  .step.w3,.step.w2,.steps>.step:last-child{grid-column:auto}
-  .w2 .shot,.steps>.step:last-child .shot{aspect-ratio:4/3.6}
-  .hero-copy{padding:18px}
-  .hero-actions .btn{flex:1}
-  .stage .spec{display:none}
-}
-@media (max-width:420px){.feats{grid-template-columns:minmax(0,1fr)}}
-
-/* ---------- first impression: hero mosaic, cake strip, gallery ---------- */
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.hero-band{padding-top:26px!important}
-.hero2{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:var(--gap);align-items:stretch}
-.hcopy{padding:26px 26px 22px;display:flex;flex-direction:column;justify-content:center;gap:14px}
-.hcopy h1{font-size:clamp(32px,4.4vw,52px)}
-.hcopy h1 em{font-style:italic;font-weight:400;color:var(--rose)}
-.hcopy .lead{font-size:16.5px;color:var(--muted)}
-.hjoin{display:flex;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;box-shadow:0 6px 20px #c12c7e14}
-.hjoin input[type=email]{flex:1 1 200px;min-height:44px;border:0;outline:0;background:transparent;padding:0 10px;font-size:15px}
-.hjoin .btn{min-height:44px;padding:10px 18px;font-size:15px}
-.hjoin .hstat{flex-basis:100%;margin:0 6px;font-size:13.5px;font-weight:500;color:var(--teal)}
-.hjoin .hstat:empty{display:none}
-.hjoin.joined input{opacity:.5}
+.hero{padding:clamp(28px,5vw,64px) 0 var(--pad);background:linear-gradient(180deg,#fff1f6 0%,#fffaf9 100%)}
+.hero .wrap{display:grid;gap:clamp(28px,5vw,64px);align-items:center}
+@media(min-width:900px){.hero .wrap{grid-template-columns:1fr 1.05fr}}
+.soon{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--rose-ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 10px}
+.soon i{width:8px;height:8px;border-radius:50%;background:#2fa36b;box-shadow:0 0 0 3px #2fa36b26}
+.hero h1{font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.02em;margin:18px 0 0;max-width:13ch}
+.hero .lede{font-size:clamp(17px,1.6vw,19px)}
+.join{display:flex;gap:8px;margin-top:26px;max-width:470px;flex-wrap:wrap}
+.join input[type=email]{flex:1 1 220px;min-height:52px;padding:0 16px;border:1px solid #e7c6d7;border-radius:14px;background:#fff;font-size:16px}
+.join .btn{min-height:52px;padding:0 22px;border-radius:14px;font-size:16px;font-weight:600;flex:0 0 auto}
+.join .stat{flex-basis:100%;font-size:14px;min-height:1px}
 .trap{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
-.halt{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13.5px}
-.mosaic{display:grid;grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:var(--gap);min-height:480px}
-.tile{position:relative;display:block;border-radius:var(--radius);overflow:hidden;background:#e1ddde;border:1px solid #f1dbe7;box-shadow:0 6px 18px #4b103d14;text-decoration:none;color:var(--ink)}
-.tile.t0{grid-row:span 2}
-.tile picture,.tile img{position:absolute;inset:0;width:100%;height:100%}
-.tile img{object-fit:cover;transition:transform .5s ease}
-.tile:hover img{transform:scale(1.05)}
-.tile .lbl{position:absolute;left:8px;bottom:8px;right:auto;max-width:calc(100% - 16px);display:flex;flex-direction:column;background:rgba(255,250,245,.92);backdrop-filter:blur(6px);border-radius:10px;padding:6px 10px;line-height:1.25}
-.tile .lbl b{font:600 14px Fraunces,Georgia,serif}
-.tile.t0 .lbl b{font-size:18px}
-.tile .lbl i{font-style:normal;font-size:11.5px;color:var(--muted)}
-.tile .go{position:absolute;right:10px;top:10px;background:var(--rose);color:#fff;font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;opacity:0;transform:translateY(-4px);transition:.25s}
-.tile:hover .go,.tile:focus-visible .go{opacity:1;transform:none}
-.tile.t0 .go{opacity:1;transform:none}
-.strip{padding:6px 0 4px}
-.strip-head{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:8px}
-.strip-head .muted{font-size:13.5px}
-.marquee{display:flex;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
-.track{display:flex;gap:10px;list-style:none;margin:0;padding:0 5px;flex-shrink:0;animation:slide 70s linear infinite}
-.marquee:hover .track{animation-play-state:paused}
-@keyframes slide{to{transform:translateX(-100%)}}
-.track a{display:flex;flex-direction:column;width:150px;background:rgba(255,250,245,.95);border:1px solid #f1dbe7;border-radius:12px;overflow:hidden;text-decoration:none;color:var(--ink)}
-.track img{width:150px;height:150px;object-fit:cover;background:#e1ddde}
-.track span{font:600 12.5px Inter,sans-serif;padding:6px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@media (prefers-reduced-motion:reduce){.marquee{overflow-x:auto}.track{animation:none}.track[aria-hidden]{display:none}}
-.filters{display:flex;flex-wrap:wrap;gap:6px}
-.filters button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;font-weight:500;font-size:13.5px;cursor:pointer;color:var(--muted)}
-.filters button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-.gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gap)}
-.gcard{display:flex;flex-direction:column;overflow:hidden;text-decoration:none;color:var(--ink);transition:transform .2s,box-shadow .2s}
-.gcard:hover{transform:translateY(-3px);box-shadow:0 12px 28px #4b103d1f}
-.gcard[hidden]{display:none}
-.gimg{position:relative}.sigtag{position:absolute;left:8px;top:8px;background:rgba(255,250,245,.94);color:var(--rose-ink);font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px}
-.gimg{aspect-ratio:1/1;background:#e1ddde;overflow:hidden}
-.gimg img{width:100%;height:100%;object-fit:cover}
-.gtxt{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px 10px 12px}
-.gtxt>span:first-child{display:flex;flex-direction:column;line-height:1.25;min-width:0}
-.gtxt b{font:600 14.5px Fraunces,Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gtxt i{font-style:normal;font-size:12px;color:var(--muted)}
-.garrow{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--rose-soft);color:var(--rose-ink);font-weight:600}.gcard:hover .garrow{background:var(--rose);color:#fff}
-.gmore{display:flex;justify-content:center;margin-top:14px}
-
-.spin3{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:var(--gap);align-items:stretch}
-.stage{position:relative;aspect-ratio:1/1;border-radius:18px;overflow:hidden;background:radial-gradient(120% 90% at 50% 30%,#fff 0,#f6eef1 60%,#efe2e8 100%);border:1px solid var(--line)}
-.stage img.poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}
-.stage .play{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:2}
-.stage .hint{position:absolute;left:12px;top:12px;z-index:2;background:rgba(255,250,245,.94);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--rose-ink)}
-.stage .open{position:absolute;right:12px;bottom:12px;z-index:2}
-.picker{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;align-content:start}
-.picker button{border:2px solid transparent;border-radius:12px;padding:0;background:#fff;overflow:hidden;cursor:pointer;aspect-ratio:1/1;position:relative}
-.picker button img{width:100%;height:100%;object-fit:cover;display:block}
-.picker button.on{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-soft)}
-.picker button span{position:absolute;left:0;right:0;bottom:0;font:600 10.5px Inter,sans-serif;color:#fff;background:linear-gradient(transparent,#0008);padding:10px 4px 4px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.spin3 .side h3{font:600 22px Fraunces,Georgia,serif;margin:2px 0 4px}.spin3 .side p{margin:0 0 10px}
-.cmp{position:relative;aspect-ratio:1/1;border-radius:18px;overflow:hidden;border:1px solid var(--line);user-select:none;touch-action:pan-y;background:#e1ddde}
-.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
-.cmp .top{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--x,50%)) 0 0)}
-.cmp .bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 0 1px #0002}
-.cmp .knob{position:absolute;top:50%;left:var(--x,50%);width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;background:#fff;box-shadow:0 4px 14px #0003;display:grid;place-items:center;font-weight:700;color:var(--rose-ink)}
-.cmp .tag{position:absolute;top:10px;font-size:12px;font-weight:600;background:rgba(255,250,245,.94);border-radius:999px;padding:4px 10px;color:var(--ink)}
-.cmp .tag.l{left:10px}.cmp .tag.r{right:10px}
-.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
-.cmpwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--gap);align-items:center}
-.cmptabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
-.cmptabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted)}
-.cmptabs button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-.spin3d{position:absolute;right:8px;bottom:8px;border:0;border-radius:999px;background:var(--rose);color:#fff;font:600 11.5px Inter,sans-serif;padding:5px 10px;cursor:pointer;opacity:0;transform:translateY(4px);transition:.2s}
-.gcard:hover .spin3d,.gcard:focus-within .spin3d{opacity:1;transform:none}
-@media (hover:none){.spin3d{opacity:1;transform:none}}
-@media (max-width:860px){.spin3,.cmpwrap{grid-template-columns:minmax(0,1fr)}.picker{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.stage{aspect-ratio:1/1.05}}
-.mbar{display:none}
-@media (max-width:1120px){.gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}@media (max-width:1020px){.gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:860px){
-  .hero2{grid-template-columns:minmax(0,1fr)}
-  .mosaic{min-height:0;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto;gap:8px;order:-1}
-  .tile{aspect-ratio:1/1}
-  .tile.t0{grid-column:span 3;grid-row:auto;aspect-ratio:1.55/1}
-  .tile.t0 img{object-position:50% 45%}
-  .tile.t4{display:none}
-  .tile .go{display:none}
-  .tile:not(.t0) .lbl{left:5px;right:5px;bottom:5px;padding:3px 6px}
-  .tile:not(.t0) .lbl b{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tile:not(.t0) .lbl i{display:none}
-  .hcopy h1{font-size:30px}
-  .hcopy{padding:18px}
-  .mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:45;gap:8px;padding:8px;background:rgba(255,250,245,.96);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:16px;box-shadow:0 10px 30px #4b103d2e}
-  .mbar .btn{flex:1;min-height:44px}
-  body{padding-bottom:76px}
-}
-@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.garrow{display:none}.track a{width:124px}.track img{width:124px;height:124px}}
-.hcake{position:relative;border-radius:24px;overflow:hidden;background:#e1ddde;aspect-ratio:1400/1017;align-self:center;perspective:900px;box-shadow:0 24px 50px -30px #4b103d66}
+.alt{margin-top:16px;font-size:15px;color:var(--muted)}
+.alt a{font-weight:600}
+/* hero cake */
+.hcake{position:relative;border-radius:28px;overflow:hidden;background:#e1ddde;aspect-ratio:1400/1017;perspective:900px;box-shadow:0 30px 60px -32px #4b103d66}
 .hcake picture,.hcake img.poster{display:block;width:100%;height:100%}
 .hcake img.poster{object-fit:contain;transition:transform .25s ease-out,opacity .5s;transform-origin:50% 60%}
 .hcake iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .5s}
-.hcake .hcplay{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);border-radius:999px;min-height:46px;padding:0 22px;font-weight:600;box-shadow:0 10px 24px #c12c7e55;text-transform:none}
+.hcake .hcplay{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);border-radius:999px;min-height:48px;padding:0 24px;font-weight:600;box-shadow:0 10px 24px #c12c7e55}
 .hcake .hchint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#fffffff0;border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;pointer-events:none}
-.hcake.loading::after{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;border:3px solid #fff;border-top-color:var(--rose);animation:hcspin .9s linear infinite}
-@keyframes hcspin{to{transform:rotate(360deg)}}
-@media(max-width:900px){.hcake{order:-1}}
+.hcake.loading::after{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;border:3px solid #fff;border-top-color:var(--rose);animation:spin .9s linear infinite}
+@media(max-width:899px){.hcake{order:-1}}
 @media(prefers-reduced-motion:reduce){.hcake img.poster{transition:none}}
+.realsec .cmpbox{max-width:760px;margin-top:28px}
+/* real cake next to its 3D design */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pair figure{margin:0;position:relative}
+.pair picture{display:block;aspect-ratio:1;border-radius:24px;overflow:hidden;background:#efe6e8;box-shadow:0 24px 48px -28px #4b103d59}
+.pair img{width:100%;height:100%;object-fit:cover}
+.pair figcaption{position:absolute;left:12px;bottom:12px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;background:#fffffff2}
+.cmpcap{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.cmpcap p{font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13.5px;cursor:pointer;color:var(--ink)}
+.chips button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+/* how it works: interactive steps */
+.how .lede{margin-bottom:28px}
+.hw{display:grid;gap:22px;align-items:center}
+@media(min-width:900px){.hw{grid-template-columns:.85fr 1.15fr;gap:40px}}
+.hwtabs{display:flex;flex-direction:column;gap:10px}
+.hwtabs button{position:relative;display:flex;gap:14px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:#fff;border-radius:18px;padding:16px 18px;cursor:pointer;color:var(--ink);font:inherit;overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .2s}
+.hwtabs button:hover{border-color:#e6b4c4}
+.hwtabs button.on{border-color:var(--rose);box-shadow:0 14px 30px -18px #c12c7e88;transform:translateX(4px)}
+.hwtabs .n{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 16px Fraunces,Georgia,serif;background:var(--rose-soft);color:var(--rose-ink);transition:background .2s,color .2s}
+.hwtabs button.on .n{background:var(--rose);color:#fff}
+.hwtabs .tx{display:flex;flex-direction:column;gap:3px}
+.hwtabs .tx b{font:600 19px/1.2 Fraunces,Georgia,serif}
+.hwtabs .tx span{color:var(--muted);font-size:14.5px;line-height:1.5}
+.hwtabs .bar{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--rose)}
+.hw.auto .hwtabs button.on .bar{animation:hwbar var(--hwt,7s) linear forwards}
+.hw.paused .hwtabs button.on .bar{animation-play-state:paused}
+@keyframes hwbar{to{width:100%}}
+@media(max-width:899px){.hwtabs{flex-direction:row;overflow-x:auto;scrollbar-width:none}.hwtabs button{flex:1 0 0;min-width:0;padding:10px 12px;align-items:center}.hwtabs .tx span{display:none}.hwtabs .tx b{font-size:15px}.hwtabs button.on{transform:none}.hwtabs .n{width:28px;height:28px;font-size:14px}}
+.hwstage{position:relative;aspect-ratio:5/4;border-radius:28px;overflow:hidden;background:linear-gradient(160deg,#fff 0%,#fde3ee 100%);box-shadow:0 30px 60px -34px #4b103d66}
+.hwp{position:absolute;inset:0;opacity:1;transition:opacity .45s,transform .45s}
+.hwp[hidden]{display:block;opacity:0;transform:translateY(10px);pointer-events:none;visibility:hidden}
+.hwp .ill{position:absolute;inset:0;container-type:inline-size}
+.design .win{position:absolute;left:8cqw;right:8cqw;top:7cqw;height:5.5cqw;background:#fff;border-radius:2.4cqw 2.4cqw 0 0;border:1px solid var(--line);border-bottom:0;display:flex;align-items:center;gap:2cqw;padding:0 2.4cqw;font-size:2.2cqw;color:var(--muted)}
+.design .dots{display:flex;gap:.9cqw}.design .dots i{width:1.4cqw;height:1.4cqw;border-radius:50%;background:#efd4e0}
+.design picture{position:absolute;left:8cqw;right:8cqw;top:12.5cqw;bottom:9cqw;border:1px solid var(--line);border-radius:0 0 2.4cqw 2.4cqw;overflow:hidden;background:#fff;box-shadow:0 4cqw 8cqw -5cqw #4b103d66}
+.design picture img{width:100%;height:100%;object-fit:cover;object-position:top left}
+.design .chipsf{position:absolute;right:4cqw;bottom:4cqw;display:flex;gap:1.4cqw}
+.design .chipsf span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:1cqw 2.2cqw;font-size:2.4cqw;font-weight:600;color:var(--rose-ink);box-shadow:0 2cqw 4cqw -2cqw #4b103d55;animation:hwpop .5s both}
+.design .chipsf span:nth-child(2){animation-delay:.12s}.design .chipsf span:nth-child(3){animation-delay:.24s}.design .chipsf span:nth-child(4){animation-delay:.36s}
+@keyframes hwpop{from{opacity:0;transform:translateY(2cqw) scale(.9)}}
+.hwp[hidden] .chipsf span{animation:none}
+.send .phone{position:absolute;right:12cqw;top:6cqw;width:30cqw;aspect-ratio:9/17;background:#2b1424;border-radius:5cqw;padding:1.3cqw;box-shadow:0 4cqw 7cqw -4cqw #4b103d80}
+.send .scr{position:relative;background:#fff;border-radius:3.8cqw;height:100%;display:flex;flex-direction:column;align-items:center;padding:3cqw 2cqw 2cqw;gap:1.3cqw;overflow:hidden}
+.send .pt{font:600 2.8cqw/1.2 Fraunces,Georgia,serif;color:var(--ink);text-align:center}
+.send .scr img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:2.4cqw;background:#efe6e8}
+.send .ap,.send .rc{width:100%;text-align:center;font:600 2.3cqw Inter,system-ui,sans-serif;border-radius:1.6cqw;padding:1.3cqw 0;white-space:nowrap}
+.send .ap{background:var(--rose);color:#fff;border:0;cursor:pointer;box-shadow:0 0 0 0 #c12c7e66;animation:hwping 1.8s infinite}
+.send .rc{border:1px solid var(--line);color:var(--ink)}
+.send .done{position:absolute;inset:auto 1.6cqw 1.6cqw;background:#e3f5e8;color:#22703c;border-radius:2cqw;padding:2cqw;font:600 2.3cqw/1.3 Inter,system-ui,sans-serif;text-align:center;transform:translateY(130%);transition:transform .35s}
+.send.ok .done{transform:none}.send.ok .ap{animation:none;background:#22703c}
+@keyframes hwping{70%{box-shadow:0 0 0 2cqw #c12c7e00}100%{box-shadow:0 0 0 0 #c12c7e00}}
+.send .msg{position:absolute;left:9cqw;top:34cqw;width:38cqw;background:#fff;border:1px solid var(--line);border-radius:3cqw 3cqw 3cqw .8cqw;padding:2.4cqw 2.8cqw;box-shadow:0 3cqw 6cqw -3cqw #4b103d55;display:flex;flex-direction:column;gap:.5cqw;font-size:2.5cqw;line-height:1.35;z-index:1}
+.send .msg b{font-size:2.8cqw}.send .msg span{color:var(--muted)}.send .msg u{color:var(--rose-ink);text-decoration:none;font-weight:600;font-size:2.3cqw}
+.plan .sheet{position:absolute;inset:7cqw 14cqw;background:#fff;border-radius:2.6cqw;box-shadow:0 4cqw 8cqw -5cqw #4b103d66;padding:3.4cqw;font-size:2.5cqw;display:flex;flex-direction:column;gap:2.4cqw}
+.plan .sh{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:2cqw}
+.plan .sh b{font:600 4cqw Fraunces,Georgia,serif}
+.plan .ok{background:#e3f5e8;color:#22703c;border-radius:999px;padding:.7cqw 2cqw;font-weight:600;font-size:2.4cqw;animation:hwstamp .5s .3s both}
+@keyframes hwstamp{from{opacity:0;transform:scale(1.6) rotate(-8deg)}}
+.hwp[hidden] .ok{animation:none}
+.plan .sb{display:grid;grid-template-columns:42% 1fr;gap:3cqw;align-items:center}
+.plan .sb img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:2cqw;background:#efe6e8}
+.plan dl{display:grid;grid-template-columns:auto 1fr;gap:.8cqw 2cqw;margin:0}
+.plan dt{color:var(--muted)}.plan dd{margin:0;font-weight:600}
+.plan .sw{display:flex;align-items:center;gap:1.2cqw;color:var(--muted);margin-top:auto}
+.plan .sw i{width:3cqw;height:3cqw;border-radius:50%;border:1px solid #0001}.plan .sw span{margin-left:1cqw}
+@media(prefers-reduced-motion:reduce){.hwp,.hwtabs button{transition:none}.hwtabs button.on .bar,.send .ap,.design .chipsf span,.plan .ok{animation:none}.hwtabs button.on .bar{width:0}}
+/* live 3D */
+.live{background:#fbf2f5}
+.live .wrap{display:grid;gap:28px;align-items:center}
+@media(min-width:900px){.live .wrap{grid-template-columns:.8fr 1.2fr;grid-template-areas:'head stage' 'pick stage';align-content:center}.live .wrap>div:first-child{grid-area:head;align-self:end}.live .picker{grid-area:pick;align-self:start;margin-top:0}.live .stage{grid-area:stage}}
+@media(max-width:899px){.live .picker{order:2;margin-top:0}}
+.stage{position:relative;aspect-ratio:1;border-radius:28px;overflow:hidden;background:#ece4e6}
+.stage img.poster{width:100%;height:100%;object-fit:cover;transition:opacity .5s}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .play{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-height:48px;padding:0 22px;border-radius:999px;font-weight:600;box-shadow:0 10px 24px #c12c7e55}
+.stage.loading::after{content:'';position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px;border-radius:50%;border:3px solid #fff;border-top-color:var(--rose);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.stage.loading::after{animation-duration:3s}}
+.stage .open{position:absolute;right:14px;bottom:14px;border-radius:999px}
+.picker{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:22px;max-width:520px}
+@media(min-width:900px){.picker{grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px}}
+.picker button{border:2px solid transparent;border-radius:16px;padding:0;background:#fff;cursor:pointer;overflow:hidden;aspect-ratio:1}
+.picker button img{width:100%;height:100%;object-fit:cover}
+.picker button.on{border-color:var(--rose)}
+/* gallery */
+.ghead{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.row{display:grid;grid-auto-flow:column;grid-auto-columns:min(62vw,240px);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 20px;margin-top:36px;padding:0 20px 8px;scrollbar-width:thin}
+@media(min-width:1160px){.row{padding-left:calc((100vw - 1080px)/2)}}
+.row a{scroll-snap-align:start;text-decoration:none;color:var(--ink)}
+.row .im{display:block;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#efe6e8}
+.row .im img{width:100%;height:100%;object-fit:cover;transition:transform .35s}
+.row a:hover .im img{transform:scale(1.04)}
+.row b{display:block;margin-top:10px;font-weight:600;font-size:15px}
+/* faq */
+.faq .wrap{display:grid;gap:28px}
+@media(min-width:900px){.faq .wrap{grid-template-columns:.8fr 1.2fr}}
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq details:first-child{border-top:1px solid var(--line)}
+.faq summary{cursor:pointer;font-weight:600;font-size:17px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--rose);font-size:22px;line-height:1;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);line-height:1.6;margin-top:10px;max-width:60ch}
+/* final */
+.final{padding-bottom:calc(var(--pad) + 20px)}
+.panel{background:var(--ink);color:#fff;border-radius:32px;padding:clamp(32px,6vw,72px);display:grid;gap:28px;align-items:center;position:relative;overflow:hidden}
+@media(min-width:900px){.panel{grid-template-columns:1.1fr 1fr}}
+.panel h2{color:#fff;max-width:14ch}
+.panel .lede{color:#f3d9e6}
+.panel form{display:flex;flex-direction:column;gap:12px}
+.panel .join{margin-top:0;max-width:none}
+.panel .join input[type=email]{border-color:transparent}
+.panel .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#f3d9e6;cursor:pointer}
+.panel .check input{margin-top:3px;accent-color:var(--rose)}
+.panel .fine{font-size:12.5px;color:#d9b6c8}
+.panel .fine a{color:#fff}
+.panel #launchStatus{font-size:14px;color:#fff;min-height:1px}
+/* phone quick bar, shown after the hero */
+.mbar{display:none}
+@media(max-width:700px){.mbar{display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:45;gap:8px;padding:8px;background:#fffaf9f2;backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px #4b103d2e;transform:translateY(130%);transition:transform .3s}.mbar.on{transform:none}.mbar .btn{flex:1;min-height:46px;border-radius:12px}.hp .site-foot{padding-bottom:90px}}
+@media(prefers-reduced-motion:reduce){.row .im img,.mbar,.faq summary::after{transition:none}}
 </style>
 </head>
-<body>
+<body class="hp">
 <header class="site-head">
  <div class="head-in">
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>
   <nav class="site-nav" aria-label="Main">
    <a href="index.html" aria-current="page">Home</a>
-   <a href="#how-it-works">How It Works</a>
+   <a href="#how-it-works">How it works</a>
    <a href="studio.html">Studio</a>
    <a href="shop.html#orders" data-team>Orders</a>
    <a href="shop.html#calendar" data-team>Calendar</a>
@@ -261,154 +193,102 @@
   </nav>
   <details class="menu">
    <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
-   <div class="menu-panel"><a href="index.html" aria-current="page">Home</a><a href="#how-it-works">How It Works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="#launch-list">Join Waitlist</a></div>
+   <div class="menu-panel"><a href="index.html" aria-current="page">Home</a><a href="#how-it-works">How it works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="#launch-list">Join Waitlist</a></div>
   </details>
  </div>
 </header>
 
 <main>
- <section class="band hero-band">
-  <div class="wrap hero2">
-   <div class="card hcopy">
-    <span class="soon"><i></i>Dream Cake Studio · Launching Soon</span>
-    <h1>Design The Cake. <em>Wow The Client.</em> Then Bake It.</h1>
-    <p class="lead">Build real-looking cakes in 3D, from Lambeth bows to gold drips, and send your client a link to approve it before you bake.</p>
-    <form class="hjoin" data-launch novalidate>
-     <label class="sr" for="hEmail">Email Address</label>
-     <input id="hEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Your email for early access">
+ <section class="hero">
+  <div class="wrap">
+   <div>
+    <span class="soon"><i></i>Opening soon for cake artists</span>
+    <h1>Show your client the cake before you bake it.</h1>
+    <p class="lede">Design cakes in 3D, send your client one link, and get their approval on any phone. No more guessing from sketches.</p>
+    <form class="join" data-launch novalidate>
+     <label class="sr" for="hEmail">Email address</label>
+     <input id="hEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Your email">
      <input class="trap" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-     <button class="btn primary" type="submit">Join The Waitlist</button>
-     <p class="hstat" data-launch-status role="status" aria-live="polite"></p>
+     <button class="btn primary" type="submit">Join the waitlist</button>
+     <p class="stat" data-launch-status role="status" aria-live="polite"></p>
     </form>
-    <div class="halt"><a class="btn" href="studio.html">Try The Studio Now</a><span class="muted">No download. Works on any phone or computer.</span></div>
+    <p class="alt">Or <a href="studio.html">try the Studio now</a>. It's free and runs in your browser.</p>
    </div>
    <div class="hcake" id="hcake"><picture><source srcset="assets/home/lambeth-hero.webp" type="image/webp"><img class="poster" id="hcPoster" src="assets/home/lambeth-hero.jpg" alt="A two-tier blush Lambeth cake with pink bows, designed in Dream Cake Studio" width="1400" height="1017" data-fallback></picture><button class="btn primary hcplay" id="hcPlay" type="button">Spin it in 3D</button><span class="hchint" id="hcHint" hidden>Drag to turn the cake</span></div>
   </div>
  </section>
 
- <section class="strip" aria-label="Cakes designed in Dream Cake Studio">
-  <div class="strip-head wrap"><span class="eyebrow">Designed In Dream Cake Studio</span><span class="muted">Every cake on this page is a real 3D render. Tap one to make it yours.</span></div>
-  <div class="marquee"><ul class="track"><li><a href="studio.html" data-open-cake><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth" loading="lazy" data-fallback width="640" height="640"></picture><span>Blush Lambeth</span></a></li><li><a href="studio.html?theme=sig_peony"><picture><source srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade" loading="lazy" data-fallback width="640" height="640"></picture><span>Coral Peony Cascade</span></a></li><li><a href="studio.html?theme=sig_moneybag"><picture><source srcset="assets/home/cakes/sig_moneybag.webp" type="image/webp"><img src="assets/home/cakes/sig_moneybag.jpg" alt="Money Bag Birthday" loading="lazy" data-fallback width="640" height="640"></picture><span>Money Bag Birthday</span></a></li><li><a href="studio.html?theme=sig_cow"><picture><source srcset="assets/home/cakes/sig_cow.webp" type="image/webp"><img src="assets/home/cakes/sig_cow.jpg" alt="Pink Bow Cow" loading="lazy" data-fallback width="640" height="640"></picture><span>Pink Bow Cow</span></a></li><li><a href="studio.html?theme=sig_crawfish"><picture><source srcset="assets/home/cakes/sig_crawfish.webp" type="image/webp"><img src="assets/home/cakes/sig_crawfish.jpg" alt="Crawfish Boil Pot" loading="lazy" data-fallback width="640" height="640"></picture><span>Crawfish Boil Pot</span></a></li><li><a href="studio.html?theme=sig_ruffles"><picture><source srcset="assets/home/cakes/sig_ruffles.webp" type="image/webp"><img src="assets/home/cakes/sig_ruffles.jpg" alt="Forever Ruffles" loading="lazy" data-fallback width="640" height="640"></picture><span>Forever Ruffles</span></a></li><li><a href="studio.html?theme=sig_babysky"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up And Away Bears" loading="lazy" data-fallback width="640" height="640"></picture><span>Up, Up And Away Bears</span></a></li><li><a href="studio.html?theme=sig_sports"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number" loading="lazy" data-fallback width="640" height="640"></picture><span>All-Star Sports Number</span></a></li><li><a href="studio.html?theme=sig_rosettower"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower" loading="lazy" data-fallback width="640" height="640"></picture><span>Blush Rosette Tower</span></a></li><li><a href="studio.html?theme=sig_movie"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn" loading="lazy" data-fallback width="640" height="640"></picture><span>Movie Night Popcorn</span></a></li><li><a href="studio.html?theme=sig_bee"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden" loading="lazy" data-fallback width="640" height="640"></picture><span>Bumble Bee Garden</span></a></li><li><a href="studio.html?theme=sig_monogram"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco" loading="lazy" data-fallback width="640" height="640"></picture><span>Champagne Gold Art Deco</span></a></li><li><a href="studio.html?theme=sig_pillows"><picture><source srcset="assets/home/cakes/sig_pillows.webp" type="image/webp"><img src="assets/home/cakes/sig_pillows.jpg" alt="Gold Trim Pillows" loading="lazy" data-fallback width="640" height="640"></picture><span>Gold Trim Pillows</span></a></li><li><a href="studio.html?theme=sig_teal"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade" loading="lazy" data-fallback width="640" height="640"></picture><span>Teal Bauble Cascade</span></a></li><li><a href="studio.html?theme=sig_pastelarch"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="Pastel Rainbow Unicorn" loading="lazy" data-fallback width="640" height="640"></picture><span>Pastel Rainbow Unicorn</span></a></li><li><a href="studio.html?theme=sig_blocks"><picture><source srcset="assets/home/cakes/sig_blocks.webp" type="image/webp"><img src="assets/home/cakes/sig_blocks.jpg" alt="Building Block Number" loading="lazy" data-fallback width="640" height="640"></picture><span>Building Block Number</span></a></li><li><a href="studio.html?theme=sig_rosegold"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels" loading="lazy" data-fallback width="640" height="640"></picture><span>Rose Gold Jewels</span></a></li></ul><ul class="track" aria-hidden="true"><li><a tabindex="-1" href="studio.html" data-open-cake><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth" data-fallback width="640" height="640"></picture><span>Blush Lambeth</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_peony"><picture><source srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade" data-fallback width="640" height="640"></picture><span>Coral Peony Cascade</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_moneybag"><picture><source srcset="assets/home/cakes/sig_moneybag.webp" type="image/webp"><img src="assets/home/cakes/sig_moneybag.jpg" alt="Money Bag Birthday" data-fallback width="640" height="640"></picture><span>Money Bag Birthday</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_cow"><picture><source srcset="assets/home/cakes/sig_cow.webp" type="image/webp"><img src="assets/home/cakes/sig_cow.jpg" alt="Pink Bow Cow" data-fallback width="640" height="640"></picture><span>Pink Bow Cow</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_crawfish"><picture><source srcset="assets/home/cakes/sig_crawfish.webp" type="image/webp"><img src="assets/home/cakes/sig_crawfish.jpg" alt="Crawfish Boil Pot" data-fallback width="640" height="640"></picture><span>Crawfish Boil Pot</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_ruffles"><picture><source srcset="assets/home/cakes/sig_ruffles.webp" type="image/webp"><img src="assets/home/cakes/sig_ruffles.jpg" alt="Forever Ruffles" data-fallback width="640" height="640"></picture><span>Forever Ruffles</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_babysky"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up And Away Bears" data-fallback width="640" height="640"></picture><span>Up, Up And Away Bears</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_sports"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number" data-fallback width="640" height="640"></picture><span>All-Star Sports Number</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_rosettower"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower" data-fallback width="640" height="640"></picture><span>Blush Rosette Tower</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_movie"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn" data-fallback width="640" height="640"></picture><span>Movie Night Popcorn</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_bee"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden" data-fallback width="640" height="640"></picture><span>Bumble Bee Garden</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_monogram"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco" data-fallback width="640" height="640"></picture><span>Champagne Gold Art Deco</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_pillows"><picture><source srcset="assets/home/cakes/sig_pillows.webp" type="image/webp"><img src="assets/home/cakes/sig_pillows.jpg" alt="Gold Trim Pillows" data-fallback width="640" height="640"></picture><span>Gold Trim Pillows</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_teal"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade" data-fallback width="640" height="640"></picture><span>Teal Bauble Cascade</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_blocks"><picture><source srcset="assets/home/cakes/sig_blocks.webp" type="image/webp"><img src="assets/home/cakes/sig_blocks.jpg" alt="Building Block Number" data-fallback width="640" height="640"></picture><span>Building Block Number</span></a></li><li><a tabindex="-1" href="studio.html?theme=sig_rosegold"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels" data-fallback width="640" height="640"></picture><span>Rose Gold Jewels</span></a></li></ul></div>
- </section>
-
-
- <section class="band" id="spin">
+<section id="how-it-works" class="how">
   <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">Try It Right Here</span><h2>Spin A Real Cake In 3D.</h2></div><p class="muted">This is the actual Studio running on this page. Drag to turn the cake, pinch to zoom.</p></div>
-   <div class="spin3">
-    <div class="stage" id="stage"><img class="poster" id="stagePoster" src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade cake" width="640" height="640"><span class="hint" id="stageName">Coral Peony Cascade</span><button class="btn primary play" id="stagePlay" type="button">Spin It In 3D</button><a class="btn open" id="stageOpen" href="studio.html?theme=sig_peony" style="display:none">Customize This Cake</a></div>
-    <div class="side card" style="padding:16px">
-     <h3>Pick A Cake</h3><p class="muted">Each one is a real Sprinkle Me Silly cake, rebuilt piece by piece in the Studio. Tap one to load it.</p>
-     <div class="picker" id="picker"><button type="button" data-k="sig_peony" class="on" aria-label="Show Coral Peony Cascade in 3D"><img src="assets/home/cakes/sig_peony.jpg" alt="" loading="lazy" width="640" height="640"><span>Coral Peony Cascade</span></button><button type="button" data-k="sig_moneybag" aria-label="Show Money Bag Birthday in 3D"><img src="assets/home/cakes/sig_moneybag.jpg" alt="" loading="lazy" width="640" height="640"><span>Money Bag Birthday</span></button><button type="button" data-k="sig_cow" aria-label="Show Pink Bow Cow in 3D"><img src="assets/home/cakes/sig_cow.jpg" alt="" loading="lazy" width="640" height="640"><span>Pink Bow Cow</span></button><button type="button" data-k="sig_crawfish" aria-label="Show Crawfish Boil Pot in 3D"><img src="assets/home/cakes/sig_crawfish.jpg" alt="" loading="lazy" width="640" height="640"><span>Crawfish Boil Pot</span></button><button type="button" data-k="sig_ruffles" aria-label="Show Forever Ruffles in 3D"><img src="assets/home/cakes/sig_ruffles.jpg" alt="" loading="lazy" width="640" height="640"><span>Forever Ruffles</span></button><button type="button" data-k="sig_babysky" aria-label="Show Up, Up And Away Bears in 3D"><img src="assets/home/cakes/sig_babysky.jpg" alt="" loading="lazy" width="640" height="640"><span>Up, Up And Away Bears</span></button><button type="button" data-k="sig_sports" aria-label="Show All-Star Sports Number in 3D"><img src="assets/home/cakes/sig_sports.jpg" alt="" loading="lazy" width="640" height="640"><span>All-Star Sports Number</span></button><button type="button" data-k="sig_rosettower" aria-label="Show Blush Rosette Tower in 3D"><img src="assets/home/cakes/sig_rosettower.jpg" alt="" loading="lazy" width="640" height="640"><span>Blush Rosette Tower</span></button><button type="button" data-k="sig_movie" aria-label="Show Movie Night Popcorn in 3D"><img src="assets/home/cakes/sig_movie.jpg" alt="" loading="lazy" width="640" height="640"><span>Movie Night Popcorn</span></button><button type="button" data-k="sig_bee" aria-label="Show Bumble Bee Garden in 3D"><img src="assets/home/cakes/sig_bee.jpg" alt="" loading="lazy" width="640" height="640"><span>Bumble Bee Garden</span></button><button type="button" data-k="sig_monogram" aria-label="Show Champagne Gold Art Deco in 3D"><img src="assets/home/cakes/sig_monogram.jpg" alt="" loading="lazy" width="640" height="640"><span>Champagne Gold Art Deco</span></button><button type="button" data-k="sig_pillows" aria-label="Show Gold Trim Pillows in 3D"><img src="assets/home/cakes/sig_pillows.jpg" alt="" loading="lazy" width="640" height="640"><span>Gold Trim Pillows</span></button><button type="button" data-k="sig_teal" aria-label="Show Teal Bauble Cascade in 3D"><img src="assets/home/cakes/sig_teal.jpg" alt="" loading="lazy" width="640" height="640"><span>Teal Bauble Cascade</span></button><button type="button" data-k="sig_pastelarch" aria-label="Show Pastel Rainbow Unicorn in 3D"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="" loading="lazy" width="640" height="640"><span>Pastel Rainbow Unicorn</span></button><button type="button" data-k="sig_blocks" aria-label="Show Building Block Number in 3D"><img src="assets/home/cakes/sig_blocks.jpg" alt="" loading="lazy" width="640" height="640"><span>Building Block Number</span></button><button type="button" data-k="sig_rosegold" aria-label="Show Rose Gold Jewels in 3D"><img src="assets/home/cakes/sig_rosegold.jpg" alt="" loading="lazy" width="640" height="640"><span>Rose Gold Jewels</span></button></div>
-     <p class="muted" style="margin:12px 0 0;font-size:13px">Like one? Open it in the Studio and change the colors, sizes, flowers and writing.</p>
+   <h2>From idea to a yes in three steps</h2>
+   <p class="lede">Tap a step to see it. This is exactly what you and your clients will see.</p>
+   <div class="hw">
+    <div class="hwtabs" role="tablist" aria-label="How it works">
+     <button type="button" role="tab" id="hwt0" aria-controls="hwp0" aria-selected="true" class="on"><span class="n">1</span><span class="tx"><b>Design it in 3D</b><span>Pick a theme or start blank, then shape every tier, swag and flower.</span></span><i class="bar"></i></button>
+     <button type="button" role="tab" id="hwt1" aria-controls="hwp1" aria-selected="false" tabindex="-1"><span class="n">2</span><span class="tx"><b>Send one link</b><span>Your client turns the cake on their phone and taps Approve. No account needed.</span></span><i class="bar"></i></button>
+     <button type="button" role="tab" id="hwt2" aria-controls="hwp2" aria-selected="false" tabindex="-1"><span class="n">3</span><span class="tx"><b>Bake with a plan</b><span>Every yes becomes a one-page proof with sizes, servings, flavors and colors.</span></span><i class="bar"></i></button>
+    </div>
+    <div class="hwstage">
+     <div class="hwp on" id="hwp0" role="tabpanel" aria-labelledby="hwt0"><div class="ill design"><div class="win"><span class="dots"><i></i><i></i><i></i></span><span class="url">Dream Cake Studio</span></div><picture><source srcset="assets/home/step-design.webp" type="image/webp"><img src="assets/home/step-design.jpg" alt="The Studio designing a two-tier Lambeth cake" width="640" height="640" loading="lazy" data-fallback></picture><div class="chipsf" aria-hidden="true"><span>Tiers</span><span>Piping</span><span>Bows</span><span>Flowers</span></div></div></div>
+     <div class="hwp" id="hwp1" role="tabpanel" aria-labelledby="hwt1" hidden><div class="ill send"><div class="msg"><b>Your cake design is ready</b><span>Tap to see it in 3D and approve it.</span><u>dreamcakebuilder.com/review</u></div><div class="phone"><div class="scr"><span class="pt">Blush Lambeth</span><img src="assets/home/cakes/lambeth.jpg" alt="" width="640" height="640" loading="lazy"><button type="button" class="ap" id="hwApprove">Approve design</button><span class="rc">Request changes</span><span class="done" aria-live="polite">Approved! The baker has been told.</span></div></div></div></div>
+     <div class="hwp" id="hwp2" role="tabpanel" aria-labelledby="hwt2" hidden><div class="shot ill pl</div>
     </div>
    </div>
   </div>
  </section>
 
- <section class="band" id="compare">
+ <section id="real" class="realsec">
   <div class="wrap">
-   <div class="cmpwrap">
-    <div>
-     <span class="eyebrow">Real Cake Vs. 3D Design</span><h2>Slide To Compare The Photo And The 3D Rebuild.</h2>
-     <p class="muted">Clients see a true-to-life 3D cake before you bake it. These are real orders next to their Studio versions.</p>
-     <div class="cmptabs" id="cmptabs"><button type="button" data-c="peony" class="on">Coral Peony Cascade</button><button type="button" data-c="cow">Pink Bow Cow</button><button type="button" data-c="moneybag">Money Bag Birthday</button><button type="button" data-c="crawfish">Crawfish Boil Pot</button><button type="button" data-c="bee">Bumble Bee Garden</button><button type="button" data-c="movie">Movie Night Popcorn</button><button type="button" data-c="ruffles">Forever Ruffles</button><button type="button" data-c="sports">All-Star Sports Number</button></div>
-     <a class="btn primary" id="cmpOpen" href="studio.html?theme=sig_peony">Open This One In The Studio</a>
-    </div>
-    <div class="cmp" id="cmp" style="--x:50%"><picture><source id="cmpRealW" srcset="assets/home/real/peony.webp" type="image/webp"><img id="cmpReal" src="assets/home/real/peony.jpg" alt="Real Coral Peony Cascade cake by Sprinkle Me Silly" width="640" height="640"></picture><div class="top"><picture><source id="cmp3dW" srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img id="cmp3d" src="assets/home/cakes/sig_peony.jpg" alt="The same cake rebuilt in 3D" width="640" height="640"></picture></div><span class="tag l">3D Studio</span><span class="tag r">Real Cake</span><span class="bar"></span><span class="knob" aria-hidden="true">⇆</span><input type="range" min="0" max="100" value="50" aria-label="Slide between the 3D design and the real cake" id="cmpRange"></div>
-   </div>
-  </div>
- </section>
- <section class="band" id="gallery">
-  <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">Signature Cakes By Sprinkle Me Silly</span><h2>Real Cakes, Rebuilt In 3D. Start From Any Of Them.</h2></div>
-    <div class="filters" role="group" aria-label="Filter cakes"><button class="on" data-f="all">All Cakes</button><button data-f="wedding">Wedding</button><button data-f="birthday">Birthday</button><button data-f="kids">Kids &amp; Baby</button><button data-f="statement">Statement</button></div></div>
-   <div class="gallery"><a class="card gcard" data-cat="wedding" href="studio.html" data-open-cake><span class="gimg"><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth cake designed in 3D" loading="lazy" data-fallback width="640" height="640"></picture></span><span class="gtxt"><span><b>Blush Lambeth</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="wedding" data-sig="peony" href="studio.html?theme=sig_peony"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_peony" aria-label="Spin Coral Peony Cascade in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Coral Peony Cascade</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="birthday" data-sig="moneybag" href="studio.html?theme=sig_moneybag"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_moneybag.webp" type="image/webp"><img src="assets/home/cakes/sig_moneybag.jpg" alt="Money Bag Birthday cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_moneybag" aria-label="Spin Money Bag Birthday in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Money Bag Birthday</b><i>Birthday</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="kids" data-sig="cow" href="studio.html?theme=sig_cow"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_cow.webp" type="image/webp"><img src="assets/home/cakes/sig_cow.jpg" alt="Pink Bow Cow cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_cow" aria-label="Spin Pink Bow Cow in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Pink Bow Cow</b><i>Kids</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="statement" data-sig="crawfish" href="studio.html?theme=sig_crawfish"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_crawfish.webp" type="image/webp"><img src="assets/home/cakes/sig_crawfish.jpg" alt="Crawfish Boil Pot cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_crawfish" aria-label="Spin Crawfish Boil Pot in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Crawfish Boil Pot</b><i>Statement</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="wedding" data-sig="ruffles" href="studio.html?theme=sig_ruffles"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_ruffles.webp" type="image/webp"><img src="assets/home/cakes/sig_ruffles.jpg" alt="Forever Ruffles cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_ruffles" aria-label="Spin Forever Ruffles in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Forever Ruffles</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="kids" data-sig="babysky" href="studio.html?theme=sig_babysky"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up And Away Bears cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_babysky" aria-label="Spin Up, Up And Away Bears in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Up, Up And Away Bears</b><i>Baby Shower</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="kids" data-sig="sports" href="studio.html?theme=sig_sports"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_sports" aria-label="Spin All-Star Sports Number in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>All-Star Sports Number</b><i>Kids</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="wedding" data-sig="rosettower" href="studio.html?theme=sig_rosettower"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_rosettower" aria-label="Spin Blush Rosette Tower in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Blush Rosette Tower</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="birthday" data-sig="movie" href="studio.html?theme=sig_movie"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_movie" aria-label="Spin Movie Night Popcorn in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Movie Night Popcorn</b><i>Birthday</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="kids" data-sig="bee" href="studio.html?theme=sig_bee"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_bee" aria-label="Spin Bumble Bee Garden in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Bumble Bee Garden</b><i>Kids</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="wedding" data-sig="monogram" href="studio.html?theme=sig_monogram"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_monogram" aria-label="Spin Champagne Gold Art Deco in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Champagne Gold Art Deco</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="statement" data-sig="pillows" href="studio.html?theme=sig_pillows"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_pillows.webp" type="image/webp"><img src="assets/home/cakes/sig_pillows.jpg" alt="Gold Trim Pillows cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_pillows" aria-label="Spin Gold Trim Pillows in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Gold Trim Pillows</b><i>Statement</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="birthday" data-sig="teal" href="studio.html?theme=sig_teal"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_teal" aria-label="Spin Teal Bauble Cascade in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Teal Bauble Cascade</b><i>Birthday</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="birthday" data-sig="pastelarch" href="studio.html?theme=sig_pastelarch"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="Pastel Rainbow Unicorn cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_pastelarch" aria-label="Spin Pastel Rainbow Unicorn in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Pastel Rainbow Unicorn</b><i>Birthday</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="kids" data-sig="blocks" href="studio.html?theme=sig_blocks"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_blocks.webp" type="image/webp"><img src="assets/home/cakes/sig_blocks.jpg" alt="Building Block Number cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_blocks" aria-label="Spin Building Block Number in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Building Block Number</b><i>Kids</i></span><span class="garrow" aria-hidden="true">→</span></span></a><a class="card gcard" data-cat="wedding" data-sig="rosegold" href="studio.html?theme=sig_rosegold"><span class="gimg"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels cake rebuilt in 3D" loading="lazy" data-fallback width="640" height="640"></picture><span class="sigtag">Real Cake, Rebuilt</span><button class="spin3d" type="button" data-spin="sig_rosegold" aria-label="Spin Rose Gold Jewels in 3D">Spin In 3D</button></span><span class="gtxt"><span><b>Rose Gold Jewels</b><i>Wedding</i></span><span class="garrow" aria-hidden="true">→</span></span></a></div>
-   <p class="gmore"><a class="btn primary" href="studio.html">See All 95+ Themes In The Studio</a></p>
-  </div>
- </section>
-
- <section class="band" id="how-it-works">
-  <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">How The Studio Works</span><h2>From Idea To Approved Cake In Five Steps.</h2></div><p class="muted">Every picture below is the real Studio, showing the same Blush Lambeth cake.</p></div>
-   <ol class="steps">
-    <li class="card step w3">
-     <div class="txt"><div class="top"><span class="num">01</span><h3>Start Your Cake</h3></div>
-      <p>Pick one of 80+ ready-made themes, or add the client's inspiration photo and tap it to pull the exact colors.</p>
-      <div class="tags"><span class="chip plain">Themes</span><span class="chip plain">Inspiration Photo</span></div></div>
-     <div class="shot"><picture><source srcset="assets/home/step-themes.webp" type="image/webp"><img src="assets/home/step-themes.jpg" alt="The Studio's Start From A Theme window with wedding, birthday and statement cakes" loading="lazy" data-fallback width="1000" height="621"></picture></div>
-    </li>
-    <li class="card step w3">
-     <div class="txt"><div class="top"><span class="num">02</span><h3>Design Every Detail In 3D</h3></div>
-      <p>Set tier sizes and shapes, choose from 20+ frosting textures and 14 piping borders, then add Lambeth swags, bows, flowers and writing. Drag any piece where you want it.</p>
-      <div class="tags"><span class="chip plain">Tiers</span><span class="chip plain">Frosting</span><span class="chip plain">Piping</span><span class="chip plain">Decor</span><span class="chip plain">Lighting</span></div></div>
-     <div class="shot"><picture><source srcset="assets/home/step-design.webp" type="image/webp"><img src="assets/home/step-design.jpg" alt="Editing the Lambeth cake's piping borders in the Studio" loading="lazy" data-fallback width="1200" height="707"></picture></div>
-    </li>
-    <li class="card step w2">
-     <div class="txt"><div class="top"><span class="num">03</span><h3>Send It For Review</h3></div>
-      <p>Tap Send For Review and text or email the link. Your client turns the cake in 3D on their phone, then taps Approve Design or Request Changes.</p></div>
-     <div class="shot phone"><div class="device"><picture><source srcset="assets/home/step-review.webp" type="image/webp"><img src="assets/home/step-review.jpg" alt="A client viewing the cake on a phone with Approve Design and Request Changes buttons" loading="lazy" data-fallback width="600" height="1212"></picture></div><span class="cap">✓ Approved</span></div>
-    </li>
-    <li class="card step w2">
-     <div class="txt"><div class="top"><span class="num">04</span><h3>Share A Proof</h3></div>
-      <p>Make a one-page proof with three views, sizes, colors and notes. Print it, save it as a PDF or send it with your quote.</p></div>
-     <div class="shot proof"><picture><source srcset="assets/home/step-proof.webp" type="image/webp"><img src="assets/home/step-proof.jpg" alt="One-page client proof of the Blush Lambeth cake with front and top views" loading="lazy" data-fallback width="800" height="916"></picture></div>
-    </li>
-    <li class="card step w2">
-     <div class="txt"><div class="top"><span class="num">05</span><h3>Bake With A Plan</h3></div>
-      <p>The Summary shows servings, tier sizes and every detail tier by tier, plus a How To Cut This Cake guide. Save it to your Cake Box to reuse later.</p></div>
-     <div class="shot" style="background:linear-gradient(150deg,#fff,#fff5fa);padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:6px"><b style="font:600 16px Fraunces,Georgia,serif">Design Summary</b><span class="muted">Blush Lambeth</span></div>
-      <div style="display:flex;justify-content:space-between"><span class="muted">Tiers</span><b>2</b></div>
-      <div style="display:flex;justify-content:space-between"><span class="muted">Height</span><b>8.4"</b></div>
-      <div style="display:flex;justify-content:space-between;align-items:center"><span class="muted">Serves About</span><b style="font:600 26px Fraunces,Georgia,serif;color:var(--rose-ink)">50</b></div>
-      <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px"><b>Tier 1</b> · 7" × 4" · Lambeth, Bows</div>
-      <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 8px"><b>Tier 2</b> · 10" × 4.4" · Pearls, Shells</div>
-      <div style="display:flex;gap:6px;margin-top:auto"><span class="chip">How To Cut This Cake</span><span class="chip teal">Option A / B</span></div>
-     </div>
-    </li>
-   </ol>
-  </div>
- </section>
-
- <section class="band" id="features">
-  <div class="wrap">
-   <div class="sec-head"><div><span class="eyebrow">Inside The Studio</span><h2>Everything You Need To Show The Cake.</h2></div><a class="btn sm" href="studio.html">Open The Studio</a></div>
-   <div class="feats">
-    <div class="card feat"><span class="k">Start</span><b>80+ Themes</b><span>Weddings, birthdays, number and letter cakes, and more.</span></div>
-    
-    <div class="card feat"><span class="k">Design</span><b>Piping &amp; Lambeth</b><span>Shells, pearls, rosettes, ruffles, rope, swags and bows.</span></div>
-    <div class="card feat"><span class="k">Design</span><b>Decor Library</b><span>Flowers, fruit, sprinkles, toppers and your own images.</span></div>
-    <div class="card feat"><span class="k">Look</span><b>Studio Lighting</b><span>Soft Daylight, Golden Studio, Clean Gallery or Moody.</span></div>
-    <div class="card feat"><span class="k">Share</span><b>Client Options</b><span>Make Option A and B and compare them side by side.</span></div>
-    <div class="card feat"><span class="k">Share</span><b>Photo &amp; Proof</b><span>Save a clean cake photo or a one-page proof in one tap.</span></div>
-    <div class="card feat"><span class="k">Keep</span><b>Cake Box</b><span>Every design saved, backed up and ready to reuse.</span></div>
+   <h2>Real cakes next to their 3D designs</h2>
+   <p class="lede">Every one of these started in the Studio. Pick a cake to compare.</p>
+   <div class="cmpbox">
+    <div class="pair" id="cmp"><figure><picture><source id="cmpRealW" srcset="assets/home/real/peony.webp" type="image/webp"><img src="assets/home/real/peony.jpg" alt="The real Coral Peony Cascade cake" width="640" height="640" data-fallback id="cmpReal"></picture><figcaption>The real cake</figcaption></figure><figure><picture><source id="cmp3dW" srcset="assets/home/cakes/sig_peony.webp" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg" alt="The same cake designed in the Studio" width="640" height="640" data-fallback id="cmp3d"></picture><figcaption>Its 3D design</figcaption></figure></div>
+    <div class="chips" id="cmptabs" role="group" aria-label="Choose a cake to compare"><button type="button" data-c="peony" class="on">Coral Peony Cascade</button><button type="button" data-c="cow">Pink Bow Cow</button><button type="button" data-c="moneybag">Money Bag Birthday</button><button type="button" data-c="crawfish">Crawfish Boil Pot</button><button type="button" data-c="bee">Bumble Bee Garden</button><button type="button" data-c="movie">Movie Night Popcorn</button></div>
    </div>
   </div>
  </section>
 
- <section class="band">
-  <div class="wrap lower">
-   <div class="card faq" id="workflow-questions">
-    <h2>Questions Before You Start?</h2>
-    <details open><summary>Who Is Dream Cake Studio For?</summary><p>Cake artists who want to show clients exactly what their cake will look like, and get a clear yes before baking.</p></details>
-    <details><summary>Do My Clients Need An Account?</summary><p>No. They open the link you send, turn the cake in 3D and tap Approve Design or Request Changes. You're notified either way.</p></details>
-    <details><summary>What Happens When A Client Wants Changes?</summary><p>Their note comes straight to you. Update the same design in the Studio and send the link again, so the approval always matches the latest version.</p></details>
-    <details><summary>Does It Work On My Phone Or Tablet?</summary><p>Yes. The Studio works in your browser on a phone, tablet or computer, with the cake on top and your tools right below it.</p></details>
-    <details><summary>Can I Show Non-Edible Decorations?</summary><p>Yes. You can mark decorations and add client notes about what is edible and what must be removed before serving. You remain responsible for confirming these details.</p></details>
-    <details><summary>Is There More Coming?</summary><p>Yes. We're building more tools for running your cake business alongside the Studio. Join the list to hear about them first.</p></details>
+ <section class="live" id="spin">
+  <div class="wrap">
+   <div>
+    <h2>Turn a cake around yourself</h2>
+    <p class="lede">This is the real Studio, running right here. Pick a cake, then drag to spin it and pinch to zoom.</p>
    </div>
-   <div class="card join" id="launch-list">
-    <span class="eyebrow">Launch List</span>
-    <h2>Be First In The Studio.</h2>
-    <p class="muted">Leave your email and we'll let you know the moment Dream Cake Studio opens, plus a few sneak peeks along the way.</p>
+   <div class="picker" id="picker"><button type="button" data-k="sig_peony" class="on" aria-label="Show Coral Peony Cascade in 3D"><img src="assets/home/cakes/sig_peony.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Coral Peony Cascade</span></button><button type="button" data-k="sig_monogram" aria-label="Show Champagne Gold Art Deco in 3D"><img src="assets/home/cakes/sig_monogram.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Champagne Gold Art Deco</span></button><button type="button" data-k="sig_moneybag" aria-label="Show Money Bag Birthday in 3D"><img src="assets/home/cakes/sig_moneybag.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Money Bag Birthday</span></button><button type="button" data-k="sig_cow" aria-label="Show Pink Bow Cow in 3D"><img src="assets/home/cakes/sig_cow.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Pink Bow Cow</span></button><button type="button" data-k="sig_ruffles" aria-label="Show Forever Ruffles in 3D"><img src="assets/home/cakes/sig_ruffles.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Forever Ruffles</span></button><button type="button" data-k="sig_crawfish" aria-label="Show Crawfish Boil Pot in 3D"><img src="assets/home/cakes/sig_crawfish.jpg" alt="" loading="lazy" width="640" height="640"><span hidden>Crawfish Boil Pot</span></button></div>
+   <div class="stage" id="stage"><img class="poster" id="stagePoster" src="assets/home/cakes/sig_peony.jpg" alt="Coral Peony Cascade cake" width="640" height="640" loading="lazy"><span class="sr" id="stageName">Coral Peony Cascade</span><button class="btn primary play" id="stagePlay" type="button">Spin it in 3D</button><a class="btn open" id="stageOpen" href="studio.html?theme=sig_peony" style="display:none">Customize this cake</a></div>
+  </div>
+ </section>
+
+ <section id="gallery">
+  <div class="wrap ghead">
+   <div><h2>Start from a cake that's already designed</h2><p class="lede">Real cakes, rebuilt in 3D. Open one and make it yours.</p></div>
+   <a class="btn" href="studio.html">See all themes in the Studio</a>
+  </div>
+  <div class="row"><a href="studio.html" data-open-cake><span class="im"><picture><source srcset="assets/home/cakes/lambeth.webp" type="image/webp"><img src="assets/home/cakes/lambeth.jpg" alt="Blush Lambeth cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Lambeth</b></a><a href="studio.html?theme=sig_monogram"><span class="im"><picture><source srcset="assets/home/cakes/sig_monogram.webp" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg" alt="Champagne Gold Art Deco cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Champagne Gold Art Deco</b></a><a href="studio.html?theme=sig_rosettower"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosettower.webp" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg" alt="Blush Rosette Tower cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Blush Rosette Tower</b></a><a href="studio.html?theme=sig_babysky"><span class="im"><picture><source srcset="assets/home/cakes/sig_babysky.webp" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg" alt="Up, Up and Away Bears cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Up, Up and Away Bears</b></a><a href="studio.html?theme=sig_movie"><span class="im"><picture><source srcset="assets/home/cakes/sig_movie.webp" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg" alt="Movie Night Popcorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Movie Night Popcorn</b></a><a href="studio.html?theme=sig_bee"><span class="im"><picture><source srcset="assets/home/cakes/sig_bee.webp" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg" alt="Bumble Bee Garden cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Bumble Bee Garden</b></a><a href="studio.html?theme=sig_teal"><span class="im"><picture><source srcset="assets/home/cakes/sig_teal.webp" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg" alt="Teal Bauble Cascade cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Teal Bauble Cascade</b></a><a href="studio.html?theme=sig_pastelarch"><span class="im"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg" alt="Pastel Rainbow Unicorn cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Pastel Rainbow Unicorn</b></a><a href="studio.html?theme=sig_sports"><span class="im"><picture><source srcset="assets/home/cakes/sig_sports.webp" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg" alt="All-Star Sports Number cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>All-Star Sports Number</b></a><a href="studio.html?theme=sig_rosegold"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosegold.webp" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg" alt="Rose Gold Jewels cake designed in Dream Cake Studio" width="640" height="640" loading="lazy" data-fallback></picture></span><b>Rose Gold Jewels</b></a></div>
+ </section>
+
+ <section class="faq" id="workflow-questions">
+  <div class="wrap">
+   <h2>Questions</h2>
+   <div>
+    <details><summary>Who is it for?</summary><p>Cake artists who want to show clients exactly what their cake will look like and get a clear yes before baking.</p></details>
+    <details><summary>Do my clients need an account?</summary><p>No. They open the link you send, turn the cake in 3D and tap Approve or Request changes. You're told either way.</p></details>
+    <details><summary>Does it work on my phone?</summary><p>Yes. The Studio runs in your browser on a phone, tablet or computer. There's nothing to download.</p></details>
+    <details><summary>What does it cost?</summary><p>You can try the Studio free right now. Join the waitlist and you'll hear about plans and early access first.</p></details>
+   </div>
+  </div>
+ </section>
+
+ <section class="final" id="launch-list">
+  <div class="wrap">
+   <div class="panel">
+    <div><h2>Be first in the Studio</h2><p class="lede">Leave your email and we'll tell you the moment Dream Cake Studio opens, with a few sneak peeks along the way.</p></div>
     <form id="launchForm" novalidate>
-     <label>Email Address<input name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"></label>
-     <label class="check"><input name="news" type="checkbox"> Also send me occasional Studio sneak peeks and product updates.</label>
+     <div class="join"><label class="sr" for="fEmail">Email address</label><input id="fEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="you@example.com"><button class="btn primary" type="submit">Join the waitlist</button></div>
+     <label class="check"><input name="news" type="checkbox"> Also send me occasional sneak peeks and product news.</label>
      <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-     <button class="btn primary" type="submit">Keep Me In The Loop</button>
      <p id="launchStatus" role="status" aria-live="polite"></p>
-     <p class="fine">By joining, you agree to receive a launch email. Product news is optional. Email support@dreamcakebuilder.com to leave the list.</p>
+     <p class="fine">You'll get a launch email. Product news is optional. See our <a href="privacy.html">privacy page</a>.</p>
     </form>
    </div>
   </div>
@@ -423,35 +303,46 @@
   <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
  </div>
 </footer>
-<nav class="mbar" aria-label="Quick actions"><a class="btn" href="studio.html">Try The Studio</a><a class="btn primary" href="#launch-list">Join Waitlist</a></nav>
+<nav class="mbar" id="mbar" aria-label="Quick actions"><a class="btn" href="studio.html">Try the Studio</a><a class="btn primary" href="#launch-list">Join the waitlist</a></nav>
+
 <script>
 const LAMBETH='DCS1:eyJuYW1lIjoiQmx1c2ggTGFtYmV0aCIsInRpZXJzIjpbeyJkIjoxMCwiaCI6NC40LCJjb2xvciI6IiNmOGRkZTQiLCJmaW5pc2giOiJidXR0ZXJjcmVhbSIsInRleHR1cmUiOiJzbW9vdGgiLCJ0b3AiOiJwZWFybHMiLCJib3R0b20iOiJzaGVsbHMiLCJzaWRlIjoibGFtYmV0aCIsInBpcGUiOiIjZmJmN2YxIiwiYWNjZW50IjoiI2U5YTZiYSIsInBlYXJsQ29sb3IiOm51bGwsImJvd3MiOnRydWUsImJvd0NvbG9yIjoiI2YyOWJiNCIsImdvbGRMZWFmIjpmYWxzZSwiZHJvcHMiOmZhbHNlfSx7ImQiOjcsImgiOjQsImNvbG9yIjoiI2ZiZjdmMSIsImZpbmlzaCI6ImJ1dHRlcmNyZWFtIiwidGV4dHVyZSI6InNtb290aCIsInRvcCI6InNoZWxscyIsImJvdHRvbSI6InNoZWxscyIsInNpZGUiOiJsYW1iZXRoIiwicGlwZSI6IiNmYmY3ZjEiLCJhY2NlbnQiOiIjZTlhNmJhIiwicGVhcmxDb2xvciI6bnVsbCwiYm93cyI6dHJ1ZSwiYm93Q29sb3IiOiIjZjI5YmI0IiwiZ29sZExlYWYiOmZhbHNlLCJkcm9wcyI6ZmFsc2V9XSwiYm9hcmQiOiJ3aGl0ZSIsImJvYXJkQ29sb3IiOiIjZjI5YmI0IiwidG9wcGVyIjoicm9zZXMiLCJ0b3BwZXJDb2xvciI6IiNmM2Q2ZGMiLCJtZXNzYWdlIjp7InRleHQiOiIiLCJ0aWVyIjowLCJjb2xvciI6IiNjMjVkN2QifSwiY2hhcmFjdGVyIjo3MCwic2NlbmUiOnsicHJlc2V0Ijoic29mdCIsInNoaW5lIjo4NSwic29mdG5lc3MiOjEwMCwic3RyZW5ndGgiOjEwMCwiY3JldmljZSI6NTMsImJyaWdodCI6ODF9LCJub3RlcyI6IiJ9';
-// hero cake: tilts toward the pointer, then turns into the real 3D Studio cake when tapped
+// hero cake: tilts toward the pointer, then becomes the real 3D Studio cake when tapped
 (function(){const h=document.getElementById('hcake');if(!h)return;const img=document.getElementById('hcPoster'),play=document.getElementById('hcPlay'),hint=document.getElementById('hcHint'),still=matchMedia('(prefers-reduced-motion: reduce)').matches;let fr=null;
  if(!still)h.addEventListener('pointermove',e=>{if(fr)return;const r=h.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;img.style.transform='rotateY('+(x*10)+'deg) rotateX('+(-y*6)+'deg) scale(1.03)'});
  h.addEventListener('pointerleave',()=>{img.style.transform=''});
  play.addEventListener('click',()=>{if(fr)return;try{localStorage.setItem('dcs-open-code',LAMBETH)}catch(e){}fr=document.createElement('iframe');fr.title='The Blush Lambeth cake in 3D';fr.src='studio.html?view=1';h.classList.add('loading');play.hidden=true;img.style.transform='';
   fr.onload=()=>setTimeout(()=>{fr.style.opacity='1';img.style.opacity='0';h.classList.remove('loading');hint.hidden=false;setTimeout(()=>hint.hidden=true,4000)},2200);h.appendChild(fr)});
 })();
-// gallery filters
-
-document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.toggle('on',x===b));const f=b.dataset.f;document.querySelectorAll('.gcard').forEach(c=>c.hidden=f!=='all'&&c.dataset.cat!==f)}));
-
-// live 3D stage
-(function(){const st=document.getElementById('stage');if(!st)return;const poster=document.getElementById('stagePoster'),nm=document.getElementById('stageName'),play=document.getElementById('stagePlay'),open=document.getElementById('stageOpen');let cur='sig_peony',fr=null;
- const load=k=>{cur=k;const b=document.querySelector('#picker [data-k="'+k+'"]');document.querySelectorAll('#picker button').forEach(x=>x.classList.toggle('on',x===b));const n=b?b.querySelector('span').textContent:'';nm.textContent=n;poster.src='assets/home/cakes/'+k+'.jpg';poster.alt=n+' cake';open.href='studio.html?theme='+k;
-  if(fr){fr.src='studio.html?theme='+k+'&view=1'}};
- const start=()=>{if(fr)return;fr=document.createElement('iframe');fr.title='Live 3D cake';fr.loading='eager';fr.allow='fullscreen';fr.src='studio.html?theme='+cur+'&view=1';fr.style.opacity='0';fr.addEventListener('load',()=>setTimeout(()=>{fr.style.transition='opacity .5s';fr.style.opacity='1';poster.style.opacity='0'},1600));st.insertBefore(fr,play);play.style.display='none';open.style.display='';nm.textContent=nm.textContent+' · Drag To Spin'};
+// how it works: tap a step, or let it play through on its own
+(function(){const hw=document.querySelector('.hw');if(!hw)return;const tabs=[...hw.querySelectorAll('[role=tab]')],panes=[...hw.querySelectorAll('[role=tabpanel]')],send=hw.querySelector('.ill.send'),T=7000,still=matchMedia('(prefers-reduced-motion: reduce)').matches;let cur=0,timer=null,auto=!still,seen=false;
+ const show=(i,focus)=>{cur=i;hw.classList.toggle('auto',auto);tabs.forEach((t,k)=>{const on=k===i;t.classList.toggle('on',on);t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;const b=t.querySelector('.bar');b.style.animation='none';b.offsetWidth;b.style.animation=''});panes.forEach((p,k)=>p.hidden=k!==i);if(focus)tabs[i].focus();
+  if(send){send.classList.remove('ok');clearTimeout(send._t);if(i===1&&auto)send._t=setTimeout(()=>send.classList.add('ok'),3200)}
+  clearTimeout(timer);if(auto)timer=setTimeout(()=>show((cur+1)%3),T)};
+ tabs.forEach((t,i)=>{t.addEventListener('click',()=>{auto=false;show(i)});t.addEventListener('keydown',e=>{const d=e.key==='ArrowRight'||e.key==='ArrowDown'?1:e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:0;if(d){e.preventDefault();auto=false;show((cur+d+3)%3,true)}})});
+ const ap=document.getElementById('hwApprove');if(ap)ap.addEventListener('click',()=>{auto=false;clearTimeout(timer);send.classList.add('ok')});
+ hw.addEventListener('pointerenter',()=>{if(auto){clearTimeout(timer);hw.classList.add('paused')}});hw.addEventListener('pointerleave',()=>{hw.classList.remove('paused');if(auto)show(cur)});
+ hw.style.setProperty('--hwt',T/1000+'s');
+ if('IntersectionObserver'in window){auto=false;new IntersectionObserver(([e])=>{if(e.isIntersecting&&!seen&&!still){seen=true;auto=true;show(0)}},{threshold:.4}).observe(hw)}
+})();
+// live 3D stage: loads quietly while the visitor is still above it, so it's ready on arrival
+(function(){const st=document.getElementById('stage');if(!st)return;const poster=document.getElementById('stagePoster'),nm=document.getElementById('stageName'),play=document.getElementById('stagePlay'),open=document.getElementById('stageOpen');let cur='sig_peony',fr=null,ready=false,want=false;
+ const show=()=>{ready=true;st.classList.remove('loading');if(want){fr.style.opacity='1';poster.style.opacity='0';play.style.display='none';open.style.display=''}};
+ const make=()=>{if(fr)return;fr=document.createElement('iframe');fr.title='Live 3D cake';fr.allow='fullscreen';fr.src='studio.html?theme='+cur+'&view=1';fr.style.opacity='0';fr.style.transition='opacity .5s';fr.onload=()=>setTimeout(show,1200);st.insertBefore(fr,play)};
+ const start=()=>{want=true;make();if(ready)show();else{st.classList.add('loading');play.textContent='Loading the 3D cake…'}};
+ const load=k=>{cur=k;const b=document.querySelector('#picker [data-k="'+k+'"]');document.querySelectorAll('#picker button').forEach(x=>x.classList.toggle('on',x===b));const n=b?b.querySelector('span').textContent:'';nm.textContent=n;poster.src='assets/home/cakes/'+k+'.jpg';poster.alt=n+' cake';open.href='studio.html?theme='+k;if(fr){ready=false;poster.style.opacity='1';fr.style.opacity='0';st.classList.add('loading');fr.src='studio.html?theme='+k+'&view=1'}};
+ if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();make()}},{rootMargin:'900px 0px'});io.observe(st)}
  play.addEventListener('click',start);
- document.getElementById('picker').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;load(b.dataset.k);if(!fr)start();else{poster.style.opacity='1';fr.style.opacity='0';fr.onload=()=>setTimeout(()=>{fr.style.opacity='1';poster.style.opacity='0'},1600)}});
- document.querySelectorAll('[data-spin]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();load(b.dataset.spin);start();document.getElementById('spin').scrollIntoView({behavior:'smooth',block:'start'})}));
+ document.getElementById('picker').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;load(b.dataset.k);start()});
 })();
 // real vs 3D compare
-(function(){const c=document.getElementById('cmp');if(!c)return;const r=document.getElementById('cmpRange');r.addEventListener('input',()=>c.style.setProperty('--x',r.value+'%'));
+(function(){const c=document.getElementById('cmp');if(!c)return;
  document.getElementById('cmptabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#cmptabs button').forEach(x=>x.classList.toggle('on',x===b));const k=b.dataset.c;
-  document.getElementById('cmpRealW').srcset='assets/home/real/'+k+'.webp';document.getElementById('cmpReal').src='assets/home/real/'+k+'.jpg';document.getElementById('cmp3dW').srcset='assets/home/cakes/sig_'+k+'.webp';document.getElementById('cmp3d').src='assets/home/cakes/sig_'+k+'.jpg';document.getElementById('cmpReal').alt='Real '+b.textContent+' cake by Sprinkle Me Silly';document.getElementById('cmpOpen').href='studio.html?theme=sig_'+k;r.value=50;c.style.setProperty('--x','50%')})})();
+  document.getElementById('cmpRealW').srcset='assets/home/real/'+k+'.webp';document.getElementById('cmpReal').src='assets/home/real/'+k+'.jpg';document.getElementById('cmp3dW').srcset='assets/home/cakes/sig_'+k+'.webp';document.getElementById('cmp3d').src='assets/home/cakes/sig_'+k+'.jpg';document.getElementById('cmpReal').alt='The real '+b.textContent+' cake';document.getElementById('cmp3d').alt='The same '+b.textContent+' cake designed in the Studio'})})();
+// phone quick bar appears once the hero is off screen
+(function(){const m=document.getElementById('mbar'),h=document.querySelector('.hero'),f=document.getElementById('launch-list');if(!m||!h||!('IntersectionObserver'in window))return;let past=false,atEnd=false;const u=()=>m.classList.toggle('on',past&&!atEnd);
+ new IntersectionObserver(([x])=>{past=!x.isIntersecting;u()}).observe(h);new IntersectionObserver(([x])=>{atEnd=x.isIntersecting;u()}).observe(f)})();
 // "Open This Cake" loads the Blush Lambeth into the Studio
-document.querySelectorAll('[data-open-cake]').forEach(a=>a.addEventListener('click',()=>{try{localStorage.setItem('dcs-open-code','DCS1:eyJuYW1lIjoiQmx1c2ggTGFtYmV0aCIsInRpZXJzIjpbeyJkIjoxMCwiaCI6NC40LCJjb2xvciI6IiNmOGRkZTQiLCJmaW5pc2giOiJidXR0ZXJjcmVhbSIsInRleHR1cmUiOiJzbW9vdGgiLCJ0b3AiOiJwZWFybHMiLCJib3R0b20iOiJzaGVsbHMiLCJzaWRlIjoibGFtYmV0aCIsInBpcGUiOiIjZmJmN2YxIiwiYWNjZW50IjoiI2U5YTZiYSIsInBlYXJsQ29sb3IiOm51bGwsImJvd3MiOnRydWUsImJvd0NvbG9yIjoiI2YyOWJiNCIsImdvbGRMZWFmIjpmYWxzZSwiZHJvcHMiOmZhbHNlfSx7ImQiOjcsImgiOjQsImNvbG9yIjoiI2ZiZjdmMSIsImZpbmlzaCI6ImJ1dHRlcmNyZWFtIiwidGV4dHVyZSI6InNtb290aCIsInRvcCI6InNoZWxscyIsImJvdHRvbSI6InNoZWxscyIsInNpZGUiOiJsYW1iZXRoIiwicGlwZSI6IiNmYmY3ZjEiLCJhY2NlbnQiOiIjZTlhNmJhIiwicGVhcmxDb2xvciI6bnVsbCwiYm93cyI6dHJ1ZSwiYm93Q29sb3IiOiIjZjI5YmI0IiwiZ29sZExlYWYiOmZhbHNlLCJkcm9wcyI6ZmFsc2V9XSwiYm9hcmQiOiJ3aGl0ZSIsImJvYXJkQ29sb3IiOiIjZjI5YmI0IiwidG9wcGVyIjoicm9zZXMiLCJ0b3BwZXJDb2xvciI6IiNmM2Q2ZGMiLCJtZXNzYWdlIjp7InRleHQiOiIiLCJ0aWVyIjowLCJjb2xvciI6IiNjMjVkN2QifSwiY2hhcmFjdGVyIjo3MCwic2NlbmUiOnsicHJlc2V0Ijoic29mdCIsInNoaW5lIjo4NSwic29mdG5lc3MiOjEwMCwic3RyZW5ndGgiOjEwMCwiY3JldmljZSI6NTMsImJyaWdodCI6ODF9LCJub3RlcyI6IiJ9')}catch(e){}}));
 </script>
 <script src="assets/dcb-site.js" defer></script>
 </body>
