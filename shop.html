@@ -850,7 +850,7 @@ function sideOrder(){
  return `<div class="card white"><h3>Order summary</h3>
  ${draft.customer?`<div class="kv"><span>Customer</span><span>${esc(draft.customer)}</span></div>`:""}
  ${e?`<div class="kv"><span>Event</span><span><i class="dot" style="background:${esc(e.color)}"></i> ${esc(e.name)}</span></div>`:""}
- ${draft.date?`<div class="kv"><span>Date</span><span>${esc(new Date(draft.date+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}${draft.time?" · "+esc(draft.time):""}</span></div>`:""}
+ ${draft.date?`<div class="kv"><span>Date</span><span>${esc(new Date(draft.date+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}${draft.time?" · "+esc(t12(draft.time)):""}</span></div>`:""}
  <div class="kv"><span>Items</span><span>${draft.items.reduce((a,i)=>a+(+i.qty||1),0)}</span></div>
  <div class="kv"><span>Subtotal</span><span>${money(t.sub)}</span></div>
  <div class="kv"><span>Tax</span><span>${money(t.tax)}</span></div>
