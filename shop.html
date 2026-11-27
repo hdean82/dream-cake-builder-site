@@ -676,7 +676,7 @@ h3.hico{display:flex;align-items:center;gap:8px}
 .tlogo{height:44px;max-width:140px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #eee;padding:3px}
 /* save bar */
 .savebar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:60;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 7px 7px 16px;box-shadow:0 14px 34px -14px #4b103d66;max-width:calc(100vw - 24px)}
-.savebar[hidden]{display:none}
+.savebar[hidden]{display:none}body:has(.modal.on) .savebar{display:none}
 .savebar .sbt{font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;margin-right:4px;white-space:nowrap}
 .savebar .sbt i{width:9px;height:9px;border-radius:50%;background:#e98a3c;box-shadow:0 0 0 4px #e98a3c33}
 .savebar .sbt.ok{color:#22703c}.savebar .sbt svg{width:17px;height:17px}
@@ -685,7 +685,10 @@ body.hassave main{padding-bottom:84px}
 .savebar .btn[disabled]{opacity:.4;cursor:default;box-shadow:none}
 @media(max-width:900px){.savebar{left:12px;right:12px;transform:none;justify-content:flex-end;border-radius:16px}.savebar .sbt{margin-right:auto;white-space:normal}}
 .ctop{display:flex;align-items:center;gap:8px;margin-bottom:12px}.ctop .sp{flex:1}
-.cgrid{display:grid;gap:0 16px}@media(min-width:1000px){.cgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.savebar:not(.dirty){display:none}body.hassave main{padding-bottom:96px}}
+@media(max-width:600px){.wrap>.cardhead{flex-wrap:wrap}.wrap>.cardhead>div{flex:1 1 200px;min-width:0}.wrap>.cardhead>span{flex-wrap:wrap}}
+@media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
+.cpgrid{display:grid;gap:0 16px;grid-template-columns:minmax(0,1fr)}@media(min-width:1000px){.cpgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .cdl{display:grid;grid-template-columns:120px 1fr;gap:10px 12px;margin:6px 0 0;font-size:15px}.cdl dt{color:var(--muted)}.cdl dd{margin:0;overflow-wrap:anywhere}.cdl a{color:var(--rose-ink)}
 .nil{color:var(--muted)}.cnotes{white-space:pre-wrap;margin:0}
 .mktag{display:inline-flex;align-items:center;gap:3px;vertical-align:2px;font:700 11.5px/1 Inter,system-ui,sans-serif;border-radius:999px;padding:3px 8px;margin-left:4px}
@@ -1630,7 +1633,7 @@ function vCustomers(){
   $("main").innerHTML=`<div class="wrap"><div class="ctop"><button class="back" data-a="backCust" style="margin:0">‹ All customers</button><span class="sp"></span>${ed?`<button class="btn sm" data-a="custCancel">Cancel</button><button class="btn primary sm" data-a="custSave">Save</button>`:`<button class="btn sm" data-a="custEditOn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg> Edit</button>`}</div>
   ${c.blacklisted?`<div class="blbanner" role="alert"><span class="bli">${I_STOP}</span><div><b>Blacklisted</b><span>${esc(c.first||"This customer")} is not allowed to order${c.blReason?`: ${esc(c.blReason)}`:"."}${c.blAt?` <span class="note">Since ${esc(new Date(c.blAt).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))}</span>`:""}</span></div><button class="btn sm" data-a="blOff">Remove from blacklist</button></div>`:""}
   <div class="card chead"><span class="cav big" style="background:hsl(${hue} 70% 92%);color:hsl(${hue} 45% 32%)">${esc(ini)}</span><div class="bd"><h1>${esc(fullName(c)||"New customer")} ${mk}</h1><p class="hint" style="margin:2px 0 0">${st.n?`${st.n} order${st.n===1?"":"s"} · ${money(st.spent)} spent${st.last?` · last ${esc(new Date(st.last+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))}`:""}`:"No orders yet"}${c.imported?` · <span class="pill">Imported</span>`:""}</p></div></div>
-  <div class="cgrid"><div class="ccol">
+  <div class="cpgrid"><div class="ccol">
   ${ed?`<div class="card"><h3>Contact details</h3>
   <div class="grid2">${fld("first","First name <span class=\"req\">*</span>","text","",' autocomplete="off"')}${fld("last","Last name")}${fld("phone","Phone","tel","(555) 555-5555")}${fld("phone2","Other phone","tel","Work or mobile")}${fld("email","Email","email")}${fld("company","Company","text","Optional")}</div>
   <div class="field"><label for="cf-address">Street address</label><input type="text" id="cf-address" data-c="address" value="${esc(c.address||"")}" placeholder="For deliveries"></div>
