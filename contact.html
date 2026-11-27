@@ -36,6 +36,22 @@
 .c-side ul{margin:0;padding-left:18px;color:var(--muted)}
 .c-side li{margin:4px 0}
 .c-side .note{font-size:13px;color:var(--muted);margin-top:10px}
+.cform{display:flex;flex-direction:column;gap:14px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.cform h2{font-size:20px;text-transform:none}
+.cform label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px;text-transform:none}
+.cform label i{font-style:normal;font-weight:400;color:var(--muted)}
+.cform input,.cform select,.cform textarea{font:inherit;font-weight:400;font-size:16px;padding:11px 12px;border:1px solid #e3c3d4;border-radius:10px;background:#fff;color:var(--ink);width:100%}
+.cform textarea{resize:vertical;min-height:140px}
+.cform .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cform .send{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.cform .send .btn{min-height:46px;padding:0 22px;text-transform:none}
+#cStatus{font-size:14px}
+#cStatus.bad{color:#b3261e}#cStatus.good{color:#22703c}
+.cform .fine{font-size:12.5px;color:var(--muted)}
+.cform .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.c-side .ways{margin-top:6px}
+.c-main h1{text-transform:none}
+@media (max-width:560px){.cform .row2{grid-template-columns:1fr}}
 #copied{font-size:13px;color:var(--teal);min-height:1em;margin-top:6px}
 @media (max-width:860px){.contact{grid-template-columns:minmax(0,1fr)}}
 </style>
@@ -64,24 +80,33 @@
 <main class="band">
  <div class="wrap contact">
   <div class="card c-main">
-   <span class="eyebrow">Support & contact</span>
-   <h1>We'd love to hear from you.</h1>
-   <p class="lead">Questions about the Studio, a problem with your account, or an idea for something you'd like to see? Send us a note and we'll get back to you.</p>
+   <h1>We'd love to hear from you</h1>
+   <p class="lead">Questions about the Studio, a problem with your account, or an idea for something you'd like to see? Send us a message here and we'll reply by email.</p>
+   <form id="cForm" class="cform" novalidate>
+    <h2>Help us help you faster</h2>
+    <div class="row2">
+     <label>Your name<input name="name" autocomplete="name" maxlength="100" required></label>
+     <label>Your email<input name="email" type="email" autocomplete="email" maxlength="254" required></label>
+    </div>
+    <label>What's this about?<select name="topic" required><option value="">Choose one</option><option>A question about the Studio</option><option>A problem with my account</option><option>Something isn't working</option><option>An idea or request</option><option>Business or press</option><option>Something else</option></select></label>
+    <div class="row2">
+     <label>The email you sign in with <i>(if different)</i><input name="account" type="email" maxlength="254" autocomplete="off"></label>
+     <label>Which page were you on?<select name="page"><option value="">Not sure</option><option>Home</option><option>Studio</option><option>Account</option><option>Orders</option><option>Contact</option><option>A quote or design link</option><option>Somewhere else</option></select></label>
+    </div>
+    <label>Your message<textarea name="message" rows="6" maxlength="4000" required placeholder="Tell us what you expected and what happened instead. If you have a screenshot, mention it and we'll ask for it in our reply."></textarea></label>
+    <label class="trap" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+    <div class="send"><button class="btn primary" type="submit">Send message</button><p id="cStatus" role="status" aria-live="polite"></p></div>
+    <p class="fine">We use your details only to answer you. See our <a href="privacy.html">privacy page</a>.</p>
+   </form>
+  </div>
+  <aside class="card c-side">
+   <h2>Other ways to reach us</h2>
    <div class="ways">
     <a class="way" href="mailto:support@dreamcakebuilder.com?subject=Dream%20Cake%20Builder%20support"><span class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span><b>Email support</b><span>support@dreamcakebuilder.com</span></span><button type="button" class="btn sm copy" data-copy="support@dreamcakebuilder.com">Copy</button></a>
     <a class="way" href="https://www.instagram.com/dreamcakebuilder/"><span class="wi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></span><span><b>Instagram</b><span>@dreamcakebuilder</span></span></a>
     <a class="way" href="https://www.facebook.com/Dreamcakebuilder"><span class="wi"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.7 4.5h2.1V1.1a27 27 0 0 0-3.1-.2c-3.1 0-5.2 1.9-5.2 5.4v3H6v3.9h3.5V23h4.1v-9.8H17l.5-3.9h-3.9V6.7c0-1.1.3-2.2 2.1-2.2Z"/></svg></span><span><b>Facebook</b><span>Dream Cake Builder</span></span></a>
    </div>
    <p id="copied" role="status" aria-live="polite"></p>
-  </div>
-  <aside class="card c-side">
-   <h2>Help us help you faster</h2>
-   <ul>
-    <li>The email address you sign in with</li>
-    <li>Which page you were on (Studio, Account, Contact…)</li>
-    <li>What you expected and what happened instead</li>
-    <li>A screenshot, if you have one</li>
-   </ul>
    <p class="note">Looking for answers first? See <a href="index.html#workflow-questions">common questions</a>, or <a href="index.html#launch-list">join the launch list</a> for access news.</p>
   </aside>
  </div>
@@ -95,6 +120,22 @@
   <span class="end"><a href="mailto:support@dreamcakebuilder.com">support@dreamcakebuilder.com</a> · © <span data-year>2026</span></span>
  </div>
 </footer>
+<script>
+// Contact form: sends through our server, so nobody needs to open their email app.
+(function(){const f=document.getElementById('cForm');if(!f)return;const st=document.getElementById('cStatus'),btn=f.querySelector('button[type=submit]');
+ const say=(t,c)=>{st.textContent=t;st.className=c||''};
+ f.addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(f));
+  if(!d.name.trim())return say('Add your name.','bad'),f.name.focus();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim()))return say('Check your email address.','bad'),f.email.focus();
+  if(!d.topic)return say("Pick what your message is about.",'bad'),f.topic.focus();
+  if(d.message.trim().length<5)return say('Write a little more about what you need.','bad'),f.message.focus();
+  btn.disabled=true;say('Sending…');
+  try{const r=await fetch('https://gcorvodfcxhumesttwvj.supabase.co/functions/v1/contact-message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const j=await r.json().catch(()=>({}));
+   if(r.ok&&j.ok){f.reset();say("Thanks! Your message is on its way. We'll reply to your email.",'good')}else say(j.error||"Your message couldn't be sent. Please email support@dreamcakebuilder.com.",'bad')}
+  catch(err){say("Your message couldn't be sent. Check your connection, or email support@dreamcakebuilder.com.",'bad')}
+  btn.disabled=false});
+})();
+</script>
 <script src="assets/dcb-site.js" defer></script>
 <script>
 {
