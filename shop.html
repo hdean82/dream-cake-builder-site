@@ -849,6 +849,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .cnext2{display:flex;gap:10px;align-items:center;background:var(--rose-soft,#fbe7f1);border-radius:12px;padding:10px 12px}.cnext2>div{flex:1;display:flex;flex-direction:column}.cnext2 .ci{font-size:22px}
 .shsec{margin:0 0 12px}.shsec h4{margin:0 0 6px;font-size:14px;color:var(--plum,#4b103d)}.shrow{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:6px;cursor:pointer}.shrow input{accent-color:var(--teal,#177d79);width:20px;height:20px;flex:none}.shrow .bd{flex:1;display:flex;flex-direction:column;min-width:0}.shrow .qv{font-weight:600;white-space:nowrap;font-size:13.5px}.shrow.got{opacity:.5}.shrow.got b{text-decoration:line-through}
 .ltool{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 6px}.ltool select{width:auto;flex:1 1 200px;max-width:320px}.ltool #lstDays{flex:0 1 160px}.ltool .btn{align-self:stretch;min-width:84px}@media(max-width:520px){.ltool #lstPick{flex:1 1 100%;max-width:none}.ltool #lstDays{flex:1 1 auto}}.lmore{margin:0 0 12px;font-size:13.5px;color:var(--muted)}.lmore .linkbtn{font-size:13.5px}
+#abTitle{cursor:pointer;display:flex;align-items:center;gap:4px;min-width:0}#abTitle::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-3px);margin-left:6px;opacity:.55;flex:none}
 .mapsw{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px}
 .rlist{display:flex;flex-direction:column;gap:10px}.rstop{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.rstop.done{opacity:.6}
 .rnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--rose,#c12c7e);color:#fff;display:grid;place-items:center;font-weight:700}.rstop.done .rnum{background:var(--teal,#177d79)}
@@ -1017,7 +1018,7 @@ function openDiscount(i){const it=i!=null?draft.items[i]:null,d=it?it.discount:{
 function itemTitle(it){if(it.discount)return it.discount.label||"Discount";if(it.tiers){const first=it.tiers[0]?.opts||{};return `${it.tiers.length}-tier ${(Object.values(first)[1]||"").toLowerCase()} ${it.typeName.replace(/s$/,"").toLowerCase()}`.replace(/\s+/g," ").trim().replace(/^./,c=>c.toUpperCase())}return it.typeName}
 
 function nav(){$("nav").innerHTML=`<button class="gsbtn" data-a="gsOpen" aria-label="Search everything"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search<kbd>${/Mac|iPhone|iPad/.test(navigator.platform)?"⌘":"Ctrl "}K</kbd></button>`+ROUTES.map(r=>r[0]==="sec"?`<div class="navsec">${r[1]}</div>`:r[3]?`<a class="navbtn" href="${r[3]}">${r[2]}${r[1]}</a>`:`<button class="navbtn${route===r[0]?" on":""}" data-a="go" data-r="${r[0]}"${route===r[0]?' aria-current="page"':""}>${r[2]}${r[1]}</button>`).join("")}
-function appbar(){const r=ROUTES.find(x=>x[0]===route);const t=document.getElementById("abTitle");if(t)t.textContent=route==="new-order"&&draft&&draft.id?`${draft.kind} #${draft.no}`:(r?r[1]:"");const b=document.getElementById("abBack");if(b)b.hidden=route==="today";document.body.classList.remove("navopen")}
+function appbar(){const r=ROUTES.find(x=>x[0]===route);const t=document.getElementById("abTitle");if(t)t.textContent=route==="new-order"&&draft&&draft.id?`${draft.kind} #${draft.no}`:(r?r[1]:"");const b=document.getElementById("abBack");if(b)b.hidden=!(route==="new-order"||document.querySelector("#main .back"));document.body.classList.remove("navopen")}
 function siteCurrent(){document.querySelectorAll("[data-site]").forEach(a=>{const on=a.dataset.site===(route==="calendar"?"calendar":"shop");on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")})}
 function render(){nav();siteCurrent();renderView();cloudChip();side();appbar();saveBar()}
 function renderView(){({today:vToday,calendar:vCalendar,requests:vRequests,reqform:vReqForm,bake:vBake,money:vMoney,customers:vCustomers,recipes:vRecipes,"new-order":vOrder,orders:vOrders,products:vProducts,events:vEvents,emails:vEmails,preferences:vPrefs,portfolio:vPortfolio,tools:vTools,help:vHelp,lists:vLists}[route]||vOrder)()}
@@ -3322,12 +3323,13 @@ window.addEventListener("dcb-auth",()=>{if(CLOUD.state==="off")cloudConnect()});
 <script>
 (function(){
  var b=document.body,m=document.getElementById("abMenu"),k=document.getElementById("abBack"),sc=document.getElementById("navScrim");
- function open(on){b.classList.toggle("navopen",on);m.setAttribute("aria-expanded",on?"true":"false")}
+ function open(on){b.classList.toggle("navopen",on);m.setAttribute("aria-expanded",on?"true":"false");if(on){var cur=document.querySelector("#nav .navbtn.on");if(cur)setTimeout(function(){try{cur.scrollIntoView({block:"center"})}catch(e){}},30)}}
  m.addEventListener("click",function(){open(!b.classList.contains("navopen"))});
  sc.addEventListener("click",function(){open(false)});
  document.addEventListener("keydown",function(e){if(e.key==="Escape")open(false)});
  document.addEventListener("click",function(e){document.querySelectorAll("details.kebab[open]").forEach(function(d){if(!d.contains(e.target)||e.target.closest(".kmenu [data-a]"))d.open=false})});
- k.addEventListener("click",function(){if(typeof navDepth!=="undefined"&&navDepth>0)history.back();else if(typeof go==="function")go("today")});
+ k.addEventListener("click",function(){var bk=document.querySelector("#main .back");if(bk){bk.click();return}if(typeof navDepth!=="undefined"&&navDepth>0)history.back();else if(typeof go==="function")go("orders")});
+ var tt=document.getElementById("abTitle");tt.setAttribute("role","button");tt.setAttribute("tabindex","0");tt.setAttribute("aria-label","Open menu");tt.addEventListener("click",function(){open(true)});tt.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();open(true)}});
 })();
 </script>
 <script>
