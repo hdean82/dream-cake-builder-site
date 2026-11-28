@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="assets/dcb-theme.css">
 <style>
 .rvs{margin:4px 0 14px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--line,#eed3e3)}.rvsum{margin:0;font-size:14px}.rvs .st{color:#e0a100;letter-spacing:1px}.rvs blockquote{margin:8px 0 0;font-size:14px;line-height:1.45;color:var(--ink,#4b103d)}.rvs cite{display:block;font-style:normal;font-size:12.5px;color:var(--muted,#79536e);margin-top:2px}
+.draftnote{margin:0 0 10px;font-size:13px}
 .req-wrap{max-width:680px;margin:0 auto;padding:0 16px}
 .req-card{padding:18px 20px}
 .req-card h1{font-size:clamp(26px,4vw,34px);margin-bottom:4px}
@@ -185,8 +186,23 @@ function form(){
   <button class="btn primary submit" type="submit"${PREVIEW?' disabled':''}>${esc(LK.btn||'Send my request')}${PREVIEW?' (preview)':''}</button>
   <p class="fine">Your details go only to ${esc(info.business)} so they can reply about your cake.</p>
  </form>${WEB()&&info.brand!==false?`<p class="brandline"><a href="https://www.dreamcakebuilder.com" target="_blank" rel="noopener">Order form by Dream Cake Builder</a></p>`:''}`;
- drawPics();sizeUp();
+ drawPics();sizeUp();draftInit();
 }
+// Keep what the customer typed if they leave and come back (this device only; cleared once sent).
+const DKEY=()=>'dcb-req-draft:'+slug;
+function draftKey(el){return el.id?'#'+el.id:el.name?'@'+el.name+'='+el.value:''}
+function draftSave(){if(PREVIEW)return;const f=$('rf');if(!f)return;const o={};let any=false;
+ f.querySelectorAll('input,select,textarea').forEach(el=>{if(el.type==='file'||el.type==='hidden'||el.type==='submit')return;const k=draftKey(el);if(!k)return;
+  if(el.type==='checkbox'||el.type==='radio'){if(el.checked){o[k]=1;any=true}}else if(el.value){o[k]=el.value;any=true}});
+ try{any?localStorage.setItem(DKEY(),JSON.stringify({t:Date.now(),o})):localStorage.removeItem(DKEY())}catch{}}
+function draftInit(){const f=$('rf');if(!f||PREVIEW)return;let d=null;try{d=JSON.parse(localStorage.getItem(DKEY())||'null')}catch{}
+ if(d&&d.o&&Date.now()-d.t<30*864e5){const els=[...f.querySelectorAll('input,select,textarea')].filter(el=>el.type!=='file');
+  const put=el=>{const k=draftKey(el);if(!k||!(k in d.o))return false;if(el.type==='checkbox'||el.type==='radio')el.checked=true;else el.value=d.o[k];return true};
+  els.filter(el=>el.id!=='q-f_ptime').forEach(el=>{if(put(el)){el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}});
+  const pt=$('q-f_ptime');if(pt){ptUpdate();put(pt)}
+  if(Object.keys(d.o).length>1){const n=document.createElement('p');n.className='fine draftnote';n.innerHTML='We kept what you typed last time. <button type="button" class="linkish" id="draftClear">Start over</button>';f.prepend(n);
+   $('draftClear').onclick=()=>{try{localStorage.removeItem(DKEY())}catch{};form()}}}
+ let tm;f.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(draftSave,400)});f.addEventListener('change',()=>{clearTimeout(tm);tm=setTimeout(draftSave,400)})}
 const t12s=t=>{const[h,m]=t.split(':').map(Number);return `${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`};
 function slotTimes(from,to,step){const st=Math.max(15,+step||60),toM=v=>{const[h,m]=String(v||'').split(':').map(Number);return h*60+(m||0)};const out=[];for(let m=toM(from);m+st<=toM(to)+0.1&&out.length<48;m+=st)out.push(t12s(`${Math.floor(m/60)}:${m%60}`));return out}
 function ptUpdate(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q-f_ptime'),msg=$('ptMsg'),d=$('f-date')&&$('f-date').value;
@@ -235,6 +251,7 @@ document.addEventListener('submit',async e=>{
   const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:($('f-phone')&&$('f-phone').value.trim())||null,p_event_date:(WAIT?null:$('f-date').value)||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv')&&$('f-serv').value?+$('f-serv').value:null,p_details:details||'(No details given)',p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
   if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.message||'send failed')}
   try{const rid=await r.clone().json();if(typeof rid==='string')fetch(`${SUPABASE_URL}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'request',id:rid}),keepalive:true}).catch(()=>{})}catch{}
+  try{localStorage.removeItem(DKEY())}catch{}
   const PT=WEB()&&info.pro&&info.form&&info.form.look||{};const go=/^https:\/\/[^\s"'<>]+$/.test(PT.redirect||'')?PT.redirect:'';
   app.innerHTML=`<div class="done"><div class="big">${esc(PT.thanksTitle||'Request sent!')}</div><p class="muted" style="white-space:pre-wrap">${PT.thanks?esc(PT.thanks.replace(/\{name\}/g,name.split(' ')[0])):`Thank you, ${esc(name.split(' ')[0])}. ${esc(info.business)} will reply to ${esc(email)} soon.`}</p>${go?`<p><a class="btn primary" href="${esc(go)}" target="_top">Continue</a></p>`:''}</div>`;sizeUp();
   if(go)setTimeout(()=>{try{window.top.location.href=go}catch(e){location.href=go}},2500);
