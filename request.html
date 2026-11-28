@@ -154,7 +154,7 @@ function form(){
   <div class="field"><label for="f-email">Email${req(1)}</label><input type="email" id="f-email" required maxlength="254" autocomplete="email"></div>
   ${f.phone.on?`<div class="field"><label for="f-phone">Phone${req(f.phone.req)}</label><input type="tel" id="f-phone" maxlength="40" autocomplete="tel"></div>`:''}</div>
   <h2 class="sh">Your event</h2>
-  <div class="grid2"><div class="field"><label for="f-date">Event date${req(f.date.req)}</label><input type="date" id="f-date" min="${today}"><div id="dmsg" class="fine" style="margin-top:4px"></div></div>
+  <div class="grid2"><div class="field"><label for="f-date">Event date${req(f.date.req)}</label><input type="date" id="f-date" min="${leadMin()}">${+c.minDays?`<div class="fine" style="margin-top:4px">Please order at least ${+c.minDays} day${+c.minDays===1?"":"s"} ahead.</div>`:""}<div id="dmsg" class="fine" style="margin-top:4px"></div></div>
   ${f.event.on&&info.event_types.length?`<div class="field"><label for="f-event">Occasion${req(f.event.req)}</label><select id="f-event"><option value="">Choose…</option>${info.event_types.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></div>`:''}
   ${f.servings.on?`<div class="field"><label for="f-serv">Servings or guests${req(f.servings.req)}</label><input type="number" id="f-serv" min="0" max="10000" inputmode="numeric"></div>`:''}
   ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
@@ -184,6 +184,7 @@ function ptUpdate(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q
  const day=sl.days[new Date(d+'T12:00').getDay()],times=day?slotTimes(day.from,day.to,sl.step):[];
  sel.hidden=!times.length;msg.textContent=times.length?'':'No pickup times that day. Pick another date, or choose Delivery.';
  sel.innerHTML='<option value="">Choose a time…</option>'+times.map(t=>`<option${t===keep?' selected':''}>${esc(t)}</option>`).join('');if(!times.includes(keep))sel.value=''}
+function leadMin(){const n=+(F().minDays)||0,d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function handoff(){const el=document.querySelector('[data-q="f_handoff"]');return el?el.value:''}
 function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.q)}${req(q.required)}`;
  if(q.type==='long')return `<div class="field"><label for="${id}">${lab}</label><textarea id="${id}" data-q="${esc(i)}" maxlength="1000" style="min-height:80px"></textarea></div>`;
@@ -212,6 +213,7 @@ document.addEventListener('submit',async e=>{
  const need=[[cf.phone.on&&cf.phone.req&&$('f-phone')&&!$('f-phone').value.trim(),'your phone number'],[cf.date.req&&!$('f-date').value,'the event date'],[cf.event.on&&cf.event.req&&$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!details,'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
  if(need){m.className='msg';m.textContent=`Please add ${need[1]}.`;return}
  if(isFull($('f-date').value)){m.className='msg';m.textContent='That date is fully booked. Please pick another date.';$('f-date').focus();return}
+ if($('f-date').value&&$('f-date').value<leadMin()){m.className='msg';m.textContent=`Please pick a date at least ${+F().minDays} day${+F().minDays===1?'':'s'} from today.`;$('f-date').focus();return}
  const ans=answers(),miss=ans.find(a=>a.required&&!a.a);if(miss){m.className='msg';m.textContent=`Please answer: ${miss.q}`;return}
  busy=true;btn.disabled=true;btn.textContent='Sending…';
  try{
