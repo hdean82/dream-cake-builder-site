@@ -445,3 +445,45 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
   // Before a form is sent, put passwords back to hidden so browsers offer to save them.
   document.addEventListener('submit', () => document.querySelectorAll('.pweye>input').forEach((i) => { if (i.type === 'text') { i.type = 'password'; const b = i.nextSibling; if (b) { b.textContent = 'Show'; b.setAttribute('aria-pressed', 'false'); } } }), true);
 })();
+
+/* Title Case for headings, buttons and labels: major words capitalized; a, an, the, and, but, for, nor, or, so, yet,
+   at, by, in, of, on, to, up stay lowercase unless they are the first or last word. (CSS alone would capitalize every word.) */
+(function () {
+  if (window.__dcbTitle || /studio\.html$/.test(location.pathname)) return; window.__dcbTitle = true;
+  const SEL = 'h1,h2,h3,h4,.btn,.navbtn,.seg button,.tile,label,.lbl,th,.status,.eyebrow,.site-nav a,.menu-panel a,.toggle .t,summary,.pill,.chip,.tag,.tagchip,.cloudchip,.legend span,.mstat .lbl,.tdue,.setup .tb b,.navgroup,.sbhead,.kpis .kpi>span,.kv>span:first-child,.cloudchip span,.cloudchip a,.filters button,.sh';
+  const SKIP = 'input,textarea,select,option,.note,.hint,.d,.fine,.muted,.jl,.toast,#toast,.fl-al b,.pt small,.pv,.rqform-sum small,.rqst,.ostat,.pays small,.tpill,.cnext,.rfrow,.rfcol,.rfolbl,.rfopt,code,pre,[contenteditable],.notc';
+  const SMALL = new Set(['a', 'an', 'the', 'and', 'but', 'for', 'nor', 'or', 'so', 'yet', 'at', 'by', 'in', 'of', 'on', 'to', 'up']);
+  const css = document.createElement('style'); css.textContent = '[data-tc]{text-transform:none!important}'; document.head.appendChild(css);
+  const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+  function word(w, edge) {
+    if (!/[a-z]/i.test(w) || /[@/:\\]|\.\w/.test(w)) return w;                 // emails, links, numbers
+    return w.split('-').map((p, i) => {
+      const m = p.match(/^([^A-Za-z]*)([A-Za-z][\w'’]*)(.*)$/); if (!m) return p;
+      const core = m[2];
+      if (/[A-Z]/.test(core.slice(1))) return p;                               // iPhone, DCB, McKay: leave as typed
+      const lower = core.toLowerCase();
+      const small = SMALL.has(lower) && !(edge && i === 0);
+      return m[1] + (small ? lower : cap(lower)) + m[3];
+    }).join('-');
+  }
+  function fix(el) {
+    if (!el.isConnected || el.closest(SKIP)) return;
+    const nodes = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement && n.parentElement.closest(SKIP) && el.contains(n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    for (let n; (n = tw.nextNode());) if (/\S/.test(n.nodeValue)) nodes.push(n);
+    if (!nodes.length) return;
+    const parts = nodes.map((n) => n.nodeValue.split(/(\s+)/));
+    let total = 0; parts.forEach((p) => p.forEach((t) => { if (/[A-Za-z]/.test(t)) total++; }));
+    let k = 0;
+    parts.forEach((p, i) => {
+      const out = p.map((t) => { if (!/[A-Za-z]/.test(t)) return t; const edge = k === 0 || k === total - 1; k++; return word(t, edge); }).join('');
+      if (out !== nodes[i].nodeValue) nodes[i].nodeValue = out;
+    });
+    el.setAttribute('data-tc', '');
+  }
+  let queue = new Set(), pending = false;
+  const flush = () => { pending = false; const q = queue; queue = new Set(); q.forEach((r) => { if (!r || r.nodeType !== 1 || !r.isConnected) return; if (r.matches(SEL)) fix(r); r.querySelectorAll(SEL).forEach(fix); const up = r.parentElement && r.parentElement.closest(SEL); if (up) fix(up); }); };
+  const add = (n) => { if (n) { queue.add(n.nodeType === 1 ? n : n.parentElement); if (!pending) { pending = true; requestAnimationFrame(flush); } } };
+  const start = () => { add(document.body); new MutationObserver((ms) => ms.forEach((m) => { if (m.type === 'characterData') add(m.target); else { m.addedNodes.forEach(add); if (m.target.nodeType === 1 && m.target.closest(SEL)) add(m.target); } })).observe(document.body, { childList: true, subtree: true, characterData: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  window.DCBTitle = (s) => String(s).split(/(\s+)/).map((t, i, a) => /[A-Za-z]/.test(t) ? word(t, i === 0 || i === a.length - 1) : t).join('');
+})();
