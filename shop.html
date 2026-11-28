@@ -1669,11 +1669,14 @@ function cloudChip(){const m=$("main");if(!m)return;let html="";const st=CLOUD.s
  let el=$("cloudChip");if(!el){el=document.createElement("div");el.id="cloudChip";el.className="cloudchip"}el.innerHTML=html;m.prepend(el)}
 function schedulePush(){if(CLOUD.state!=="on"&&CLOUD.state!=="error")return;CLOUD.dirty=true;const me=readMeta();me.dirty=true;writeMeta(me);clearTimeout(CLOUD.timer);CLOUD.timer=setTimeout(cloudPush,1200);cloudChip()}
 async function cloudPush(){if(CLOUD.busy){clearTimeout(CLOUD.timer);CLOUD.timer=setTimeout(cloudPush,800);return}
+ // Safety brake: never send the order book more than once every 4 seconds, and after a failed save wait longer each time (up to 5 minutes).
+ {const now=Date.now(),gap=CLOUD.fails?Math.min(300e3,15e3*2**(CLOUD.fails-1)):4e3,wait=(CLOUD.lastTry||0)+gap-now;if(wait>0){clearTimeout(CLOUD.timer);CLOUD.timer=setTimeout(cloudPush,wait);return}CLOUD.lastTry=now}
+ if(CLOUD.state==="conflict"||CLOUD.state==="noaccess"||CLOUD.state==="off")return;
  CLOUD.busy=true;cloudChip();
  try{await uploadPending()}catch{}
  try{const r=await api("/rest/v1/rpc/shop_save_snapshot",{method:"POST",body:{p_data:forCloud(),p_revision:CLOUD.rev}});
-  CLOUD.rev=r.revision;CLOUD.dirty=false;CLOUD.state="on";CLOUD.last=new Date();writeMeta({rev:CLOUD.rev,dirty:false,at:CLOUD.last.toISOString()})}
- catch(e){if(e.code==="40001"||/conflict/i.test(e.message))CLOUD.state="conflict";else if(e.code==="42501")CLOUD.state="noaccess";else if(e.code==="signin")CLOUD.state="off";else CLOUD.state="error"}
+  CLOUD.rev=r.revision;CLOUD.dirty=false;CLOUD.state="on";CLOUD.fails=0;CLOUD.last=new Date();writeMeta({rev:CLOUD.rev,dirty:false,at:CLOUD.last.toISOString()})}
+ catch(e){CLOUD.fails=(CLOUD.fails||0)+1;if(e.code==="40001"||/conflict/i.test(e.message))CLOUD.state="conflict";else if(e.code==="42501")CLOUD.state="noaccess";else if(e.code==="signin")CLOUD.state="off";else CLOUD.state="error"}
  finally{CLOUD.busy=false;cloudChip()}}
 async function cloudConnect(){const se=window.DCBAuth&&await DCBAuth.session();if(!se){CLOUD.state="off";cloudChip();return}
  CLOUD.state="connecting";cloudChip();
@@ -2535,8 +2538,8 @@ document.addEventListener("click",e=>{
   case"compose":openCompose(b.dataset.k);break;
   case"ordTab":ordTab=b.dataset.v;render();break;
   case"cloudTake":(async()=>{try{const snap=CLOUD.latest&&CLOUD.state==="conflict"&&CLOUD.latest.revision>=CLOUD.rev?CLOUD.latest:await cloudLatest();mergeCloud(snap.data);CLOUD.rev=+snap.revision;CLOUD.dirty=false;CLOUD.state="on";writeMeta({rev:CLOUD.rev,dirty:false});closeM();draft=blankOrder();render();toast("Loaded your account's copy")}catch{toast("Couldn't load it. Check your connection")}})();break;
-  case"cloudKeep":(async()=>{try{const snap=await cloudLatest();CLOUD.rev=+snap.revision||0;CLOUD.state="on";closeM();await cloudPush();toast(CLOUD.state==="on"?"Saved this device's copy to your account":"Couldn't save. Try again")}catch{toast("Couldn't reach your account. Check your connection")}})();break;
-  case"cloudRetry":CLOUD.state="on";cloudPush();break;
+  case"cloudKeep":(async()=>{try{const snap=await cloudLatest();CLOUD.rev=+snap.revision||0;CLOUD.state="on";CLOUD.fails=0;CLOUD.lastTry=0;closeM();await cloudPush();toast(CLOUD.state==="on"?"Saved this device's copy to your account":"Couldn't save. Try again")}catch{toast("Couldn't reach your account. Check your connection")}})();break;
+  case"cloudRetry":CLOUD.state="on";CLOUD.fails=0;CLOUD.lastTry=0;cloudPush();break;
   case"rqReload":RQ.state="idle";render();break;
   case"rqFilter":RQ.filter=b.dataset.v;render();break;
   case"rqCopy":(navigator.clipboard?navigator.clipboard.writeText(b.dataset.v):Promise.reject()).then(()=>toast("Link copied"),()=>toast(b.dataset.v));break;
