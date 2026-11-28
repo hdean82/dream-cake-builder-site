@@ -328,7 +328,14 @@ html.dcb-leaving .app>:not(header){opacity:0;transition:opacity .17s}
 .dcb-menu-panel a{padding:10px 12px;border-radius:9px;text-decoration:none;color:var(--ink);transition:background-color .15s,color .15s}
 .dcb-menu-panel a:hover,.dcb-menu-panel a[aria-current=page]{background:var(--rose-soft);color:var(--rose-ink)}
 .dcb-drip{position:absolute;left:0;right:0;top:-2px;height:23px;pointer-events:none;background:url("assets/drip.svg") 0 0/230px 23px repeat-x;filter:drop-shadow(0 2px 2px #da6aa33a)}
-.loading{animation:dcb-breathe 1.3s ease-in-out infinite alternate}
+.loading{z-index:2;flex-direction:column;gap:14px;background:radial-gradient(circle at 50% 45%,#fff 0,#fff7fa 45%,transparent 75%);transition:opacity .4s ease}
+.loading span{animation:dcb-breathe 1.3s ease-in-out infinite alternate;color:var(--rose-ink)}
+.loading.out{opacity:0;pointer-events:none}
+.ldcake{display:flex;flex-direction:column-reverse;align-items:center;gap:3px;height:58px;justify-content:flex-start}
+.ldcake i{display:block;height:16px;border-radius:5px 5px 3px 3px;background:linear-gradient(#fde3f0,#f7c4dc);box-shadow:inset 0 3px 0 #fff8,0 2px 0 #e7a9c7;transform-origin:50% 100%;animation:dcb-tier 1.8s cubic-bezier(.3,.7,.3,1.2) infinite}
+.ldcake i:nth-child(1){width:64px}.ldcake i:nth-child(2){width:46px;animation-delay:.18s}.ldcake i:nth-child(3){width:28px;animation-delay:.36s;background:linear-gradient(#fff,#fde3f0)}
+@keyframes dcb-tier{0%{transform:scaleY(0);opacity:0}18%,78%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+@media (max-width:700px){.tour{top:108px}}
 @keyframes dcb-breathe{from{opacity:.55}to{opacity:1}}
 @media (min-width:821px) and (max-width:1100px){.dcb-sitemenu .bw{display:none}.dcb-sitemenu .here{display:inline!important}}
 @media (max-width:820px),(orientation:landscape) and (max-height:560px){.dcb-sitemenu .bw,.dcb-sitemenu .here{display:none!important}.dcb-sitemenu>summary{padding:3px 4px;gap:4px;margin-left:0}.dcb-sitemenu img{width:28px;height:28px}.dcb-drip{display:none}}
@@ -336,7 +343,7 @@ html.dcb-leaving .app>:not(header){opacity:0;transition:opacity .17s}
 .dcb-menu-panel{max-height:calc(100vh - 72px);max-height:calc(100dvh - 72px);overflow-y:auto;overscroll-behavior:contain}
 html.client .dcb-sitemenu .caret,html.client .dcb-sitemenu .here,html.client .dcb-menu-panel{display:none!important}
 html.client .dcb-sitemenu>summary{cursor:default;background:none!important}
-@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.loading{animation:none}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.loading,.loading span,.ldcake i{animation:none!important}}
 @media print{.dcb-drip{display:none!important}.dcb-sitemenu:not([open]) .dcb-menu-panel{display:none!important}.dcb-sitemenu[open] .dcb-menu-panel{display:flex!important}}
 .dcb-menu-panel{max-height:calc(100dvh - 76px);overflow-y:auto;min-width:240px}
 .dcb-menu-panel .mp-sec{text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;font-weight:600;color:#a27f97;margin:10px 12px 4px}
@@ -450,7 +457,7 @@ html:not(.has-ai) #aiBtn,html:not(.has-ai) .msai{display:none!important}.ai2beta
 </aside>
 
 <main>
- <div id="view"><div class="loading" id="loading">Preheating the studio...</div></div><div class="dcb-drip" aria-hidden="true"></div><div id="sizeLayer" aria-hidden="true"></div><div id="refCard" hidden><div class="refbar"><span>Tap photo to pick a color</span><input type="range" min="20" max="100" value="100" aria-label="Photo visibility"><button type="button" class="refsz" data-sz="-1" aria-label="Smaller photo">−</button><button type="button" class="refsz" data-sz="1" aria-label="Larger photo">+</button><button type="button" class="refx" aria-label="Hide photo">×</button></div><div class="refwrap"><img alt="Inspiration photo"></div><p class="refhint">Pinch or scroll on the photo to zoom in, drag to move around, double-tap to reset.</p></div>
+ <div id="view"><div class="loading" id="loading" role="status"><div class="ldcake" aria-hidden="true"><i></i><i></i><i></i></div><span>Preheating the studio…</span></div></div><div class="dcb-drip" aria-hidden="true"></div><div id="sizeLayer" aria-hidden="true"></div><div id="refCard" hidden><div class="refbar"><span>Tap photo to pick a color</span><input type="range" min="20" max="100" value="100" aria-label="Photo visibility"><button type="button" class="refsz" data-sz="-1" aria-label="Smaller photo">−</button><button type="button" class="refsz" data-sz="1" aria-label="Larger photo">+</button><button type="button" class="refx" aria-label="Hide photo">×</button></div><div class="refwrap"><img alt="Inspiration photo"></div><p class="refhint">Pinch or scroll on the photo to zoom in, drag to move around, double-tap to reset.</p></div>
  <div id="studioBar" class="studiobar" hidden><span class="sbtxt">Studio theme: <b id="sbName"></b></span><button type="button" class="btn sm primary" id="sbSave">Save for all artists</button><details class="sbmore"><summary aria-label="More theme options">⋯</summary><div class="sbmenu"><button type="button" id="sbRestore">Restore the original design</button><button type="button" id="sbHide">Hide from artists</button><button type="button" id="sbClose">Close this bar</button></div></details></div>
  <div class="float top">
   <span class="tpwrap"><button type="button" class="chip" id="selChip" aria-expanded="false" aria-controls="tierPop" title="See everything on this tier">Editing <b>Tier 1</b></button><div id="tierPop" class="tpop" hidden role="dialog" aria-label="Items on this tier"></div></span>
@@ -3895,7 +3902,7 @@ function buildCake(){
  buildMessage();applyShine();
  if(!build.done){build.done=true;if(!setView(design.view))goView('three',true)}else if(pendingFrame){pendingFrame=false;if(!setView(design.view))goView('three')}
  refreshSel();
- $('#loading')?.remove()}
+ {const ld=$('#loading');if(ld&&!ld.classList.contains('out')){ld.classList.add('out');setTimeout(()=>ld.remove(),450)}}}
 let brickBoardCache=null;
 function brickPartyBoard(){
  return brickBoardCache||(brickBoardCache=(()=>{
