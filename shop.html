@@ -758,6 +758,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .igcv{display:block;width:100%;max-width:360px;margin:0 auto;height:auto;border-radius:12px;box-shadow:0 10px 30px -18px #4b103d88}
 .wrapcard .wstep{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.wrapcard .wstep:first-of-type{border-top:0}.wck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:#fff}.wstep.done .wck{background:#2f7d5b;border-color:#2f7d5b}.wtx{flex:1;min-width:0}.wtx b{display:block}.wstep.done .wtx b{color:var(--muted);text-decoration:line-through}
 .srcbar{display:block;height:6px;border-radius:3px;background:var(--rose-soft,#fde3f0);margin-top:5px;max-width:200px;overflow:hidden}.srcbar i{display:block;height:100%;background:var(--rose,#c12c7e);border-radius:3px}
+@media (max-width:480px){.dfoot .btn{flex:1 1 calc(33% - 8px);min-width:0;padding-left:8px;padding-right:8px;white-space:nowrap}.dfoot .btn.primary{flex-basis:100%}}
 </style>
 </head>
 <body>
@@ -2135,6 +2136,7 @@ function orderVars(o){const t=totals(o),s=S.settings;const issued=o.issued||new 
  return{CUSTOMER_FIRST_NAME:(o.customer||"").trim().split(/\s+/)[0]||"there",CUSTOMER_NAME:o.customer||"",ORDER_NUMBER:o.no||s.nextNo,EVENT_DATE:o.date?fd(new Date(o.date+"T00:00")):"your event date",PICKUP_TIME:o.time?t12(o.time):"the agreed time",ORDER_TOTAL:money(t.total),DEPOSIT_DUE:money(t.depLeft),BALANCE_DUE:money(t.bal),QUOTE_EXPIRY:fd(exp),QUOTE_LINK:o.share&&o.share.token?shareUrl(o.share.token):"(your quote link will go here)",BUSINESS_NAME:s.biz,BUSINESS_PHONE:s.phone,BUSINESS_EMAIL:s.email,CANCEL_NOTE:(o.cancel&&o.cancel.clientNote)||"",AMOUNT_PAID:money(t.paid||0),PICKUP_ADDRESS:pickupText(o)||"(pickup address)"}}
 const fillReal=(str,v)=>String(str).replace(/\{\{([A-Z_]+)\}\}/g,(m,k)=>k in v?String(v[k]):m);
 let C=null;
+const smsHref=(ph,body)=>`sms:${String(ph||"").replace(/[^\d+]/g,"")}${/iPhone|iPad|Mac/.test(navigator.userAgent)?"&":"?"}body=${encodeURIComponent(String(body||"").slice(0,1200))}`;
 async function openCompose(key){const o=draft;
  if(CLOUD.state==="on"&&o.id&&o.status!=="Cancelled"&&!(o.share&&o.share.token)){try{await shareOrder(o,true)}catch{}}
  const v=orderVars(o);const def=key||(o.status==="Cancelled"?"cancel":o.kind==="Quote"?"quote":(totals(o).bal>0.005?"invoice":"receipt"));const t=S.tpls.find(x=>x.id===def)||S.tpls[0];
@@ -2150,7 +2152,7 @@ function renderCompose(){const o=draft;
  ${/\{\{[A-Z_]+\}\}|\(your quote link/.test(C.body)?`<p class="hint">Check for anything still in curly braces or marked “will go here” before sending.</p>`:""}
  ${(o.emails||[]).length?`<span class="lbl">Sent from this order</span>${o.emails.map(e=>`<div class="kv"><span>${esc((S.tpls.find(t=>t.id===e.key)||{name:e.key==="cakecard"?"Cake card":e.key}).name)}</span><span>${esc(new Date(e.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span></div>`).join("")}`:""}</div>
  ${CLOUD.state==="on"?`<p class="hint" style="margin:0">Sends from <b>${esc(S.settings.biz||"your business")}</b> &lt;hello@dreamcakebuilder.com&gt;. Replies come to ${esc(S.settings.email||"your account email")}.</p>`:`<p class="hint" style="margin:0"><a href="account.html?next=${encodeURIComponent("shop.html#"+route)}">Sign in</a> to send emails straight from here.</p>`}</div>
- <div class="dfoot"><button class="btn" data-a="cCopy">Copy</button><a class="btn" id="cMail" href="mailto:${encodeURIComponent(C.to)}?subject=${encodeURIComponent(C.subject)}&body=${encodeURIComponent(C.body)}">Email App</a>${CLOUD.state==="on"?`<button class="btn" data-a="cSent">Mark As Sent</button><button class="btn primary" data-a="cSend" id="cSendBtn">Send Email</button>`:`<button class="btn primary" data-a="cSent">Mark As Sent</button>`}</div>`;
+ <div class="dfoot"><button class="btn" data-a="cCopy">Copy</button><a class="btn" id="cMail" href="mailto:${encodeURIComponent(C.to)}?subject=${encodeURIComponent(C.subject)}&body=${encodeURIComponent(C.body)}">Email App</a>${(draft.phone||"").replace(/\D/g,"").length>=7?`<a class="btn" id="cSms" href="${smsHref(draft.phone,C.body)}">Text</a>`:""}${CLOUD.state==="on"?`<button class="btn" data-a="cSent">Mark As Sent</button><button class="btn primary" data-a="cSend" id="cSendBtn">Send Email</button>`:`<button class="btn primary" data-a="cSent">Mark As Sent</button>`}</div>`;
  $("modal").classList.add("on")}
 
 async function sendEmail(m){const se=await DCBAuth.session();if(!se)throw new Error("Sign in first");if(emailLogo())m={...m,logo:emailLogo()};
@@ -2792,7 +2794,7 @@ document.addEventListener("input",e=>{
  if(el.dataset.r){const r=S.recipes.find(x=>x.id===editRec);r[el.dataset.r]=el.value;save();side();return}
  if(el.dataset.rl&&el.tagName==="INPUT"){const[i,k]=el.dataset.rl.split(":");const r=S.recipes.find(x=>x.id===editRec);r.lines[+i][k]=el.value;save();const rc=el.closest(".rline")?.querySelector(".rc");if(rc)rc.textContent=money(lineCost(r.lines[+i]));side();return}
  if(el.dataset.ig&&el.tagName==="INPUT"){const[i,k]=el.dataset.ig.split(":");S.ingredients[+i][k]=el.value;save();return}
- if(el.dataset.cm){C[el.dataset.cm]=el.value;const m=$("cMail");if(m)m.href=`mailto:${encodeURIComponent(C.to)}?subject=${encodeURIComponent(C.subject)}&body=${encodeURIComponent(C.body)}`;return}
+ if(el.dataset.cm){C[el.dataset.cm]=el.value;const m=$("cMail");if(m)m.href=`mailto:${encodeURIComponent(C.to)}?subject=${encodeURIComponent(C.subject)}&body=${encodeURIComponent(C.body)}`;const t=$("cSms");if(t)t.href=smsHref(draft.phone,C.body);return}
  if(el.dataset.doc){S.settings.doc[el.dataset.doc]=el.value;save();return}
  if(el.id==="custSearch"){custSearch=el.value;const pos=el.selectionStart;vCustomers();const s2=$("custSearch");s2.focus();s2.setSelectionRange(pos,pos);return}
  if(el.dataset.m){setM(el);if($("mSum"))$("mSum").innerHTML=sumHtml();if($("mPrev"))$("mPrev").innerHTML=prevHtml();return}
