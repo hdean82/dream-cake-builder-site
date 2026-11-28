@@ -689,6 +689,7 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:600px){.wrap>.cardhead{flex-wrap:wrap}.wrap>.cardhead>div{flex:1 1 200px;min-width:0}.wrap>.cardhead>span{flex-wrap:wrap}}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
 @media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
+.creq{border-top:1px solid var(--line);padding:8px 0}.creq summary{cursor:pointer;list-style:none}.creq summary::-webkit-details-marker{display:none}.creq summary::before{content:"▸ ";color:var(--muted)}.creq[open] summary::before{content:"▾ "}
 .rqmc{font-size:12px;font-weight:600;color:var(--muted);background:#f6eef3;border-radius:999px;padding:2px 9px;margin-left:4px;white-space:nowrap}.rqmc.new{background:var(--rose);color:#fff}
 .rqchat{display:flex;flex-direction:column;gap:10px}.rqcsum{background:#fff7fa;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--muted)}.rqcsum div{margin-top:4px;white-space:pre-wrap}
 .rqthread{display:flex;flex-direction:column;gap:8px;max-height:min(46vh,420px);overflow-y:auto;padding:4px 2px;overscroll-behavior:contain}
@@ -1147,7 +1148,7 @@ function vRequests(){
    ${r.details?`<p style="white-space:pre-wrap;margin:8px 0">${esc(r.details)}</p>`:""}
    ${(r.answers||[]).length?`<dl class="rqans">${r.answers.map(x=>`<dt>${esc(x.q)}</dt><dd>${esc(x.a)}</dd>`).join("")}</dl>`:""}
    ${(r.image_paths||[]).length?`<div class="pics">${r.image_paths.map(pth=>RQ.pics[pth]?`<a class="pic" href="${esc(RQ.pics[pth])}" target="_blank" rel="noopener"><img src="${esc(RQ.pics[pth])}" alt="Inspiration photo"></a>`:`<div class="pic"></div>`).join("")}</div>`:""}
-   <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn primary sm" data-a="rqChat" data-id="${esc(r.id)}">${rqMsgs(r.id).length?"Open conversation":"Message"}</button><button class="btn sm" data-a="rqQuote" data-id="${esc(r.id)}">Make a quote</button>${r.status!=="replied"?`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="replied">Mark replied</button>`:""}${r.status!=="declined"?`<button class="btn sm danger" data-a="rqStatus" data-id="${esc(r.id)}" data-v="declined">Decline</button>`:`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="new">Move back to new</button>`}</div></div></details>`}).join(""):`<div class="card empty">${I.inbox}${RQ.list.length?"Nothing in this list.":"No requests yet. Share your order form link to start receiving them."}</div>`}</div>
+   <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn primary sm" data-a="rqChat" data-id="${esc(r.id)}">${rqMsgs(r.id).length?"Open conversation":"Message"}</button><button class="btn sm" data-a="rqQuote" data-id="${esc(r.id)}">Make a quote</button>${rqIsCustomer(r)?`<button class="btn sm" data-a="rqOpenCust" data-id="${esc(r.id)}">Customer profile</button>`:`<button class="btn sm" data-a="rqCust" data-id="${esc(r.id)}">Save to customers</button>`}${r.status!=="replied"?`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="replied">Mark replied</button>`:""}${r.status!=="declined"?`<button class="btn sm danger" data-a="rqStatus" data-id="${esc(r.id)}" data-v="declined">Decline</button>`:`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="new">Move back to new</button>`}</div></div></details>`}).join(""):`<div class="card empty">${I.inbox}${RQ.list.length?"Nothing in this list.":"No requests yet. Share your order form link to start receiving them."}</div>`}</div>
   <p class="pempty" id="rqNone" hidden>No requests match your search.</p>`}
  $("main").innerHTML=`<div class="wrap rqpage"><div class="cardhead"><div><h1>Requests</h1><p class="lead" style="margin:0">Cake requests from your online order form.</p></div>${RQ.state==="ready"?`<span style="display:flex;gap:6px"><button class="btn sm" data-a="rqReload">Refresh</button></span>`:""}</div>${body}</div>`;
  rqSearch(RQ.q||"");
@@ -1171,6 +1172,29 @@ function formSetupHtml(){const fd=fullDates();const off=(S.settings.daysOff||[])
   ${CLOUD.state!=="on"?`<p class="note" style="margin:6px 0 0">Sign in so your form can see these.</p>`:""}</details></div>`}
 function sideRequests(){const n=RQ.list.filter(r=>r.status==="new").length;return `<div class="card white"><h3>Inbox</h3><div class="big">${RQ.state==="ready"?n:"–"}</div><p class="hint" style="margin:0">new request${n===1?"":"s"} waiting. “Make a quote” copies a request into a new quote, ready for prices.</p></div>`}
 async function rqPatch(id,body){await api(`/rest/v1/shop_requests?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",body,prefer:"return=minimal"});const r=RQ.list.find(x=>x.id===id);if(r)Object.assign(r,body)}
+
+/* ---------- Request → customer profile and quote ---------- */
+function rqParse(r){const out={handoff:"",address:"",time:"",budget:"",extras:"",rest:[]};
+ (r.answers||[]).forEach(x=>{const q=String(x.q||""),a=String(x.a||"").trim();if(!a)return;
+  if(/^pickup or delivery/i.test(q)){out.handoff=/deliver/i.test(a)?"Delivered":/ship/i.test(a)?"Shipped":"Collected";return}
+  if(/^budget$/i.test(q)){out.budget=a;return}
+  if(/^extras chosen$/i.test(q)){out.extras=a;return}
+  if(/address/i.test(q)&&!out.address){out.address=a;return}
+  if(/\btime\b/i.test(q)&&!out.time){const m=a.match(/(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?/i);if(m){let h=+m[1];const mm=m[2]||"00",ap=(m[3]||"").toLowerCase();if(ap.startsWith("p")&&h<12)h+=12;if(ap.startsWith("a")&&h===12)h=0;if(h<24&&+mm<60){out.time=`${String(h).padStart(2,"0")}:${mm}`}}}
+  out.rest.push({q,a})});return out}
+function rqCustomer(r){const em=lc(r.email),ph=String(r.phone||"").replace(/\D/g,"");
+ let c=S.customers.find(x=>em&&lc(x.email)===em)||S.customers.find(x=>ph.length>=7&&String(x.phone||"").replace(/\D/g,"").endsWith(ph.slice(-10)))||S.customers.find(x=>!x.email&&lc(fullName(x))===lc(r.name));
+ const isNew=!c;if(!c){c=fixCustomer({id:uid(),...splitName(r.name),phone:r.phone||"",email:r.email||"",notes:"",source:"Website"});S.customers.push(c)}
+ else{if(!c.phone&&r.phone)c.phone=r.phone;if(!c.email&&r.email)c.email=r.email;if(!c.first&&!c.last){Object.assign(c,splitName(r.name));fixCustomer(c)}if(!c.source)c.source="Website"}
+ const e=rqEvent(r.event_type_id),p=rqParse(r);c.requests=Array.isArray(c.requests)?c.requests:[];
+ const rec={id:r.id,at:r.created_at,date:r.event_date||"",event:e?e.name:"",servings:r.servings||"",details:String(r.details||"").slice(0,1500),answers:(r.answers||[]).filter(x=>x&&x.a).slice(0,40).map(x=>({q:String(x.q).slice(0,200),a:String(x.a).slice(0,500)})),photos:(r.image_paths||[]).length};
+ const k=c.requests.findIndex(x=>x.id===r.id);if(k>-1)c.requests[k]=rec;else c.requests.unshift(rec);
+ if(p.address&&p.handoff==="Delivered"&&!c.address){c.address=p.address}
+ return{c,isNew}}
+const rqIsCustomer=r=>S.customers.some(x=>(x.requests||[]).some(q=>q.id===r.id));
+function custRequestsCard(c){const L=c.requests||[];if(!L.length)return "";
+ return `<div class="card"><h3>Cake requests</h3><p class="hint" style="margin:2px 0 8px">What ${esc(c.first||"they")} asked for on your order form.</p>${L.map(q=>`<details class="creq"><summary><b>${esc(q.event||"Cake request")}</b>${q.date?` · ${esc(new Date(q.date+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))}`:""}<span class="note"> · sent ${esc(new Date(q.at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span></summary>
+  ${q.details?`<p style="white-space:pre-wrap;margin:6px 0">${esc(q.details)}</p>`:""}<dl class="rqans">${q.servings?`<dt>Servings</dt><dd>${esc(q.servings)}</dd>`:""}${(q.answers||[]).map(a=>`<dt>${esc(a.q)}</dt><dd>${esc(a.a)}</dd>`).join("")}${q.photos?`<dt>Photos</dt><dd>${q.photos} in Requests</dd>`:""}</dl></details>`).join("")}</div>`}
 
 /* ---------- Request conversations ---------- */
 const rqMsgs=id=>(RQ.msgs||[]).filter(m=>m.request_id===id);
@@ -1845,6 +1869,7 @@ function vCustomers(){
   <div class="card"><div class="cardhead" style="margin:0"><div><h3 style="margin:0">Special dates</h3><p class="hint" style="margin:2px 0 6px">Birthdays and anniversaries show on your Today page the week before.</p></div><button class="mv" data-a="sdAdd" aria-label="Add a date" title="Add a date">+</button></div>${(c.dates||[]).map((x,i)=>`<div class="grid3" style="align-items:end"><div class="field"><input type="text" data-sd="${i}" data-sk="label" value="${esc(x.label||"")}" placeholder="e.g. Ava's birthday" aria-label="What it is"></div><div class="field"><input type="date" data-sd="${i}" data-sk="date" value="${esc(x.date||"")}" aria-label="Date"></div><div class="field"><button class="btn sm" data-a="sdDel" data-i="${i}">Remove</button></div></div>`).join("")||`<p class="nil" style="text-align:center;margin:10px 0">No special dates added</p>`}</div>
   <div class="card"><h3>Automatic emails for ${esc(c.first||"this customer")}</h3><p class="hint" style="margin:0 0 6px">Choose which automatic emails this customer gets. Changes save right away. <button class="linkbtn" data-a="go" data-r="emails">Email settings for everyone</button></p>${S.settings.autoSend?`<p class="epon"><i></i>Automatic emails are on.</p>`:`<p class="epoff">Automatic emails are off for everyone, so nothing goes out yet.</p>`}<div class="ephead"><span>Email</span><span>Send</span><span>Skip</span></div>${prefs}</div>
   </div></div>
+  ${custRequestsCard(c)}
   <div class="card"><div class="cardhead"><div><h3 style="margin:0">Order history</h3></div>${c.blacklisted?`<button class="btn sm" disabled title="Blacklisted customers can't order">New order</button>`:`<button class="btn sm primary" data-a="custOrder">+ New order</button>`}</div>${mine.length?`<div class="rows">${mine.map(orow).join("")}</div>`:`<p class="nil" style="text-align:center;margin:14px 0">No orders yet</p>`}</div>
   <div class="card"><div class="cardhead"><div><h3 style="margin:0">Imported order history <span class="pill">Read-only</span></h3></div><button class="btn sm" data-a="impOpen" data-k="orders">Import</button></div>${old.length?`<div class="rows">${old.map(orow).join("")}</div>`:`<p class="nil" style="text-align:center;margin:14px 0">No imported order history</p>`}</div>
   <div class="card"><h3>Customer statement</h3><p class="hint" style="margin:0 0 8px">Everything ${esc(c.first||"they")} ordered and paid in a date range, ready to print or send.</p><div class="stmtbar"><label>From<input type="date" id="stA" value="${esc(STMT.a)}"></label><label>To<input type="date" id="stB" value="${esc(STMT.b)}"></label><label class="chk"><input type="checkbox" id="stU"${STMT.unpaid?" checked":""}> Leave out paid orders</label><button class="btn primary sm" data-a="stmtView">View statement</button></div></div>
@@ -2392,9 +2417,14 @@ document.addEventListener("click",e=>{
    if(draft.id){const k=S.orders.findIndex(x=>x.id===draft.id);if(k>=0){S.orders[k]=clone(draft);save()}}closeM();render();if(mail)openCompose("cancel");else toast(draft.id?"Cancelled and saved":"Marked cancelled. Save to keep it");break}
   case"openStudio":{if(draft.studio&&draft.studio.code){try{localStorage.setItem("dcs-open-code",draft.studio.code)}catch{}}location.href="studio.html";break}
   case"rqQuote":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;{const bc=blMatch(r.name,r.email);if(bc&&!confirm(`${fullName(bc)} is blacklisted${bc.blReason?" ("+bc.blReason+")":""}. Make a quote anyway?`))break}const en=rqEvent(r.event_type_id)?.name;const le=S.events.find(e=>en&&e.name.toLowerCase()===en.toLowerCase());
-   draft=blankOrder();Object.assign(draft,{customer:r.name,email:r.email,phone:r.phone||"",date:r.event_date||"",kind:"Quote",status:"Inquiry",eventId:le?le.id:draft.eventId,notes:[r.details,r.servings?`Servings: ${r.servings}`:"",...(r.answers||[]).map(x=>`${x.q} ${x.a}`)].filter(Boolean).join("\n\n"),requestId:r.id});logEv(draft,"Started from an online request");
-   const c=S.customers.find(x=>x.email&&x.email.toLowerCase()===r.email.toLowerCase());if(c)draft.customerId=c.id;
-   rqPatch(r.id,{status:"converted"}).catch(()=>{});go("new-order");toast("Request copied into a new quote. Add items and prices");break}
+   const {c,isNew}=rqCustomer(r),p=rqParse(r);persist();
+   draft=blankOrder();Object.assign(draft,{customer:fullName(c)||r.name,email:r.email||c.email||"",phone:r.phone||c.phone||"",customerId:c.id,date:r.event_date||"",time:p.time,kind:"Quote",status:"Inquiry",eventId:le?le.id:draft.eventId,
+    handoff:p.handoff||draft.handoff,address:p.handoff==="Delivered"?p.address:"",notes:r.details||"",images:(r.image_paths||[]).slice(0,8).map(x=>"sb:"+x),imagesOnDoc:false,requestId:r.id,
+    prodNotes:[`From your online order form, ${new Date(r.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}`,r.servings?`Servings: ${r.servings}`:"",p.budget?`Budget: ${p.budget}`:"",p.extras?`Extras they picked: ${p.extras}`:"",p.address&&p.handoff!=="Delivered"?`Address: ${p.address}`:"",...p.rest.filter(x=>!/address/i.test(x.q)||p.handoff!=="Delivered").map(x=>`${x.q}: ${x.a}`)].filter(Boolean).join("\n")});
+   logEv(draft,"Started from an online request");
+   rqPatch(r.id,{status:"converted"}).catch(()=>{});go("new-order");toast(`Request copied into a new quote${isNew?` and ${fullName(c)} added to Customers`:""}. Add items and prices`);break}
+  case"rqCust":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;const {c,isNew}=rqCustomer(r);persist();vRequests();toast(isNew?`${fullName(c)} added to Customers`:`Request saved to ${fullName(c)}'s profile`);break}
+  case"rqOpenCust":{const r=RQ.list.find(x=>x.id===b.dataset.id);const c=r&&S.customers.find(x=>(x.requests||[]).some(q=>q.id===r.id));if(c){editCust=c.id;custEditing=false;go("customers")}break}
   case"planOpen":planner.open=true;renderItem();setTimeout(()=>$("pl-g")&&$("pl-g").focus(),0);break;
   case"planClose":planner.open=false;renderItem();break;
   case"planUse":{const r=planTiers(+planner.guests,planner.style,planner.shape)[i];if(!r)break;const t=ptype(M.item.typeId);const sizeG=t.groups.find(x=>/size/i.test(x.name)),shapeG=t.groups.find(x=>/shape/i.test(x.name));const base=()=>Object.fromEntries(t.groups.filter(x=>!x.hidden).map(x=>[x.name,""]));
