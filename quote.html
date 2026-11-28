@@ -144,7 +144,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
    <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv" id="paidRow" hidden><span>Paid online</span><span id="paidAmt"></span></div><div class="kv tot"><span>Balance due</span><span id="balAmt">${esc(d.bal)}</span></div></div>
   <div id="payBox" class="noprint"></div>
   ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
-  ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
+  ${d.notes?`<span class="lbl">Additional Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
   ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
    if(d.payNote||pay)sec.push(`<section class="dsec" id="howPay"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
    if(d.footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(d.footer)}</div></section>`);
