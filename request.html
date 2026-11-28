@@ -271,6 +271,7 @@ if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('messa
   if(!info)return closed('Order form not found','Check the link you were given, or contact the cake artist directly.');
   if(!info.accepting)return closed(`${info.business} isn't taking requests right now`,'Please check back soon or contact them directly.');
   form();
+  if(info.business)document.title='Order a cake from '+info.business;
   rpc('shop_reviews_public',{p_slug:slug}).then(r=>r.ok?r.json():null).then(j=>{const R=(j&&Array.isArray(j.reviews)?j.reviews:[]).filter(x=>x&&+x.rating>=1);if(!R.length||!app.querySelector('#rf'))return;
    const avg=R.reduce((a,x)=>a+ +x.rating,0)/R.length,top=R.filter(x=>+x.rating>=4&&x.body).slice(0,2);
    const d=document.createElement('div');d.className='rvs';d.innerHTML=`<p class="rvsum"><span class="st" aria-hidden="true">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span> <b>${avg.toFixed(1)}</b> from ${R.length} review${R.length===1?'':'s'}</p>${top.map(x=>`<blockquote>“${esc(String(x.body).length>140?String(x.body).slice(0,137).trim()+'…':x.body)}”<cite>${esc(x.name||'')}</cite></blockquote>`).join('')}`;
