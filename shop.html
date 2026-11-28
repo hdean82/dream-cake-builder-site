@@ -752,6 +752,7 @@ input[type=range]{width:100%;accent-color:var(--rose)}
 .rqbl{display:flex;gap:8px;align-items:flex-start;margin:8px 0 2px;background:#b3261e;color:#fff;border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.4}.rqbl svg{width:18px;height:18px;flex:none;margin-top:1px}
 details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .slotgrid{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 8px;align-items:center;margin:6px 0 8px}.slotday{display:flex;align-items:center;gap:6px;min-width:64px}.slotday:not(.on) b{color:var(--muted)}.slotto{font-size:13px;color:var(--muted)}.slotgrid input[type=time]{min-width:0;padding:6px 8px}.slotgrid input:disabled{opacity:.45}.rfchk{display:flex;gap:8px;align-items:center;font-weight:500}
+.sigshow{margin:8px 0 10px;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:12px}.sigshow img{display:block;max-width:260px;width:100%;height:auto}.sigshow span{font-size:12.5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2113,7 +2114,7 @@ async function shareOrder(o,quiet){if(CLOUD.state!=="on")throw new Error("Sign i
  const k=S.orders.findIndex(x=>x.id===o.id);if(k>=0){S.orders[k].share=clone(o.share);save()}if(first&&!quiet)logEv(o,"Customer link created");return shareUrl(tok)}
 let APPR={at:0};
 async function syncApprovals(force){if(CLOUD.state!=="on"||(!force&&Date.now()-APPR.at<60e3))return;APPR.at=Date.now();
- let rows=[];try{rows=await api("/rest/v1/shop_quote_links?select=order_ref,status,responder_name,client_message,responded_at,viewed_at")}catch{return}
+ let rows=[];try{rows=await api("/rest/v1/shop_quote_links?select=order_ref,status,responder_name,client_message,responded_at,viewed_at,signature,signed_at")}catch{return}
  let changed=false;const news=[];
  for(const r of rows||[]){const o=S.orders.find(x=>x.id===r.order_ref);if(!o)continue;const a=o.approval||{};
   if(r.viewed_at&&!a.viewed){o.approval=Object.assign(a,{viewed:r.viewed_at});changed=true}
@@ -2123,6 +2124,7 @@ async function syncApprovals(force){if(CLOUD.state!=="on"||(!force&&Date.now()-A
    else if(r.status==="declined"){logEv(o,`Declined by ${who} online`);news.push(`${who} declined #${o.no}`)}
    else news.push(`New message from ${who} on #${o.no}`);
    if(r.client_message)logEv(o,`Message from ${who}: ${r.client_message.slice(0,300)}`)}
+  if(r.signature&&o.approval&&!o.approval.sig){o.approval.sig=r.signature;o.approval.signedAt=r.signed_at;logEv(o,`Signed online by ${r.responder_name||o.customer}`);changed=true}
   if(r.status==="revoked"&&o.share&&o.share.token&&!o.share.off){o.share.off=true;changed=true}}
  if(changed){if(draft&&draft.id){const fresh=S.orders.find(x=>x.id===draft.id);if(fresh){draft.approval=clone(fresh.approval||null);draft.status=fresh.status;draft.log=clone(fresh.log||[])}}save();render();if(news.length)toast(news.slice(0,2).join(" · "))}}
 window.addEventListener("focus",()=>syncApprovals());setInterval(()=>{if(!document.hidden)syncApprovals()},120e3);
@@ -2130,6 +2132,7 @@ function approvalBadge(o){const a=o.approval||{};if(a.status==="approved")return
 function shareCard(d){if(!d.id)return"";const on=d.share&&d.share.token&&!d.share.off,a=d.approval||{};const when=x=>new Date(x).toLocaleDateString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
  return `<div class="card sharecard"><div class="cardhead"><div><h3>Customer Link</h3><p class="hint" style="margin:0">${on?(a.status==="approved"?`<b>Approved</b>${a.name?" by "+esc(a.name):""} · ${esc(when(a.at))}`:a.status==="declined"?`<b>Declined</b>${a.name?" by "+esc(a.name):""} · ${esc(when(a.at))}`:a.viewed?`Opened ${esc(when(a.viewed))}. Waiting for an answer.`:"Not opened yet."):`Your customer can view this ${d.kind==="Quote"?"quote":"invoice"}${d.images&&d.images.length?" with photos":""}, approve it and message you. No account needed.`}</p></div>${approvalBadge(d)}</div>
   ${a.msg?`<blockquote class="cmsg">“${esc(a.msg)}”<span>${esc(a.name||d.customer)}</span></blockquote>`:""}
+  ${a.sig&&/^data:image\/png;base64,/.test(a.sig)?`<div class="sigshow"><img src="${a.sig}" alt="Customer signature"><span>Signed online by ${esc(a.name||d.customer)}${a.signedAt?" · "+esc(when(a.signedAt)):""}</span></div>`:""}
   <div style="display:flex;gap:6px;flex-wrap:wrap">${on?`<button class="btn sm" data-a="shareCopy">Copy Link</button><button class="btn sm" data-a="compose" data-k="${d.kind==="Quote"?"quote":"invoice"}">Email Link</button><a class="btn sm" href="${esc(shareUrl(d.share.token))}" target="_blank" rel="noopener">Open</a><button class="btn sm" data-a="shareSync">Check For Answers</button><button class="btn sm danger" data-a="shareOff">Turn Off Link</button>`:CLOUD.state==="on"?`<button class="btn sm primary" data-a="shareMake">Create Link</button>`:`<span class="note">Sign in to share a link.</span>`}</div></div>`}
 
 /* ---------- Cancelling an order ---------- */

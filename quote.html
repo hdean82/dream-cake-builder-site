@@ -41,6 +41,7 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .docfoot{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 0}
 .answer{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .answer h2{font-size:20px;margin:0 0 4px}
+.sigwrap{margin:6px 0 10px}.sigwrap label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}.sigpad{display:block;width:100%;height:130px;background:#fff;border:1.5px dashed var(--line);border-radius:12px;touch-action:none;cursor:crosshair}.sigrow{display:flex;justify-content:space-between;align-items:center;margin-top:4px}.sigrow button{background:none;border:0;color:var(--rose-ink,#9a1b5f);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:4px}.signed{display:inline-block;margin-top:6px;font-size:13px;color:#0f5f5b}
 .field{display:flex;flex-direction:column;gap:4px;margin:10px 0}
 .field input,.field textarea{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink)}
 .field textarea{min-height:80px;resize:vertical}
@@ -127,7 +128,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
    if(d.terms)sec.push(`<details class="dsec dfold"><summary>Full terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
    return sec.length?`<div class="dsecs">${sec.join('')}</div>`:''})()}
  </div>
- ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b> ${esc(d.biz)} will see your answer in their orders.<span class="depnote">${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</span></div>${answerBox(true)}`
+ ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b>${Q.signed?' <span class="signed">✍️ Signed online.</span>':''} ${esc(d.biz)} will see your answer in their orders.<span class="depnote">${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</span></div>${answerBox(true)}`
   :st==='declined'?`<div class="state no"><b>You declined this ${isQ?'quote':'invoice'}${when?' on '+esc(when):''}.</b> Changed your mind? Send ${esc(d.biz)} a message below.</div>${answerBox(true)}`
   :Q.expired?`<div class="state no"><b>This quote has expired.</b> Send ${esc(d.biz)} a message below to ask for a new one.</div>${answerBox(true)}`
   :answerBox(false)}
@@ -138,6 +139,7 @@ function answerBox(msgOnly){const isQ=Q.doc.kind==='quote';
   <p class="note" style="margin:0">${msgOnly?`Your message goes straight to ${esc(Q.doc.biz)}.`:isQ?`Approve to let ${esc(Q.doc.biz)} know you'd like to go ahead, or send a question first.`:`Let ${esc(Q.doc.biz)} know if anything needs changing.`}</p>
   <div class="field"><label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="120" value="${esc(Q.responder_name||Q.doc.customer||'')}"></div>
   <div class="field"><label for="a-msg">Message <span class="note">optional</span></label><textarea id="a-msg" maxlength="2000" placeholder="Anything you'd like to add or change"></textarea></div>
+  ${!msgOnly&&isQ?`<div class="sigwrap"><label for="sigPad">Sign to approve</label><canvas class="sigpad" id="sigPad" aria-label="Signature pad. Draw your signature with your finger or mouse."></canvas><div class="sigrow"><span class="note">Use your finger or mouse</span><button type="button" id="sigClear">Clear</button></div></div>`:''}
   ${!msgOnly&&isQ&&Q.doc.terms?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-terms" style="margin-top:3px"> I've read the terms and policies above.</label>`:''}
   <div class="acts">${msgOnly?`<button class="btn primary" type="button" data-act="message">Send Message</button>`:`${isQ?`<button class="btn primary" type="button" data-act="approve">Approve Quote</button>`:''}<button class="btn" type="button" data-act="message">Send A Question</button>${isQ?`<button class="btn" type="button" data-act="decline">Decline</button>`:''}`}</div>
   <p class="msg" id="a-out" role="status"></p></form>`}
@@ -147,15 +149,29 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  if(!name){out.textContent='Please type your name.';$('a-name').focus();return}
  if(act==='message'&&!m){out.textContent='Please write your message.';$('a-msg').focus();return}
  if(act==='approve'&&$('a-terms')&&!$('a-terms').checked){out.textContent='Please tick the box to confirm you read the terms.';return}
+ if(act==='approve'&&$('sigPad')&&!SIG.has){out.textContent='Please sign in the box to approve.';$('sigPad').scrollIntoView({block:'center',behavior:'smooth'});return}
  if(act==='decline'&&!confirm('Decline this quote?'))return;
  document.querySelectorAll('[data-act]').forEach(x=>x.disabled=true);b.textContent='Sending…';
  try{const st=await rpc('shop_quote_respond',{p_token:token,p_action:act,p_name:name,p_message:m||null});
   fetch(`${SB}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'quote',token}),keepalive:true}).catch(()=>{});
+  if(act==='approve'&&SIG.has){try{await rpc('shop_quote_sign',{p_token:token,p_signature:sigData()});Q.signed=true}catch(e){console.warn('signature',e)}}
   Q.status=st;Q.responder_name=name;Q.responded_at=new Date().toISOString();draw();payDraw();
   if(act==='message'){const o=$('a-out');if(o){o.style.color='#0f5f5b';o.textContent='Message sent. Thank you!'}}
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
  }catch(err){document.querySelectorAll('[data-act]').forEach(x=>x.disabled=false);b.textContent={approve:'Approve Quote',decline:'Decline',message:'Send Message'}[act];out.textContent=err.message||'Something went wrong. Please try again.'}});
 
+
+// Signature pad: drawn with a finger or mouse, saved as a small PNG when the quote is approved.
+const SIG={has:false,ctx:null};
+function sigInit(){const c=$('sigPad');if(!c||c.dataset.on)return;c.dataset.on=1;const r=c.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);c.width=Math.round(r.width*dpr);c.height=Math.round(r.height*dpr);
+ const x=c.getContext('2d');x.scale(dpr,dpr);x.lineWidth=2.4;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#2b1424';SIG.ctx=x;SIG.has=false;let d=false,lx=0,ly=0;
+ const pt=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+ c.addEventListener('pointerdown',e=>{d=true;c.setPointerCapture(e.pointerId);[lx,ly]=pt(e);x.beginPath();x.arc(lx,ly,1.1,0,7);x.fill();SIG.has=true});
+ c.addEventListener('pointermove',e=>{if(!d)return;const[a,b]=pt(e);x.beginPath();x.moveTo(lx,ly);x.lineTo(a,b);x.stroke();lx=a;ly=b});
+ const up=()=>d=false;c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+ $('sigClear').onclick=()=>{x.clearRect(0,0,c.width,c.height);SIG.has=false}}
+function sigData(){const c=$('sigPad'),o=document.createElement('canvas');const w=Math.min(600,c.width),h=Math.round(c.height*w/c.width);o.width=w;o.height=h;o.getContext('2d').drawImage(c,0,0,w,h);return o.toDataURL('image/png')}
+new MutationObserver(()=>sigInit()).observe(document.body,{childList:true,subtree:true});
 
 // Pay by card straight to the cake artist (Stripe), when they've switched it on.
 let PAY=null,PAID=null;
