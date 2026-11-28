@@ -834,6 +834,7 @@ const TPL=[
  ["remind","auto","Order reminder","Reminds customers a few days before their order.","Your cake is almost ready!","Hi {{CUSTOMER_FIRST_NAME}},\n\nA friendly reminder that your order is scheduled for {{EVENT_DATE}} at {{PICKUP_TIME}}.\n\nBalance due at pickup: {{BALANCE_DUE}}\n\n{{BUSINESS_NAME}}"],
  ["payrem","auto","Payment reminder","Reminds customers about upcoming or overdue payments.","Payment reminder for order #{{ORDER_NUMBER}}","Hi {{CUSTOMER_FIRST_NAME}},\n\nYour remaining balance of {{BALANCE_DUE}} is due before {{EVENT_DATE}}.\n\nThank you!\n{{BUSINESS_NAME}}"],
  ["paythanks","auto","Payment thank-you","Confirms a payment as soon as it's recorded.","Thank you for your payment!","Hi {{CUSTOMER_FIRST_NAME}},\n\nYour payment has been received. Remaining balance: {{BALANCE_DUE}}.\n\n{{BUSINESS_NAME}}"],
+ ["rebook","manual","Celebrating again?","Used from Today when last year's birthday or anniversary comes round.","Celebrating again this year? 🎂","Hi {{CUSTOMER_FIRST_NAME}},\n\nIt's almost a year since I made your cake, and I'd love to be part of the celebration again!\n\nIf you're planning something this year, just reply and I'll hold the date for you. I can do the same design, or something completely new.\n\n{{BUSINESS_NAME}}\n{{BUSINESS_PHONE}}"],
  ["followup","auto","After-order follow-up","Sent after the order is completed.","How was your cake?","Hi {{CUSTOMER_FIRST_NAME}},\n\nI hope your celebration was wonderful! I'd love to hear how everyone liked the cake, and a photo would make my day.\n\nThank you for choosing {{BUSINESS_NAME}}!"]
 ];
 const AUTO_ON={autoinv:true,ack:false,expired:true,remind:true,payrem:true,paythanks:true,followup:false};
@@ -1492,6 +1493,16 @@ const addDays=(iso,n)=>{const d=new Date(iso+"T00:00");d.setDate(d.getDate()+n);
 function orderTasks(o){if(!o.date||o.kind!=="Order"||["Cancelled","Completed"].includes(o.status))return[];
  return S.prepSteps.slice().sort((a,b)=>b.days-a.days).map(st=>({o,st,due:addDays(o.date,-(+st.days||0)),done:!!(o.tasks&&o.tasks[st.id])}))}
 const allTasks=()=>S.orders.flatMap(orderTasks);
+/* ---------- Re-book reminders: last year's birthdays and anniversaries coming round again ---------- */
+function rebookList(){const today=isoD(new Date()),until=addDays(today,28),y=+today.slice(0,4),seen=new Set(),out=[];const skip=S.settings.rebookSkip||{};
+ const evName=o=>(S.events.find(e=>e.id===o.eventId)||{}).name||"";
+ const busy=o=>S.orders.some(x=>x!==o&&x.status!=="Cancelled"&&x.date&&x.date>=today&&((o.customerId&&x.customerId===o.customerId)||(o.email&&x.email&&x.email.toLowerCase()===o.email.toLowerCase())||lc(x.customer)===lc(o.customer)));
+ S.orders.filter(o=>o.kind==="Order"&&o.status!=="Cancelled"&&o.date&&o.date<today&&/birthday|anniversar/i.test(evName(o))).sort((a,b)=>b.date.localeCompare(a.date)).forEach(o=>{
+  const md=o.date.slice(5);let k=`${y}-${md}`;if(k<today)k=`${y+1}-${md}`;if(k>until||o.date.slice(0,4)>=k.slice(0,4))return;
+  const who=(o.customerId||o.email||lc(o.customer))+"|"+evName(o);if(seen.has(who))return;seen.add(who);
+  if(skip[o.id]===k.slice(0,4)||busy(o))return;out.push({o,k,ev:evName(o)})});
+ return out.sort((a,b)=>a.k.localeCompare(b.k)).slice(0,8)}
+function ensureTpls(){TPL.forEach(([id,group,name,desc,subject,body])=>{if(!S.tpls.some(t=>t.id===id))S.tpls.push({id,group,name,desc,subject,body,on:group==="manual"?true:!!AUTO_ON[id]})})}
 function taskRow(t,showOrder=true){const today=isoD(new Date()),late=!t.done&&t.due<today;
  return `<label class="trow${t.done?" done":""}${late?" late":""}"><input type="checkbox" data-task="${esc(t.o.id)}|${esc(t.st.id)}"${t.done?" checked":""}><span class="tb"><b>${esc(t.st.name)}</b>${showOrder?`<span class="note">${esc(t.o.customer)} · #${esc(t.o.no)} · event ${esc(new Date(t.o.date+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span>`:""}</span><span class="tdue">${late?"Overdue · ":""}${esc(t.due===today?"Today":new Date(t.due+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</span></label>`}
 
@@ -1539,6 +1550,7 @@ function vToday(){const today=isoD(new Date()),tom=addDays(today,1),wk=addDays(t
  ${card("Pickups & deliveries",handoffs.length?`<div class="rows">${handoffs.map(o=>orow(o,`${o.date===today?"Today":"Tomorrow"}<br><span class="note">${esc({Collected:"Pickup",Delivered:"Delivery",Shipped:"Ship"}[o.handoff])}</span>`)).join("")}</div>`:"","None today or tomorrow.")}
  ${soon.length?card("Coming up in the next 3 days",`<div class="tlist">${soon.map(t=>taskRow(t)).join("")}</div>`):""}
  ${(()=>{const nx=x=>{if(!x.date)return null;const[,m,dd]=x.date.split("-");let y=new Date().getFullYear(),k=`${y}-${m}-${dd}`;if(k<today)k=`${y+1}-${m}-${dd}`;return k};const sd=S.customers.flatMap(c=>(c.dates||[]).map(x=>({c,x,k:nx(x)}))).filter(o=>o.k&&o.k<=wk).sort((a,b)=>a.k.localeCompare(b.k));return sd.length?card("Special dates this week",`<div class="rows">${sd.map(o=>`<button class="rowi" data-a="custToday" data-id="${esc(o.c.id)}"><span class="bd"><span class="t">${esc(o.x.label||"Special date")}</span><br><span class="d">${esc(o.c.name)} · ${esc(new Date(o.k+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</span></span><span class="v">${o.c.phone?"Call":"Email"}</span></button>`).join("")}</div>`):""})()}
+ ${(()=>{const rb=rebookList();return rb.length?card(`Reach out again <span class="pill">${rb.length}</span>`,`<p class="hint" style="margin:0 0 8px">Last year's celebrations coming round again. A quick hello is the easiest order you'll get.</p><div class="rows">${rb.map(x=>`<div class="rowi rbk"><span class="bd"><span class="t">${esc(x.o.customer)}</span><br><span class="d">${esc(x.ev)} · ${esc(new Date(x.k+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))} · last cake #${esc(x.o.no)}</span></span><span class="v rbka"><button class="btn sm primary" data-a="rebookMsg" data-id="${esc(x.o.id)}">Say hello</button><button class="btn sm ghost" data-a="rebookSkip" data-id="${esc(x.o.id)}" data-y="${esc(x.k.slice(0,4))}" aria-label="Not this year">Skip</button></span></div>`).join("")}</div>`,""):""})()}
  <div class="grid2" style="gap:0 12px">${card("Quotes expiring soon",expiring.length?`<div class="rows">${expiring.map(o=>orow(o,money(totals(o).total))).join("")}</div>`:"","No quotes about to expire.")}
  ${card("Balances due this week",owed.length?`<div class="rows">${owed.map(o=>orow(o,money(totals(o).bal))).join("")}</div>`:"","Everyone's paid up for this week.")}</div></div>`;
 }
@@ -2412,6 +2424,8 @@ document.addEventListener("click",e=>{
   case"delPay":logEv(draft,`Payment of ${money(draft.payments[i].amount)} removed`);draft.payments.splice(i,1);render();break;
   case"docPreview":openDoc();break;
   case"logoDel":delete S.settings.doc.logo;save();render();toast("Logo removed");break;
+  case"rebookSkip":{S.settings.rebookSkip=S.settings.rebookSkip||{};S.settings.rebookSkip[b.dataset.id]=b.dataset.y;save();render();toast("Hidden until next year");break}
+  case"rebookMsg":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;ensureTpls();save();draft=clone(o);go("new-order");setTimeout(()=>openCompose("rebook"),80);break}
   case"custToday":editCust=b.dataset.id;custTab="customers";go("customers");break;
   case"sdAdd":{const c=S.customers.find(x=>x.id===editCust);if(c){(c.dates=c.dates||[]).push({label:"",date:""});save();render()}}break;
   case"sdDel":{const c=S.customers.find(x=>x.id===editCust);if(c&&c.dates){c.dates.splice(+b.dataset.i,1);save();render()}}break;
