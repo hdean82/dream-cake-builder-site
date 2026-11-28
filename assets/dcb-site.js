@@ -473,10 +473,10 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
     for (let n; (n = tw.nextNode());) if (/\S/.test(n.nodeValue)) nodes.push(n);
     if (!nodes.length) return;
     const parts = nodes.map((n) => n.nodeValue.split(/(\s+)/));
-    let total = 0; parts.forEach((p) => p.forEach((t) => { if (/[A-Za-z]/.test(t)) total++; }));
+    let total = 0; parts.forEach((p) => p.forEach((t) => { if (/\S/.test(t)) total++; }));
     let k = 0;
     parts.forEach((p, i) => {
-      const out = p.map((t) => { if (!/[A-Za-z]/.test(t)) return t; const edge = k === 0 || k === total - 1; k++; return word(t, edge); }).join('');
+      const out = p.map((t) => { if (!/\S/.test(t)) return t; const edge = k === 0 || k === total - 1 || /^[(\[“"]/.test(t); k++; return /[A-Za-z]/.test(t) ? word(t, edge) : t; }).join('');
       if (out !== nodes[i].nodeValue) nodes[i].nodeValue = out;
     });
     el.setAttribute('data-tc', '');
