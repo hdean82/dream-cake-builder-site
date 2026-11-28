@@ -28,6 +28,7 @@
 .field input,.field textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:inherit;font-size:16px;background:#fff;color:var(--ink)}.field input:focus,.field textarea:focus{outline:2px solid var(--rose);outline-offset:1px;border-color:transparent}
 .msg{min-height:20px;color:var(--rose-ink,#9a1b5f);font-size:14px;margin:8px 0 0}
 .done{text-align:center;padding:20px 0}.done .big{font-family:Fraunces,Georgia,serif;font-size:28px;margin-bottom:6px}
+.also{margin:16px auto 0;max-width:420px;background:#fff;border:1px solid #eed3e3;border-radius:14px;padding:14px}.also p{margin:0 0 10px}
 </style>
 </head>
 <body>
@@ -60,7 +61,7 @@ const H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json
 const $=id=>document.getElementById(id),app=$('app');
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const q=new URLSearchParams(location.search),slug=(q.get('shop')||'').trim().toLowerCase(),cake=(q.get('cake')||'').slice(0,80),who=(q.get('name')||'').slice(0,60);
-let biz='',rating=0;
+let biz='',rating=0,RURL='';
 const rpc=async(fn,body)=>{const r=await fetch(`${SB}/rest/v1/rpc/${fn}`,{method:'POST',headers:H,body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||'Something went wrong. Please try again.');return j};
 function draw(){app.innerHTML=`<span class="eyebrow">Leave a review</span><h1>How was your cake${biz?` from ${esc(biz)}`:''}?</h1><p class="lead">A few words help other people find a great cake artist. Thank you!</p>
  <form id="f" novalidate><div class="field"><span style="font-weight:600;font-size:14px" id="rl">Your rating</span><div class="stars" role="radiogroup" aria-labelledby="rl">${[1,2,3,4,5].map(n=>`<button type="button" role="radio" aria-checked="${rating===n}" aria-label="${n} star${n>1?'s':''}" data-s="${n}" class="${n<=rating?'on':''}">★</button>`).join('')}</div></div>
@@ -73,10 +74,12 @@ document.addEventListener('submit',async e=>{e.preventDefault();const m=$('m'),n
  if(!rating){m.textContent='Please tap a star rating.';return}if(!name){m.textContent='Please add your name.';$('n').focus();return}
  const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Sending…';
  try{await rpc('shop_review_submit',{p_slug:slug,p_name:name,p_rating:rating,p_body:body,p_cake:cake});
-  app.innerHTML=`<div class="done"><div class="big">Thank you! 💕</div><p>Your review was sent to ${esc(biz||'your cake artist')}.</p><p style="margin-top:14px"><a class="btn" href="request.html?shop=${encodeURIComponent(slug)}">Order another cake</a></p></div>`}
+  const ext=rating>=4&&/^https:\/\/\S+$/.test(RURL)?RURL:'',ex=ext?(/facebook\./i.test(ext)?'Facebook':/google|g\.page|goo\.gl/i.test(ext)?'Google':'their review page'):'';
+  app.innerHTML=`<div class="done"><div class="big">Thank you! 💕</div><p>Your review was sent to ${esc(biz||'your cake artist')}.</p>${ext?`<div class="also"><p>Would you post it on ${esc(ex)} too? It helps a small cake business more than you'd think.</p><button type="button" class="btn primary" id="copyGo">Copy my review and open ${esc(ex)}</button></div>`:''}<p style="margin-top:14px"><a class="btn" href="request.html?shop=${encodeURIComponent(slug)}">Order another cake</a></p></div>`;
+  const cg=document.getElementById('copyGo');if(cg)cg.onclick=async()=>{try{if(body)await navigator.clipboard.writeText(body)}catch{}window.open(ext,'_blank','noopener')}}
  catch(err){btn.disabled=false;btn.textContent='Send my review';m.textContent=err.message}});
 (async()=>{if(!slug){app.innerHTML='<p>This review link isn’t complete. Please check the link you were sent.</p>';return}
- try{const p=await rpc('shop_reviews_public',{p_slug:slug});if(!p){app.innerHTML='<p>This review link isn’t active.</p>';return}biz=p.business||'';document.title=`Review ${biz} · Dream Cake Builder`;draw()}
+ try{const p=await rpc('shop_reviews_public',{p_slug:slug});if(!p){app.innerHTML='<p>This review link isn’t active.</p>';return}biz=p.business||'';RURL=p.review_url||'';document.title=`Review ${biz} · Dream Cake Builder`;draw()}
  catch{app.innerHTML='<p>We couldn’t load this page. Please check your connection and try again.</p>'}})();
 }
 </script>
