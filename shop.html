@@ -2376,7 +2376,7 @@ function vProducts(){
  <button class="gear" data-a="tEdit" data-id="${esc(t.id)}" aria-label="Options for ${esc(t.name)}" title="Options">${GEAR}</button></div></div>`).join("")}</div></div>`;
  dragList("#tyList",(a,b)=>{reorder(S.types,a,b);save();render()});
 }
-function sideProducts(){const n=S.types.filter(t=>t.on).length;return `<div class="card white"><h3>Add item tiles</h3><div class="big">${n} of ${S.types.length}</div><p class="hint">product types show as big tiles when you tap “Add item” on an order. Switch off the ones you rarely sell. They stay available under “More product types”.</p></div><div class="card white"><h3>Tip</h3><p class="hint" style="margin:0">Put your best sellers at the top. Use the arrows to reorder types and options.</p></div>`}
+function sideProducts(){const on=S.types.filter(t=>t.on),off=S.types.filter(t=>!t.on);return `<div class="card white"><h3>Quick Add</h3><div class="big">${on.length} shown first</div><p class="hint">When you tap “Add Item” on an order, these ${on.length} product types show as big buttons so you can pick them in one tap.${off.length?` The other ${off.length} (${esc(off.map(t=>t.name).join(", "))}) are one more tap away, under “More Product Types”.`:""}</p><p class="hint" style="margin:6px 0 0">Tick or untick a type in the Quick Add column to change this.</p></div><div class="card white"><h3>Tip</h3><p class="hint" style="margin:0">Put your best sellers at the top. Drag ⋮⋮ to change the order of types and options.</p></div>`}
 
 /* ---------- Event types ---------- */
 let newEvColor=COLORS[0];
