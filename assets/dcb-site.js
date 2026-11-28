@@ -393,3 +393,29 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
   addEventListener('dcb-auth', () => setTimeout(start, 50));
   addEventListener('focus', () => { if (wrap) load(); });
 })();
+
+// Error reporting: if something breaks in a visitor's browser, quietly note the page and message (no personal details)
+// so the team sees real problems before anyone has to report them. Repeats of the same error are counted, not re-sent.
+(() => {
+  if (!/^https:$/.test(location.protocol)) return;
+  const SB = 'https://gcorvodfcxhumesttwvj.supabase.co', KEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+  const sent = new Set(); let n = 0;
+  const ours = src => !src || src.startsWith(location.origin) || src.startsWith(SB);
+  const skip = m => /ResizeObserver loop|Script error\.?$|Non-Error promise rejection|AbortError|The operation was aborted|Load failed|Failed to fetch|NetworkError|cancelled|chrome-extension|moz-extension|safari-(web-)?extension/i.test(m);
+  function report(message, source, stack) {
+    try {
+      message = String(message || '').slice(0, 500);
+      if (!message || skip(message) || skip(String(stack || '')) || !ours(source || '')) return;
+      const key = message + '|' + source; if (sent.has(key) || n >= 10) return; sent.add(key); n++;
+      let token = '';
+      try { const s = JSON.parse(localStorage.getItem('sb-gcorvodfcxhumesttwvj-auth-token')); if (s && s.access_token && s.expires_at > Date.now() / 1000 + 30) token = s.access_token; } catch (e) {}
+      fetch(SB + '/rest/v1/rpc/dcb_log_error', { method: 'POST', keepalive: true,
+        headers: { apikey: KEY, Authorization: 'Bearer ' + (token || KEY), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_page: location.pathname + location.hash.replace(/[?&](t|code|token)=[^&]*/g, ''), p_message: message, p_source: String(source || '').slice(0, 300), p_stack: String(stack || '').slice(0, 2000), p_agent: navigator.userAgent.slice(0, 300) })
+      }).catch(() => {});
+    } catch (e) {}
+  }
+  window.addEventListener('error', e => { if (e && e.message) report(e.message, (e.filename || '') + (e.lineno ? ':' + e.lineno + ':' + (e.colno || 0) : ''), e.error && e.error.stack); });
+  window.addEventListener('unhandledrejection', e => { const r = e && e.reason; report(r && (r.message || r) || 'Unhandled promise rejection', (r && r.stack && (String(r.stack).match(/https?:\/\/[^\s)]+/) || [''])[0]) || location.href, r && r.stack); });
+  window.DCBReportError = report;
+})();
