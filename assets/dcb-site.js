@@ -86,7 +86,7 @@
   const acct = () => {
     let on = false;
     try { const t = JSON.parse(localStorage.getItem('sb-gcorvodfcxhumesttwvj-auth-token')); on = !!(t && t.access_token && (!t.expires_at || t.expires_at * 1000 > Date.now() - 864e5 * 30)); } catch {}
-    document.querySelectorAll('[data-acct]').forEach(a => { a.textContent = on ? 'Account' : 'Sign in'; });
+    document.querySelectorAll('[data-acct]').forEach(a => { a.textContent = on ? 'My Account' : 'Sign In'; });
   };
   acct(); window.addEventListener('dcb-auth', acct); window.addEventListener('storage', acct);
 
