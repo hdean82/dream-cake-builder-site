@@ -581,7 +581,7 @@ h3.hico{display:flex;align-items:center;gap:8px}
 .cgrid.joined .cday:hover{background:#fffafc;box-shadow:none}
 .cgrid.joined .cday.sel{box-shadow:inset 0 0 0 2px var(--rose);border-color:var(--line)}
 .cday.off{background:repeating-linear-gradient(135deg,#fff,#fff 6px,#fbf1f4 6px,#fbf1f4 12px)!important}
-.offmark{margin-top:auto;align-self:flex-start;font-size:10.5px;font-weight:600;color:#9b6d84;background:#f3e6ec;border-radius:5px;padding:0 6px}
+.offmark{margin-top:auto;align-self:flex-start;font-size:10.5px;font-weight:600;color:#fff;background:var(--c,#9b6d84);border-radius:5px;padding:0 6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cchip.dim{opacity:.2}
 .cday.miss{opacity:.55}
 .cday.hit{background:#fff5f9!important}
@@ -690,6 +690,7 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
 @media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
 .creq{border-top:1px solid var(--line);padding:8px 0}.creq summary{cursor:pointer;list-style:none}.creq summary::-webkit-details-marker{display:none}.creq summary::before{content:"▸ ";color:var(--muted)}.creq[open] summary::before{content:"▾ "}
+.calblk .seg{margin:8px 0 4px}.calblk .seg button{gap:6px}.cbtag{display:inline-flex;align-items:center;gap:7px;font-weight:600;margin:4px 0 6px}.cbtag i{width:10px;height:10px;border-radius:50%;background:var(--c)}
 .rqmc{font-size:12px;font-weight:600;color:var(--muted);background:#f6eef3;border-radius:999px;padding:2px 9px;margin-left:4px;white-space:nowrap}.rqmc.new{background:var(--rose);color:#fff}
 .rqchat{display:flex;flex-direction:column;gap:10px}.rqcsum{background:#fff7fa;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--muted)}.rqcsum div{margin-top:4px;white-space:pre-wrap}
 .rqthread{display:flex;flex-direction:column;gap:8px;max-height:min(46vh,420px);overflow-y:auto;padding:4px 2px;overscroll-behavior:contain}
@@ -1040,7 +1041,7 @@ function vCalendar(){
  const y=calCur.getFullYear(),m=calCur.getMonth(),first=new Date(y,m,1).getDay(),start=new Date(y,m,1-first),cells=Math.ceil((first+new Date(y,m+1,0).getDate())/7)*7,today=isoD(new Date());
  let h="";
  for(let i=0;i<cells;i++){const d=new Date(start);d.setDate(start.getDate()+i);const k=isoD(d),list=ordersOn(k);
-  const off=(S.settings.daysOff||[]).includes(k);h+=`<button class="cday${d.getMonth()!==m?" out":""}${k===today?" today":""}${k===calSel?" sel":""}${off?" off":""}" data-a="calDay" data-d="${k}" aria-label="${esc(d.toDateString())}, ${list.length} orders"><span class="n">${d.getDate()}${(()=>{if(d.getMonth()!==m||k<today)return"";const c=capacity(k);return c.dayFull?'<span class="full">Full</span>':c.weekFull?'<span class="full wk">Week full</span>':""})()}</span>${list.slice(0,3).map(o=>{const e=evt(o.eventId);return `<span class="cchip${["Completed","Cancelled"].includes(o.status)?" done":""}" data-ev="${esc(o.eventId||"")}" data-q="${esc([o.customer,o.no,o.email,e&&e.name].filter(Boolean).join(" ").toLowerCase())}"><i class="dot" style="background:${esc(e?.color||"#c12c7e")}"></i><span>${esc((o.time?t12(o.time)+" ":"")+o.customer)}</span></span>`}).join("")}${list.length>3?`<span class="more">+${list.length-3} more</span>`:""}${off?'<span class="offmark" title="Day off">Off</span>':""}</button>`}
+  const off=(S.settings.daysOff||[]).includes(k);h+=`<button class="cday${d.getMonth()!==m?" out":""}${k===today?" today":""}${k===calSel?" sel":""}${off?" off":""}" data-a="calDay" data-d="${k}" aria-label="${esc(d.toDateString())}, ${list.length} orders"><span class="n">${d.getDate()}${(()=>{if(d.getMonth()!==m||k<today)return"";const c=capacity(k);return c.dayFull?'<span class="full">Full</span>':c.weekFull?'<span class="full wk">Week full</span>':""})()}</span>${list.slice(0,3).map(o=>{const e=evt(o.eventId);return `<span class="cchip${["Completed","Cancelled"].includes(o.status)?" done":""}" data-ev="${esc(o.eventId||"")}" data-q="${esc([o.customer,o.no,o.email,e&&e.name].filter(Boolean).join(" ").toLowerCase())}"><i class="dot" style="background:${esc(e?.color||"#c12c7e")}"></i><span>${esc((o.time?t12(o.time)+" ":"")+o.customer)}</span></span>`}).join("")}${list.length>3?`<span class="more">+${list.length-3} more</span>`:""}${off?(()=>{const{kind,note}=offInfo(k);return `<span class="offmark" style="--c:${kind[2]}" title="${esc(kind[1]+(note?": "+note:""))}">${esc(note&&note.length<14?note:kind[1])}</span>`})():""}</button>`}
  const MONTHS=Array.from({length:12},(_,k)=>new Date(2000,k,1).toLocaleDateString(undefined,{month:"long"})),yrs=[];for(let yy=new Date().getFullYear()-2;yy<=new Date().getFullYear()+3;yy++)yrs.push(yy);if(!yrs.includes(y))yrs.push(y);
  const used=S.events.filter(e=>S.orders.some(o=>o.eventId===e.id))||[];
  $("main").innerHTML=`<div class="caltoday"><span>Today's date</span><b>${esc(new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"}))}</b></div><div class="calhead"><h1>${esc(calCur.toLocaleDateString(undefined,{month:"long",year:"numeric"}))}</h1><div class="calnav"><button class="btn sm" data-a="calPrev" aria-label="Previous month">‹</button><button class="btn sm" data-a="calToday">Today</button><button class="btn sm" data-a="calNext" aria-label="Next month">›</button><button class="btn sm" data-a="icsAll" title="Download upcoming orders as a calendar file">Export</button><button class="btn primary sm" data-a="calNew">+ New order</button></div></div>
@@ -1051,13 +1052,23 @@ function vCalendar(){
   <select aria-label="Event type" onchange="calFilter(null,this.value)"><option value="">All events</option>${S.events.map(e=>`<option value="${esc(e.id)}"${CALF.ev===e.id?" selected":""}>${esc(e.name)}</option>`).join("")}</select>
   <span class="psearch cb-s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Search by customer or order #" aria-label="Search orders on the calendar" value="${esc(CALF.q)}" oninput="calFilter(this.value,null)"></span></div>
  <div class="cgrid joined">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="dow">${d}</div>`).join("")}${h}</div>
- <div class="calkey"><span class="ck-l">Types:</span>${(used.length?used:S.events).map(e=>`<span><i class="dot" style="background:${esc(e.color)}"></i>${esc(e.name)}</span>`).join("")}<span class="ck-off"><i></i>Day off</span><span class="ck-full"><i>Full</i>Fully booked</span></div>`;
+ <div class="calkey"><span class="ck-l">Types:</span>${(used.length?used:S.events).map(e=>`<span><i class="dot" style="background:${esc(e.color)}"></i>${esc(e.name)}</span>`).join("")}<span class="ck-off"><i></i>Blocked: ${OFF_KINDS.map(([v,l,c])=>`<b style="color:${c}">${l}</b>`).join(" · ")}</span><span class="ck-full"><i>Full</i>Fully booked</span></div>`;
  calFilter(CALF.q,CALF.ev);
 }
 let CALF={q:"",ev:""};
 function calJump(yy,mm){calCur=new Date(yy??calCur.getFullYear(),mm??calCur.getMonth(),1);render()}
 function calFilter(q,ev){if(q!=null)CALF.q=q;if(ev!=null)CALF.ev=ev;const t=CALF.q.trim().toLowerCase(),on=!!(t||CALF.ev);
  document.querySelectorAll(".cgrid .cday").forEach(c=>{let hit=0;c.querySelectorAll(".cchip").forEach(ch=>{const ok=(!t||ch.dataset.q.includes(t))&&(!CALF.ev||ch.dataset.ev===CALF.ev);ch.classList.toggle("dim",on&&!ok);if(ok)hit++});c.classList.toggle("hit",on&&hit>0);c.classList.toggle("miss",on&&!hit)})}
+const OFF_KINDS=[["holiday","Holiday","#e0892e"],["personal","Personal","#7c5cc4"],["booked","Booked","#c12c7e"],["other","Other","#8a7a80"]];
+const offInfo=k=>{const I=S.settings.offInfo||{};const x=I[k]||{};const kind=OFF_KINDS.find(o=>o[0]===x.kind)||OFF_KINDS[3];return{kind,note:x.note||""}};
+let calBlockKind="holiday";
+function calBlockCard(){const k=calSel,off=(S.settings.daysOff||[]).includes(k);
+ if(off){const{kind,note}=offInfo(k);return `<div class="card white calblk"><h3>Blocked</h3><p class="cbtag" style="--c:${kind[2]}"><i></i>${esc(kind[1])}${note?` · ${esc(note)}`:""}</p><p class="hint">Customers can't pick this date on your order form.</p><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-a="calBlockEdit" data-d="${k}">Change</button><button class="btn sm" data-a="calUnblock" data-d="${k}">Unblock</button></div></div>`}
+ return `<div class="card white calblk"><h3>Block out this day</h3><p class="hint">Blocked days show on your calendar and can't be picked on your order form.</p>
+ <div class="seg" role="radiogroup" aria-label="Why">${OFF_KINDS.map(([v,l,c])=>`<button type="button" role="radio" aria-checked="${calBlockKind===v}" class="${calBlockKind===v?"on":""}" data-a="calBlockKind" data-v="${v}"><i class="dot" style="background:${c}"></i>${l}</button>`).join("")}</div>
+ <div class="field"><label for="cbNote">Note <span class="note">optional, only you see it</span></label><input type="text" id="cbNote" maxlength="80" placeholder="${calBlockKind==="holiday"?"e.g. Christmas":calBlockKind==="personal"?"e.g. Family trip":calBlockKind==="booked"?"e.g. Wedding fair":"Reason"}"></div>
+ <div class="field"><label for="cbTo">Through <span class="note">optional, to block several days</span></label><input type="date" id="cbTo" min="${k}"></div>
+ <button class="btn primary wide" data-a="calBlock">Block ${esc(new Date(k+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</button></div>`}
 function sideCalendar(){
  const list=ordersOn(calSel),d=new Date(calSel+"T00:00"),y=calCur.getFullYear(),m=calCur.getMonth();
  const mo=S.orders.filter(o=>{if(!o.date)return false;const x=new Date(o.date+"T00:00");return x.getFullYear()===y&&x.getMonth()===m&&o.status!=="Cancelled"});
@@ -1065,6 +1076,7 @@ function sideCalendar(){
  return `<div class="card white"><h3>${esc(d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}))}</h3>
  ${list.length?`<div class="rows">${list.map(o=>{const e=evt(o.eventId);return `<button class="rowi" data-a="openOrder" data-id="${esc(o.id)}"><span class="bd"><span class="t">${esc(o.time?t12(o.time)+" · ":"")}${esc(o.customer)}</span><br><span class="d"><i class="dot" style="background:${esc(e?.color||"#ccc")};width:9px;height:9px"></i> ${esc(e?.name||"")} · ${esc(o.status)}</span></span><span class="v">${money(totals(o).total)}</span></button>`}).join("")}</div>`:`<p class="hint">Nothing booked this day.</p>`}
  <button class="btn wide" data-a="calNew" style="margin-top:8px">+ Order on this day</button></div>
+ ${calBlockCard()}
  <div class="card white"><h3>${esc(calCur.toLocaleDateString(undefined,{month:"long"}))} at a glance</h3><div class="big">${money(tot)}</div><p class="hint">booked across ${mo.length} order${mo.length===1?"":"s"}</p><div class="kv"><span>Balances still due</span><span>${money(bal)}</span></div></div>
  ${calFeedCard()}
  <div class="card white"><h3>Event colors</h3><div class="legend">${S.events.map(e=>`<span><i class="dot" style="background:${esc(e.color)}"></i>${esc(e.name)}</span>`).join("")}</div></div>`;
@@ -1166,8 +1178,8 @@ function formSetupHtml(){const fd=fullDates();const off=(S.settings.daysOff||[])
   ${(S.formQ||[]).length<10?`<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-a="fqAdd">+ Add a question</button>${(S.formQ||[]).length?"":`<button class="btn sm" data-a="fqStarter">Add suggested questions</button>`}</div>`:""}</details></div>
  <div class="card"><details data-keep="off"${OPEN.has("off")?" open":""}><summary><h3 style="display:inline">Dates you can't take</h3> <span class="note">${fd.length} blocked</span></summary>
   <p class="hint">Full days from your limits in Preferences are blocked on the form automatically. Add vacations and days off here.</p>
-  <div class="addbar"><input type="date" id="offDay" aria-label="Day off" min="${isoD(new Date())}"><button class="btn sm" data-a="offAdd">Block this day</button></div>
-  ${off.length?`<div class="chips">${off.map(k=>`<span class="chip">${esc(new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}<button class="mv" data-a="offDel" data-v="${k}" aria-label="Unblock">✕</button></span>`).join("")}</div>`:""}
+  <div class="addbar"><input type="date" id="offDay" aria-label="Day to block" min="${isoD(new Date())}"><select id="offKind" aria-label="Why">${OFF_KINDS.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select><button class="btn sm" data-a="offAdd">Block this day</button></div>
+  ${off.length?`<div class="chips">${off.map(k=>`<span class="chip"><i class="dot" style="background:${offInfo(k).kind[2]}"></i>${esc(new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))} · ${esc(offInfo(k).kind[1])}<button class="mv" data-a="offDel" data-v="${k}" aria-label="Unblock">✕</button></span>`).join("")}</div>`:""}
   ${fd.length>off.length?`<p class="note" style="margin:6px 0 0">Also full from your limits: ${fd.filter(k=>!off.includes(k)).slice(0,8).map(k=>esc(new Date(k+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}))).join(", ")}${fd.length-off.length>8?"…":""}</p>`:""}
   ${CLOUD.state!=="on"?`<p class="note" style="margin:6px 0 0">Sign in so your form can see these.</p>`:""}</details></div>`}
 function sideRequests(){const n=RQ.list.filter(r=>r.status==="new").length;return `<div class="card white"><h3>Inbox</h3><div class="big">${RQ.state==="ready"?n:"–"}</div><p class="hint" style="margin:0">new request${n===1?"":"s"} waiting. “Make a quote” copies a request into a new quote, ready for prices.</p></div>`}
@@ -2398,8 +2410,15 @@ document.addEventListener("click",e=>{
   case"fqStarter":{S.formQ.push({id:"q"+uid(),q:"Cake flavor",type:"choice",opts:"Vanilla, Chocolate, Red velvet, Lemon, Not sure yet",required:false},{id:"q"+uid(),q:"Pickup or delivery?",type:"choice",opts:"Pickup, Delivery",required:true},{id:"q"+uid(),q:"Budget",type:"text",opts:"",required:false},{id:"q"+uid(),q:"Any allergies we should know about?",type:"long",opts:"",required:false},{id:"q"+uid(),q:"How did you hear about us?",type:"text",opts:"",required:false});save();render();toast("Added 5 questions. Edit or delete any of them");break}
   case"fqDel":{snap();S.formQ.splice(i,1);save();render();toast("Question deleted",true);break}
   case"fqUp":{move(S.formQ,i,-1);save();render();break}
-  case"offAdd":{const v=$("offDay").value;if(!v){toast("Pick a date first");break}if(!S.settings.daysOff.includes(v))S.settings.daysOff.push(v);save();render();toast("That day is blocked on your form");break}
-  case"offDel":{S.settings.daysOff=S.settings.daysOff.filter(k=>k!==b.dataset.v);save();render();break}
+  case"calBlockKind":calBlockKind=b.dataset.v;side();break;
+  case"calBlock":{const from=calSel,to=($("cbTo")&&$("cbTo").value)||from,note=(($("cbNote")&&$("cbNote").value)||"").trim().slice(0,80);if(to<from){toast("The end date is before the start");break}
+   const days=[];const d=new Date(from+"T00:00"),end=new Date(to+"T00:00");while(d<=end&&days.length<92){days.push(isoD(d));d.setDate(d.getDate()+1)}
+   S.settings.offInfo=S.settings.offInfo||{};days.forEach(k=>{if(!S.settings.daysOff.includes(k))S.settings.daysOff.push(k);S.settings.offInfo[k]={kind:calBlockKind,note}});
+   const busy=days.filter(k=>ordersOn(k).some(o=>o.status!=="Cancelled")).length;save();render();toast(`${days.length>1?days.length+" days":"Day"} blocked${busy?`. ${busy} of them already ${busy>1?"have":"has"} orders`:""}`);break}
+  case"calUnblock":{const k=b.dataset.d;S.settings.daysOff=S.settings.daysOff.filter(x=>x!==k);if(S.settings.offInfo)delete S.settings.offInfo[k];save();render();toast("Day unblocked");break}
+  case"calBlockEdit":{const k=b.dataset.d;const x=(S.settings.offInfo||{})[k]||{};calBlockKind=x.kind||"other";S.settings.daysOff=S.settings.daysOff.filter(y=>y!==k);if(S.settings.offInfo)delete S.settings.offInfo[k];render();setTimeout(()=>{const n=$("cbNote");if(n){n.value=x.note||"";n.focus()}},0);break}
+  case"offAdd":{const v=$("offDay").value;if(!v){toast("Pick a date first");break}if(!S.settings.daysOff.includes(v))S.settings.daysOff.push(v);S.settings.offInfo=S.settings.offInfo||{};S.settings.offInfo[v]={kind:($("offKind")&&$("offKind").value)||"other",note:""};save();render();toast("That day is blocked on your form");break}
+  case"offDel":{S.settings.daysOff=S.settings.daysOff.filter(k=>k!==b.dataset.v);if(S.settings.offInfo)delete S.settings.offInfo[b.dataset.v];save();render();break}
   case"pfAddFromOrders":{openPfPick();break}
   case"pfPickOne":{const x=(openPfPick.list||[])[+b.dataset.k];if(!x)break;if(S.portfolio.items.some(p=>p.src===x.src)){toast("Already in your portfolio");break}if(S.portfolio.items.length>=60){toast("Your portfolio is full (60 photos)");break}
    const o=x.o;S.portfolio.items.push({src:x.src,title:(o.items||[]).map(itemTitle).join(" · ").slice(0,80),note:"",event:evt(o.eventId)?.name||"",servings:""});save();b.classList.add("on");toast("Added to your portfolio");break}
