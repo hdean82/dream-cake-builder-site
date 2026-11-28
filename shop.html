@@ -1717,7 +1717,7 @@ async function cloudPush(){if(CLOUD.busy){clearTimeout(CLOUD.timer);CLOUD.timer=
  finally{CLOUD.busy=false;cloudChip()}}
 async function cloudConnect(){const se=window.DCBAuth&&await DCBAuth.session();if(!se){CLOUD.state="off";cloudChip();return}
  CLOUD.state="connecting";cloudChip();
- try{const biz=await api("/rest/v1/rpc/shop_ensure_business",{method:"POST",body:{}});CLOUD.shopId=biz&&biz.id;
+ try{const biz=await api("/rest/v1/rpc/shop_ensure_business",{method:"POST",body:{}});CLOUD.shopId=biz&&biz.id;CLOUD.bizName=biz&&biz.name;
   const snap=await api("/rest/v1/rpc/shop_load_snapshot",{method:"POST",body:{}});let meta=readMeta();
   const cloudRev=snap?+snap.revision||0:0,hasCloud=cloudRev>0&&snap.data&&snap.data.settings;
   // This device's saved orders belong to whichever account last synced them. Never hand them to a different account:
@@ -1733,6 +1733,7 @@ async function cloudConnect(){const se=window.DCBAuth&&await DCBAuth.session();i
   else if(!meta.dirty&&meta.rev!=null){mergeCloud(snap.data);CLOUD.state="on";writeMeta({rev:cloudRev,dirty:false});draft=blankOrder();render();toast("Updated with changes from your other device")}
   else{CLOUD.latest=snap;CLOUD.state="conflict";chooseCopy(snap)}
  }catch(e){CLOUD.state=e.code==="42501"||/artist access/i.test(e.message)?"noaccess":e.code==="signin"?"off":"error"}
+ if(CLOUD.state==="on"&&CLOUD.bizName&&(!S.settings.biz||S.settings.biz==="My cake shop")&&CLOUD.bizName!=="My cake shop"){S.settings.biz=CLOUD.bizName;save();try{render()}catch{}}
  cloudChip();if(CLOUD.state==="on"){try{side()}catch{}setTimeout(()=>syncApprovals(true),500)}}
 function chooseCopy(snap){const d=snap.data||{},when=snap.updated_at?new Date(snap.updated_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"earlier";
  $("dialog").innerHTML=`<div class="dhead"><div><h2>Which copy should we keep?</h2><p class="hint">This device and your account both have saved orders.</p></div></div>
