@@ -22,7 +22,9 @@ const hash = t => crypto.createHash('sha1').update(t).digest('hex').slice(0, 12)
 
 const manifest = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
 const pictured = fs.readdirSync(OUT).filter(f => f.endsWith('.jpg') && !f.endsWith('-pair.jpg')).map(f => f.slice(0, -4));
-let todo = (only.length ? only : pictured).filter(k => themes.has(k));
+// New signature themes get a picture on their first run, so they can join the home page gallery.
+const fresh = [...themes.keys()].filter(k => k.startsWith('sig_') && !pictured.includes(k));
+let todo = (only.length ? only : [...pictured, ...fresh]).filter(k => themes.has(k));
 if (!force && !only.length) todo = todo.filter(k => manifest[k] !== hash(themes.get(k)));
 if (!todo.length) { console.log('All cake pictures are up to date.'); process.exit(0); }
 console.log('Rendering:', todo.join(', '));

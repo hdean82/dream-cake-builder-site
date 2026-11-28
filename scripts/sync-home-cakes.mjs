@@ -14,9 +14,17 @@ const studio = fs.readFileSync(path.join(ROOT, 'studio.html'), 'utf8');
 const names = {};
 for (const m of studio.matchAll(/\{key:'([a-z0-9_]+)',name:'((?:[^'\\]|\\.)*)'/g)) if (!names[m[1]]) names[m[1]] = m[2].replace(/\\(.)/g, '$1');
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// The home page gallery lists every signature theme in the Studio that has a picture, newest first,
+// after the Blush Lambeth sample. New themes appear here on their own once their picture is rendered.
+const sig = [...new Set([...studio.matchAll(/\{key:'(sig_[a-z0-9_]+)'/g)].map(m => m[1]))].reverse();
+const pic = k => fs.existsSync(path.join(CAKES, k + '.jpg'));
+const gallery = ['lambeth', ...sig].filter(pic);
+const card = k => { const v = manifest[k] ? `?v=${manifest[k]}` : '', nm = esc(names[k] || 'Blush Lambeth');
+  return `<a href="${k === 'lambeth' ? 'studio.html" data-open-cake' : 'studio.html?theme=' + k + '"'}><span class="im"><picture><source srcset="assets/home/cakes/${k}.webp${v}" type="image/webp"><img src="assets/home/cakes/${k}.jpg${v}" alt="${nm} cake" width="640" height="640" loading="lazy" data-fallback data-alt="${k}"></picture></span><b data-n="${k}">${nm}</b></a>`; };
 for (const f of files) {
   const p = path.join(ROOT, f);
   let h = fs.readFileSync(p, 'utf8'); const before = h;
+  h = h.replace(/(<section[^>]*id="gallery"[\s\S]*?<div class="row">)[\s\S]*?(<\/div>)/, (all, a, b) => a + gallery.map(card).join('') + b);
   h = h.replace(/(assets\/home\/cakes\/([a-z0-9_]+?)(-pair)?\.(?:jpg|webp))(\?v=[a-z0-9]+)?/g, (all, url, k) => manifest[k] ? `${url}?v=${manifest[k]}` : url);
   h = h.replace(/const CAKEV=\{[^}]*\};/, 'const CAKEV=' + JSON.stringify(manifest) + ';');
   h = h.replace(/(<(\w+)\b[^>]*\bdata-n="([a-z0-9_]+)"[^>]*>)([^<]*)(<\/\2>)/g, (all, open, tag, k, txt, close) => names[k] ? open + esc(names[k]) + close : all);

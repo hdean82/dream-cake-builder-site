@@ -3,7 +3,10 @@ name: Cake pictures
 on:
   push:
     branches: [main]
-    paths: [studio.html]
+    paths: [studio.html, scripts/render-cakes.mjs]
+  schedule:
+    # Every Monday, re-render every cake so Studio drawing changes (not just recipe changes) show up too.
+    - cron: "17 9 * * 1"
   workflow_dispatch:
     inputs:
       themes:
@@ -12,6 +15,9 @@ on:
         default: ""
 permissions:
   contents: write
+concurrency:
+  group: cake-pictures
+  cancel-in-progress: false
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -25,12 +31,13 @@ jobs:
       - name: Render changed cakes
         run: |
           T="${{ github.event.inputs.themes }}"
+          [ "${{ github.event_name }}" = "schedule" ] && T=all
           if [ "$T" = "all" ]; then node scripts/render-cakes.mjs --all; else node scripts/render-cakes.mjs $T; fi
       - name: Save the new pictures
         run: |
           git config user.name "cake-pictures bot"
           git config user.email "cake-pictures@users.noreply.github.com"
-          [ -f .rendered-cakes.json ] || { echo "Nothing rendered"; exit 0; }
+          [ -f .rendered-cakes.json ] || echo '{}' > .rendered-cakes.json  # still sync names and the gallery list
           mkdir -p /tmp/new && cp assets/home/cakes/* /tmp/new/ && cp .rendered-cakes.json /tmp/rendered.json
           # Lay the new pictures on top of the latest main (other changes may have landed while rendering), then push.
           for i in 1 2 3 4 5 6; do
