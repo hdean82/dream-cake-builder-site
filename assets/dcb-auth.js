@@ -64,6 +64,16 @@
     const s = await session(); if (!s) throw new Error('Please sign in again.');
     await call('user', { method: 'PUT', body: { password }, token: s.access_token });
   }
+  // The signed-in person's account (name, email, phone kept with the sign-in).
+  async function getUser() {
+    const s = await session(); if (!s) throw new Error('Please sign in again.');
+    const u = await call('user', { method: 'GET', token: s.access_token }); write({ ...read(), user: u }); return u;
+  }
+  async function updateUser(body, redirect) {
+    const s = await session(); if (!s) throw new Error('Please sign in again.');
+    const u = await call('user' + (redirect ? '?redirect_to=' + encodeURIComponent(redirect) : ''), { method: 'PUT', body, token: s.access_token });
+    write({ ...read(), user: u }); return u;
+  }
   async function signOut() {
     const s = read();
     write(null);
@@ -93,5 +103,5 @@
     return res.json();
   }
 
-  window.DCBAuth = { session, signInWithPassword, sendLink, sendReset, updatePassword, signOut, fromRedirect, rpc, current: read };
+  window.DCBAuth = { session, signInWithPassword, sendLink, sendReset, updatePassword, getUser, updateUser, signOut, fromRedirect, rpc, current: read };
 })();

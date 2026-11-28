@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sign in · Dream Cake Builder</title>
+<title>Your Account · Dream Cake Builder</title>
 <meta name="theme-color" content="#c12c7e">
 <meta name="robots" content="noindex">
 <link rel="icon" href="lilac/assets/favicon.svg">
@@ -11,13 +11,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/dcb-theme.css">
 <style>
-.acc{max-width:440px;margin:0 auto;padding:0 16px}
+.acc{max-width:440px;margin:0 auto;padding:0 16px}.acc.wide2{max-width:620px}
+.acc .card+.card{margin-top:14px}.acc h2{font-family:Fraunces,Georgia,serif;font-size:18px;margin:0 0 4px}.acc .sub{color:var(--muted);font-size:13.5px;margin:0 0 8px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}@media(max-width:520px){.g2{grid-template-columns:minmax(0,1fr)}}
+.rowbtn{display:flex;justify-content:flex-end;margin-top:6px}
 .acc .card{padding:20px 22px}
 .acc h1{font-size:clamp(26px,4vw,32px);margin:4px 0 6px}
 .acc .lead{color:var(--muted);margin-bottom:12px}
 .field{margin:10px 0}
 .field label{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
-input[type=email],input[type=password]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+input[type=email],input[type=password],input[type=text],input[type=tel]{width:100%;min-height:42px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
 .wide{width:100%;min-height:44px}
 .alt{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:13.5px}
 .linkbtn{border:0;background:none;color:var(--rose-ink);text-decoration:underline;cursor:pointer;padding:4px 0;font:inherit}
@@ -53,7 +56,7 @@ input[type=email],input[type=password]{width:100%;min-height:42px;border:1px sol
  </div>
 </header>
 
-<main class="band"><div class="acc"><div class="card" id="app"><p class="muted">Loading…</p></div></div></main>
+<main class="band"><div class="acc" id="accWrap"><div class="card" id="app"><p class="muted">Loading…</p></div></div></main>
 
 <footer class="site-foot">
  <div class="foot-in">
@@ -87,20 +90,40 @@ function signedOut(){
  <p class="note" style="margin-top:12px;font-size:12.5px;color:var(--muted)">New here? Dream Cake Builder is in early access. <a href="index.html#launch-list">Join the waitlist</a>.</p>`;
 }
 async function signedIn(s){
- const email=s.user?.email||'your account';
- app.innerHTML=`<span class="eyebrow">Your account</span><h1>You're signed in</h1><div class="who"><span class="avatar">${esc(email[0].toUpperCase())}</span><span><b>${esc(email)}</b><span class="muted" style="font-size:13px">Signed in on this device</span></span></div>
- <div class="access" id="acc"><div><span>Checking your access…</span></div></div>
- <div class="go"><a class="btn primary" href="studio.html">Open the Studio</a><a class="btn" data-team href="shop.html#calendar">Open Orders</a></div>
- <button class="btn wide" data-out style="margin-top:10px">Sign out</button>`;
  const n=next();if(n){location.replace(n);return}
+ let u=s.user||{};try{u=await A.getUser()}catch{}
+ const md=u.user_metadata||{},email=u.email||'your account',name=md.name||'';
+ $('accWrap').classList.add('wide2');
+ app.innerHTML=`<span class="eyebrow">Your account</span><h1>Account Settings</h1><div class="who"><span class="avatar">${esc((name||email)[0].toUpperCase())}</span><span><b>${esc(name||email)}</b><span class="muted" style="font-size:13px">${esc(name?email:'Signed in on this device')}</span></span></div>
+ <div class="access" id="acc"><div><span>Checking your access…</span></div></div>
+ <div class="go"><a class="btn primary" href="studio.html">Open The Studio</a><a class="btn" data-team href="shop.html#calendar">Open Orders</a></div>
+ <button class="btn wide" data-out style="margin-top:10px">Sign Out</button>`;
+ const more=document.createElement('div');more.id='accMore';more.innerHTML=`
+ <div class="card"><h2>Your Details</h2><p class="sub">Your own name and phone. Your business name, logo and pickup address are in Orders under Preferences.</p>
+  <form id="pfDetails" novalidate><div class="g2"><div class="field"><label for="d-name">Your Name</label><input type="text" id="d-name" autocomplete="name" maxlength="120" value="${esc(name)}"></div><div class="field"><label for="d-phone">Phone</label><input type="tel" id="d-phone" autocomplete="tel" maxlength="40" value="${esc(md.phone_number||'')}"></div></div>
+  <div class="rowbtn"><button class="btn primary" type="submit">Save Details</button></div><p class="msg" data-msg hidden></p></form></div>
+ <div class="card"><h2>Email</h2><p class="sub">You sign in with <b>${esc(email)}</b>. ${u.new_email?`Waiting for you to confirm <b>${esc(u.new_email)}</b>. Check that inbox.`:'To change it, we email a link to the new address and the change happens when you click it.'}</p>
+  <form id="pfEmail" novalidate><div class="field"><label for="e-new">New Email</label><input type="email" id="e-new" autocomplete="email" maxlength="254"></div>
+  <div class="rowbtn"><button class="btn" type="submit">Change Email</button></div><p class="msg" data-msg hidden></p></form></div>
+ <div class="card"><h2>Password</h2><p class="sub">At least 8 characters. Other devices stay signed in until they sign out.</p>
+  <form id="pfPass" novalidate><div class="g2"><div class="field"><label for="p-new">New Password</label><input type="password" id="p-new" autocomplete="new-password" minlength="8"></div><div class="field"><label for="p-new2">Type It Again</label><input type="password" id="p-new2" autocomplete="new-password" minlength="8"></div></div>
+  <div class="rowbtn"><button class="btn" type="submit">Change Password</button></div><p class="msg" data-msg hidden></p></form></div>`;
+ document.getElementById('accMore')?.remove();app.after(more);
  try{const a=await A.rpc('dcb_studio_access');$('acc').innerHTML=`<div><span>Studio</span><b>${a&&a.premium?'Full access':'Studio Lite'}</b></div><div data-team><span>Orders</span><b>${a&&a.artist_cloud?'Included':'Needs artist access'}</b></div>`}
  catch{$('acc').innerHTML='<div><span>Couldn’t check your access right now.</span></div>'}
 }
+const fsay=(f,t,ok)=>{const m=f.querySelector('[data-msg]');m.className='msg'+(ok?' ok':'');m.textContent=t;m.hidden=!t};
+document.addEventListener('submit',async e=>{const f=e.target;if(!['pfDetails','pfEmail','pfPass'].includes(f.id))return;e.preventDefault();const b=f.querySelector('button[type=submit]');if(b.disabled)return;fsay(f,'');
+ try{
+  if(f.id==='pfDetails'){const nm=$('d-name').value.trim(),ph=$('d-phone').value.trim();if(ph&&ph.replace(/\D/g,'').length<7){fsay(f,'Check the phone number.');return}b.disabled=true;await A.updateUser({data:{name:nm,phone_number:ph}});fsay(f,'Saved.',true);const w=document.querySelector('.who b');if(w&&nm)w.textContent=nm}
+  if(f.id==='pfEmail'){const em=$('e-new').value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){fsay(f,'Enter a valid email address.');return}b.disabled=true;await A.updateUser({email:em},location.origin+location.pathname);fsay(f,`We sent a link to ${em}. Click it to finish the change. Until then, keep signing in with your current email.`,true);$('e-new').value=''}
+  if(f.id==='pfPass'){const p1=$('p-new').value,p2=$('p-new2').value;if(p1.length<8){fsay(f,'Use at least 8 characters.');return}if(p1!==p2){fsay(f,'The two passwords don’t match.');return}b.disabled=true;await A.updatePassword(p1);fsay(f,'Password changed.',true);$('p-new').value='';$('p-new2').value=''}
+ }catch(err){fsay(f,err.message||'Something went wrong. Please try again.')}finally{b.disabled=false}});
 async function draw(){const s=await A.session();s?signedIn(s):signedOut()}
 
 document.addEventListener('click',async e=>{
  const m=e.target.closest('[data-mode]');if(m){mode=m.dataset.mode;signedOut();$('a-email').focus();return}
- if(e.target.closest('[data-out]')){await A.signOut();mode='password';signedOut()}
+ if(e.target.closest('[data-out]')){await A.signOut();mode='password';document.getElementById('accMore')?.remove();$('accWrap').classList.remove('wide2');signedOut()}
 });
 document.addEventListener('submit',async e=>{
  if(e.target.id!=='af')return;e.preventDefault();if(busy)return;

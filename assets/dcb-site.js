@@ -419,3 +419,29 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
   window.addEventListener('unhandledrejection', e => { const r = e && e.reason; report(r && (r.message || r) || 'Unhandled promise rejection', (r && r.stack && (String(r.stack).match(/https?:\/\/[^\s)]+/) || [''])[0]) || location.href, r && r.stack); });
   window.DCBReportError = report;
 })();
+
+/* Show / hide for every password box on the site (sign in, new password, beta setup). */
+(function () {
+  if (window.__dcbPwEye) return; window.__dcbPwEye = true;
+  const css = document.createElement('style');
+  css.textContent = '.pweye{position:relative;display:block}.pweye>input{padding-right:62px!important;width:100%}.pweye>button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--rose-ink,#8c1d5c);font:600 12.5px Inter,Arial,sans-serif;padding:6px 8px;border-radius:8px;cursor:pointer;min-height:32px}.pweye>button:hover{background:var(--rose-soft,#fde3ee)}.pweye>button:focus-visible{outline:2px solid var(--rose,#c12c7e)}';
+  document.head.appendChild(css);
+  const wrap = (inp) => {
+    if (inp.dataset.eye || !inp.parentNode) return; inp.dataset.eye = '1';
+    const w = document.createElement('span'); w.className = 'pweye';
+    inp.parentNode.insertBefore(w, inp); w.appendChild(inp);
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Show';
+    b.setAttribute('aria-label', 'Show password'); b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => {
+      const show = inp.type === 'password'; inp.type = show ? 'text' : 'password';
+      b.textContent = show ? 'Hide' : 'Show'; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.setAttribute('aria-pressed', String(show));
+      inp.focus();
+    });
+    w.appendChild(b);
+  };
+  const scan = (root) => (root.querySelectorAll ? root.querySelectorAll('input[type=password]') : []).forEach(wrap);
+  const start = () => { scan(document); new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1) { if (n.matches && n.matches('input[type=password]')) wrap(n); scan(n); } }))).observe(document.body, { childList: true, subtree: true }); };
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  // Before a form is sent, put passwords back to hidden so browsers offer to save them.
+  document.addEventListener('submit', () => document.querySelectorAll('.pweye>input').forEach((i) => { if (i.type === 'text') { i.type = 'password'; const b = i.nextSibling; if (b) { b.textContent = 'Show'; b.setAttribute('aria-pressed', 'false'); } } }), true);
+})();
