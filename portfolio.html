@@ -28,6 +28,9 @@
 .cake .btn{margin-top:auto;align-self:flex-start}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .big{font-family:Fraunces,Georgia,serif;font-size:26px;color:var(--ink);margin-bottom:6px}
+.revs{margin:22px 0 10px}.revs h2{font-family:Fraunces,Georgia,serif;font-size:24px;margin:0 0 4px}.revs .sum{color:var(--muted);margin:0 0 12px}.revs .sum b{color:#f2a900;letter-spacing:1px}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}.rcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.rcard .st{color:#f2a900;letter-spacing:1px}.rcard p{margin:6px 0;font-size:14.5px}.rcard .who{font-size:13px;color:var(--muted)}
 .lb{position:fixed;inset:0;background:#2a0a22e6;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
 .lb.on{display:flex}.lb img{max-width:100%;max-height:85vh;border-radius:12px}
 .lb button{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:12px;border:0;background:#fff;font-size:18px;cursor:pointer}
@@ -69,7 +72,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const app=$('app');
 const params=new URLSearchParams(location.search.slice(1)||location.hash.slice(1));
 const slug=(params.get('shop')||'').trim().toLowerCase();
-let P=null,urls={},filter='';
+let P=null,urls={},filter='',RV=[];
 
 function msg(title,text){app.innerHTML=`<div class="empty"><div class="big">${esc(title)}</div><p>${esc(text)}</p><p style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
 function draw(){
@@ -80,7 +83,7 @@ function draw(){
  ${events.length>1?`<div class="filters"><button type="button" class="${filter?'':'on'}" data-f="">All</button>${events.map(e=>`<button type="button" class="${filter===e?'on':''}" data-f="${esc(e)}">${esc(e)}</button>`).join('')}</div>`:''}
  ${shown.length?`<div class="grid">${shown.map(x=>{const u=urls[x.path]||'';return `<article class="cake"><button type="button" class="img" data-zoom="${esc(x.path)}" aria-label="View ${esc(x.title||'cake')} larger">${u?`<img src="${esc(u)}" alt="${esc(x.title||'Cake')}" loading="lazy">`:''}</button>
   <div class="body"><h3>${esc(x.title||'Custom cake')}</h3>${x.event||x.servings?`<div class="meta">${esc([x.event,x.servings?x.servings+' servings':''].filter(Boolean).join(' · '))}</div>`:''}${x.note?`<p>${esc(x.note)}</p>`:''}
-  ${P.accepting?`<a class="btn sm" href="${reqBase}&like=${encodeURIComponent(x.title||'this cake')}${u?`&img=${encodeURIComponent(u)}`:''}">Order something like this</a>`:''}</div></article>`}).join('')}</div>`:`<div class="empty">No cakes here yet.</div>`}`;
+  ${P.accepting?`<a class="btn sm" href="${reqBase}&like=${encodeURIComponent(x.title||'this cake')}${u?`&img=${encodeURIComponent(u)}`:''}">Order something like this</a>`:''}</div></article>`}).join('')}</div>`:`<div class="empty">No cakes here yet.</div>`}${RV.length?(()=>{const avg=RV.reduce((a,r)=>a+r.rating,0)/RV.length;return `<section class="revs" aria-label="Reviews"><h2>What customers say</h2><p class="sum"><b>${'★'.repeat(Math.round(avg))}</b> ${avg.toFixed(1)} from ${RV.length} review${RV.length>1?'s':''}</p><div class="rgrid">${RV.slice(0,12).map(r=>`<article class="rcard"><div class="st" aria-label="${r.rating} out of 5 stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>${r.body?`<p>“${esc(r.body)}”</p>`:''}<div class="who">${esc(r.name)}${r.cake?` · ${esc(r.cake)}`:''}</div></article>`).join('')}</div></section>`})():''}`;
 }
 document.addEventListener('click',e=>{const f=e.target.closest('[data-f]');if(f){filter=f.dataset.f;draw();return}
  const z=e.target.closest('[data-zoom]');if(z&&urls[z.dataset.zoom]){$('lbImg').src=urls[z.dataset.zoom];$('lb').classList.add('on');$('lbX').focus();return}
@@ -95,6 +98,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lb').classList.re
   if(!P)return msg('This gallery is private','The cake artist hasn’t shared their gallery yet.');
   document.title=`${P.business} · Cake gallery`;
   draw();
+  fetch(`${SB}/rest/v1/rpc/shop_reviews_public`,{method:'POST',headers:H,body:JSON.stringify({p_slug:slug})}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.reviews&&j.reviews.length){RV=j.reviews;draw()}}).catch(()=>{});
   const paths=P.items.map(x=>x.path);
   if(paths.length){const s=await fetch(`${SB}/storage/v1/object/sign/shop-files`,{method:'POST',headers:H,body:JSON.stringify({expiresIn:86400,paths}),signal:AbortSignal.timeout(15000)});
    if(s.ok){(await s.json()).forEach(x=>{if(x.signedURL&&x.path)urls[x.path]=SB+'/storage/v1'+x.signedURL});draw()}}
