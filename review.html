@@ -74,6 +74,7 @@ document.addEventListener('submit',async e=>{e.preventDefault();const m=$('m'),n
  if(!rating){m.textContent='Please tap a star rating.';return}if(!name){m.textContent='Please add your name.';$('n').focus();return}
  const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Sending…';
  try{await rpc('shop_review_submit',{p_slug:slug,p_name:name,p_rating:rating,p_body:body,p_cake:cake});
+  try{fetch(`${SB}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'review',slug}),keepalive:true}).catch(()=>{})}catch{}
   const ext=rating>=4&&/^https:\/\/\S+$/.test(RURL)?RURL:'',ex=ext?(/facebook\./i.test(ext)?'Facebook':/google|g\.page|goo\.gl/i.test(ext)?'Google':'their review page'):'';
   app.innerHTML=`<div class="done"><div class="big">Thank you! 💕</div><p>Your review was sent to ${esc(biz||'your cake artist')}.</p>${ext?`<div class="also"><p>Would you post it on ${esc(ex)} too? It helps a small cake business more than you'd think.</p><button type="button" class="btn primary" id="copyGo">Copy my review and open ${esc(ex)}</button></div>`:''}<p style="margin-top:14px"><a class="btn" href="request.html?shop=${encodeURIComponent(slug)}">Order another cake</a></p></div>`;
   const cg=document.getElementById('copyGo');if(cg)cg.onclick=async()=>{try{if(body)await navigator.clipboard.writeText(body)}catch{}window.open(ext,'_blank','noopener')}}
