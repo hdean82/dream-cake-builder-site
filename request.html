@@ -67,6 +67,7 @@ html.lk.c1 .grid2{grid-template-columns:minmax(0,1fr)}
 html.lk.sp-s .field{margin:6px 0}html.lk.sp-s .sh{margin-top:14px}html.lk.sp-l .field{margin:16px 0}html.lk.sp-l .sh{margin-top:32px}
 html.lk.cardon .req-card{border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -30px rgba(0,0,0,.35);padding:22px;background:#fff}
 @media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}input,select,textarea{font-size:16px}}
+.linkish{background:none;border:0;padding:0;font:inherit;color:var(--rose-ink,#9a1b5f);text-decoration:underline;cursor:pointer}
 </style>
 </head>
 <body>
@@ -198,7 +199,9 @@ function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.pos
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
  if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';ptUpdate();document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
-function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;n.textContent=isFull(d)?'That date is fully booked. Please pick another date.':'';n.style.color=isFull(d)?'var(--rose-ink)':''}
+let WAIT=false;
+function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;WAIT=false;if(isFull(d)){n.innerHTML='That date is fully booked. Pick another date, or <button type="button" class="linkish" id="waitBtn">join the waitlist for it</button>.';n.style.color='var(--rose-ink)'}else{n.textContent='';n.style.color=''}}
+document.addEventListener('click',e=>{if(e.target.id!=='waitBtn')return;WAIT=true;const n=$('dmsg');n.textContent='You\'re asking to join the waitlist for this date. Send your request and we\'ll contact you if a spot opens.';n.style.color='var(--ink)'});
 document.addEventListener('input',e=>{if(e.target.id==='f-date'){dateNote();ptUpdate()}});document.addEventListener('change',e=>{if(e.target.id==='f-date')ptUpdate()});
 function drawPics(){const box=$('pics');if(!box)return;sizeUp();box.innerHTML=pics.map((p,i)=>`<div class="pic"><img src="${p.url}" alt="Inspiration photo ${i+1}"><button type="button" data-del="${i}" aria-label="Remove photo">✕</button></div>`).join('')+(pics.length<8?`<label class="pic add"><input type="file" id="picIn" accept="image/*" multiple hidden>+ Add photos</label>`:'')}
 
@@ -207,19 +210,19 @@ document.addEventListener('click',e=>{const d=e.target.closest('[data-del]');if(
 document.addEventListener('submit',async e=>{
  if(e.target.id!=='rf')return;e.preventDefault();if(busy)return;
  const m=$('rmsg'),btn=e.target.querySelector('button[type=submit]');m.className='';m.textContent='';
- const name=$('f-name').value.trim(),email=$('f-email').value.trim(),details=$('f-details').value.trim();
+ const name=$('f-name').value.trim(),email=$('f-email').value.trim(),details=(WAIT&&$('f-date').value&&isFull($('f-date').value)?`⏳ WAITLIST for ${new Date($('f-date').value+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} (fully booked when they asked).\n\n`:'')+$('f-details').value.trim();
  if($('f-web').value)return;
  const cf=F().f;if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){m.className='msg';m.textContent='Please add your name and a valid email.';return}
- const need=[[cf.phone.on&&cf.phone.req&&$('f-phone')&&!$('f-phone').value.trim(),'your phone number'],[cf.date.req&&!$('f-date').value,'the event date'],[cf.event.on&&cf.event.req&&$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!details,'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
+ const need=[[cf.phone.on&&cf.phone.req&&$('f-phone')&&!$('f-phone').value.trim(),'your phone number'],[cf.date.req&&!$('f-date').value,'the event date'],[cf.event.on&&cf.event.req&&$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!$('f-details').value.trim(),'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
  if(need){m.className='msg';m.textContent=`Please add ${need[1]}.`;return}
- if(isFull($('f-date').value)){m.className='msg';m.textContent='That date is fully booked. Please pick another date.';$('f-date').focus();return}
+ if(isFull($('f-date').value)&&!WAIT){m.className='msg';m.innerHTML='That date is fully booked. Pick another date, or <button type="button" class="linkish" id="waitBtn">join the waitlist for it</button>.';$('f-date').focus();return}
  if($('f-date').value&&$('f-date').value<leadMin()){m.className='msg';m.textContent=`Please pick a date at least ${+F().minDays} day${+F().minDays===1?'':'s'} from today.`;$('f-date').focus();return}
  const ans=answers(),miss=ans.find(a=>a.required&&!a.a);if(miss){m.className='msg';m.textContent=`Please answer: ${miss.q}`;return}
  busy=true;btn.disabled=true;btn.textContent='Sending…';
  try{
   const paths=[];
   for(const p of pics){const path=`${info.shop_id}/requests/${crypto.randomUUID()}.jpg`;const r=await fetch(`${SUPABASE_URL}/storage/v1/object/shop-files/${path}`,{method:'POST',headers:{...H,'Content-Type':'image/jpeg','x-upsert':'false'},body:p.blob,signal:AbortSignal.timeout(30000)});if(r.ok)paths.push(path)}
-  const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:($('f-phone')&&$('f-phone').value.trim())||null,p_event_date:$('f-date').value||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv')&&$('f-serv').value?+$('f-serv').value:null,p_details:details||'(No details given)',p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
+  const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:($('f-phone')&&$('f-phone').value.trim())||null,p_event_date:(WAIT?null:$('f-date').value)||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv')&&$('f-serv').value?+$('f-serv').value:null,p_details:details||'(No details given)',p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
   if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.message||'send failed')}
   try{const rid=await r.clone().json();if(typeof rid==='string')fetch(`${SUPABASE_URL}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'request',id:rid}),keepalive:true}).catch(()=>{})}catch{}
   const PT=WEB()&&info.pro&&info.form&&info.form.look||{};const go=/^https:\/\/[^\s"'<>]+$/.test(PT.redirect||'')?PT.redirect:'';
