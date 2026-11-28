@@ -41,6 +41,7 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .docfoot{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 0}
 .answer{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .answer h2{font-size:20px;margin:0 0 4px}
+.calbtn{margin-top:8px}
 .sigwrap{margin:6px 0 10px}.sigwrap label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}.sigpad{display:block;width:100%;height:130px;background:#fff;border:1.5px dashed var(--line);border-radius:12px;touch-action:none;cursor:crosshair}.sigrow{display:flex;justify-content:space-between;align-items:center;margin-top:4px}.sigrow button{background:none;border:0;color:var(--rose-ink,#9a1b5f);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:4px}.signed{display:inline-block;margin-top:6px;font-size:13px;color:#0f5f5b}
 .field{display:flex;flex-direction:column;gap:4px;margin:10px 0}
 .field input,.field textarea{font:inherit;font-size:16px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;color:var(--ink)}
@@ -128,7 +129,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
    if(d.terms)sec.push(`<details class="dsec dfold"><summary>Full terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
    return sec.length?`<div class="dsecs">${sec.join('')}</div>`:''})()}
  </div>
- ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b>${Q.signed?' <span class="signed">✍️ Signed online.</span>':''} ${esc(d.biz)} will see your answer in their orders.<span class="depnote">${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</span></div>${answerBox(true)}`
+ ${d.cancelled?'':st==='approved'?`<div class="state ok"><b>You approved this ${isQ?'quote':'invoice'}${Q.responder_name?' as '+esc(Q.responder_name):''}${when?' on '+esc(when):''}.</b>${Q.signed?' <span class="signed">✍️ Signed online.</span>':''} ${esc(d.biz)} will see your answer in their orders.<span class="depnote">${d.dep&&isQ?` Your deposit of <b>${esc(d.dep)}</b> books your date.`:''}</span>${d.iso?`<br><button type="button" class="btn sm calbtn" data-ics="1">📅 Add to my calendar</button>`:''}</div>${answerBox(true)}`
   :st==='declined'?`<div class="state no"><b>You declined this ${isQ?'quote':'invoice'}${when?' on '+esc(when):''}.</b> Changed your mind? Send ${esc(d.biz)} a message below.</div>${answerBox(true)}`
   :Q.expired?`<div class="state no"><b>This quote has expired.</b> Send ${esc(d.biz)} a message below to ask for a new one.</div>${answerBox(true)}`
   :answerBox(false)}
@@ -160,6 +161,16 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
  }catch(err){document.querySelectorAll('[data-act]').forEach(x=>x.disabled=false);b.textContent={approve:'Approve Quote',decline:'Decline',message:'Send Message'}[act];out.textContent=err.message||'Something went wrong. Please try again.'}});
 
+
+// Add the pickup or delivery to the client's own calendar (an .ics file every calendar app opens).
+document.addEventListener('click',e=>{if(!e.target.closest('[data-ics]'))return;const d=Q.doc;if(!d.iso)return;const p=x=>String(x).padStart(2,'0');
+ const ic=s=>String(s||'').replace(/[\\,;]/g,m=>'\\'+m).replace(/\n/g,'\\n'),dt=d.iso.replace(/-/g,'');let start,end;
+ if(d.t24){const[h,m]=d.t24.split(':').map(Number);start=`DTSTART:${dt}T${p(h)}${p(m)}00`;const e2=new Date(2000,0,1,h,m+30);end=`DTEND:${dt}T${p(e2.getHours())}${p(e2.getMinutes())}00`}
+ else{const n=new Date(d.iso+'T12:00');n.setDate(n.getDate()+1);start=`DTSTART;VALUE=DATE:${dt}`;end=`DTEND;VALUE=DATE:${n.getFullYear()}${p(n.getMonth()+1)}${p(n.getDate())}`}
+ const what=d.handoff==='Delivered'||d.handoff==='Delivery'?'Cake delivery':'Cake pickup';
+ const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Dream Cake Builder//Quote//EN','BEGIN:VEVENT',`UID:${token}@dreamcakebuilder.com`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').slice(0,15)}Z`,start,end,
+  `SUMMARY:${ic(what+' · '+d.biz)}`,`DESCRIPTION:${ic((d.no?'Order #'+d.no+'. ':'')+'Your quote: '+location.href)}`,d.address&&!/shared once/i.test(d.address)?`LOCATION:${ic(d.address)}`:'','BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY',`DESCRIPTION:${ic(what)}`,'END:VALARM','END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='cake-'+(d.no||'order')+'.ics';document.body.appendChild(a);a.click();a.remove()});
 
 // Signature pad: drawn with a finger or mouse, saved as a small PNG when the quote is approved.
 const SIG={has:false,ctx:null};
