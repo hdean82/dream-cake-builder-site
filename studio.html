@@ -2260,6 +2260,8 @@ for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k
    make:(q,c,mode,dc)=>{const id='mx_'+k,e=MODEL_CACHE[id];if(!e){loadModel(id);return[]}if(!e.parts)return[];const out=e.parts.map(([m,g])=>[m,g.clone()]);if(dc&&dc.flip)out.forEach(([,g])=>g.rotateZ(PI));return out}};
   DECOR_ICONS['mx_'+k]='<svg viewBox="0 0 40 30" aria-hidden="true"><image href="/assets/models/thumbs/'+k+'.webp" x="5" y="0" width="30" height="30" preserveAspectRatio="xMidYMid slice"/></svg>';
   (window.__mxCatLater=window.__mxCatLater||[]).push(['mx_'+k,cat])}}
+// Stems were trimmed off these flower models so the blooms sit right on the cake. Scale keeps each bloom about the size it was before.
+{const STEM_K={"calla_lily":0.71,"carnation":0.735,"coral_anemone":0.55,"coral_garden_rose":0.88,"gold_leaf_peony":1.0,"lisianthus":0.55,"longstem_calla":0.55,"peony_blush":1.0,"peony_bud":0.741,"peony_coral":0.708,"pink_cosmos":0.69,"pink_lily":0.988,"radiant_peony":0.839,"red_poppy":0.55,"white_anemone":0.573,"white_dahlia":0.55,"pink_tulip":0.55,"purple_iris":0.55,"daffodil":0.55,"freesia":0.646,"pink_orchid":0.65,"white_orchid":0.679,"stephanotis":0.763,"white_garden_rose":0.817,"babys_breath":0.74,"cream_wildflower":0.714};for(const k in STEM_K){const m=MODELS['mx_'+k];if(m)m[3]=+(m[3]*STEM_K[k]).toFixed(3)}}
 // ---- hide 3D toppers whose files were lost with the old Studio host (they no longer load) ----
 queueMicrotask(()=>{for(const k in MODELS){if(!modelLive(MODELS[k])&&DECOR['m_'+k])DECOR['m_'+k].hidden=true}})
 // ===================================================================================================
