@@ -11,6 +11,22 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.open = false; });
   });
 
+  // open pages faster (Safari and Firefox): start fetching a page (and, for the Studio, its 3D engine everywhere) as soon as
+  // someone hovers over or touches a link to it, so the click lands on a page that is mostly loaded
+  {
+    const warm = new Set(), slow = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+    const fetchEarly = (href, cors) => { if (warm.has(href)) return; warm.add(href); const l = document.createElement('link'); l.rel = 'prefetch'; l.href = href; if (cors) l.crossOrigin = 'anonymous'; document.head.appendChild(l); };
+    const onIntent = e => {
+      const a = e.target.closest && e.target.closest('a[href]'); if (!a || slow) return;
+      const u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || u.pathname === location.pathname || !/(\/|\.html|\/[a-z-]+)$/i.test(u.pathname)) return;
+      if (!(HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules'))) fetchEarly(u.pathname + u.search); // Chrome already does this via speculation rules below
+      if (/^\/studio(\.html)?$/i.test(u.pathname)) fetchEarly('https://unpkg.com/three@0.163.0/build/three.module.js', true);
+    };
+    document.addEventListener('pointerover', onIntent, { passive: true });
+    document.addEventListener('touchstart', onIntent, { passive: true });
+  }
+
   // smooth page changes: modern browsers use CSS view transitions (see dcb-theme.css);
   // older ones get a short fade out / fade in here instead
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
