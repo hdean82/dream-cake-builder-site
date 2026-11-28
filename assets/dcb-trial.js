@@ -15,8 +15,8 @@
   let used = read(), locked = false, chip = null;
 
   const css = document.createElement('style');
-  css.textContent = `.dcb-pv{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9000;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eed3e3;border-radius:999px;padding:6px 6px 6px 12px;font:600 13px/1 Inter,system-ui,sans-serif;color:#4b103d;box-shadow:0 8px 22px -12px #4b103d88}
-.dcb-pv a{background:#c12c7e;color:#fff;text-decoration:none;border-radius:999px;padding:7px 11px}
+  css.textContent = `.dcb-pv{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9000;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #eed3e3;border-radius:999px;padding:4px 4px 4px 10px;font:600 12px/1 Inter,system-ui,sans-serif;color:#4b103d}
+.dcb-pv a{background:#c12c7e;color:#fff;text-decoration:none;border-radius:999px;padding:5px 9px}
 .dcb-pvx h2,.dcb-pvx a{text-transform:none}
 @media(max-width:700px){.dcb-pv{top:calc(66px + env(safe-area-inset-top));bottom:auto;right:8px;font-size:12px;padding:4px 4px 4px 10px}.dcb-pv a{padding:6px 9px}}
 .dcb-pv.low{border-color:#f3a6c8;background:#fff4f9}.dcb-pv .t{white-space:nowrap}
@@ -35,7 +35,7 @@
     if (!chip) { chip = document.createElement('div'); chip.className = 'dcb-pv'; chip.setAttribute('role', 'status'); document.body.appendChild(chip); }
     const m = mins();
     chip.classList.toggle('low', m <= 3);
-    chip.innerHTML = `<span class="t">Free preview · ${m} min left</span><a href="index.html#launch-list">Join</a>`;
+    chip.innerHTML = `<span class="t" title="Free preview time left">⏱ ${m} min</span><a href="index.html#launch-list">Join</a>`;
   }
   function lock() {
     if (locked) return; locked = true;
