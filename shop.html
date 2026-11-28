@@ -2428,7 +2428,7 @@ document.addEventListener("click",e=>{
   case"rqCopy":(navigator.clipboard?navigator.clipboard.writeText(b.dataset.v):Promise.reject()).then(()=>toast("Link copied"),()=>toast(b.dataset.v));break;
   case"rqSlugSave":{const v=$("rqSlug").value.trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"");if(!/^[a-z0-9][a-z0-9-]{2,59}$/.test(v)){toast("Use 3–60 letters, numbers or dashes");break}
    api(`/rest/v1/shop_businesses?id=eq.${RQ.biz.id}`,{method:"PATCH",body:{slug:v},prefer:"return=minimal"}).then(()=>{RQ.biz.slug=v;render();toast("Link saved")}).catch(e=>toast(e.code==="23505"?"That link name is taken. Try another":"Couldn't save the link"));break}
-  case"payConnect":{b.disabled=true;b.textContent="Opening Stripe…";payApi({action:"connect"}).then(j=>{if(/^https:\/\/connect\.stripe\.com\//.test(j.url||""))location.href=j.url;else throw new Error("Stripe didn't return a setup link")}).catch(e=>{b.disabled=false;b.textContent="Connect Stripe";toast(e.message)});break}
+  case"payConnect":{b.disabled=true;b.textContent="Opening Stripe…";payApi({action:"connect"}).then(j=>{if(/^https:\/\/(connect|accounts)\.stripe\.com\//.test(j.url||""))location.href=j.url;else throw new Error("Stripe didn't return a setup link")}).catch(e=>{b.disabled=false;b.textContent="Connect Stripe";toast(e.message)});break}
   case"payRefresh":PAYST={state:"idle"};render();break;
   case"rqChat":openRqChat(b.dataset.id);break;
   case"rqChatSend":rqChatSend();break;
