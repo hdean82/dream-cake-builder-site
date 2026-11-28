@@ -18,6 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/dcb-theme.css">
 <style>
+.tipbox{margin:0 0 10px}.tips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.tipb{border:1px solid #e3c6d6;background:#fff;border-radius:12px;padding:7px 12px;font:inherit;font-size:14px;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:64px}.tipb small{font-size:11.5px;color:#79536e}.tipb.on{border-color:#c12c7e;background:#fde3f0;font-weight:600}.tipc{display:flex;gap:8px;align-items:center;font-size:14px;margin:0 0 6px}.tipc input{width:110px;padding:8px 10px;border:1px solid #e3c6d6;border-radius:10px;font:inherit}.tipsum{margin:4px 0 0;font-size:14px}
+
 .rvq{margin:10px 0 2px;font-size:14px;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #eed3e3}.rvq .st{color:#e0a100;letter-spacing:1px}.rvq .q{display:block;color:#79536e;font-size:13px;margin-top:3px}
 
 .q-wrap{max-width:780px;margin:0 auto;padding:6px 14px 30px}
@@ -207,20 +209,28 @@ new MutationObserver(()=>sigInit()).observe(document.body,{childList:true,subtre
 let PAY=null,PAID=null;
 const fm=c=>'$'+(c/100).toFixed(2);
 async function payCall(body){const r=await fetch(`${SB}/functions/v1/shop-pay`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Payments are unavailable right now.');return j}
+let TIP={pct:0,custom:''},TIPPED=0;
+function tipCents(){if(!PAY||!PAY.tips||PAY.deposit)return 0;if(TIP.pct==='c'){const v=Math.round(parseFloat(String(TIP.custom).replace(/[^0-9.]/g,''))*100)||0;return Math.max(0,Math.min(v,PAY.balance,100000))}return Math.round(PAY.balance*(+TIP.pct||0)/100)}
+function tipHtml(){const o=[[0,'No tip'],[10,'10%'],[15,'15%'],[20,'20%'],['c','Custom']];const t=tipCents();
+ return `<div class="tipbox"><b>Add a tip?</b> <span class="note">Optional, and it all goes to ${esc(Q.doc.biz)}.</span><div class="tips" role="radiogroup" aria-label="Tip">${o.map(([v,l])=>`<button type="button" class="tipb${String(TIP.pct)===String(v)?' on':''}" role="radio" aria-checked="${String(TIP.pct)===String(v)}" data-tip="${v}">${l}${typeof v==='number'&&v?`<small>${esc(fm(Math.round(PAY.balance*v/100)))}</small>`:''}</button>`).join('')}</div>
+ ${TIP.pct==='c'?`<label class="tipc">Tip amount <input id="tipAmt" inputmode="decimal" placeholder="$0.00" value="${esc(TIP.custom)}"></label>`:''}
+ <p class="tipsum" id="tipSum">Balance ${esc(fm(PAY.balance))}${t?` + tip ${esc(fm(t))} = <b>${esc(fm(PAY.balance+t))}</b>`:''}</p></div>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-tip]');if(!b)return;TIP.pct=b.dataset.tip==='c'?'c':+b.dataset.tip;payDraw();if(TIP.pct==='c'&&$('tipAmt'))$('tipAmt').focus()});
+document.addEventListener('input',e=>{if(e.target.id!=='tipAmt')return;TIP.custom=e.target.value;const t=tipCents();$('tipSum').innerHTML=`Balance ${esc(fm(PAY.balance))}${t?` + tip ${esc(fm(t))} = <b>${esc(fm(PAY.balance+t))}</b>`:''}`;if($('payBal'))$('payBal').textContent=`Pay balance ${fm(PAY.balance+t)}`});
 function payDraw(){const box=$('payBox');if(!box)return;const d=Q.doc;let h='';
  const online=Math.max(PAID||0,(PAY&&PAY.paid)||0),cents=v=>Math.round(parseFloat(String(v||'').replace(/[^0-9.]/g,''))*100)||0;
  if(online>0&&$('paidRow')){$('paidRow').hidden=false;$('paidAmt').textContent='−'+fm(online);const left=Math.max(0,cents(d.bal)-online);$('balAmt').textContent=fm(left);if(!left){if($('howPay'))$('howPay').hidden=true;document.querySelectorAll('.depnote').forEach(x=>x.textContent=' Your date is booked.')}
   if(!PAID)h+=`<div class="paydone"><b>${left?'Payment received.':'Paid in full, thank you!'}</b> ${esc(fm(online))} paid online to ${esc(d.biz)}.</div>`}
- if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
+ if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))}${TIPPED?` plus your ${esc(fm(TIPPED))} tip`:''} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
  if(PAY&&PAY.enabled&&!d.cancelled){const isQ=d.kind==='quote',needApprove=isQ&&Q.status!=='approved';
   h+=`<div class="paybox"><b>Pay online</b><p class="note" style="margin:2px 0 10px">Secure card payment. It goes straight to ${esc(d.biz)}.</p>${needApprove?`<p class="note" style="margin:0 0 8px">Paying approves this quote and books your date.</p>`:''}
-  <div class="payrow">${PAY.deposit?`<button class="btn primary" type="button" data-pay="deposit">Pay deposit ${esc(fm(PAY.deposit))}</button>`:''}${PAY.balance?`<button class="btn${PAY.deposit?'':' primary'}" type="button" data-pay="balance">Pay ${PAY.deposit?'in full':'balance'} ${esc(fm(PAY.balance))}</button>`:''}</div><p class="note" id="payMsg" role="status" style="margin:8px 0 0"></p></div>`}
+  ${PAY.tips&&!PAY.deposit&&PAY.balance?tipHtml():''}<div class="payrow">${PAY.deposit?`<button class="btn primary" type="button" data-pay="deposit">Pay deposit ${esc(fm(PAY.deposit))}</button>`:''}${PAY.balance?`<button class="btn${PAY.deposit?'':' primary'}" type="button" data-pay="balance" id="payBal">Pay ${PAY.deposit?'in full':'balance'} ${esc(fm(PAY.balance+(PAY.deposit?0:tipCents())))}</button>`:''}</div><p class="note" id="payMsg" role="status" style="margin:8px 0 0"></p></div>`}
  box.innerHTML=h}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-pay]');if(!b)return;const m=$('payMsg');document.querySelectorAll('[data-pay]').forEach(x=>x.disabled=true);b.textContent='Opening secure checkout…';
- try{const j=await payCall({action:'checkout',token,what:b.dataset.pay});if(!/^https:\/\/checkout\.stripe\.com\//.test(j.url||''))throw new Error('Payments are unavailable right now.');location.href=j.url}
+ try{const tip=b.dataset.pay==='balance'?tipCents():0;const j=await payCall({action:'checkout',token,what:b.dataset.pay,...(tip?{tip}:{})});if(!/^https:\/\/checkout\.stripe\.com\//.test(j.url||''))throw new Error('Payments are unavailable right now.');location.href=j.url}
  catch(err){if(m)m.textContent=err.message;payDraw()}});
 async function payInit(){try{const u=new URLSearchParams(location.search),sid=u.get('paid')||'';
-  if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)){const j=await payCall({action:'confirm',token,session:sid}).catch(()=>null);if(j&&j.ok){PAID=j.amount;if(Q&&Q.status==='sent'){Q.status='approved';Q.responded_at=new Date().toISOString();draw()}}try{history.replaceState(null,'',location.pathname+'?t='+token)}catch{}}
+  if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)){const j=await payCall({action:'confirm',token,session:sid}).catch(()=>null);if(j&&j.ok){PAID=j.amount-(j.tip||0);TIPPED=j.tip||0;if(Q&&Q.status==='sent'){Q.status='approved';Q.responded_at=new Date().toISOString();draw()}}try{history.replaceState(null,'',location.pathname+'?t='+token)}catch{}}
   PAY=await payCall({action:'options',token}).catch(()=>null);payDraw()}catch{}}
 (async()=>{
  if(!/^[0-9a-f-]{36}$/i.test(token))return msg('Link not found','Please check the link you were sent.');
