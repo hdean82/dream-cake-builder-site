@@ -1070,10 +1070,26 @@ function dustParts(parts,q,S){const specks=[],base=new T.IcosahedronGeometry(.01
 // Semi-naked finish: a thin scraped coat with the cake layers showing through.
 const NAKED=new Map();
 function NKT(x){return x==='seminaked'||x==='naked'}
-function nakedTex(col,h,full){const key=col+'|'+Math.round(h*4)+(full?'|full':'');if(NAKED.has(key))return NAKED.get(key);const W=512,H=512,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),img=x.createImageData(W,H),d=img.data,f=fbm(5,4,321),g=fbm(32,2,77),cr=fbm(96,1,55),fr=new T.Color(col),sp=new T.Color('#dcaa66'),spD=new T.Color('#b97c3e'),vb=2/43,vt=32/43,nL=Math.max(2,Math.round(h/1.4)),tmp=new T.Color();
- for(let j=0;j<H;j++){const v=1-(j+.5)/H;for(let i=0;i<W;i++){const u=i/W,o=(j*W+i)*4;let a=1;if(v>vb&&v<vt){const yy=(v-vb)/(vt-vb)*h;let fill=9;for(let k=1;k<nL;k++)fill=Math.min(fill,Math.abs(yy-k*h/nL));const s=(yy/h*2.2)%1,cov=f(u,s)*.62+g(u,(yy/h*6)%1)*.38,bias=.22*smooth(.35,.06,fill)+.3*smooth(h-.5,h-.1,yy)+.25*smooth(.35,.05,yy);a=full?smooth(.2,.1,fill+(g(u,(yy/h*6)%1)-.5)*.08)*.98+.75*smooth(h-.12,h-.02,yy):smooth(.5,.6,cov+bias)}
-  const crumb=cr(u,(v*3)%1);if(full){const fc=cr((u*7)%1,(v*9)%1);tmp.set('#ecd09a').lerp(spD,.18+.45*fc*fc)}else tmp.copy(sp).lerp(spD,.55*crumb+.15*Math.sin(v*90));tmp.lerp(fr,a);d[o]=Math.round(tmp.r*255);d[o+1]=Math.round(tmp.g*255);d[o+2]=Math.round(tmp.b*255);d[o+3]=255}}
- x.putImageData(img,0,0);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.wrapS=T.RepeatWrapping;t.anisotropy=4;NAKED.set(key,t);return t}
+const CRUMB_HI=new T.Color('#f6e2b8');let CRUMB_FIELD=null;
+// Sponge grain and air holes are the same for every cake, so they are worked out once and shared.
+function crumbField(W,H){if(CRUMB_FIELD&&CRUMB_FIELD.W===W&&CRUMB_FIELD.H===H)return CRUMB_FIELD;const cr=fbm(160,2,55),pore=fbm(240,1,13),G=new Float32Array(W*H),P=new Float32Array(W*H);for(let j=0;j<H;j++){const v=1-(j+.5)/H;for(let i=0;i<W;i++){const u=i/W;G[j*W+i]=cr(u,(v*.6)%1);P[j*W+i]=pore(u,(v*.7)%1)}}CRUMB_FIELD={W,H,G,P};return CRUMB_FIELD}
+function nakedTex(col,h,full){const key='v2|'+col+'|'+Math.round(h*4)+(full?'|full':'');if(NAKED.has(key))return NAKED.get(key);const W=1024,H=640,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d'),img=x.createImageData(W,H),d=img.data,
+ // scraper streaks run around the cake (long in u, short in v); crumb is fine grain; pores are the little air holes of the sponge
+ st=fbm(3,4,321),st2=fbm(9,3,91),g=fbm(32,2,77),cr=fbm(160,2,55),pore=fbm(240,1,13),wob=fbm(6,2,404),fr=new T.Color(col),crumbL=new T.Color('#efcf95'),crumbD=new T.Color('#d3a463'),crust=new T.Color('#b27a3f'),vb=2/43,vt=32/43,nL=Math.max(2,Math.round(h/1.4)),tmp=new T.Color(),fc=new T.Color();
+ const CF=crumbField(W,H),WB=new Float32Array((nL+1)*W);for(let k=1;k<nL;k++)for(let i=0;i<W;i++)WB[k*W+i]=(wob(i/W,(k*.37)%1)-.5)*.12;
+ for(let j=0;j<H;j++){const v=1-(j+.5)/H;for(let i=0;i<W;i++){const u=i/W,o=(j*W+i)*4;let a=1,cake=0,edge=0;
+  if(v>vb&&v<vt){const yy=(v-vb)/(vt-vb)*h;
+   // distance to the nearest filling line, with the line wandering a little like a real hand-spread layer
+   let fill=9;for(let k=1;k<nL;k++){const lineY=k*h/nL+WB[k*W+i],dd=Math.abs(yy-lineY);if(dd<fill){fill=dd}}
+   const layerPos=(yy*nL/h)%1;edge=Math.min(layerPos,1-layerPos); // 0 at a layer's baked top/bottom
+   if(full){const th=.17+(g(u,(yy/h*5)%1)-.5)*.1;a=smooth(th+.025,th-.025,fill);a=Math.max(a,.92*smooth(h-.16,h-.05,yy),.9*smooth(.1,.03,yy))}
+   else{const streak=st(u,(yy/h*6)%1)*.55+st2(u,(yy/h*14)%1)*.45,keep=.34*smooth(.32,.05,fill)+.34*smooth(h-.55,h-.12,yy)+.3*smooth(.4,.08,yy)+.18*smooth(.24,.04,edge);const sN=(streak-.5)*2.4+.5;a=smooth(.34,.56,sN+keep-.04);a=Math.max(a,.16+.12*g(u,(yy/h*7)%1))}
+   cake=1}
+  // sponge colour: golden crumb, darker baked crust near each layer's top and bottom, pores and crumb grain
+  const grain=CF.G[j*W+i],p=CF.P[j*W+i];fc.copy(crumbL).lerp(crumbD,.25+.5*grain);if(cake)fc.lerp(crust,(full?.55:.35)*smooth(.09,.0,edge));if(p>.72)fc.multiplyScalar(.78+.15*(1-p));else if(p<.2)fc.lerp(CRUMB_HI,.25);
+  // frosting is a thin translucent smear where it's scraped back on a semi-naked cake
+  tmp.copy(fc).lerp(fr,a);if(!full&&a<.98&&a>.0)tmp.lerp(fr,.12*(1-a));d[o]=Math.round(tmp.r*255);d[o+1]=Math.round(tmp.g*255);d[o+2]=Math.round(tmp.b*255);d[o+3]=255}}
+ x.putImageData(img,0,0);const t=new T.CanvasTexture(cv);t.colorSpace=T.SRGBColorSpace;t.wrapS=T.RepeatWrapping;t.anisotropy=8;NAKED.set(key,t);return t}
 // ---------------------------------------------------------------- Themed starter cakes
 const DC=(type,layout,count,o={})=>({type,layout,count,size:100,rot:0,y:0,...o});
 const THEMES=[
