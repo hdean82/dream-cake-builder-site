@@ -2,7 +2,7 @@
 // The team password lives only in Cloudflare (Pages > Settings > Variables and Secrets > TEAM_KEY), never in this code.
 // Visit /team?key=YOUR-PASSWORD once on a device to unlock it; /team?off locks that device again.
 // Devices keep a token derived from the password, so changing TEAM_KEY locks every device until it is unlocked again.
-const LOCKED = /^\/(shop|portfolio|calendar|beta-admin|pricing)(\.html)?\/?$/i;
+const LOCKED = /^\/(shop|calendar|beta-admin|pricing)(\.html)?\/?$/i;
 const YEAR = 60 * 60 * 24 * 365;
 
 async function sha256(text) {
@@ -40,6 +40,7 @@ async function shopPreview(slug, kind) {
     const f = i.form || {}, name = i.business.trim().slice(0, 80);
     const desc = String(f.intro || '').replace(/\s+/g, ' ').trim().slice(0, 180) || `Tell ${name} about your celebration and request a custom cake.`;
     const img = /^https:\/\//.test(f.logo || '') ? f.logo : '';
+    if (kind === 'portfolio') return { title: `${name} · Cake gallery`, desc: `See cakes by ${name} and request your own.`, img };
     if (kind === 'review') return { title: `Leave a review for ${name}`, desc: `How was your cake? Share a few words with ${name}.`, img };
     return { title: `Order a cake from ${name}`, desc, img };
   } catch { return null; }
@@ -106,7 +107,7 @@ export async function onRequest({ request, next, env }) {
     out.headers.set('X-Robots-Tag', 'noindex');
     return out;
   }
-  const pv = path.match(/^\/(request|review)(\.html)?\/?$/i);
+  const pv = path.match(/^\/(request|review|portfolio)(\.html)?\/?$/i);
   if (pv && request.method === 'GET') {
     const slug = (url.searchParams.get('shop') || '').trim().toLowerCase();
     if (/^[a-z0-9-]{2,60}$/.test(slug)) {
