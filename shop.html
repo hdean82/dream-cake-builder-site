@@ -894,6 +894,7 @@ function defaults(){
 }
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+function migrateS(){
 if(!S||!S.settings)S=defaults();
 S.customers=S.customers||[];
 if(Array.isArray(S.tpls)&&!S.tpls.some(t=>t.id==="cancel")){const c=TPL.find(x=>x[0]==="cancel");const at=S.tpls.findIndex(t=>t.id==="invoice");S.tpls.splice(at<0?0:at+1,0,{id:c[0],group:c[1],name:c[2],desc:c[3],subject:c[4],body:c[5],on:true})}
@@ -905,6 +906,8 @@ if(!S.settings.servingBasis)S.settings.servingBasis={wedding:2,party:3};S.expens
 S.lists=S.lists||{expense:["Ingredients","Packaging","Equipment","Decorations","Delivery & mileage","Marketing"],income:["Cake orders","Classes","Tips"],recipe:["Cakes","Fillings","Frostings","Cookies"]};
 if(S.settings.instalments==null)S.settings.instalments=2;
 S.settings.doc=Object.assign({accent:"#c12c7e",quoteTitle:"Quote",invoiceTitle:"Invoice",showTerms:true,payNote:""},S.settings.doc||{});
+}
+migrateS();
 let storageWarned=false;
 let cloudHook=null;
 const persist=()=>{if(cloudHook)cloudHook();try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){if(!storageWarned){storageWarned=true;setTimeout(()=>toast("This browser's storage is full. Remove some photos to keep saving."),50)}return false}};
@@ -2470,7 +2473,10 @@ function vPrefs(){
  ${sec("Your data","",
    row("backup",IC.save,"Backup",CLOUD.state==="on"?"Saved to your account":"This browser",`<p class="hint">${CLOUD.state==="on"?"Everything saves to your account automatically, so you can use any device. You can still copy a backup to keep somewhere else.":"You’re not signed in, so your orders live only in this browser. Sign in to save them to your account, or copy a backup now and then and keep it somewhere safe."}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="backupCopy">Copy backup</button><button class="btn sm" data-a="backupShow">Restore from a backup</button></div>
  <div id="restoreBox" hidden><textarea id="restoreText" style="margin-top:8px;min-height:90px" placeholder="Paste a backup here"></textarea><button class="btn primary sm" data-a="backupRestore" style="margin-top:6px">Restore</button></div>`)
-  +row("reset",IC.reset,"Start over","",`<p class="hint">Put every setting, list and template back to the starting version. Orders, customers and recipes are kept.</p><button class="btn danger" data-a="resetAll">Reset set-up</button>`))}
+  +row("reset",IC.reset,"Reset settings","",`<p class="hint" style="margin-top:0">Use this if your set-up has gotten messy and you want a clean starting point. It does not delete any orders or records.</p>
+ <div class="kv"><span>Goes back to the starting version</span><span></span></div><p class="hint" style="margin:2px 0 8px">Quote and invoice settings, deposit and payment plan, tax rates, policies and terms, product types and prices, event types, email templates, your order form and notification choices.</p>
+ <div class="kv"><span>Stays exactly as it is</span><span></span></div><p class="hint" style="margin:2px 0 10px">Orders and quotes, customers, recipes and ingredients, money and mileage, portfolio photos and reviews, suppliers, your business name, contact details, pickup address, logo, order numbers and card payments.</p>
+ <button class="btn danger" data-a="resetAll">Reset Settings</button>`,"Back to the starting set-up"))}
  <p class="pempty" id="prefNone" hidden>No settings match your search.</p></div>`;
  prefFilter(PREFQ,true);
 }
@@ -2573,7 +2579,7 @@ function vHelp(){const G=[["Taking your first order","Tap New order, add the cus
  <div class="card"><h3>Need a hand?</h3><p class="hint">Email us and we'll get back to you within one business day.</p><a class="btn primary" href="mailto:support@dreamcakebuilder.com?subject=Help%20with%20Orders">Email support</a> <a class="btn" href="contact.html">Contact page</a></div></div>`}
 function sideHelp(){return`<div class="card"><h3>Tips</h3><p class="hint">Orders save when you tap Save. On settings pages like Customers, Product types and Preferences, tap Save changes at the bottom when you're done. Sign in to keep your order book in sync across your phone and computer.</p></div>`}
 /* ---------- toast & undo ---------- */
-function toast(msg,undo){const t=$("toast");t.innerHTML=esc(msg)+(undo?`<button id="undoB">Undo</button>`:"");t.classList.add("on");t.style.pointerEvents=undo?"auto":"none";if(undo)$("undoB").onclick=()=>{S=undoSnap;save();render();toast("Restored")};clearTimeout(t._h);t._h=setTimeout(()=>{t.classList.remove("on");t.style.pointerEvents="none"},4500)}
+function toast(msg,undo){const t=$("toast");t.innerHTML=esc(msg)+(undo?`<button id="undoB">Undo</button>`:"");t.classList.add("on");t.style.pointerEvents=undo?"auto":"none";if(undo)$("undoB").onclick=()=>{S=undoSnap;if(SAVE_PAGES.has(route)){persist();DIRTY=false}else save();render();toast("Restored")};clearTimeout(t._h);t._h=setTimeout(()=>{t.classList.remove("on");t.style.pointerEvents="none"},4500)}
 const snap=()=>{undoSnap=clone(S)};
 const move=(arr,i,d)=>{const j=i+d;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]]};
 
@@ -2844,7 +2850,11 @@ document.addEventListener("click",e=>{
   case"sset":S.settings[b.dataset.k]=b.dataset.v;save();render();break;
   case"taxAdd":OPEN.add("taxes");S.taxes.push({id:uid(),name:"New rate",rate:0});save();render();break;
   case"taxDel":snap();{const gone=S.taxes.splice(i,1)[0];if(S.settings.defaultTax===gone.id)S.settings.defaultTax="none"}save();render();toast("Tax rate deleted",true);break;
-  case"resetAll":{snap();const keep={orders:S.orders,customers:S.customers,recipes:S.recipes,ingredients:S.ingredients};S=Object.assign(defaults(),keep);S.lists=undoSnap.lists;S.settings.doc=Object.assign({accent:"#c12c7e",quoteTitle:"Quote",invoiceTitle:"Invoice",showTerms:true,payNote:""});S.settings.instalments=2;save();render();toast("Set-up reset",true);break}
+  case"resetAll":{if(!confirm("Put your settings, products, event types, email templates and order form back to the starting version?\n\nYour orders, customers, recipes, money, mileage, portfolio and business details stay. You can undo right after."))break;
+   snap();const D=defaults(),old=S.settings,keepSet={biz:old.biz,email:old.email,phone:old.phone,address:old.address,pickupPaidOnly:old.pickupPaidOnly,nextNo:old.nextNo,payments:old.payments};
+   S.settings=Object.assign(D.settings,Object.fromEntries(Object.entries(keepSet).filter(([,v])=>v!==undefined)));S.settings.doc=Object.assign({accent:"#c12c7e",quoteTitle:"Quote",invoiceTitle:"Invoice",showTerms:true,payNote:""},old.doc&&old.doc.logo?{logo:old.doc.logo}:{});S.settings.instalments=2;
+   ["taxes","types","events","tpls"].forEach(k=>{if(D[k]!==undefined)S[k]=D[k]});delete S.reqForm;S.formQ=[];migrateS();
+   persist();DIRTY=false;render();toast("Settings reset. Your orders and records are untouched",true);break}
   case"backupCopy":{const txt=JSON.stringify({app:"dream-cake-shop",v:1,at:new Date().toISOString(),data:S});(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast("Backup copied. Paste it somewhere safe"),()=>{$("restoreBox").hidden=false;const ta=$("restoreText");ta.value=txt;ta.select();toast("Backup is selected below. Copy it with your keyboard or long-press")});break}
   case"backupShow":$("restoreBox").hidden=false;$("restoreText").focus();break;
   case"backupRestore":{try{const j=JSON.parse($("restoreText").value);const d=j.data||j;if(!d.settings||!Array.isArray(d.orders))throw 0;snap();S=d;S.customers=S.customers||[];S.recipes=S.recipes||[];S.ingredients=S.ingredients||[];save();draft=blankOrder();render();toast("Backup restored",true)}catch(e){toast("That doesn't look like an Orders backup")}break}
