@@ -247,6 +247,25 @@ body.hp{background-color:#fffaf9}
 .bpop .x{position:absolute;right:10px;top:10px;width:40px;height:40px;border-radius:50%;border:0;background:#ffffffcc;color:var(--ink);font-size:22px;line-height:1;cursor:pointer;z-index:2}
 .bpop .stamp+.x{right:auto;left:10px}
 @media(prefers-reduced-motion:reduce){.bpop,.bpop .card{transition:none}.bpop .top img{animation:none}}
+.after .wrap{display:grid;gap:34px;align-items:center}
+@media(min-width:900px){.after .wrap{grid-template-columns:1fr 1.05fr}}
+.after .lede{max-width:46ch}
+.after ul.pts{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px}
+.after ul.pts li{padding-left:22px;position:relative;line-height:1.45}
+.after ul.pts li::before{content:'';position:absolute;left:4px;top:.55em;width:8px;height:8px;border-radius:50%;background:var(--rose)}
+.ticket{position:relative;background:#fff;border-radius:6px;padding:22px 22px 18px;box-shadow:0 24px 50px -28px #4b103d66;transform:rotate(-1.2deg);max-width:440px;margin:0 auto;width:100%;font-size:14.5px}
+.ticket::before,.ticket::after{content:'';position:absolute;left:0;right:0;height:10px;background:radial-gradient(circle at 6px -1px,transparent 6px,#fff 6.5px) 0 0/12px 10px repeat-x}
+.ticket::before{top:-9px;transform:scaleY(-1)}.ticket::after{bottom:-9px}
+.ticket .th{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-bottom:2px dashed #f1dbe5;padding-bottom:10px;margin-bottom:6px}
+.ticket .th b{font:600 20px Fraunces,Georgia,serif;color:var(--ink)}.ticket .th span{color:var(--muted);font-size:13px}
+.ticket ol{list-style:none;margin:0;padding:0}
+.ticket li{display:grid;grid-template-columns:58px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid #f6e7ee}
+.ticket li:last-child{border-bottom:0}
+.ticket time{font-size:12.5px;color:var(--rose-ink);font-weight:600;padding-top:1px}
+.ticket li small{display:block;color:var(--muted);font-size:12.5px;margin-top:1px}
+.ticket .stars{color:#e0a100;letter-spacing:1px}
+.hp main>section.after{background:rgba(255,250,245,.7)}
+@media(max-width:520px){.ticket .th{flex-direction:column;align-items:flex-start;gap:2px}.ticket li{grid-template-columns:42px 1fr}.ticket{transform:rotate(-.6deg)}}
 </style>
 </head>
 <body class="hp">
@@ -387,6 +406,32 @@ body.hp{background-color:#fffaf9}
   <div class="row"><a href="studio.html" data-open-cake><span class="im"><picture><source srcset="assets/home/cakes/lambeth.webp?v=b78c7fe00d" type="image/webp"><img src="assets/home/cakes/lambeth.jpg?v=b78c7fe00d" alt="Blush Lambeth cake" width="640" height="640" loading="lazy" data-fallback data-alt="lambeth"></picture></span><b data-n="lambeth">Blush Lambeth</b></a><a href="studio.html?theme=sig_moneybag"><span class="im"><picture><source srcset="assets/home/cakes/sig_moneybag.webp?v=273367c230" type="image/webp"><img src="assets/home/cakes/sig_moneybag.jpg?v=273367c230" alt="Money Bag Birthday cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_moneybag"></picture></span><b data-n="sig_moneybag">Money Bag Birthday</b></a><a href="studio.html?theme=sig_bee"><span class="im"><picture><source srcset="assets/home/cakes/sig_bee.webp?v=1f3fd6bd90" type="image/webp"><img src="assets/home/cakes/sig_bee.jpg?v=1f3fd6bd90" alt="Garden Bee cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_bee"></picture></span><b data-n="sig_bee">Garden Bee</b></a><a href="studio.html?theme=sig_crawfish"><span class="im"><picture><source srcset="assets/home/cakes/sig_crawfish.webp?v=755f1fe84c" type="image/webp"><img src="assets/home/cakes/sig_crawfish.jpg?v=755f1fe84c" alt="Crawfish Boil Pot cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_crawfish"></picture></span><b data-n="sig_crawfish">Crawfish Boil Pot</b></a><a href="studio.html?theme=sig_movie"><span class="im"><picture><source srcset="assets/home/cakes/sig_movie.webp?v=410c1d72ae" type="image/webp"><img src="assets/home/cakes/sig_movie.jpg?v=410c1d72ae" alt="Movie Night Popcorn cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_movie"></picture></span><b data-n="sig_movie">Movie Night Popcorn</b></a><a href="studio.html?theme=sig_blocks"><span class="im"><picture><source srcset="assets/home/cakes/sig_blocks.webp?v=ec18333655" type="image/webp"><img src="assets/home/cakes/sig_blocks.jpg?v=ec18333655" alt="Building Block Number cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_blocks"></picture></span><b data-n="sig_blocks">Building Block Number</b></a><a href="studio.html?theme=sig_sports"><span class="im"><picture><source srcset="assets/home/cakes/sig_sports.webp?v=56e8ba6c37" type="image/webp"><img src="assets/home/cakes/sig_sports.jpg?v=56e8ba6c37" alt="All-Star Sports Number cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_sports"></picture></span><b data-n="sig_sports">All-Star Sports Number</b></a><a href="studio.html?theme=sig_babysky"><span class="im"><picture><source srcset="assets/home/cakes/sig_babysky.webp?v=91b6229a43" type="image/webp"><img src="assets/home/cakes/sig_babysky.jpg?v=91b6229a43" alt="Up, Up And Away Bears cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_babysky"></picture></span><b data-n="sig_babysky">Up, Up And Away Bears</b></a><a href="studio.html?theme=sig_rosegold"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosegold.webp?v=7ae9db245e" type="image/webp"><img src="assets/home/cakes/sig_rosegold.jpg?v=7ae9db245e" alt="Rose Gold Jewels cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_rosegold"></picture></span><b data-n="sig_rosegold">Rose Gold Jewels</b></a><a href="studio.html?theme=sig_ruffles"><span class="im"><picture><source srcset="assets/home/cakes/sig_ruffles.webp?v=80b24dc4cc" type="image/webp"><img src="assets/home/cakes/sig_ruffles.jpg?v=80b24dc4cc" alt="Forever Eva | Ivory Ruffles cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_ruffles"></picture></span><b data-n="sig_ruffles">Forever Eva | Ivory Ruffles</b></a><a href="studio.html?theme=sig_pillows"><span class="im"><picture><source srcset="assets/home/cakes/sig_pillows.webp?v=715d3a1823" type="image/webp"><img src="assets/home/cakes/sig_pillows.jpg?v=715d3a1823" alt="Gold Trim Pillows cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_pillows"></picture></span><b data-n="sig_pillows">Gold Trim Pillows</b></a><a href="studio.html?theme=sig_cow"><span class="im"><picture><source srcset="assets/home/cakes/sig_cow.webp?v=3dcb2140ac" type="image/webp"><img src="assets/home/cakes/sig_cow.jpg?v=3dcb2140ac" alt="Cartoon Cow Cake cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_cow"></picture></span><b data-n="sig_cow">Cartoon Cow Cake</b></a><a href="studio.html?theme=sig_pastelarch"><span class="im"><picture><source srcset="assets/home/cakes/sig_pastelarch.webp?v=11d699f0cb" type="image/webp"><img src="assets/home/cakes/sig_pastelarch.jpg?v=11d699f0cb" alt="Pastel Rainbow Unicorn cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_pastelarch"></picture></span><b data-n="sig_pastelarch">Pastel Rainbow Unicorn</b></a><a href="studio.html?theme=sig_teal"><span class="im"><picture><source srcset="assets/home/cakes/sig_teal.webp?v=753ecf263e" type="image/webp"><img src="assets/home/cakes/sig_teal.jpg?v=753ecf263e" alt="Teal Bauble Cascade cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_teal"></picture></span><b data-n="sig_teal">Teal Bauble Cascade</b></a><a href="studio.html?theme=sig_rosettower"><span class="im"><picture><source srcset="assets/home/cakes/sig_rosettower.webp?v=efead41012" type="image/webp"><img src="assets/home/cakes/sig_rosettower.jpg?v=efead41012" alt="Blush Rosette Tower cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_rosettower"></picture></span><b data-n="sig_rosettower">Blush Rosette Tower</b></a><a href="studio.html?theme=sig_monogram"><span class="im"><picture><source srcset="assets/home/cakes/sig_monogram.webp?v=0c14529ad0" type="image/webp"><img src="assets/home/cakes/sig_monogram.jpg?v=0c14529ad0" alt="Champagne Gold Art Deco cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_monogram"></picture></span><b data-n="sig_monogram">Champagne Gold Art Deco</b></a><a href="studio.html?theme=sig_peony"><span class="im"><picture><source srcset="assets/home/cakes/sig_peony.webp?v=d554d39f24" type="image/webp"><img src="assets/home/cakes/sig_peony.jpg?v=d554d39f24" alt="Coral Peony Cascade cake" width="640" height="640" loading="lazy" data-fallback data-alt="sig_peony"></picture></span><b data-n="sig_peony">Coral Peony Cascade</b></a></div>
  </section>
 
+ <section class="after" id="orders-tools">
+  <div class="wrap">
+   <div>
+    <h2>Everything after the yes</h2>
+    <p class="lede">Dream Cake Orders keeps the rest of the order in one place, from the first message to the five-star review.</p>
+    <ul class="pts">
+     <li>An order form for your website and Instagram bio, with your pickup times and a waitlist for booked dates</li>
+     <li>Quotes your clients sign and pay online</li>
+     <li>A bake sheet that works out batter and buttercream for every tier</li>
+     <li>Reminders and thank-you emails that send themselves</li>
+     <li>Reviews, a QR code for your counter, and Instagram posts made from your cakes</li>
+    </ul>
+   </div>
+   <div class="ticket" aria-label="Example order from request to review">
+    <div class="th"><b>Order #1042 · Jess</b><span>Blush Lambeth · 30 servings</span></div>
+    <ol>
+     <li><time>Mon</time><span>Request came in from your order form<small>Picked Saturday, 2:00 pm pickup</small></span></li>
+     <li><time>Tue</time><span>Quote signed and deposit paid online<small>Date is now booked on your calendar</small></span></li>
+     <li><time>Thu</time><span>Bake sheet ready<small>10&quot; + 7&quot; vanilla · 14 cups batter · 8 cups buttercream</small></span></li>
+     <li><time>Fri</time><span>Pickup reminder sent to Jess</span></li>
+     <li><time>Sun</time><span>Thank-you email with your review link<small class="stars" aria-label="5 stars">★★★★★</small></span></li>
+    </ol>
+   </div>
+  </div>
+ </section>
+
  <section class="faq" id="workflow-questions">
   <div class="wrap">
    <h2>Questions</h2>
@@ -394,6 +439,7 @@ body.hp{background-color:#fffaf9}
     <details><summary>Who is it for?</summary><p>Cake artists who want to show clients exactly what their cake will look like and get a clear yes before baking.</p></details>
     <details><summary>Do my clients need an account?</summary><p>No. They open the link you send, turn the cake in 3D and tap Approve or Request changes. You're told either way.</p></details>
     <details><summary>Does it work on my phone?</summary><p>Yes. The Studio runs in your browser on a phone, tablet or computer. There's nothing to download.</p></details>
+    <details><summary>Can it run my orders too?</summary><p>Yes. Dream Cake Orders handles requests, quotes, deposits, your calendar and bake sheets, and sends the reminder emails for you. It opens to Beta Artists first.</p></details>
     <details><summary>What does it cost?</summary><p>Before launch, anyone can try the Studio free for 15 minutes. Beta Artists get full access while we test. Pricing will be announced at launch; join the waitlist and you'll hear about it first.</p></details>
    </div>
   </div>
