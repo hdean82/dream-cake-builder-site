@@ -52,6 +52,7 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .paybtn{display:inline-flex;align-items:center;gap:6px}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}.big{font-family:Fraunces,Georgia,serif;font-size:26px;color:var(--ink);margin-bottom:6px}
 @media print{.site-head,.site-foot,.answer,.noprint{display:none!important}body{background:#fff!important}.doc{border:0;box-shadow:none}}
+.paybox{margin:14px 0 0;padding:14px 16px;border:1.5px solid var(--acc,#c12c7e);border-radius:14px;background:#fff}.payrow{display:flex;gap:8px;flex-wrap:wrap}.payrow .btn{min-height:46px;padding:0 18px}.paydone{margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f5e8;color:#22703c}
 </style>
 </head>
 <body>
@@ -116,6 +117,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   <div class="dtot"><div class="kv"><span>Subtotal</span><span>${esc(d.sub)}</span></div>${d.tax?`<div class="kv"><span>Tax</span><span>${esc(d.tax)}</span></div>`:''}${d.fee?`<div class="kv"><span>Delivery</span><span>${esc(d.fee)}</span></div>`:''}
    <div class="kv tot"><span>Total</span><span>${esc(d.total)}</span></div>${d.paid?`<div class="kv"><span>Paid</span><span>${esc(d.paid)}</span></div>`:''}
    <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv tot"><span>Balance due</span><span>${esc(d.bal)}</span></div></div>
+  <div id="payBox" class="noprint"></div>
   ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
   ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
   ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
@@ -149,19 +151,36 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]
  document.querySelectorAll('[data-act]').forEach(x=>x.disabled=true);b.textContent='Sending…';
  try{const st=await rpc('shop_quote_respond',{p_token:token,p_action:act,p_name:name,p_message:m||null});
   fetch(`${SB}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'quote',token}),keepalive:true}).catch(()=>{});
-  Q.status=st;Q.responder_name=name;Q.responded_at=new Date().toISOString();draw();
+  Q.status=st;Q.responder_name=name;Q.responded_at=new Date().toISOString();draw();payDraw();
   if(act==='message'){const o=$('a-out');if(o){o.style.color='#0f5f5b';o.textContent='Message sent. Thank you!'}}
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})
  }catch(err){document.querySelectorAll('[data-act]').forEach(x=>x.disabled=false);b.textContent={approve:'Approve Quote',decline:'Decline',message:'Send Message'}[act];out.textContent=err.message||'Something went wrong. Please try again.'}});
 
+
+// Pay by card straight to the cake artist (Stripe), when they've switched it on.
+let PAY=null,PAID=null;
+const fm=c=>'$'+(c/100).toFixed(2);
+async function payCall(body){const r=await fetch(`${SB}/functions/v1/shop-pay`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Payments are unavailable right now.');return j}
+function payDraw(){const box=$('payBox');if(!box)return;const d=Q.doc;let h='';
+ if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
+ if(PAY&&PAY.enabled&&!d.cancelled){const isQ=d.kind==='quote',needApprove=isQ&&Q.status!=='approved';
+  h+=`<div class="paybox"><b>Pay online</b><p class="note" style="margin:2px 0 10px">Secure card payment. It goes straight to ${esc(d.biz)}.</p>${needApprove?`<p class="note" style="margin:0 0 8px">Approve the quote below first, then pay your deposit here to book your date.</p>`:''}
+  <div class="payrow">${PAY.deposit?`<button class="btn primary" type="button" data-pay="deposit"${needApprove?' disabled':''}>Pay deposit ${esc(fm(PAY.deposit))}</button>`:''}${PAY.balance?`<button class="btn${PAY.deposit?'':' primary'}" type="button" data-pay="balance"${needApprove?' disabled':''}>Pay ${PAY.deposit?'in full':'balance'} ${esc(fm(PAY.balance))}</button>`:''}</div><p class="note" id="payMsg" role="status" style="margin:8px 0 0"></p></div>`}
+ box.innerHTML=h}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-pay]');if(!b)return;const m=$('payMsg');document.querySelectorAll('[data-pay]').forEach(x=>x.disabled=true);b.textContent='Opening secure checkout…';
+ try{const j=await payCall({action:'checkout',token,what:b.dataset.pay});if(!/^https:\/\/checkout\.stripe\.com\//.test(j.url||''))throw new Error('Payments are unavailable right now.');location.href=j.url}
+ catch(err){if(m)m.textContent=err.message;payDraw()}});
+async function payInit(){try{const u=new URLSearchParams(location.search),sid=u.get('paid')||'';
+  if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)){const j=await payCall({action:'confirm',token,session:sid}).catch(()=>null);if(j&&j.ok)PAID=j.amount;try{history.replaceState(null,'',location.pathname+'?t='+token)}catch{}}
+  PAY=await payCall({action:'options',token}).catch(()=>null);payDraw()}catch{}}
 (async()=>{
  if(!/^[0-9a-f-]{36}$/i.test(token))return msg('Link not found','Please check the link you were sent.');
  try{Q=await rpc('shop_quote_view',{p_token:token});
   if(!Q)return msg('This link is no longer active','Please contact your cake artist for a new link.');
-  draw();
+  draw();payInit();
   const paths=(Q.doc.images||[]).slice(0,8);
   if(paths.length){const r=await fetch(`${SB}/storage/v1/object/sign/shop-files`,{method:'POST',headers:H,body:JSON.stringify({expiresIn:86400,paths})});
-   if(r.ok){(await r.json()).forEach(x=>{if(x.signedURL&&x.path)urls[x.path]=SB+'/storage/v1'+x.signedURL});const keep=[$('a-name')&&$('a-name').value,$('a-msg')&&$('a-msg').value];draw();if(keep[0]!=null&&$('a-name')){$('a-name').value=keep[0];$('a-msg').value=keep[1]}}}
+   if(r.ok){(await r.json()).forEach(x=>{if(x.signedURL&&x.path)urls[x.path]=SB+'/storage/v1'+x.signedURL});const keep=[$('a-name')&&$('a-name').value,$('a-msg')&&$('a-msg').value];draw();payDraw();if(keep[0]!=null&&$('a-name')){$('a-name').value=keep[0];$('a-msg').value=keep[1]}}}
  }catch{msg('We couldn’t load this page','Please check your connection and try again.')}
 })();
 }
