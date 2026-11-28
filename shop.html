@@ -1684,7 +1684,7 @@ async function uploadPending(){if(!CLOUD.shopId)return;for(const o of [...S.orde
 const META_KEY=KEY+":cloud";
 const CLOUD={state:"off",rev:0,dirty:false,timer:null,busy:false,last:null,latest:null};
 const readMeta=()=>{try{return JSON.parse(localStorage.getItem(META_KEY))||{}}catch{return{}}};
-const writeMeta=m=>{try{localStorage.setItem(META_KEY,JSON.stringify(m))}catch{}};
+const writeMeta=m=>{try{if(CLOUD.uid&&!m.user)m={...m,user:CLOUD.uid};localStorage.setItem(META_KEY,JSON.stringify(m))}catch{}};
 /* ---------- What customers see: full dates, form questions, portfolio ---------- */
 function fullDates(){const out=new Set((S.settings.daysOff||[]).filter(Boolean));const t=new Date();for(let i=0;i<400;i++){const d=new Date(t);d.setDate(t.getDate()+i);const k=isoD(d);const c=capacity(k);if(c.dayFull||c.weekFull)out.add(k)}return[...out].filter(k=>k>=isoD(t)).sort()}
 function publicInfo(){const P=S.portfolio||{},RP=rfPublic();return{full_dates:fullDates(),review_url:/^https:\/\/\S{8,290}$/.test(S.settings.reviewUrl||"")?S.settings.reviewUrl:"",questions:RP.questions,form:RP.form,
@@ -1716,8 +1716,14 @@ async function cloudPush(){if(CLOUD.busy){clearTimeout(CLOUD.timer);CLOUD.timer=
 async function cloudConnect(){const se=window.DCBAuth&&await DCBAuth.session();if(!se){CLOUD.state="off";cloudChip();return}
  CLOUD.state="connecting";cloudChip();
  try{const biz=await api("/rest/v1/rpc/shop_ensure_business",{method:"POST",body:{}});CLOUD.shopId=biz&&biz.id;
-  const snap=await api("/rest/v1/rpc/shop_load_snapshot",{method:"POST",body:{}});const meta=readMeta();
+  const snap=await api("/rest/v1/rpc/shop_load_snapshot",{method:"POST",body:{}});let meta=readMeta();
   const cloudRev=snap?+snap.revision||0:0,hasCloud=cloudRev>0&&snap.data&&snap.data.settings;
+  // This device's saved orders belong to whichever account last synced them. Never hand them to a different account:
+  // set them aside (kept on this device) and start this account from its own copy, or empty.
+  {const uid=(se.user&&se.user.id)||(()=>{try{return JSON.parse(atob(se.access_token.split(".")[1].replace(/-/g,"+").replace(/_/g,"/"))).sub}catch{return""}})();
+   const other=uid&&((meta.user&&meta.user!==uid)||(!meta.user&&meta.rev!=null&&!hasCloud));
+   if(other){try{localStorage.setItem(KEY+":other:"+(meta.user||"earlier"),JSON.stringify(S))}catch{}S=defaults();meta={};try{localStorage.setItem(KEY,JSON.stringify(S));localStorage.removeItem(META_KEY)}catch{}}
+   CLOUD.uid=uid}
   CLOUD.rev=cloudRev;
   if(!hasCloud){CLOUD.state="on";await cloudPush();toast("Your orders are now saved to your account");}
   else if(meta.rev===cloudRev){CLOUD.state="on";if(meta.dirty)await cloudPush();}
