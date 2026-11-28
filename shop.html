@@ -779,6 +779,15 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 @media (max-width:480px){.dfoot:not(:has(.btn~.btn~.btn))>.btn{flex:1 1 0}.dfoot:not(:has(.btn~.btn~.btn))>.btn.primary{flex:2 1 0}.dfoot{padding:10px 14px}}
 /* One menu inside Orders: the site links live in the Orders menu */
 .site-head .menu{display:none!important}
+/* Preferences: jump buttons and set-up reminders */
+.pjump{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;margin:0 0 4px;scrollbar-width:none}.pjump::-webkit-scrollbar{display:none}
+.pjump button{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
+.pjump button:hover{border-color:var(--rose);color:var(--rose-ink)}
+.prefs .psec{scroll-margin-top:130px}.prefs details.prow{scroll-margin-top:140px}
+.ptodo{border-color:#f3c9dc;background:#fff7fb}.ptodo h3{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.ptodo-list{display:grid;gap:6px}.ptodo-i{display:grid;grid-template-columns:1fr auto;text-align:left;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;color:var(--ink)}
+.ptodo-i small{grid-column:1;color:var(--muted);font-size:12.5px}.ptodo-i span{grid-row:1/3;grid-column:2;align-self:center;color:var(--rose-ink);font-size:20px}
+.ptodo-i:hover{border-color:var(--rose)}
 /* New order form: compact and tidy */
 .oform .card{padding:12px 14px;margin-bottom:10px}
 .oform .card h3{font-size:14.5px;margin:0 0 6px}
@@ -890,7 +899,7 @@ function defaults(){
  const pt=(name,e,on,groups,tiers=false)=>({id:uid(),name,e,on,tiers,groups});
  return{
   settings:{biz:"My cake shop",email:"",phone:"",address:"",nextNo:1001,defType:"Quote",expiry:7,depositPct:50,defaultTax:"none",terms:"A non-refundable deposit reserves your date. Changes can be made up to 7 days before your event.",footer:"Thank you for choosing us for your celebration!",labor:0,margin:0,unit:"Miles",copyMe:false,report:false,payRem:false},
-  taxes:[{id:"none",name:"No tax",rate:0},{id:uid(),name:"Tennessee",rate:9.25},{id:uid(),name:"Mississippi",rate:7}],
+  taxes:[{id:"none",name:"No tax",rate:0}],
   types:[pt("Cakes","🎂",true,cakeGroups,true),pt("Cupcakes","🧁",true,[g("Sizes",["Mini","Standard","Jumbo"]),g("Flavors",["Vanilla","Chocolate","Strawberry","Lemon","Funfetti"]),g("Frosting",["Vanilla buttercream","Chocolate buttercream","Cream cheese"])]),pt("Cookies","🍪",true,[g("Style",["Decorated sugar cookie","Chocolate chip","Snickerdoodle"]),g("Packaging",["Bagged","Boxed","Platter"])]),pt("Cake pops","🍭",true,[g("Flavors",["Vanilla","Chocolate","Red velvet"])]),pt("Mini cakes","🍰",true,[g("Flavors",["Vanilla","Chocolate","Lemon"])]),pt("Cake jars","🍮",true,[g("Flavors",["Strawberry shortcake","Chocolate fudge","Banana pudding"])]),pt("Toppers","🎀",true,[g("Style",["Acrylic","Paper","Fondant figure"])]),pt("Donuts","🍩",false,[g("Glaze",["Classic","Chocolate","Sprinkle"])]),pt("Macarons","🥮",false,[g("Flavors",["Vanilla","Raspberry","Pistachio"])]),pt("Other","📦",true,[])],
   events:[["Birthday","#e05a5a"],["Wedding","#4fa36f"],["Anniversary","#e98a3c"],["Baby shower","#4a8fd9"],["Bridal shower","#d06aa8"],["Graduation","#6b6bd9"],["Gender reveal","#9a6ad9"],["Holiday","#e0a23a"],["Corporate","#3fa3a3"],["Other","#8a7a70"]].map(([name,color])=>({id:uid(),name,color})),
   tpls:TPL.map(([id,group,name,desc,subject,body])=>({id,group,name,desc,subject,body,on:group==="manual"?true:!!AUTO_ON[id]})),
@@ -913,10 +922,13 @@ if(S.settings.instalments==null)S.settings.instalments=2;
 S.settings.doc=Object.assign({accent:"#c12c7e",quoteTitle:"Quote",invoiceTitle:"Invoice",showTerms:true,payNote:""},S.settings.doc||{});
 }
 migrateS();
+try{if(!localStorage.getItem(KEY))localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
 let storageWarned=false;
 let cloudHook=null;
 const persist=()=>{if(cloudHook)cloudHook();try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){if(!storageWarned){storageWarned=true;setTimeout(()=>toast("This browser's storage is full. Remove some photos to keep saving."),50)}return false}};
-const save=()=>{if(typeof SAVE_PAGES!=="undefined"&&SAVE_PAGES.has(route)){DIRTY=true;saveBar();return true}return persist()};
+// On pages with a Save button: if the edits end up matching what is already saved, the "unsaved changes" bar goes away again.
+let dirtyT=0;const dirtyCheck=()=>{clearTimeout(dirtyT);dirtyT=setTimeout(()=>{if(!DIRTY)return;let same=false;try{const n=(k,v)=>typeof v==="string"&&/^-?\d+(\.\d+)?$/.test(v)?+v:v,saved=localStorage.getItem(KEY);same=!!saved&&JSON.stringify(S,n)===JSON.stringify(JSON.parse(saved),n)}catch(e){}if(same){DIRTY=false;saveBar()}},300)};
+const save=()=>{if(typeof SAVE_PAGES!=="undefined"&&SAVE_PAGES.has(route)){DIRTY=true;saveBar();dirtyCheck();return true}return persist()};
 
 const blankOrder=()=>({id:null,no:null,customer:"",phone:"",email:"",eventId:S.events[0]?.id||"",kind:S.settings.defType,status:"Inquiry",date:"",time:"",handoff:"Collected",address:"",fee:0,items:[],notes:"",prodNotes:"",deposit:null,customerId:null,expiryDays:S.settings.expiry,images:[],imagesOnDoc:true,payments:[],issued:null});
 let route="today",draft=blankOrder(),editType=null,editTpl=null,M=null,search="",undoSnap=null;
@@ -2431,6 +2443,8 @@ function vPrefs(){
  const catRow=(k,l,icon)=>row("cat-"+k,icon,l,`${S.lists[k].length}`,`<div class="tags">${S.lists[k].map((v,i)=>`<span class="tagchip">${esc(v)}<button type="button" data-a="listDel" data-k="${k}" data-i="${i}" aria-label="Remove ${esc(v)}">✕</button></span>`).join("")}</div><form class="addbar" data-a="listAdd" data-k="${k}"><input type="text" placeholder="Add a category" aria-label="New ${esc(l.toLowerCase())}"><button class="btn sm" type="submit">Add</button></form>`);
  $("main").innerHTML=`<div class="wrap prefs"><h1>Preferences</h1><p class="lead">Your business details and the defaults for new orders.</p>
  <div class="psearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="prefQ" placeholder="Search settings…" aria-label="Search settings" value="${esc(PREFQ)}" oninput="prefFilter(this.value)"></div>
+ ${prefTodo()}
+ <nav class="pjump" aria-label="Jump to a section">${["Business","Quotes & invoices","Payments","Policies","Orders & planning","Pricing & costs","Categories","Emails & notifications","Your data"].map(t=>`<button type="button" data-a="pjump" data-v="${esc(t)}">${esc(t.replace(" & invoices","").replace(" & planning","").replace(" & costs","").replace(" & notifications",""))}</button>`).join("")}</nav>
  ${sec("Business","Who you are and where customers collect their cakes.",
    row("biz",IC.biz,"Business profile",short(s.biz),`${f("biz","Business name")}<div class="grid2">${f("email","Email","email")}${f("phone","Phone","tel")}</div>`,"Name, email and phone")
   +row("addr",IC.pin,"Pickup address",s.address?short(s.address):`<span class="reqtag">Required</span>`,`<p class="hint" style="margin-top:0">Where customers collect their cakes. It's on quotes, invoices and emails as {{PICKUP_ADDRESS}}.</p>${f("address","Pickup address <span class=\"req\">*</span>","text",'placeholder="Street, city, state, ZIP" autocomplete="street-address"')}<label class="toggle"><div><div class="t">Only show it once the invoice is paid</div><div class="d">Until an order is paid in full, quotes, invoices and emails say “Address shared once your invoice is paid”.</div></div><span class="sw2"><input type="checkbox" data-s="pickupPaidOnly"${s.pickupPaidOnly?" checked":""}><i></i></span></label>`,s.pickupPaidOnly?"Shown once paid":"Where customers collect cakes")
@@ -2440,7 +2454,7 @@ function vPrefs(){
   +row("defType",IC.type,"Default order type",esc(s.defType||"Quote"),`<div class="seg">${["Quote","Order"].map(k=>`<button type="button" class="${s.defType===k?"on":""}" data-a="sset" data-k="defType" data-v="${k}">${k}</button>`).join("")}</div>`,"What new orders start as")
   +row("expiry",IC.clock,"Quote expiry",`${esc(s.expiry)} days`,f("expiry","Quote expires after (days)","number",'min="0"'))
   +row("footer",IC.foot,"Order footer",set(s.footer),`<p class="hint" style="margin-top:0">A thank-you note under the prices on quotes and invoices, and at the end of emails.</p>${richEd("footer","Order footer","Thank you for choosing us for your celebration!",90)}`)
-  +row("tax",IC.tax,"Tax rates",`${esc(dtax.name)} (${esc(dtax.rate)}%)`,`<div class="field" style="margin-top:0"><label for="s-deftax">Default rate for new items <span class="note">you can change it on any item</span></label><select id="s-deftax" data-s="defaultTax">${S.taxes.map(t=>`<option value="${esc(t.id)}"${s.defaultTax===t.id?" selected":""}>${esc(t.name)} (${esc(t.rate)}%)</option>`).join("")}</select></div><details data-keep="taxes"${OPEN.has("taxes")?" open":""}><summary class="note" style="cursor:pointer">Edit or add rates (${S.taxes.length})</summary>
+  +row("tax",IC.tax,"Tax rates",`${esc(dtax.name)} (${esc(dtax.rate)}%)`,`<div class="field" style="margin-top:0"><label for="s-deftax">Default rate for new items <span class="note">you can change it on any item</span></label><select id="s-deftax" data-s="defaultTax">${S.taxes.map(t=>`<option value="${esc(t.id)}"${s.defaultTax===t.id?" selected":""}>${esc(t.name)} (${esc(t.rate)}%)</option>`).join("")}</select></div><details data-keep="taxes"${OPEN.has("taxes")||S.taxes.length<2?" open":""}><summary class="note" style="cursor:pointer">Edit or add rates (${S.taxes.length})</summary>${S.taxes.length<2?`<p class="hint" style="margin:6px 0 0">Charge sales tax? Add your rate, like “Texas 8.25%”, and pick it as the default above.</p>`:""}
  ${S.taxes.map((t,i)=>`<div class="li"><input type="text" class="nm" data-tx="${i}:name" value="${esc(t.name)}" aria-label="Tax name"${t.id==="none"?" readonly":""}><input type="number" data-tx="${i}:rate" value="${esc(t.rate)}" step="0.01" min="0" style="width:90px" aria-label="Rate %"${t.id==="none"?" readonly":""}><span class="note">%</span>${t.id==="none"?`<span style="width:30px"></span>`:`<button class="mv del" data-a="taxDel" data-i="${i}" aria-label="Delete">✕</button>`}</div>`).join("")}
  <button class="btn sm" data-a="taxAdd" style="margin-top:8px">+ Add tax rate</button></details>`)
   +row("look",IC.palette,"Quote & invoice look",`<i class="pdot" style="background:${esc(s.doc.accent)}"></i>`,`<span class="lbl">Logo</span><div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">${s.doc.logo?`<img src="${esc(s.doc.logo)}" alt="Your logo" style="height:56px;max-width:160px;object-fit:contain;border-radius:8px;background:#fff;border:1px solid #eee;padding:4px">`:`<span class="hint">No logo yet. It shows at the top of quotes, invoices and job sheets.</span>`}<label class="btn sm" style="cursor:pointer">${s.doc.logo?"Change logo":"Upload logo"}<input type="file" accept="image/*" id="logoIn" hidden></label>${s.doc.logo?`<button class="btn sm" data-a="logoDel">Remove</button>`:""}</div>
@@ -2486,6 +2500,14 @@ function vPrefs(){
  <p class="pempty" id="prefNone" hidden>No settings match your search.</p></div>`;
  prefFilter(PREFQ,true);
 }
+/* Preferences: what still needs setting before customers see a quote */
+function prefTodo(){const s=S.settings,PST=typeof PAYST!=="undefined"?PAYST:null,items=[];
+ if(!String(s.address||"").trim())items.push(["addr","Add Your Pickup Address","Customers need it on quotes and emails"]);
+ if(!String(s.phone||"").trim()&&!String(s.email||"").trim())items.push(["biz","Add Your Business Email or Phone","So customers can reach you"]);
+ if(!String(s.cancelPolicy||"").trim())items.push(["pol-cancelPolicy","Write a Cancellation Policy","Shown on quotes so there are no surprises"]);
+ if(PST&&PST.state==="ready"&&!(PST.data&&PST.data.connected&&PST.data.charges_enabled))items.push(["stripe","Turn On Card Payments","Let customers pay deposits online"]);
+ if(!items.length)return "";
+ return `<div class="card ptodo"><h3>Still to Set Up <span class="pill">${items.length}</span></h3><div class="ptodo-list">${items.map(([k,t,d])=>`<button type="button" class="ptodo-i" data-a="pgo" data-v="${k}"><b>${esc(t)}</b><small>${esc(d)}</small><span aria-hidden="true">›</span></button>`).join("")}</div></div>`}
 let PREFQ="";
 function prefFilter(q,keep){PREFQ=q||"";const t=PREFQ.trim().toLowerCase(),root=document.querySelector(".prefs");if(!root)return;let any=false;root.querySelectorAll(".psec").forEach(sec=>{let n=0;sec.querySelectorAll(".prow").forEach(r=>{const hit=!t||r.dataset.q.includes(t)||sec.querySelector("h2").textContent.toLowerCase().includes(t);r.hidden=!hit;if(hit)n++});sec.hidden=!n;if(n)any=true});const e=document.getElementById("prefNone");if(e)e.hidden=any}
 function sidePrefs(){const s=S.settings;return `<div class="card white"><h3>At a glance</h3><div class="kv"><span>Next order</span><span>#${esc(s.nextNo)}</span></div><div class="kv"><span>Deposit</span><span>${esc(s.depositPct)}%</span></div><div class="kv"><span>Quotes held</span><span>${esc(s.expiry)} days</span></div><div class="kv"><span>Default tax</span><span>${esc(S.taxes.find(t=>t.id===s.defaultTax)?.name||"No tax")}</span></div></div><p class="note">Tap Save changes at the bottom when you're done.</p>`}
@@ -2615,6 +2637,8 @@ document.addEventListener("click",e=>{
   case"irCost":{const c=(M.item.recipes||[]).reduce((a,r)=>{const x=S.recipes.find(y=>y.id===r.id);return a+(x?recipeCost(x).total*(+r.batches||0):0)},0);M.item.cost=c.toFixed(2);renderItem();toast("Cost set from linked recipes");break}
   case"useSuggest":M.item.price=suggestPrice(M.item).toFixed(2);renderItem();break;
   case"neStudio":{const ne=studioNonEdible(draft.studio);if(ne){draft.nonEdible=ne;render();toast("Filled from the Studio design")}break}
+  case"pjump":{const h=[...document.querySelectorAll(".psec h2")].find(x=>x.textContent.trim().toLowerCase()===b.dataset.v.toLowerCase());if(h)h.closest(".psec").scrollIntoView({behavior:"smooth",block:"start"});break}
+  case"pgo":{const d=document.querySelector(`[data-keep="pr-${b.dataset.v}"]`);if(d){d.open=true;OPEN.add("pr-"+b.dataset.v);d.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>{const f=d.querySelector("input,textarea,[contenteditable]");if(f)f.focus({preventScroll:true})},450)}break}
   case"useBizAddr":draft.address=S.settings.address;render();break;
   case"delPic":draft.images.splice(i,1);render();break;
   case"addPay":{const amt=+$("p-amt").value||+$("p-amt").placeholder||0;if(!amt){toast("Enter the payment amount");$("p-amt").focus();break}draft.payments=draft.payments||[];logEv(draft,`Payment of ${money(amt)} recorded (${$("p-method").value})`);draft.payments.push({id:uid(),amount:Math.round(amt*100)/100,method:$("p-method").value,date:$("p-date").value||new Date().toISOString().slice(0,10)});render();toast(`${money(amt)} recorded. Save the order to keep it`);
