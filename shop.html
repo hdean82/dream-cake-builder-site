@@ -2902,5 +2902,14 @@ window.addEventListener("dcb-auth",()=>{if(CLOUD.state==="off")cloudConnect()});
  k.addEventListener("click",function(){if(typeof navDepth!=="undefined"&&navDepth>0)history.back();else if(typeof go==="function")go("today")});
 })();
 </script>
+<script>
+/* New version check: if Orders was updated while this tab stayed open, offer a reload so old code never keeps running for days. */
+(()=>{if(!/^https?:/.test(location.protocol))return;let base=null,shown=false;
+ const sig=r=>[r.headers.get("etag"),r.headers.get("last-modified")].filter(Boolean).join("|");
+ async function check(){if(shown)return;try{const r=await fetch(location.pathname,{method:"HEAD",cache:"no-store",credentials:"same-origin"});if(!r.ok)return;const v=sig(r);if(!v)return;if(base===null){base=v;return}
+  if(v!==base){shown=true;const d=document.createElement("div");d.className="newver";d.setAttribute("role","status");d.innerHTML='Orders has been updated. <button type="button">Reload</button>';d.querySelector("button").onclick=()=>location.reload();document.body.append(d)}}catch{}}
+ check();setInterval(check,20*60e3);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")check()})})();
+</script>
+<style>.newver{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:9999;background:#4b103d;color:#fff;border-radius:999px;padding:8px 8px 8px 16px;font-size:14px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px -10px #4b103d99;white-space:nowrap}.newver button{border:0;background:#fff;color:#4b103d;border-radius:999px;padding:6px 12px;font-weight:600;font:inherit;font-weight:600;cursor:pointer}@media print{.newver{display:none}}</style>
 </body>
 </html>
