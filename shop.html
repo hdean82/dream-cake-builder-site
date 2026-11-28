@@ -848,6 +848,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .cinsg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.cinsg>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.cinsg b{font-family:Fraunces,Georgia,serif;font-size:20px;color:var(--plum,#4b103d)}
 .cnext2{display:flex;gap:10px;align-items:center;background:var(--rose-soft,#fbe7f1);border-radius:12px;padding:10px 12px}.cnext2>div{flex:1;display:flex;flex-direction:column}.cnext2 .ci{font-size:22px}
 .shsec{margin:0 0 12px}.shsec h4{margin:0 0 6px;font-size:14px;color:var(--plum,#4b103d)}.shrow{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:6px;cursor:pointer}.shrow input{accent-color:var(--teal,#177d79);width:20px;height:20px;flex:none}.shrow .bd{flex:1;display:flex;flex-direction:column;min-width:0}.shrow .qv{font-weight:600;white-space:nowrap;font-size:13.5px}.shrow.got{opacity:.5}.shrow.got b{text-decoration:line-through}
+.mapsw{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px}
 .rlist{display:flex;flex-direction:column;gap:10px}.rstop{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.rstop.done{opacity:.6}
 .rnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--rose,#c12c7e);color:#fff;display:grid;place-items:center;font-weight:700}.rstop.done .rnum{background:var(--teal,#177d79)}
 .rbd{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.rtop{display:flex;justify-content:space-between;gap:8px}.raddr{font-weight:600;color:var(--plum,#4b103d)}.rfacts{display:flex;gap:6px;flex-wrap:wrap}.rfacts:empty{display:none}.rcode{background:#fff4dc!important;color:#8a5a00!important;font-weight:700}
@@ -2620,7 +2621,7 @@ const _side=side;side=function(){_side();const none=route==="customers"||route==
 document.addEventListener("change",e=>{if(e.target.id!=="logoIn")return;const f=e.target.files&&e.target.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);S.settings.doc.logo=c.toDataURL("image/png");save();render();toast("Logo added")};im.onerror=()=>toast("That image could not be read");im.src=u});
 /* ---------- Lists & reports ---------- */
 let LIST="handoffs",LISTDAYS=14;
-const mapHref=a=>/iPhone|iPad|Mac/.test(navigator.userAgent)?`https://maps.apple.com/?daddr=${encodeURIComponent(a)}`:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}`;
+const mapHref=a=>(S.settings.maps||(/iPhone|iPad|Mac/.test(navigator.userAgent)?"apple":"google"))==="apple"?`https://maps.apple.com/?daddr=${encodeURIComponent(a)}`:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}`;
 function vLists(){const today=isoD(new Date()),end=addDays(today,LISTDAYS),live=S.orders.filter(o=>o.status!=="Cancelled"&&o.date&&o.date>=today&&o.date<=end).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
  const fd=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
  const tabs=[["handoffs","Pickups & deliveries"],["orders","Order list"],["quotes","Open quotes"],["balances","Balances due"],["baking","Baking list"],["sources","Where customers come from"]];
@@ -2971,6 +2972,7 @@ document.addEventListener("click",e=>{
   case"shopCopy":{const t=shopText();if(navigator.share){navigator.share({title:"Shopping list",text:t}).catch(()=>{})}else{(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("Shopping list copied")).catch(()=>toast("Couldn't copy here"))}break}
   case"shopPrint":try{const src=$("shopList");let pr=$("printRoot");if(pr)pr.remove();pr=document.createElement("div");pr.id="printRoot";pr.innerHTML=`<h2 style="font-family:Fraunces,Georgia,serif">Shopping List</h2>`+src.innerHTML;document.body.appendChild(pr);document.body.classList.add("printing-jobs");const done=()=>{document.body.classList.remove("printing-jobs");pr.remove();window.removeEventListener("afterprint",done)};window.addEventListener("afterprint",done);window.print()}catch(e){toast("Printing isn't available here")}break;
   case"runOpen":runOpen();break;
+  case"runMaps":S.settings.maps=b.dataset.v;persist();runOpen();break;
   case"runDay":RUNDAY=b.dataset.v;runOpen();break;
   case"runReady":case"runDone":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;const v=b.dataset.a==="runDone"?"Completed":"Ready";o.status=v;logEv(o,v==="Ready"?"Marked ready":"Delivered, order completed");save();if(o.share&&o.share.token&&!o.share.off&&CLOUD.state==="on")shareOrder(o,true).catch(()=>{});const sc=$("dialog").querySelector(".dbody").scrollTop;runOpen();$("dialog").querySelector(".dbody").scrollTop=sc;render();$("modal").classList.add("on");toast(v==="Completed"?`#${o.no} delivered`:`#${o.no} is ready`);break}
   case"jobsOpen":JOBSEL=null;jobsOpen();break;
@@ -3196,7 +3198,8 @@ function runOpen(){const today=isoD(new Date()),days=[];for(let i=0;i<8;i++){con
  if(!RUNDAY||!days.includes(RUNDAY))RUNDAY=days[0]||today;
  const all=runList(RUNDAY),dl=all.filter(o=>o.handoff==="Delivered"),pu=all.filter(o=>o.handoff!=="Delivered"),biz=S.settings.biz||"your cake artist";
  const dn=d=>d===today?"Today":d===addDays(today,1)?"Tomorrow":new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
- const gm=a=>"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(a);
+ const mp=S.settings.maps||(/iPhone|iPad|Macintosh/.test(navigator.userAgent)?"apple":"google");
+ const gm=a=>mp==="apple"?"https://maps.apple.com/?daddr="+encodeURIComponent(a)+"&dirflg=d":"https://www.google.com/maps/dir/?api=1&destination="+encodeURIComponent(a);
  const stop=(o,i)=>{const who=o.dlvWho==="other",ph=who?o.dlvPhone:o.phone,nm=who?(o.dlvName||"Day-of contact"):(o.customer||"Customer"),first=String(nm).split(" ")[0],done=o.status==="Completed";
   const msg=`Hi ${first}, it's ${biz}. I'm on my way with your cake${o.time?` and should be there around ${t12(o.time)}`:""}! 🎂`;
   return `<div class="rstop${done?" done":""}"><div class="rnum">${done?"✓":i+1}</div><div class="rbd">
@@ -3212,7 +3215,8 @@ function runOpen(){const today=isoD(new Date()),days=[];for(let i=0;i<8;i++){con
  const route=addrs.length>1?"https://www.google.com/maps/dir/?api=1"+(S.settings.address?"&origin="+encodeURIComponent(S.settings.address):"")+"&destination="+encodeURIComponent(addrs[addrs.length-1])+"&waypoints="+encodeURIComponent(addrs.slice(0,-1).slice(0,8).join("|")):"";
  $("dialog").innerHTML=`<div class="dhead"><div><h2>Delivery Day</h2><p class="hint">${dl.length?`${dl.length} deliver${dl.length===1?"y":"ies"}${pu.length?` and ${pu.length} pickup${pu.length===1?"":"s"}`:""} in time order.`:"No deliveries this day."}</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
  <div class="dbody">${days.length>1?`<div class="seg" style="margin-bottom:10px;flex-wrap:wrap">${days.map(d=>`<button type="button" class="${RUNDAY===d?"on":""}" data-a="runDay" data-v="${d}">${esc(dn(d))}</button>`).join("")}</div>`:`<p class="lbl" style="margin:0 0 8px">${esc(dn(RUNDAY))}</p>`}
- ${route?`<a class="btn wide" href="${esc(route)}" target="_blank" rel="noopener" style="margin-bottom:10px">Open the Whole Route in Google Maps</a>`:""}
+ <div class="mapsw"><span class="lbl" style="margin:0">Directions Open In</span><div class="seg">${[["apple","Apple Maps"],["google","Google Maps"]].map(([v,l])=>`<button type="button" class="${mp===v?"on":""}" data-a="runMaps" data-v="${v}">${l}</button>`).join("")}</div></div>
+ ${route?`<a class="btn wide" href="${esc(route)}" target="_blank" rel="noopener" style="margin-bottom:4px">Open the Whole Route in Google Maps</a>${mp==="apple"?`<p class="note" style="margin:0 0 10px;text-align:center">Apple Maps links only take one stop at a time, so the whole route opens in Google Maps.</p>`:`<div style="height:6px"></div>`}`:""}
  <div class="rlist">${dl.map(stop).join("")}</div>
  ${pu.length?`<span class="lbl" style="margin-top:12px">Pickups This Day</span><div class="rows">${pu.map(o=>`<div class="kv notc"><span>${esc(o.time?t12(o.time)+" · ":"")}${esc(o.customer||"No name")} <span class="note">#${esc(o.no)}</span></span><span>${o.status==="Completed"?`<span class="pill on">Picked Up</span>`:`<span class="note">${esc(o.status)}</span>`}</span></div>`).join("")}</div>`:""}</div>
  <div class="dfoot"><button class="btn" data-a="closeM">Close</button></div>`;
