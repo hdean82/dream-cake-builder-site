@@ -470,7 +470,7 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
   function fix(el) {
     if (!el.isConnected) return;
     { const anc = el.closest(SKIP); if (anc && !(/^(P|BLOCKQUOTE)$/.test(anc.tagName) && el.matches('.btn,button,a.btn,label,summary,h1,h2,h3,h4'))) return; }
-    const nodes = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement && n.parentElement.closest(SKIP) && el.contains(n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+    const nodes = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => { const pe = n.parentElement; if (!pe) return NodeFilter.FILTER_ACCEPT; const sk = pe.closest(SKIP); if (sk && el.contains(sk)) return NodeFilter.FILTER_REJECT; const pl = pe.closest('.pill,.tpri,.chip'); return pl && pl !== el && el.contains(pl) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; } });
     for (let n; (n = tw.nextNode());) if (/\S/.test(n.nodeValue)) nodes.push(n);
     if (!nodes.length) return;
     const parts = nodes.map((n) => n.nodeValue.split(/(\s+)/));
