@@ -2493,7 +2493,13 @@ function vHelp(){const G=[["Taking your first order","Tap New order, add the cus
  ["Serving chart for clients","Baker's tools → Servings guide → Serving chart for clients opens a branded chart you can print, save as a PDF or send."],
  ["Instagram posts","In Portfolio, tap Instagram post on any photo for a branded feed post or story with a caption ready to paste."],
  ["Winning repeat orders","Today shows last year's birthdays and anniversaries coming round again. Tap Say hello for a ready message. Completed orders get a Wrap up card: thank-you email, portfolio photo and Instagram post."],
- ["Where your customers come from","Add the “How did you hear about us?” section to your order form, then see the totals in Lists & reports → Where customers come from."]];
+ ["Where your customers come from","Add the “How did you hear about us?” section to your order form, then see the totals in Lists & reports → Where customers come from."],
+ ["Minimum notice","In Order form → Fields → Event date, choose how many days ahead customers must order. Earlier dates can't be picked."],
+ ["Texting customers","Any email you write from an order can go as a text instead: tap Text at the bottom of the message."],
+ ["Pickup day","On Today, tap Mark ready when a cake is done and Picked up when it leaves. The customer's link shows their cake's progress: Booked, Baking, Ready, Picked up. Tap a delivery address for directions."],
+ ["Customer calendars","Once a customer approves, their link has Add to my calendar, so they get a reminder before pickup."],
+ ["Reviews","In Portfolio → Reviews, copy your review link or print its QR code. New reviews wait for you; tap Show on gallery to put one on your gallery page."],
+ ["QR codes","Order form → Share → QR code makes a printable card that opens your order form. Great for business cards, cake boxes and market signs."]];
  $("main").innerHTML=`<div class="wrap"><h1>Help & guides</h1><p class="lead">Short guides for every part of your order book.</p>${G.map(([h,b])=>`<details class="card"><summary><b>${esc(h)}</b></summary><p style="margin:8px 0 0">${esc(b)}</p></details>`).join("")}
  <div class="card"><h3>Need a hand?</h3><p class="hint">Email us and we'll get back to you within one business day.</p><a class="btn primary" href="mailto:support@dreamcakebuilder.com?subject=Help%20with%20Orders">Email support</a> <a class="btn" href="contact.html">Contact page</a></div></div>`}
 function sideHelp(){return`<div class="card"><h3>Tips</h3><p class="hint">Orders save when you tap Save. On settings pages like Customers, Product types and Preferences, tap Save changes at the bottom when you're done. Sign in to keep your order book in sync across your phone and computer.</p></div>`}
