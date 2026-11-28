@@ -73,6 +73,7 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 
 /* Customer pages: just the logo up top, no site menu, so customers stay on the artist's page */
 .custpage .site-nav,.custpage details.menu{display:none!important}.custpage .site-head .brand{pointer-events:none}
+.proof{margin:14px 0 16px;border:1px solid #eed3e3;border-radius:14px;padding:12px;background:#fffafc}.proofh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline;margin-bottom:8px}.proof img{display:block;width:100%;max-height:560px;object-fit:contain;border-radius:10px;background:#fff}
 </style>
 </head>
 <body class="custpage">
@@ -136,6 +137,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   <div class="dmeta"><div><span class="lbl">For</span><b>${esc(d.customer)}</b></div>
    <div><span class="lbl">Event</span><b>${esc(d.date||'Date to be set')}${d.time?' · '+esc(d.time):''}</b><div class="note">${esc([d.event,d.handoff+(d.address?': '+d.address:'')].filter(Boolean).join(' · '))}</div>${d.dlv&&(d.dlv.place||d.dlv.contact)?`<div class="note">${esc([d.dlv.place,d.dlv.contact?'Day-of contact: '+d.dlv.contact:''].filter(Boolean).join(' · '))}</div>`:''}</div>
    <div><span class="lbl">${esc(d.validLabel)}</span><b>${esc(d.validDate)}</b></div></div>
+  ${d.design&&(d.images||[])[0]&&urls[d.images[0]]?`<div class="proof"><div class="proofh"><span class="lbl" style="margin:0">Your Cake Design</span><span class="note">${esc([d.design.name,d.design.rev?'Version '+d.design.rev:'',d.design.servings?'Serves '+d.design.servings:''].filter(Boolean).join(' · '))}</span></div><img src="${esc(urls[d.images[0]])}" alt="Your cake design"><p class="note" style="margin:6px 0 0">${isQ?'Check the colors, decorations, writing and sizes. Approving this quote approves this design too. Want something changed? Use “Ask for Design Changes” below.':'This is the design we’re making for you.'}</p></div>`:''}
   <table><thead><tr><th>Item</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Total</th></tr></thead><tbody>
    ${(d.items||[]).map(it=>`<tr><td><b>${esc(it.title)}</b>${(it.lines||[]).map(l=>`<div class="note">${esc(l)}</div>`).join('')}</td><td class="n">${esc(it.qty)}</td><td class="n">${esc(it.price)}</td><td class="n">${esc(it.total)}</td></tr>`).join('')}
   </tbody></table>
@@ -143,7 +145,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
    <div class="kv tot"><span>Total</span><span>${esc(d.total)}</span></div>${d.paid?`<div class="kv"><span>Paid</span><span>${esc(d.paid)}</span></div>`:''}
    <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv" id="paidRow" hidden><span>Paid online</span><span id="paidAmt"></span></div><div class="kv tot"><span>Balance due</span><span id="balAmt">${esc(d.bal)}</span></div></div>
   <div id="payBox" class="noprint"></div>
-  ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
+  ${(d.images||[]).slice(d.design?1:0).length?`<span class="lbl">${d.design?'More Photos':'Your cake'}</span><div class="dpics">${d.images.slice(d.design?1:0).map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
   ${d.notes?`<span class="lbl">Additional Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
   ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
    if(d.payNote||pay)sec.push(`<section class="dsec" id="howPay"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
@@ -165,14 +167,17 @@ function answerBox(msgOnly){const isQ=Q.doc.kind==='quote';
   <div class="field"><label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="120" value="${esc(Q.responder_name||Q.doc.customer||'')}"></div>
   <div class="field"><label for="a-msg">Message <span class="note">optional</span></label><textarea id="a-msg" maxlength="2000" placeholder="Anything you'd like to add or change"></textarea></div>
   ${!msgOnly&&isQ?`<div class="sigwrap"><label for="sigPad">Sign to approve</label><canvas class="sigpad" id="sigPad" aria-label="Signature pad. Draw your signature with your finger or mouse."></canvas><div class="sigrow"><span class="note">Use your finger or mouse</span><button type="button" id="sigClear">Clear</button></div></div>`:''}
+  ${!msgOnly&&isQ&&Q.doc.design?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-design" style="margin-top:3px"> I've checked my cake design and I'm happy with it.</label>`:''}
   ${!msgOnly&&isQ&&Q.doc.terms?`<label class="note" style="display:flex;gap:8px;align-items:flex-start;margin:4px 0 8px"><input type="checkbox" id="a-terms" style="margin-top:3px"> I've read the terms and policies above.</label>`:''}
-  <div class="acts">${msgOnly?`<button class="btn primary" type="button" data-act="message">Send Message</button>`:`${isQ?`<button class="btn primary" type="button" data-act="approve">Approve Quote</button>`:''}<button class="btn" type="button" data-act="message">Send A Question</button>${isQ?`<button class="btn" type="button" data-act="decline">Decline</button>`:''}`}</div>
+  <div class="acts">${msgOnly?`<button class="btn primary" type="button" data-act="message">Send Message</button>`:`${isQ?`<button class="btn primary" type="button" data-act="approve">Approve Quote</button>`:''}<button class="btn" type="button" data-act="message">Send A Question</button>${isQ&&Q.doc.design?`<button class="btn" type="button" data-act="design">Ask for Design Changes</button>`:''}${isQ?`<button class="btn" type="button" data-act="decline">Decline</button>`:''}`}</div>
   <p class="msg" id="a-out" role="status"></p></form>`}
 
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-act]');if(!b)return;const act=b.dataset.act,out=$('a-out');
  const name=$('a-name').value.trim(),m=$('a-msg').value.trim();out.textContent='';
  if(!name){out.textContent='Please type your name.';$('a-name').focus();return}
  if(act==='message'&&!m){out.textContent='Please write your message.';$('a-msg').focus();return}
+ if(act==='design'){if(!m){out.textContent='Tell us what you would like changed on the design.';$('a-msg').placeholder='e.g. Make the bow gold instead of pink, and write "Happy 30th Mia"';$('a-msg').focus();return}$('a-msg').value='Design changes: '+m.replace(/^Design changes:\s*/i,'');return document.querySelector('[data-act="message"]').click()}
+ if(act==='approve'&&$('a-design')&&!$('a-design').checked){out.textContent='Please tick the box to confirm you checked your cake design.';return}
  if(act==='approve'&&$('a-terms')&&!$('a-terms').checked){out.textContent='Please tick the box to confirm you read the terms.';return}
  if(act==='approve'&&$('sigPad')&&!SIG.has){out.textContent='Please sign in the box to approve.';$('sigPad').scrollIntoView({block:'center',behavior:'smooth'});return}
  if(act==='decline'&&!confirm('Decline this quote?'))return;
