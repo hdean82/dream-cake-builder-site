@@ -690,12 +690,13 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
 @media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
 .rqformcard2{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.rqformcard2>div{flex:1 1 220px;display:flex;flex-direction:column;gap:2px}.rqformcard2 small{color:var(--muted);font-size:13px}
-.wrap.rfpage{max-width:1280px}.rfgrid{display:grid;gap:18px;align-items:start}@media(min-width:1100px){.rfgrid{grid-template-columns:minmax(0,1fr) minmax(360px,.9fr)}.rfpvtab{display:none}}
+.wrap.rfpage{max-width:1280px}.rfcols{display:flex;gap:10px;flex-wrap:wrap}.rfcol{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:6px 12px 6px 6px;cursor:pointer;font-size:14px}.rfcol input{width:34px;height:34px;border:0;padding:0;background:none;border-radius:8px;cursor:pointer}
+.rfgrid{display:grid;gap:18px;align-items:start}@media(min-width:1100px){.rfgrid{grid-template-columns:minmax(0,1fr) minmax(360px,.9fr)}.rfpvtab{display:none}}
 .rftabs{display:flex;gap:4px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:12px;scrollbar-width:none}.rftabs::-webkit-scrollbar{display:none}
-.rftabs button{flex:1 0 auto;border:0;background:none;border-radius:10px;padding:9px 12px;font-weight:500;color:var(--muted);cursor:pointer;min-height:40px}.rftabs button.on{background:var(--rose-soft);color:var(--rose-ink)}
+.rftabs button{flex:1 0 auto;white-space:nowrap;border:0;background:none;border-radius:10px;padding:9px 12px;font-weight:500;color:var(--muted);cursor:pointer;min-height:40px}.rftabs button.on{background:var(--rose-soft);color:var(--rose-ink)}
 .rfpanel>.card{margin-bottom:12px}.rfpanel textarea{width:100%}
 .rflive{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}.rflive i{width:8px;height:8px;border-radius:50%;background:#c9b3c0}.rflive.on{color:#22703c}.rflive.on i{background:#2fa36b;box-shadow:0 0 0 3px #2fa36b26}
-.rfrow{display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer}.rfrow>span:first-child{display:flex;flex-direction:column;gap:2px}.rfrow small{color:var(--muted);font-size:13px}
+.rfrow,.rfrow *,.rfcol,.rfcol *{text-transform:none}.rfrow{display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer}.rfrow>span:first-child{display:flex;flex-direction:column;gap:2px}.rfrow small{color:var(--muted);font-size:13px}
 .rffields{padding-top:14px}.rffhead,.rffrow{display:grid;grid-template-columns:minmax(0,1fr) 64px 72px;gap:8px;align-items:center}.rffhead{font-size:12px;font-weight:600;color:var(--muted);padding:14px 0 6px;border-bottom:1px solid var(--line)}.rffhead span:not(:first-child){text-align:center}
 .rffrow{padding:10px 0;border-bottom:1px solid var(--line)}.rffrow>span:first-child{display:flex;flex-direction:column}.rffrow small{color:var(--muted);font-size:12.5px}.rfsw{display:flex;justify-content:center}.rfsw .note{font-size:12px}.rfopts{margin:8px 0 4px}
 .rfsec{padding-top:12px}.rfsechead{display:flex;gap:6px;align-items:center}.rfsechead input{flex:1;font-weight:600}.rfsecopts{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.rfsecopts select{flex:1 1 180px}.rfsecopts input{flex:0 1 140px}.rfaddq{margin-top:8px}
@@ -704,7 +705,7 @@ body.hassave main{padding-bottom:84px}
 .rfprev{position:sticky;top:76px}.rfprevbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:600;font-size:14px}.rfprevbar .seg button{min-height:32px;padding:4px 10px}
 .rfframe{border:1px dashed #e6b4c4;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.4);margin:0 auto;max-width:400px;transition:max-width .2s}.rfframe.wide{max-width:none}.rfframe iframe{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:0}
 @media(max-width:1099px){.rfprev{display:none;position:static}.rfprev.show{display:block}.rfprev.show .rfframe iframe{height:75vh}}
-@media(max-width:600px){.rftabs button{padding:8px 7px;font-size:13.5px;flex:1 1 auto}.rfsec .qrow>input[type=text]:first-child,.rfsec .qrow .qopts{flex:1 1 100%}.rfsec .qrow .qopts{order:2}.rfsec .qrow .qreq,.rfsec .qrow .mv{order:3}.rfsec .qrow select{flex:1}.rffhead,.rffrow{grid-template-columns:minmax(0,1fr) 52px 66px}.rfprevbar .seg{display:none}}
+@media(max-width:600px){.rftabs button{padding:8px 10px;font-size:13.5px;flex:0 0 auto;white-space:nowrap}.rfsec .qrow>input[type=text]:first-child,.rfsec .qrow .qopts{flex:1 1 100%}.rfsec .qrow .qopts{order:2}.rfsec .qrow .qreq,.rfsec .qrow .mv{order:3}.rfsec .qrow select{flex:1}.rffhead,.rffrow{grid-template-columns:minmax(0,1fr) 52px 66px}.rfprevbar .seg{display:none}}
 .cpgrid{display:grid;gap:0 16px;grid-template-columns:minmax(0,1fr)}@media(min-width:1000px){.cpgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .cdl{display:grid;grid-template-columns:120px 1fr;gap:10px 12px;margin:6px 0 0;font-size:15px}.cdl dt{color:var(--muted)}.cdl dd{margin:0;overflow-wrap:anywhere}.cdl a{color:var(--rose-ink)}
 .nil{color:var(--muted)}.cnotes{white-space:pre-wrap;margin:0}
@@ -1099,7 +1100,7 @@ let RQ={state:"idle",biz:null,list:[],events:[],pics:{},filter:"new",err:""};
 async function loadRequests(){RQ.state="loading";RQ.err="";render();
  try{RQ.biz=await api("/rest/v1/rpc/shop_ensure_business",{method:"POST",body:{}});
   const[list,events]=await Promise.all([api("/rest/v1/shop_requests?select=*&order=created_at.desc&limit=200"),api("/rest/v1/shop_event_types?select=id,name,color&order=sort")]);
-  RQ.list=list||[];RQ.events=events||[];RQ.state="ready";render();signPics()}
+  RQ.list=list||[];RQ.events=events||[];try{RQ.addons=await api("/rest/v1/shop_addons?select=addon,active_until")||[]}catch{RQ.addons=[]}RQ.state="ready";render();signPics()}
  catch(e){RQ.state=e.code==="signin"?"signin":(e.code==="42501"||/artist access/i.test(e.message))?"noaccess":"error";RQ.err=e.message;render()}}
 async function signPics(){const need=[...new Set(RQ.list.flatMap(r=>r.image_paths||[]))].filter(pth=>!RQ.pics[pth]);if(!need.length)return;
  try{const res=await api("/storage/v1/object/sign/shop-files",{method:"POST",body:{expiresIn:3600,paths:need}});(res||[]).forEach(x=>{if(x.signedURL&&x.path)RQ.pics[x.path]=SB+"/storage/v1"+x.signedURL});if(route==="requests")render()}catch{}}
@@ -1164,10 +1165,10 @@ async function rqPatch(id,body){await api(`/rest/v1/shop_requests?id=eq.${encode
 /* ---------- Order form builder (top of form, fields, sections, share, live preview) ---------- */
 const RF_DEF=()=>({title:"",intro:"",instr:"",note:"",align:"left",header:true,
  f:{phone:{on:true,req:false},date:{req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false,opts:"Under $100, $100 to $200, $200 to $350, $350 and up"},handoff:{on:true,req:true},details:{req:true},photos:{on:true,req:false}},
- secs:[]});
+ secs:[],hideBrand:false,look:{font:"Inter",hfont:"Fraunces",accent:"#c12c7e",ink:"#3a1030",bg:"none",field:"box",corner:"round",size:"m",btn:"",heading:true}});
 function rfCfg(){let F=S.reqForm;
  if(!F||typeof F!=="object"){F=S.reqForm=RF_DEF();const old=(S.formQ||[]).filter(q=>q&&q.q&&q.q.trim());if(old.length)F.secs.push({id:"s"+uid(),title:"More about your cake",mode:"always",price:"",qs:old.map(q=>({id:q.id||"q"+uid(),q:q.q,type:q.type||"text",opts:q.opts||"",required:!!q.required}))})}
- const d=RF_DEF();F.f=Object.assign({},d.f,F.f||{});for(const k in d.f)F.f[k]=Object.assign({},d.f[k],F.f[k]||{});F.secs=Array.isArray(F.secs)?F.secs:[];F.secs.forEach(s=>{s.qs=Array.isArray(s.qs)?s.qs:[];s.mode=s.mode||"always"});return F}
+ const d=RF_DEF();F.f=Object.assign({},d.f,F.f||{});for(const k in d.f)F.f[k]=Object.assign({},d.f[k],F.f[k]||{});F.look=Object.assign({},d.look,F.look||{});F.hideBrand=!!F.hideBrand;F.secs=Array.isArray(F.secs)?F.secs:[];F.secs.forEach(s=>{s.qs=Array.isArray(s.qs)?s.qs:[];s.mode=s.mode||"always"});return F}
 const RF_MODES=[["always","Always show"],["pick","Customer picks it"],["delivery","Only for delivery"]];
 const RF_QT=[["text","Short answer"],["long","Long answer"],["choice","Pick one"],["yes","Yes / no"]];
 const rfOpts=v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,12);
@@ -1179,11 +1180,11 @@ function rfPublic(){const F=rfCfg(),f=F.f,qs=[];
  const lg=S.settings.doc&&S.settings.doc.logo;
  return{questions:qs.slice(0,40),form:{v:2,title:F.title,intro:F.intro,instr:F.instr,note:F.note,align:F.align==="center"?"center":"left",header:!!F.header,
   f:Object.fromEntries(Object.entries(f).map(([k,x])=>[k,{on:x.on!==false,req:!!x.req}])),
-  secs:F.secs.map(s=>({id:s.id,title:s.title||"",mode:s.mode,price:s.mode==="pick"?(s.price||""):""})),
+  secs:F.secs.map(s=>({id:s.id,title:s.title||"",mode:s.mode,price:s.mode==="pick"?(s.price||""):""})),look:F.look,hideBrand:F.hideBrand,
   logo:F.header&&lg&&/^data:image\/(png|jpeg);base64,/.test(lg)&&lg.length<200000?lg:"",phone:S.settings.phone||"",email:S.settings.email||""}}}
-let rfTab="top",rfWide=false;
+let rfTab="top",rfWide=false,rfLastTab="top";
 function rfSw(path,on,dis){return `<span class="sw2"><input type="checkbox" data-rf="${path}"${on?" checked":""}${dis?" disabled":""}><i></i></span>`}
-function rfInfo(){const b=RQ.biz||{},P=rfPublic();return{shop_id:"preview",business:S.settings.biz||b.name||"Your cake shop",accepting:true,event_types:S.events.map(e=>({id:e.id,name:e.name})),full_dates:fullDates(),questions:P.questions,form:P.form}}
+function rfInfo(){const b=RQ.biz||{},P=rfPublic();return{pvEmbed:(rfTab==="preview"?rfLastTab:rfTab)==="look",brand:!(P.form.hideBrand&&rfAddon()),shop_id:"preview",business:S.settings.biz||b.name||"Your cake shop",accepting:true,event_types:S.events.map(e=>({id:e.id,name:e.name})),full_dates:fullDates(),questions:P.questions,form:P.form}}
 function rfPush(){const fr=$("rfFrame");if(fr&&fr.contentWindow)try{fr.contentWindow.postMessage({type:"dcb-form-preview",info:rfInfo()},location.origin)}catch{}}
 window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.type==="dcb-form-ready")rfPush()});
 function rfLink(){const b=RQ.biz||{};return b.slug?`${location.origin}${location.pathname.replace(/[^/]*$/,"")}request.html?shop=${b.slug}`:""}
@@ -1220,16 +1221,32 @@ function rfShare(F){const b=RQ.biz||{},link=rfLink(),P=rfPublic(),fon=Object.ent
  <div class="rfstep${b.accepting_requests&&b.slug?" ok":""}"><i>${b.accepting_requests&&b.slug?"✓":"2"}</i><div><b>Switch it on</b><label class="rfrow" style="margin-top:4px"><span><small>${b.accepting_requests?"Taking requests now":"Customers see “not taking requests right now”"}</small></span><span class="sw2"><input type="checkbox" id="rqOn"${b.accepting_requests?" checked":""}${b.slug?"":" disabled"}><i></i></span></label></div></div>
  <div class="rfstep"><i>3</i><div><b>Share it with customers</b>${link?`<div class="note" style="overflow-wrap:anywhere;margin:6px 0">${esc(link)}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">Open form</a><button class="btn sm" data-a="rqCopy" data-v="${esc(link)}">Copy link</button><button class="btn sm" data-a="rfEmbedCopy">Copy code for your website</button></div><p class="hint" style="margin:8px 0 0">Paste the website code where you want the form on your own site. It takes on your site's background and leaves off the Dream Cake Builder header.</p>`:`<p class="hint" style="margin:4px 0 0">Save a link name first.</p>`}</div></div></div>
  <div class="card"><h3>Your form at a glance</h3><div class="rfglance"><button type="button" data-a="rfTab" data-v="fields"><b>${fon}</b><span>fields showing</span></button><button type="button" data-a="rfTab" data-v="sections"><b>${F.secs.length}</b><span>section${F.secs.length===1?"":"s"}</span></button><button type="button" data-a="rfTab" data-v="sections"><b>${nq}</b><span>question${nq===1?"":"s"}</span></button></div>${P.questions.length>=40?`<p class="hint" style="margin:8px 0 0">Your form has the most questions it can hold (40).</p>`:""}</div>`}
+const rfAddon=()=>(RQ.addons||[]).some(a=>a.addon==="remove_branding"&&(!a.active_until||new Date(a.active_until)>new Date()));
+const RF_FONTS=["Inter","Poppins","Montserrat","Lato","Nunito","Quicksand","Raleway","Josefin Sans","DM Sans","Open Sans"];
+const RF_HFONTS=[["same","Same as the text"],["Fraunces","Fraunces"],["Playfair Display","Playfair Display"],["Lora","Lora"],["Cormorant Garamond","Cormorant Garamond"],["Dancing Script","Dancing Script"],["Great Vibes","Great Vibes"],["Pacifico","Pacifico"],["Abril Fatface","Abril Fatface"],["Josefin Sans","Josefin Sans"],["Montserrat","Montserrat"],["Poppins","Poppins"]];
+function rfLook(F){const L=F.look,seg=(k,opts)=>`<div class="seg" role="radiogroup">${opts.map(([v,l])=>`<button type="button" role="radio" aria-checked="${L[k]===v}" class="${L[k]===v?"on":""}" data-a="rfLookSet" data-k="${k}" data-v="${v}">${l}</button>`).join("")}</div>`,col=(k,l)=>`<label class="rfcol"><input type="color" data-rf="look.${k}" value="${esc(L[k]&&L[k]!=="none"?L[k]:"#ffffff")}"><span>${l}</span></label>`,has=rfAddon();
+ return `<div class="card"><h3>Match your website</h3><p class="hint">These settings change how the form looks when you put it on your own website with the website code from Share. The preview shows it that way while you're on this tab. Your Dream Cake Builder link keeps its usual look.</p>
+ <div class="grid2"><div class="field"><label for="rf-font">Text font</label><select id="rf-font" data-rf="look.font">${RF_FONTS.map(f=>`<option${L.font===f?" selected":""}>${f}</option>`).join("")}</select></div>
+ <div class="field"><label for="rf-hfont">Heading font</label><select id="rf-hfont" data-rf="look.hfont">${RF_HFONTS.map(([v,l])=>`<option value="${v}"${L.hfont===v?" selected":""}>${l}</option>`).join("")}</select></div></div>
+ <div class="field"><span class="lbl">Colors</span><div class="rfcols">${col("accent","Buttons and highlights")}${col("ink","Text")}${L.bg==="none"?"":col("bg","Background")}</div></div>
+ <div class="field"><span class="lbl">Background</span><div class="seg"><button type="button" class="${L.bg==="none"?"on":""}" data-a="rfLookSet" data-k="bg" data-v="none">See-through</button><button type="button" class="${L.bg!=="none"?"on":""}" data-a="rfLookSet" data-k="bg" data-v="#ffffff">A color</button></div><p class="note" style="margin:6px 0 0">See-through lets your website's own background show behind the form.</p></div>
+ <div class="field"><span class="lbl">Answer boxes</span>${seg("field",[["box","Outlined"],["line","Underline"],["soft","Filled"]])}</div>
+ <div class="field"><span class="lbl">Corners</span>${seg("corner",[["square","Square"],["round","Rounded"],["pill","Extra round"]])}</div>
+ <div class="field"><span class="lbl">Text size</span>${seg("size",[["s","Small"],["m","Medium"],["l","Large"]])}</div>
+ <div class="field"><label for="rf-btn">Send button wording</label><input type="text" id="rf-btn" data-rf="look.btn" value="${esc(L.btn)}" maxlength="40" placeholder="Send my request"></div>
+ <label class="rfrow" style="margin-top:6px"><span><b>Show the heading on your website</b><small>Switch off if your page already has its own heading above the form.</small></span>${rfSw("look.heading",L.heading)}</label>
+ <button class="btn sm" style="margin-top:12px" data-a="rfLookReset">Back to the Dream Cake Builder look</button></div>
+ <div class="card"><label class="rfrow"><span><b>Remove Dream Cake Builder branding</b><small>${has?"Your add-on is on. Switch this on to hide the small “Order form by Dream Cake Builder” line on your website.":"Hides the small “Order form by Dream Cake Builder” line under the form on your website. This is a paid add-on for $7 a month once plans open."}</small></span>${rfSw("hideBrand",F.hideBrand&&has,!has)}</label>${has?"":`<p class="note" style="margin:8px 0 0"><a href="pricing">See plans and add-ons</a></p>`}</div>`}
 function vReqForm(){const F=rfCfg();if(RQ.state==="idle")setTimeout(loadRequests,0);const b=RQ.biz||{},live=b.accepting_requests&&b.slug;
- const tabs=[["top","Top of form"],["fields","Fields"],["sections","Sections"],["share","Share"],["preview","Preview"]];
+ const tabs=[["top","Top of form"],["fields","Fields"],["sections","Sections"],["look","Website look"],["share","Share"],["preview","Preview"]];
  $("main").innerHTML=`<div class="wrap rfpage"><div class="cardhead"><div><h1>Order form</h1><p class="lead" style="margin:0">Choose what customers see when they ask you for a cake. The preview updates as you type.</p></div><span class="rflive${live?" on":""}"><i></i>${live?"Live":"Not live"}</span></div>
  <div class="rfgrid"><div class="rfedit"><div class="rftabs" role="tablist">${tabs.map(([v,l])=>`<button type="button" role="tab" aria-selected="${rfTab===v}" class="${rfTab===v?"on":""}${v==="preview"?" rfpvtab":""}" data-a="rfTab" data-v="${v}">${l}</button>`).join("")}</div>
-  <div class="rfpanel">${rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="share"?rfShare(F):""}</div></div>
+  <div class="rfpanel">${rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="look"?rfLook(F):rfTab==="share"?rfShare(F):""}</div></div>
  <div class="rfprev${rfTab==="preview"?" show":""}"><div class="rfprevbar"><span>Live preview</span><div class="seg"><button type="button" class="${rfWide?"":"on"}" data-a="rfWide" data-v="0">Phone</button><button type="button" class="${rfWide?"on":""}" data-a="rfWide" data-v="1">Computer</button></div></div><div class="rfframe${rfWide?" wide":""}"><iframe id="rfFrame" src="request.html?preview=1" title="Order form preview"></iframe></div></div></div></div>`}
 function sideReqForm(){return ""}
 function rfPaint(){if(route!=="reqform"||!document.querySelector(".rfpage .rfpanel")){render();return}const F=rfCfg();
  document.querySelectorAll(".rftabs button").forEach(x=>{const on=x.dataset.v===rfTab;x.classList.toggle("on",on);x.setAttribute("aria-selected",on)});
- document.querySelector(".rfpanel").innerHTML=rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="share"?rfShare(F):"";
+ document.querySelector(".rfpanel").innerHTML=rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="look"?rfLook(F):rfTab==="share"?rfShare(F):"";
  document.querySelector(".rfprev").classList.toggle("show",rfTab==="preview");document.querySelector(".rfframe").classList.toggle("wide",rfWide);
  document.querySelectorAll(".rfprevbar .seg button").forEach(x=>x.classList.toggle("on",(x.dataset.v==="1")===rfWide));saveBar();rfPush()}
 function rfSet(path,val){const ks=path.split(".");let o=rfCfg();for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks.at(-1)]=val}
@@ -1237,9 +1254,11 @@ document.addEventListener("input",e=>{const el=e.target;if(!el.dataset||!el.data
 document.addEventListener("change",e=>{const el=e.target;if(!el.dataset||!el.dataset.rf)return;if(el.type!=="checkbox"&&el.tagName!=="SELECT")return;const p=el.dataset.rf;rfSet(p,el.type==="checkbox"?el.checked:el.value);
  if(/^f\.\w+\.on$/.test(p)&&!el.checked)rfSet(p.replace(/on$/,"req"),false);save();rfPush();if(el.tagName==="SELECT"||/^(f\.\w+\.on|header)$/.test(p))setTimeout(rfPaint,0)});
 function rfAct(a,b){const F=rfCfg(),i=+b.dataset.i,j=+b.dataset.j;
- switch(a){case"rfTab":rfTab=b.dataset.v;rfPaint();return true;
+ switch(a){case"rfTab":if(rfTab!=="preview")rfLastTab=rfTab;rfTab=b.dataset.v;rfPaint();return true;
  case"rfWide":rfWide=b.dataset.v==="1";rfPaint();return true;
  case"rfAlign":F.align=b.dataset.v;save();rfPaint();return true;
+ case"rfLookSet":F.look[b.dataset.k]=b.dataset.v;save();rfPaint();return true;
+ case"rfLookReset":F.look=RF_DEF().look;save();rfPaint();toast("Back to the Dream Cake Builder look");return true;
  case"rfSecAdd":F.secs.push({id:"s"+uid(),title:"",mode:"always",price:"",qs:[{id:"q"+uid(),q:"",type:"text",opts:"",required:false}]});save();rfPaint();setTimeout(()=>{const n=document.querySelectorAll('.rfsechead input');if(n.length)n[n.length-1].focus()},0);return true;
  case"rfSecStarter":F.secs.push({id:"s"+uid(),title:"Flavors",mode:"always",price:"",qs:[{id:"q"+uid(),q:"Cake flavor",type:"choice",opts:"Vanilla, Chocolate, Red velvet, Lemon, Not sure yet",required:false},{id:"q"+uid(),q:"Filling",type:"choice",opts:"Buttercream, Cream cheese, Fruit, Not sure yet",required:false}]},
    {id:"s"+uid(),title:"Delivery",mode:"delivery",price:"",qs:[{id:"q"+uid(),q:"Delivery address",type:"long",opts:"",required:true},{id:"q"+uid(),q:"Delivery time",type:"text",opts:"",required:true}]},

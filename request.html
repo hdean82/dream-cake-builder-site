@@ -44,6 +44,19 @@ textarea{min-height:120px;resize:vertical}
 .prenote{background:var(--rose-soft);color:var(--rose-ink);border-radius:12px;padding:12px 14px;margin:14px 0 6px;white-space:pre-wrap}
 html.embed body{background:transparent!important}html.embed .site-head,html.embed .site-foot{display:none}html.embed main{padding:0}html.embed .req-wrap{padding:0;max-width:none}html.embed .req-card{background:transparent;border:0;box-shadow:none;padding:4px}
 html.pv .site-head,html.pv .site-foot{display:none}html.pv main{padding:10px 0}html.pv .req-wrap{padding:0 10px}html.pv .dcb-trial,html.pv .dcb-beta-fab{display:none!important}
+html.lk body{background:var(--lk-bg)!important}
+html.lk .req-card{background:var(--lk-bg);color:var(--lk-ink);font-family:var(--lk-font);--rose:var(--lk-accent);--rose-ink:var(--lk-accent);--ink:var(--lk-ink);--muted:color-mix(in srgb,var(--lk-ink) 68%,transparent);--line:color-mix(in srgb,var(--lk-ink) 18%,transparent);--rose-soft:color-mix(in srgb,var(--lk-accent) 12%,transparent)}
+html.lk .req-card h1,html.lk .req-card .rfhead b{font-family:var(--lk-hfont);color:var(--lk-ink)}
+html.lk .req-card input,html.lk .req-card select,html.lk .req-card textarea,html.lk .req-card button{font-family:var(--lk-font);color:var(--lk-ink)}
+html.lk .btn.primary{background:var(--lk-accent);border-color:var(--lk-accent);color:#fff}
+html.lk .sh,html.lk .eyebrow{color:var(--lk-accent)}
+html.lk.s-s .req-card{font-size:14px}html.lk.s-m .req-card{font-size:15.5px}html.lk.s-l .req-card{font-size:17.5px}html.lk.s-l .req-card input,html.lk.s-l .req-card select,html.lk.s-l .req-card textarea{font-size:17px}
+html.lk.c-square .req-card :is(input,select,textarea,.btn,.pick,.pic,.prenote){border-radius:0}html.lk.c-round .req-card :is(input,select,textarea,.btn,.pick,.pic,.prenote){border-radius:10px}html.lk.c-pill .req-card :is(input,select,.btn){border-radius:999px;padding-left:16px}html.lk.c-pill .req-card :is(textarea,.pick,.pic,.prenote){border-radius:20px}
+html.lk.f-box .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:transparent;border:1px solid var(--line)}
+html.lk.f-line .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:transparent;border:0;border-bottom:1.5px solid var(--line);border-radius:0!important;padding-left:2px}
+html.lk.f-soft .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:color-mix(in srgb,var(--lk-ink) 6%,transparent);border:1px solid transparent}
+html.lk .req-card :is(input,select,textarea):focus{outline:2px solid var(--lk-accent);outline-offset:1px}
+.brandline{text-align:center;font-size:12px;margin:14px 0 2px;opacity:.75}.brandline a{color:inherit}
 @media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}input,select,textarea{font-size:16px}}
 </style>
 </head>
@@ -102,13 +115,22 @@ const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},da
  return{...f,f:ff,secs}};
 const req=on=>on?' <span class="req">*</span>':'';
 let picked=new Set();
+const WEB=()=>EMBED||!!(info&&info.pvEmbed);
+function applyLook(){const R=document.documentElement,L=(info.form&&info.form.look)||null,on=WEB()&&L;R.classList.toggle('lk',!!on);R.classList.toggle('embed',WEB());
+ ['f-box','f-line','f-soft','c-square','c-round','c-pill','s-s','s-m','s-l'].forEach(c=>R.classList.remove(c));if(!on)return;
+ R.classList.add('f-'+(L.field||'box'),'c-'+(L.corner||'round'),'s-'+(L.size||'m'));
+ const fam=[L.font,L.hfont!=='same'?L.hfont:null].filter(Boolean),id='lkfont',href='https://fonts.googleapis.com/css2?'+fam.map(f=>'family='+encodeURIComponent(f).replace(/%20/g,'+')+':wght@400;500;600;700').join('&')+'&display=swap';
+ let ln=document.getElementById(id);if(!ln){ln=document.createElement('link');ln.id=id;ln.rel='stylesheet';document.head.appendChild(ln)}if(ln.href!==href)ln.href=href;
+ R.style.setProperty('--lk-accent',L.accent||'#c12c7e');R.style.setProperty('--lk-ink',L.ink||'#3a1030');R.style.setProperty('--lk-bg',L.bg&&L.bg!=='none'?L.bg:'transparent');
+ R.style.setProperty('--lk-font',`"${L.font||'Inter'}",system-ui,sans-serif`);R.style.setProperty('--lk-hfont',L.hfont&&L.hfont!=='same'?`"${L.hfont}",Georgia,serif`:`"${L.font||'Inter'}",system-ui,sans-serif`)}
 function form(){
+ applyLook();const LK=WEB()&&info.form&&info.form.look||{};
  const today=new Date().toISOString().slice(0,10),c=F(),f=c.f,qs=info.questions||[],byId=id=>qs.find(q=>q.id===id);
- const head=c.header&&!EMBED?`<div class="rfhead">${c.logo?`<img src="${esc(c.logo)}" alt="${esc(info.business)}">`:''}<div><b>${esc(info.business)}</b>${c.phone||c.email?`<span>${esc([c.phone,c.email].filter(Boolean).join(' · '))}</span>`:''}</div></div>`:'';
+ const head=c.header&&!WEB()?`<div class="rfhead">${c.logo?`<img src="${esc(c.logo)}" alt="${esc(info.business)}">`:''}<div><b>${esc(info.business)}</b>${c.phone||c.email?`<span>${esc([c.phone,c.email].filter(Boolean).join(' · '))}</span>`:''}</div></div>`:'';
  const sec=s=>{const list=qs.filter(q=>q.sec===s.id);if(s.mode==='pick')return `<div class="pick${picked.has(s.id)?' on':''}" data-sec="${esc(s.id)}"><label class="pickhead"><input type="checkbox" data-pick="${esc(s.id)}"${picked.has(s.id)?' checked':''}><span>${esc(s.title||'Extra')}</span>${s.price?`<em>${esc(s.price)}</em>`:''}</label><div class="pickbody">${list.map(qField).join('')}</div></div>`;
   return `<div class="rsec" data-sec="${esc(s.id)}" data-mode="${esc(s.mode)}"${s.mode==='delivery'&&handoff()!=='Delivery'?' hidden':''}>${s.title?`<h2 class="sh">${esc(s.title)}</h2>`:''}${s.mode==='delivery'&&f.handoff.on?'':''}${list.map(qField).join('')}</div>`};
  const picks=c.secs.filter(s=>s.mode==='pick'),other=c.secs.filter(s=>s.mode!=='pick');
- app.innerHTML=`${head}<div class="rtop" style="text-align:${c.align==='center'?'center':'left'}"><span class="eyebrow">Cake request</span><h1>${esc(c.title||`Order a cake from ${info.business}`)}</h1>
+ app.innerHTML=`${head}<div class="rtop"${LK.heading===false?" hidden":""} style="text-align:${c.align==='center'?'center':'left'}"><span class="eyebrow">Cake request</span><h1>${esc(c.title||`Order a cake from ${info.business}`)}</h1>
  <p class="lead">${esc(c.intro||"Tell us about your celebration. You'll get a reply with questions or a quote. This isn't a booking until your quote is accepted.")}</p>${c.instr?`<p class="instr">${esc(c.instr)}</p>`:''}</div>
  <form id="rf" novalidate>
   <h2 class="sh">Your details</h2>
@@ -130,9 +152,9 @@ function form(){
   <label class="trap" aria-hidden="true">Website<input id="f-web" tabindex="-1" autocomplete="off"></label>
   ${c.note?`<div class="prenote">${esc(c.note)}</div>`:''}
   <div id="rmsg" role="status" aria-live="polite"></div>
-  <button class="btn primary submit" type="submit"${PREVIEW?' disabled':''}>${PREVIEW?'Send my request (preview)':'Send my request'}</button>
+  <button class="btn primary submit" type="submit"${PREVIEW?' disabled':''}>${esc(LK.btn||'Send my request')}${PREVIEW?' (preview)':''}</button>
   <p class="fine">Your details go only to ${esc(info.business)} so they can reply about your cake.</p>
- </form>`;
+ </form>${WEB()&&info.brand!==false?`<p class="brandline"><a href="https://www.dreamcakebuilder.com" target="_blank" rel="noopener">Order form by Dream Cake Builder</a></p>`:''}`;
  drawPics();sizeUp();
 }
 function handoff(){const el=document.querySelector('[data-q="f_handoff"]');return el?el.value:''}
