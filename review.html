@@ -29,9 +29,12 @@
 .msg{min-height:20px;color:var(--rose-ink,#9a1b5f);font-size:14px;margin:8px 0 0}
 .done{text-align:center;padding:20px 0}.done .big{font-family:Fraunces,Georgia,serif;font-size:28px;margin-bottom:6px}
 .also{margin:16px auto 0;max-width:420px;background:#fff;border:1px solid #eed3e3;border-radius:14px;padding:14px}.also p{margin:0 0 10px}
+
+/* Customer pages: just the logo up top, no site menu, so customers stay on the artist's page */
+.custpage .site-nav,.custpage details.menu{display:none!important}.custpage .site-head .brand{pointer-events:none}
 </style>
 </head>
-<body>
+<body class="custpage">
 <header class="site-head">
  <div class="head-in">
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>

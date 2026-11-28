@@ -70,9 +70,12 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}.big{font-family:Fraunces,Georgia,serif;font-size:26px;color:var(--ink);margin-bottom:6px}
 @media print{.site-head,.site-foot,.answer,.noprint{display:none!important}body{background:#fff!important}.doc{border:0;box-shadow:none}}
 .paybox{margin:14px 0 0;padding:14px 16px;border:1.5px solid var(--acc,#c12c7e);border-radius:14px;background:#fff}.payrow{display:flex;gap:8px;flex-wrap:wrap}.payrow .btn{min-height:46px;padding:0 18px}.paydone{margin:14px 0 0;padding:12px 14px;border-radius:12px;background:#e3f5e8;color:#22703c}
+
+/* Customer pages: just the logo up top, no site menu, so customers stay on the artist's page */
+.custpage .site-nav,.custpage details.menu{display:none!important}.custpage .site-head .brand{pointer-events:none}
 </style>
 </head>
-<body>
+<body class="custpage">
 <header class="site-head">
  <div class="head-in">
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>

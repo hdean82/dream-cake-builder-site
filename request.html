@@ -79,9 +79,12 @@ html.lk.sp-s .field{margin:6px 0}html.lk.sp-s .sh{margin-top:14px}html.lk.sp-l .
 html.lk.cardon .req-card{border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -30px rgba(0,0,0,.35);padding:22px;background:#fff}
 @media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}input,select,textarea{font-size:16px}}
 .linkish{background:none;border:0;padding:0;font:inherit;color:var(--rose-ink,#9a1b5f);text-decoration:underline;cursor:pointer}
+
+/* Customer pages: just the logo up top, no site menu, so customers stay on the artist's page */
+.custpage .site-nav,.custpage details.menu{display:none!important}.custpage .site-head .brand{pointer-events:none}
 </style>
 </head>
-<body>
+<body class="custpage">
 <header class="site-head">
  <div class="head-in">
   <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>
