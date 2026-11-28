@@ -457,12 +457,13 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
   const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
   function word(w, edge) {
     if (!/[a-z]/i.test(w) || /[@/:\\]|\.\w/.test(w)) return w;                 // emails, links, numbers
-    return w.split('-').map((p, i) => {
+    const segs = w.split('-');
+    return segs.map((p, i) => {
       const m = p.match(/^([^A-Za-z]*)([A-Za-z][\w'’]*)(.*)$/); if (!m) return p;
       const core = m[2];
       if (/[A-Z]/.test(core.slice(1))) return p;                               // iPhone, DCB, McKay: leave as typed
       const lower = core.toLowerCase();
-      const small = SMALL.has(lower) && !(edge && i === 0);
+      const small = SMALL.has(lower) && !(i === 0 && (edge || segs.length > 1));   // first part of a compound (To-Do) is capitalized
       return m[1] + (small ? lower : cap(lower)) + m[3];
     }).join('-');
   }
