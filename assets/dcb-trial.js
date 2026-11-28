@@ -1,8 +1,8 @@
 /* Dream Cake Studio free preview: visitors get 15 minutes of design time, then the Studio asks them to join.
-   Not limited: signed-in accounts, beta artists, team devices, and client review links (view=1). */
+   Not limited: signed-in accounts, beta artists, team devices, and client review links (view=1 or ?review=). */
 (() => {
   const q = new URLSearchParams(location.search);
-  if (q.get('view') === '1' || window.DCS_VIEWER || window.top !== window) return;
+  if (q.get('view') === '1' || q.has('review') || window.DCS_VIEWER || window.top !== window) return;
   if (/(?:^|; )dcb_team(?:_ui)?=/.test(document.cookie)) return;
   const ls = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   if (ls('dcb-beta-code')) return;
