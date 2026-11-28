@@ -794,6 +794,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .gacts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.gacts .btn{min-height:30px;padding:3px 9px;font-size:12.5px}
 .icdet{margin:6px 0 10px}.icdet>summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff;width:max-content}.icdet>summary::-webkit-details-marker{display:none}.icdet>summary .tyi{width:28px;height:28px}.icdet .icpick{margin-top:8px}
 .tybd{border:0;background:none;padding:0;text-align:left;cursor:pointer;font:inherit;color:inherit}.tybd:hover .t{color:var(--rose-ink)}
+.ntlists{display:flex;flex-wrap:wrap;gap:6px}.ntchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;font-size:13.5px;cursor:pointer;color:var(--ink)!important;margin:0!important}.ntchip:has(input:checked){border-color:var(--rose);background:var(--rose-soft)}.ntchip input{accent-color:var(--rose)}
 /* New order form: compact and tidy */
 .oform .card{padding:12px 14px;margin-bottom:10px}
 .oform .card h3{font-size:14.5px;margin:0 0 6px}
@@ -2355,17 +2356,19 @@ function openDoc(){$("dialog").innerHTML=`<div class="dhead"><div><h2>${esc(draf
 async function addPics(files){const room=8-(draft.images||[]).length;for(const f of [...files].slice(0,room)){if(!f.type.startsWith("image/"))continue;try{const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});const k=Math.min(1,720/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);draft.images.push(c.toDataURL("image/jpeg",.72))}catch(e){toast("Couldn't read one of those photos")}}if(files.length>room)toast("Only 8 photos per order");render()}
 
 /* ---------- Product types ---------- */
+// Stacked tiers only make sense for layered cakes (not cupcakes, cake pops, cake jars, mini or cheesecakes, cookies…)
+const tierable=n=>/cake/i.test(n||"")&&!/cup ?cake|cake ?pop|cake ?jar|mini|cheese ?cake|pan ?cake|cake ?ball|cake ?slice/i.test(n||"");
 function vProducts(){
  if(editType){const t=ptype(editType);if(!t){editType=null;return vProducts()}
   $("main").innerHTML=`<div class="wrap"><button class="back" data-a="backType">‹ All product types</button>
   <div class="card"><div class="cardhead"><div class="emo">${tyIc(t)}</div><div><h1 style="font-size:22px">${esc(t.name)}</h1><p class="hint">These lists become the dropdowns when you add ${esc(t.name.toLowerCase())} to an order.</p></div></div>
   <div class="grid3"><div class="field"><label>Name</label><input type="text" data-t="name" value="${esc(t.name)}"></div></div><details class="icdet" data-keep="icpick"${OPEN.has("icpick")?" open":""}><summary><span class="lbl" style="margin:0">Icon</span>${tyIc(t)}<span class="note">Change</span></summary><div class="icpick" role="group" aria-label="Icon">${Object.entries(TYI).map(([k,[l,svg]])=>`<button type="button" class="${t.ic===k?"on":""}" data-a="tIcon" data-ic="${k}" title="${l}" aria-label="${l}" aria-pressed="${t.ic===k}"><span class="tyi">${svg}</span></button>`).join("")}</div></details>
-  <label class="toggle"><div><div class="t">Stacked tiers</div><div class="d">For cakes stacked in layers, like a 3-tier wedding cake. When you add one to an order, you pick the size, flavor and design notes for each tier separately (Tier 1 is the bottom). Leave this off for cupcakes, cookies and single-layer treats.</div></div><span class="sw2"><input type="checkbox" data-t="tiers"${t.tiers?" checked":""}><i></i></span></label>
+  ${t.tiers||tierable(t.name)?`<label class="toggle"><div><div class="t">Stacked tiers</div><div class="d">For cakes stacked in layers, like a 3-tier wedding cake. When you add one to an order, you pick the size, flavor and design notes for each tier separately (Tier 1 is the bottom). Leave it off for single-layer cakes.</div></div><span class="sw2"><input type="checkbox" data-t="tiers"${t.tiers?" checked":""}><i></i></span></label>`:""}
   <label class="toggle"><div><div class="t">Show as a tile when adding an item</div><div class="d">When you tap “Add item” on an order, this shows up first. When it’s off, it’s tucked under “More product types”.</div></div><span class="sw2"><input type="checkbox" data-t="on"${t.on?" checked":""}><i></i></span></label></div>
   ${t.groups.map((gr,gi)=>`<div class="card"><div class="cardhead"><div><input type="text" data-g="${gi}" value="${esc(gr.name)}" aria-label="List name" style="font-family:Fraunces,serif;font-weight:600;font-size:16px;max-width:260px"></div>
    <span class="gacts"><button class="btn ghost sm" data-a="gHide" data-g="${gi}">${gr.hidden?"Show":"Hide"}</button>${gi?`<button class="btn ghost sm" data-a="gUp" data-g="${gi}">Move Up</button>`:""}<button class="btn ghost sm danger" data-a="gDel" data-g="${gi}">Delete List</button></span></div>
    ${gr.hidden?`<p class="hint">Hidden: this list won't show when adding items.</p>`:""}
-   ${gi===0?`<p class="hint" style="margin:0 0 4px">Optional: give options a price (like $60 for a 6" cake, or $8 extra for ganache). The cake builder adds them up to suggest a price.</p>`:""}<form class="addbar" data-a="addOpt" data-g="${gi}"><input type="text" placeholder="Add a ${esc(gr.name.toLowerCase().replace(/s$/,""))}" aria-label="New option"><button class="btn primary" type="submit">Add</button></form>
+   ${gi===0?`<p class="hint" style="margin:0 0 4px">Optional: give options a price (like $60 for a 6" cake, or $8 extra for ganache). The cake builder adds them up to suggest a price.</p>`:""}<form class="addbar" data-a="addOpt" data-g="${gi}"><input type="text" placeholder="Add a ${esc(gr.name.toLowerCase().replace(/s$/,""))}, or several with commas" aria-label="New option"><button class="btn primary" type="submit">Add</button></form>
    ${gr.items.length?`<div class="dlist optlist" id="opt-${gi}">${gr.items.map((v,ii)=>`<div class="drow" data-di="${ii}">${grip(v)}<div class="li"><input type="text" class="nm" data-oi="${gi}:${ii}" value="${esc(v)}" aria-label="Option"><span class="optprice"><span>$</span><input type="number" min="0" step="0.01" data-op="${gi}:${ii}" value="${esc((gr.prices||{})[v]??"")}" placeholder="0" aria-label="Price for ${esc(v)}"></span><button class="trash" data-a="oDel" data-g="${gi}" data-i="${ii}" aria-label="Delete ${esc(v)}">${TRASH}</button></div></div>`).join("")}</div>`:`<p class="hint">No options yet.</p>`}
   </div>`).join("")}
   <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-a="gAdd">+ Add a list</button><button class="btn danger" data-a="tDel">Delete ${esc(t.name.toLowerCase())}</button></div></div>`;t.groups.forEach((gr,gi)=>dragList("#opt-"+gi,(a,b)=>{reorder(gr.items,a,b);save();render()}));return}
@@ -2860,13 +2863,27 @@ document.addEventListener("click",e=>{
   case"resetOrder":draft=blankOrder();render();break;
   case"nudgeQ":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;ensureTpls();save();draft=clone(o);go("new-order");setTimeout(()=>openCompose("nudge"),80);break}
   case"openOrder":{const so=S.orders.find(o=>o.id===b.dataset.id);if(so&&so.approval&&so.approval.at&&!so.approval.seen){so.approval.seen=true;save()}draft=clone(so);go("new-order");break}
-  case"tAdd":{const ty={id:uid(),name:"New type",e:"",ic:"box",on:true,tiers:false,groups:[g("Flavors",[])]};S.types.push(ty);save();editType=ty.id;render();break}
+  case"tAdd":{const L=["Sizes","Flavors","Fillings","Frosting","Shapes","Colors","Toppings","Packaging"];
+   $("dialog").innerHTML=`<div class="dhead"><div><h2>Add a Product Type</h2><p class="hint">Anything you sell, like Cheesecakes, Pies, Dessert Boxes or Charcuterie.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
+   <form class="dbody" id="ntForm" onsubmit="event.preventDefault();document.querySelector('[data-a=ntCreate]').click()"><div class="field"><label for="nt-name">Name</label><input type="text" id="nt-name" maxlength="40" placeholder="e.g. Cheesecakes" autocomplete="off" required></div>
+   <span class="lbl">Lists to start with</span><p class="hint" style="margin:0 0 6px">These become the dropdowns when you add one to an order. You can rename, add or remove lists later.</p>
+   <div class="ntlists">${L.map((l,i)=>`<label class="ntchip"><input type="checkbox" value="${l}"${i===0||i===1?" checked":""}> ${l}</label>`).join("")}</div>
+   <div class="field" style="margin-top:8px"><label for="nt-own">Your own list <span class="note">optional</span></label><input type="text" id="nt-own" maxlength="30" placeholder="e.g. Crust, Board size, Theme"></div><button type="submit" hidden></button></form>
+   <div class="dfoot"><button class="btn" data-a="closeM">Cancel</button><button class="btn primary" data-a="ntCreate">Create Product Type</button></div>`;
+   $("modal").classList.add("on");setTimeout(()=>$("nt-name").focus(),50);break}
+  case"ntCreate":{const name=$("nt-name").value.trim();if(!name){toast("Give it a name");$("nt-name").focus();break}
+   if(S.types.some(t=>lc(t.name)===lc(name))){toast(`You already have ${name}`);$("nt-name").focus();break}
+   const lists=[...document.querySelectorAll("#ntForm .ntlists input:checked")].map(x=>x.value),own=$("nt-own").value.trim();if(own&&!lists.some(l=>lc(l)===lc(own)))lists.push(own);
+   const guess=/cupcake/i.test(name)?"cupcake":/cookie/i.test(name)?"cookie":/pop/i.test(name)?"cakepop":/donut|doughnut/i.test(name)?"donut":/macaron/i.test(name)?"macaron":/pie|cheesecake|tart/i.test(name)?"pie":/brownie|bar/i.test(name)?"brownie":/candy|truffle|chocolate/i.test(name)?"candy":/jar/i.test(name)?"jar":/bento/i.test(name)?"bento":/flower|bouquet/i.test(name)?"bouquet":/cake/i.test(name)?"cake":"box";
+   const ty={id:uid(),name,e:"",ic:guess,on:true,tiers:tierable(name)&&/tier|wedding/i.test(name),groups:(lists.length?lists:["Options"]).map(l=>g(l,[]))};
+   S.types.push(ty);persist();closeM();editType=ty.id;render();toast(`${name} added. Now add the choices to each list`);
+   setTimeout(()=>{const f=document.querySelector('form[data-a="addOpt"] input');if(f){f.focus();f.scrollIntoView({block:"center"})}},150);break}
   case"tEdit":editType=b.dataset.id;render();window.scrollTo(0,0);break;
   case"backType":editType=null;render();break;
   case"tUp":move(S.types,i,-1);save();render();break;
   case"tDown":move(S.types,i,1);save();render();break;
   case"tDel":snap();S.types=S.types.filter(x=>x.id!==editType);editType=null;save();render();toast("Product type deleted",true);break;
-  case"gAdd":t.groups.push(g("New list",[]));save();render();break;
+  case"gAdd":{const nm=(prompt("Name the new list (like Fillings, Crust or Board size):","")||"").trim();if(!nm)break;if(t.groups.some(x=>lc(x.name)===lc(nm))){toast(`${t.name} already has ${nm}`);break}t.groups.push(g(nm,[]));save();render();setTimeout(()=>{const fs=document.querySelectorAll('form[data-a="addOpt"] input');const f=fs[fs.length-1];if(f){f.focus();f.scrollIntoView({block:"center"})}},100);break}
   case"gHide":t.groups[gi].hidden=!t.groups[gi].hidden;save();render();break;
   case"gUp":move(t.groups,gi,-1);save();render();break;
   case"gDel":snap();t.groups.splice(gi,1);save();render();toast("List deleted",true);break;
@@ -2981,7 +2998,7 @@ document.addEventListener("input",e=>{
 });
 document.addEventListener("submit",e=>{
  e.preventDefault();const f=e.target,inp=f.querySelector("input"),v=inp.value.trim();if(!v)return;
- if(f.dataset.a==="addOpt"){ptype(editType).groups[+f.dataset.g].items.push(v);save();render();const nf=document.querySelector(`form[data-g="${f.dataset.g}"] input`);if(nf)nf.focus()}
+ if(f.dataset.a==="addOpt"){const gr=ptype(editType).groups[+f.dataset.g];const add=v.split(/\s*[,;\n]\s*/).map(x=>x.trim()).filter(Boolean).filter((x,i,arr)=>!gr.items.some(y=>lc(y)===lc(x))&&arr.findIndex(z=>lc(z)===lc(x))===i);if(!add.length){toast("That's already in the list");return}gr.items.push(...add);save();render();if(add.length>1)toast(`Added ${add.length}`);const nf=document.querySelector(`form[data-g="${f.dataset.g}"] input`);if(nf)nf.focus()}
  if(f.dataset.a==="todoAdd"){S.todos.push({id:uid(),text:v,due:$("todoDue").value||"",done:false});save();render();const n=$("todoText");if(n)n.focus()}
  if(f.dataset.a==="ingAdd"){S.ingredients.push({id:uid(),name:v,packSize:"",unit:"g",packPrice:""});save();render();const nf=document.querySelector('form[data-a="ingAdd"] input');if(nf)nf.focus()}
  if(f.dataset.a==="listAdd"){S.lists[f.dataset.k].push(v);save();render();const nf=document.querySelector(`form[data-k="${f.dataset.k}"] input`);if(nf)nf.focus()}
