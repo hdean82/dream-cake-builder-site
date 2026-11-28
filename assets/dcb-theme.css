@@ -132,3 +132,12 @@ html.dcb-leaving body>main{opacity:0;transform:translateY(-6px);transition:opaci
 @media (prefers-reduced-motion:reduce){
   ::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}
 }
+
+/* Answer boxes never spill out of their column. Safari on iPad and iPhone draws date and time
+   boxes wider than their column unless told otherwise, which made them overlap the next box. */
+input,select,textarea{max-width:100%;min-width:0}
+@supports (-webkit-touch-callout:none){
+  input[type=date],input[type=time],input[type=datetime-local],input[type=month]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;min-height:44px;line-height:1.2;text-align:left;background-clip:padding-box}
+  input[type=date]::-webkit-date-and-time-value,input[type=time]::-webkit-date-and-time-value{text-align:left;margin:0;min-height:1.2em}
+  select{-webkit-appearance:none;appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2379536e' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+}
