@@ -41,6 +41,11 @@ td{padding:8px 4px;border-bottom:1px solid #f3e6ee;vertical-align:top}
 .docfoot{text-align:center;color:var(--muted);font-size:13px;margin:16px 0 0}
 .answer{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .answer h2{font-size:20px;margin:0 0 4px}
+.track{display:flex;list-style:none;margin:12px 0 4px;padding:0;gap:4px}.track li{flex:1;text-align:center;font-size:12.5px;color:var(--muted);position:relative}
+.track li span{display:grid;place-items:center;width:28px;height:28px;margin:0 auto 4px;border-radius:50%;border:2px solid var(--line);background:#fff;font-weight:700;font-size:13px;position:relative;z-index:1}
+.track li:not(:first-child)::before{content:"";position:absolute;top:13px;right:50%;width:100%;height:2px;background:var(--line)}
+.track li.done span{background:var(--acc,#c12c7e);border-color:var(--acc,#c12c7e);color:#fff}.track li.done:not(:first-child)::before{background:var(--acc,#c12c7e)}
+.track li.now{color:var(--ink);font-weight:600}.trnote{text-align:center;margin:6px 0 0;font-weight:600}
 .calbtn{margin-top:8px}
 .sigwrap{margin:6px 0 10px}.sigwrap label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}.sigpad{display:block;width:100%;height:130px;background:#fff;border:1.5px dashed var(--line);border-radius:12px;touch-action:none;cursor:crosshair}.sigrow{display:flex;justify-content:space-between;align-items:center;margin-top:4px}.sigrow button{background:none;border:0;color:var(--rose-ink,#9a1b5f);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:4px}.signed{display:inline-block;margin-top:6px;font-size:13px;color:#0f5f5b}
 .field{display:flex;flex-direction:column;gap:4px;margin:10px 0}
@@ -103,12 +108,14 @@ const safeColor=c=>/^#[0-9a-fA-F]{6}$/.test(c||'')?c:'#c12c7e';
 const safeLink=u=>/^https:\/\/[^\s"'<>]+$/.test(u||'')?u:'';
 
 function msg(t,x){app.innerHTML=`<div class="empty"><div class="big">${esc(t)}</div><p>${esc(x)}</p></div>`}
+const TRACK={Confirmed:1,Baking:2,Ready:3,Completed:4};
 function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
  document.title=`${d.title||'Quote'} #${d.no} · ${d.biz}`;
  const when=Q.responded_at?new Date(Q.responded_at).toLocaleDateString(undefined,{month:'long',day:'numeric'}):'';
  app.innerHTML=`
  <div class="doc" style="--acc:${safeColor(d.accent)}">
   <div class="dtop"><div>${/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+\/=]+$/.test(d.logo||"")?`<img src="${d.logo}" alt="" style="height:52px;max-width:180px;object-fit:contain;display:block;margin-bottom:6px">`:""}<div class="dbrand">${esc(d.biz)}</div><div class="note">${esc(d.contact)}</div></div><div class="dno"><b>${esc(d.title)}</b><span>#${esc(d.no)}</span></div></div>
+  ${!d.cancelled&&TRACK[d.stage]?(()=>{const k=TRACK[d.stage],del=/deliver/i.test(d.handoff||''),L=['Booked','Baking','Ready',del?'Delivered':'Picked up'];return `<ol class="track" aria-label="Order progress">${L.map((l,i)=>`<li class="${i<k?'done':''}${i===k-1?' now':''}"><span>${i<k?'✓':i+1}</span>${l}</li>`).join('')}</ol>${k===3?`<p class="trnote">🎂 Your cake is ready${del?' and on its way soon':' for pickup'}!</p>`:''}`})():''}
   ${d.cancelled?`<div class="dcancel"><b>Cancelled</b>${d.cancelled.note?`<div class="pre" style="color:var(--ink)">${esc(d.cancelled.note)}</div>`:''}</div>`:''}
   <div class="dmeta"><div><span class="lbl">For</span><b>${esc(d.customer)}</b></div>
    <div><span class="lbl">Event</span><b>${esc(d.date||'Date to be set')}${d.time?' · '+esc(d.time):''}</b><div class="note">${esc([d.event,d.handoff+(d.address?': '+d.address:'')].filter(Boolean).join(' · '))}</div></div>

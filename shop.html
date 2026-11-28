@@ -2176,7 +2176,7 @@ function docData(o){const s=S.settings,t=totals(o),e=evt(o.eventId),isQ=o.kind==
  const f=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
  return{v:1,kind:isQ?"quote":"invoice",title:isQ?L.quoteTitle:L.invoiceTitle,no:String(o.no||""),accent:L.accent,logo:(L.logo&&L.logo.length<180000)?L.logo:"",biz:s.biz||"",contact:[pickupShown(o)?s.address:"",s.phone,s.email].filter(Boolean).join(" · "),email:s.email||"",
   customer:o.customer||"",date:o.date?f(o.date):"",time:o.time?t12(o.time):"",event:e?.name||"",handoff:{Collected:"Pickup",Delivered:"Delivery",Shipped:"Shipped"}[o.handoff]||"",address:o.handoff!=="Collected"?(o.address||""):pickupText(o),
-  validLabel:isQ?"Valid until":"Issued",validDate:f(isQ?isoD(exp):issued),iso:/^\d{4}-\d{2}-\d{2}$/.test(o.date||"")?o.date:"",t24:/^\d{1,2}:\d{2}$/.test(o.time||"")?o.time:"",
+  validLabel:isQ?"Valid until":"Issued",validDate:f(isQ?isoD(exp):issued),stage:o.kind==="Order"?o.status:"",iso:/^\d{4}-\d{2}-\d{2}$/.test(o.date||"")?o.date:"",t24:/^\d{1,2}:\d{2}$/.test(o.time||"")?o.time:"",
   items:o.items.map(it=>({title:itemTitle(it),lines:itemLines(it),qty:String(it.qty),price:money(it.price),total:money(itemSub(it))})),
   sub:money(t.sub),tax:t.tax?money(t.tax):"",fee:t.fee?money(t.fee):"",total:money(t.total),paid:t.paid?money(t.paid):"",depLabel:isQ?"Deposit to book":"Deposit due",dep:money(t.depLeft),bal:money(t.bal),
   images:o.imagesOnDoc?(o.images||[]).filter(x=>String(x).startsWith("sb:")).map(x=>x.slice(3)):[],notes:o.notes||"",payNote:L.payNote||"",payLink:/^https:\/\/\S+$/.test(L.payLink||"")?L.payLink:"",
