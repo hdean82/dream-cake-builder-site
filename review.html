@@ -68,7 +68,7 @@ document.addEventListener('submit',async e=>{e.preventDefault();const m=$('m'),n
  if(!rating){m.textContent='Please tap a star rating.';return}if(!name){m.textContent='Please add your name.';$('n').focus();return}
  const btn=e.target.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Sending…';
  try{await rpc('shop_review_submit',{p_slug:slug,p_name:name,p_rating:rating,p_body:body,p_cake:cake});
-  app.innerHTML=`<div class="done"><div class="big">Thank you! 💕</div><p>Your review was sent to ${esc(biz||'your cake artist')}.</p><p style="margin-top:14px"><a class="btn" href="portfolio.html?shop=${encodeURIComponent(slug)}">See more of their cakes</a></p></div>`}
+  app.innerHTML=`<div class="done"><div class="big">Thank you! 💕</div><p>Your review was sent to ${esc(biz||'your cake artist')}.</p><p style="margin-top:14px"><a class="btn" href="request.html?shop=${encodeURIComponent(slug)}">Order another cake</a></p></div>`}
  catch(err){btn.disabled=false;btn.textContent='Send my review';m.textContent=err.message}});
 (async()=>{if(!slug){app.innerHTML='<p>This review link isn’t complete. Please check the link you were sent.</p>';return}
  try{const p=await rpc('shop_reviews_public',{p_slug:slug});if(!p){app.innerHTML='<p>This review link isn’t active.</p>';return}biz=p.business||'';document.title=`Review ${biz} · Dream Cake Builder`;draw()}
