@@ -32,7 +32,7 @@ const clear = ['dcb_team=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax', '
 
 // Link previews: when an artist shares their order form (iMessage, Instagram, Facebook), show their shop name instead of ours.
 const SB = 'https://gcorvodfcxhumesttwvj.supabase.co', SBKEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
-async function shopPreview(slug) {
+async function shopPreview(slug, kind) {
   try {
     const r = await fetch(SB + '/rest/v1/rpc/shop_form_info', { method: 'POST', headers: { apikey: SBKEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: slug }), signal: AbortSignal.timeout(2500), cf: { cacheTtl: 600, cacheEverything: true } });
     if (!r.ok) return null;
@@ -40,6 +40,7 @@ async function shopPreview(slug) {
     const f = i.form || {}, name = i.business.trim().slice(0, 80);
     const desc = String(f.intro || '').replace(/\s+/g, ' ').trim().slice(0, 180) || `Tell ${name} about your celebration and request a custom cake.`;
     const img = /^https:\/\//.test(f.logo || '') ? f.logo : '';
+    if (kind === 'review') return { title: `Leave a review for ${name}`, desc: `How was your cake? Share a few words with ${name}.`, img };
     return { title: `Order a cake from ${name}`, desc, img };
   } catch { return null; }
 }
@@ -105,10 +106,11 @@ export async function onRequest({ request, next, env }) {
     out.headers.set('X-Robots-Tag', 'noindex');
     return out;
   }
-  if (/^\/request(\.html)?\/?$/i.test(path) && request.method === 'GET') {
+  const pv = path.match(/^\/(request|review)(\.html)?\/?$/i);
+  if (pv && request.method === 'GET') {
     const slug = (url.searchParams.get('shop') || '').trim().toLowerCase();
     if (/^[a-z0-9-]{2,60}$/.test(slug)) {
-      const [res, p] = await Promise.all([next(), shopPreview(slug)]);
+      const [res, p] = await Promise.all([next(), shopPreview(slug, pv[1].toLowerCase())]);
       return withPreview(res, p, url.href);
     }
   }
