@@ -831,6 +831,11 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .ogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 10px}
 @media(max-width:820px){.ogrid{grid-template-columns:repeat(2,minmax(0,1fr))}.ogrid>.field:first-child:has(#o-customer){grid-column:1/-1}}
 @media(max-width:820px){.oform input:not([type=checkbox]):not([type=radio]):not([type=file]),.oform select,.oform textarea{font-size:16px!important;min-height:38px}.oform .btn,.oform .seg button{min-height:36px}}
+.pill.late{background:#fde8e6;color:#b3261e;border-color:#f3c3bd}.lateTx{color:#b3261e!important;font-weight:600}
+.gsbtn{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--muted,#79536e);font:inherit;font-size:14px;cursor:pointer;text-align:left}.gsbtn svg{width:16px;height:16px;flex:none}.gsbtn kbd{margin-left:auto;font:inherit;font-size:11px;border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.gsbtn:hover{border-color:var(--rose,#c12c7e)}#abSearch{margin-left:auto}@media(max-width:820px){.gsbtn kbd{display:none}}
+.gsin{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:#fff}.gsin svg{width:18px;height:18px;flex:none;color:var(--muted,#79536e)}.gsin input{border:0!important;box-shadow:none!important;outline:0;padding:12px 0!important;font-size:16px;background:transparent;width:100%}
+.gsres{margin-top:12px;max-height:min(60vh,520px);overflow:auto}.gsres h4{margin:12px 0 4px;font-size:13px;color:var(--muted,#79536e)}.gsres .rowi{width:100%}.gsres .rowi.sel{outline:2px solid var(--rose,#c12c7e);outline-offset:-2px}
 </style>
 </head>
 <body>
@@ -857,6 +862,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
  <button class="abtn" id="abMenu" type="button" aria-label="Open menu" aria-controls="nav"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  <button class="abtn" id="abBack" type="button" aria-label="Back" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
  <h2 id="abTitle"></h2>
+ <button class="abtn" id="abSearch" type="button" aria-label="Search everything" data-a="gsOpen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
 </div>
 <div class="navscrim" id="navScrim"></div>
 <div class="app">
@@ -991,7 +997,7 @@ function openDiscount(i){const it=i!=null?draft.items[i]:null,d=it?it.discount:{
  <div class="dfoot">${it?`<button class="btn danger" data-a="dscDel">Remove</button>`:`<button class="btn" data-a="closeM">Cancel</button>`}<button class="btn primary" data-a="dscSave">${it?"Save":"Add Discount"}</button></div>`;$("modal").classList.add("on");setTimeout(()=>{const f=$("ds-label");if(f)f.focus()},50)}
 function itemTitle(it){if(it.discount)return it.discount.label||"Discount";if(it.tiers){const first=it.tiers[0]?.opts||{};return `${it.tiers.length}-tier ${(Object.values(first)[1]||"").toLowerCase()} ${it.typeName.replace(/s$/,"").toLowerCase()}`.replace(/\s+/g," ").trim().replace(/^./,c=>c.toUpperCase())}return it.typeName}
 
-function nav(){$("nav").innerHTML=ROUTES.map(r=>r[0]==="sec"?`<div class="navsec">${r[1]}</div>`:r[3]?`<a class="navbtn" href="${r[3]}">${r[2]}${r[1]}</a>`:`<button class="navbtn${route===r[0]?" on":""}" data-a="go" data-r="${r[0]}"${route===r[0]?' aria-current="page"':""}>${r[2]}${r[1]}</button>`).join("")}
+function nav(){$("nav").innerHTML=`<button class="gsbtn" data-a="gsOpen" aria-label="Search everything"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search<kbd>${/Mac|iPhone|iPad/.test(navigator.platform)?"⌘":"Ctrl "}K</kbd></button>`+ROUTES.map(r=>r[0]==="sec"?`<div class="navsec">${r[1]}</div>`:r[3]?`<a class="navbtn" href="${r[3]}">${r[2]}${r[1]}</a>`:`<button class="navbtn${route===r[0]?" on":""}" data-a="go" data-r="${r[0]}"${route===r[0]?' aria-current="page"':""}>${r[2]}${r[1]}</button>`).join("")}
 function appbar(){const r=ROUTES.find(x=>x[0]===route);const t=document.getElementById("abTitle");if(t)t.textContent=route==="new-order"&&draft&&draft.id?`${draft.kind} #${draft.no}`:(r?r[1]:"");const b=document.getElementById("abBack");if(b)b.hidden=route==="today";document.body.classList.remove("navopen")}
 function siteCurrent(){document.querySelectorAll("[data-site]").forEach(a=>{const on=a.dataset.site===(route==="calendar"?"calendar":"shop");on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")})}
 function render(){nav();siteCurrent();renderView();cloudChip();side();appbar();saveBar()}
@@ -1056,6 +1062,8 @@ function vOrder(){
  </div>`;
 }
 function schedule(o,t){const n=Math.max(1,+o.plan||+S.settings.instalments||1);if(!t.total)return[];const rest=t.total-t.dep;const out=[{label:"Deposit to book",amt:t.dep,when:"When booked"}];if(n<=1||rest<=0)return t.dep>=t.total?out:[...out,{label:"Balance",amt:rest,when:o.date?"By "+new Date(o.date+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric"}):"Before the event"}];const each=Math.round(rest/(n-1)*100)/100;for(let i=1;i<n;i++){const amt=i===n-1?Math.round((rest-each*(n-2))*100)/100:each;let when="Before the event";if(o.date){const d=new Date(o.date+"T00:00");const days=Math.round(28*(n-1-i)/(n-1))+(i===n-1?7:0);d.setDate(d.getDate()-days);when="By "+d.toLocaleDateString(undefined,{month:"short",day:"numeric"})}out.push({label:"Payment "+(i+1),amt,when})}return out}
+function schedDue(o,t){const sc=schedule(o,t);if(!sc.length)return[];const n=sc.length;return sc.map((x,i)=>{let due;if(i===0&&n>1)due=o.issued||isoD(new Date());else if(!o.date)due=null;else if(n<=2)due=o.date;else{const d=new Date(o.date+"T00:00");const k=n-1;const days=Math.round(28*(k-i)/k)+(i===k?7:0);d.setDate(d.getDate()-days);due=isoD(d)}return{...x,due}})}
+function payDue(until){const today=isoD(new Date()),out=[];S.orders.forEach(o=>{if(o.kind!=="Order"||["Cancelled"].includes(o.status))return;const t=totals(o);if(!(t.bal>0.005))return;let paid=t.paid;for(const x of schedDue(o,t)){const left=Math.max(0,x.amt-paid);paid=Math.max(0,paid-x.amt);if(left<0.005)continue;if(!x.due||x.due>until)break;const last=out[out.length-1];if(last&&last.o===o){last.amt=Math.round((last.amt+left)*100)/100;last.n++;last.label=last.n+" payments";continue}out.push({o,label:x.label,amt:Math.round(left*100)/100,due:x.due,late:x.due<today,n:1})}});return out.sort((a,b)=>(b.late-a.late)||a.due.localeCompare(b.due))}
 function schedHtml(o,t){const sc=schedule(o,t);if(sc.length<2)return"";let paid=t.paid;return `<div style="margin-top:10px"><span class="lbl">Payment plan</span>${sc.map(x=>{const done=paid>=x.amt-0.005;paid=Math.max(0,paid-x.amt);return `<div class="kv"><span>${done?"✓ ":""}${esc(x.label)} · ${esc(x.when)}</span><span>${money(x.amt)}</span></div>`}).join("")}</div>`}
 function sideOrder(){
  const t=totals(draft),e=evt(draft.eventId);
@@ -1693,14 +1701,14 @@ function vToday(){const today=isoD(new Date()),tom=addDays(today,1),wk=addDays(t
  const soon=allTasks().filter(t=>!t.done&&t.due>today&&t.due<=addDays(today,3)).sort((a,b)=>a.due.localeCompare(b.due));
  const handoffs=S.orders.filter(o=>o.kind==="Order"&&(o.date===today||o.date===tom)&&!["Cancelled","Completed"].includes(o.status)).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
  const expiring=S.orders.filter(o=>{if(o.kind!=="Quote"||o.status==="Cancelled")return false;const iss=o.issued||today;const exp=addDays(iss,+o.expiryDays||0);return exp>=today&&exp<=addDays(today,3)});
- const owed=S.orders.filter(o=>o.kind==="Order"&&o.status!=="Cancelled"&&o.date&&o.date>=today&&o.date<=wk&&totals(o).bal>0.005);
+ const dues=payDue(wk),owed=dues;
  const hello=(()=>{const h=new Date().getHours();return h<12?"Good morning":h<17?"Good afternoon":"Good evening"})();
  const card=(title,inner,empty)=>`<div class="card"><h3>${title}</h3>${inner||`<p class="hint" style="margin:0">${empty}</p>`}</div>`;
  const orow=(o,extra)=>`<button class="rowi" data-a="openOrder" data-id="${esc(o.id)}"><span class="bd"><span class="t">${esc(o.time?t12(o.time)+" · ":"")}${esc(o.customer)}</span><br><span class="d">#${esc(o.no)} · ${esc(o.items.map(itemTitle).join(", ")||"No items")}</span></span><span class="v">${extra}</span></button>`;
- const live=S.orders.filter(o=>o.status!=="Cancelled"),wkOrders=live.filter(o=>o.kind==="Order"&&o.date&&o.date>=today&&o.date<=wk),openQ=live.filter(o=>o.kind==="Quote"),mon=today.slice(0,7),monSales=live.filter(o=>o.kind==="Order"&&(o.date||"").slice(0,7)===mon).reduce((a,o)=>a+totals(o).total,0),toCollect=owed.reduce((a,o)=>a+totals(o).bal,0);
+ const live=S.orders.filter(o=>o.status!=="Cancelled"),wkOrders=live.filter(o=>o.kind==="Order"&&o.date&&o.date>=today&&o.date<=wk),openQ=live.filter(o=>o.kind==="Quote"),mon=today.slice(0,7),monSales=live.filter(o=>o.kind==="Order"&&(o.date||"").slice(0,7)===mon).reduce((a,o)=>a+totals(o).total,0),toCollect=dues.reduce((a,x)=>a+x.amt,0),late=dues.filter(x=>x.late).length;
  const kpi=(n,l,r,cls="")=>`<button class="kpi ${cls}" data-a="go" data-r="${r}"><b>${n}</b><span>${l}</span></button>`;
  $("main").innerHTML=`<div class="wrap"><h1>${hello}</h1><p class="lead">${esc(fd(today))}${S.settings.biz?" · "+esc(S.settings.biz):""}</p>
- <div class="kpis">${kpi(wkOrders.length,"Orders this week","calendar")}${kpi(money(toCollect),"To collect this week","orders",toCollect>0?"warn":"")}${kpi(openQ.length,"Open quotes","orders")}${kpi(money(monSales),"Sales this month","money")}</div>
+ <div class="kpis">${kpi(wkOrders.length,"Orders this week","calendar")}${kpi(money(toCollect),late?`To collect · ${late} overdue`:"To collect this week","orders",toCollect>0?"warn":"")}${kpi(openQ.length,"Open quotes","orders")}${kpi(money(monSales),"Sales this month","money")}</div>
  ${setupCard()}
  ${lowStock().length?card("Running Low",`<div class="chips" style="margin-top:0">${lowStock().map(g=>`<span class="chip">${esc(g.name)} · ${esc((+g.onHand||0).toString())} ${esc(g.unit)}</span>`).join("")}</div><button class="btn sm" style="margin-top:8px" data-a="go" data-r="recipes" onclick="recTab='stock'">Update Stock</button>`,""):""}
  ${(()=>{const ans=S.orders.filter(o=>o.approval&&o.approval.at&&!o.approval.seen).sort((a,b)=>b.approval.at.localeCompare(a.approval.at));return ans.length?card("Customer Answers",`<div class="rows">${ans.map(o=>orow(o,approvalBadge(o))).join("")}</div>`,""):""})()}
@@ -1715,7 +1723,7 @@ function vToday(){const today=isoD(new Date()),tom=addDays(today,1),wk=addDays(t
    const d=Math.floor((Date.now()-Date.parse(o.share.at))/864e5);o._wait=d;return d>=2}).sort((a,b)=>b._wait-a._wait).slice(0,6);
   return W.length?card("Waiting to hear back",`<p class="hint" style="margin:0 0 6px">Quotes you shared that haven't been approved or declined yet.</p><div class="rows">${W.map(o=>`<div class="hrow">${orow(o,`${o._wait} days`)}<div class="hacts"><button class="btn sm" data-a="nudgeQ" data-id="${esc(o.id)}">Send a check-in</button></div></div>`).join("")}</div>`,""):""})()}
  <div class="grid2" style="gap:0 12px">${card("Quotes expiring soon",expiring.length?`<div class="rows">${expiring.map(o=>orow(o,money(totals(o).total))).join("")}</div>`:"","No quotes about to expire.")}
- ${card("Balances due this week",owed.length?`<div class="rows">${owed.map(o=>orow(o,money(totals(o).bal))).join("")}</div>`:"","Everyone's paid up for this week.")}</div></div>`;
+ ${card(`Payments due${late?` <span class="pill late">${late} overdue</span>`:""}`,dues.length?`<div class="rows">${dues.map(x=>`<div class="hrow">${orow(x.o,`${money(x.amt)}<br><span class="note${x.late?" lateTx":""}">${esc(x.label)} · ${x.late?"Overdue":x.due===today?"Today":esc(new Date(x.due+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}))}</span>`)}<div class="hacts"><button class="btn sm" data-a="payRemind" data-id="${esc(x.o.id)}">Send Reminder</button></div></div>`).join("")}</div>`:"","Everyone's paid up for this week.")}</div></div>`;
 }
 function sideToday(){const today=isoD(new Date()),wk=addDays(today,7);const week=S.orders.filter(o=>o.kind==="Order"&&o.date>=today&&o.date<=wk&&o.status!=="Cancelled");
  const quotes=S.orders.filter(o=>o.kind==="Quote"&&!["Cancelled"].includes(o.status)).length;const nreq=(typeof RQ!=="undefined"&&RQ.state==="ready")?RQ.list.filter(r=>r.status==="new").length:null;
@@ -2926,6 +2934,9 @@ document.addEventListener("click",e=>{
   case"saveOrder":{applyDiscounts(draft);if(!draft.customer.trim()){toast("Add the customer's name first");$("o-customer").focus();break}{const bl=!draft.id&&blMatch(draft.customer,draft.email,draft.customerId);if(bl&&!confirm(`${fullName(bl)} is blacklisted${bl.blReason?" ("+bl.blReason+")":""}. Save this order anyway?`))break}if(!draft.date){toast("Pick the event date");$("o-date").focus();break}if(draft.handoff==="Collected"&&draft.pickupAlt&&!String(draft.pickupAddr||"").trim()&&$("o-paddr")){toast("Add the pickup address for this order");$("o-paddr").focus();break}if(!draft.id){const need=[["o-phone",String(draft.phone||"").replace(/\D/g,"").length<7,"Add the customer's phone number"],["o-email",!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(draft.email||"").trim()),"Add the customer's email"],["o-event",!draft.eventId,"Choose the event type"],["o-time",!draft.time,"Add the event time"]].find(x=>x[1]&&$(x[0]));if(need){toast(need[2]);const n=$(need[0]);n.setAttribute("aria-invalid","true");n.focus();n.addEventListener("input",()=>n.removeAttribute("aria-invalid"),{once:true});n.addEventListener("change",()=>n.removeAttribute("aria-invalid"),{once:true});break}}
    const o=clone(draft);if(!o.id){o.id=uid();o.no=S.settings.nextNo;S.settings.nextNo=+S.settings.nextNo+1;o.issued=new Date().toISOString().slice(0,10);logEv(o,`Created as ${o.kind.toLowerCase()} · ${money(totals(o).total)}`)}else{const prev=S.orders.find(x=>x.id===o.id);if(prev)diffLog(prev,o)}linkCustomer(o);const k=S.orders.findIndex(x=>x.id===o.id);k>=0?S.orders[k]=o:S.orders.push(o);save();toast(`${o.kind} #${o.no} saved`);if(o.share&&o.share.token&&!o.share.off&&CLOUD.state==="on")shareOrder(o,true).catch(()=>{});draft=blankOrder();{const tab=ORD_TABS.find(t=>t[2](o));ordTab=tab?tab[0]:"all"}go("orders");break}
   case"resetOrder":draft=blankOrder();render();break;
+  case"gsOpen":gsOpen();break;
+  case"gsGo":{const k=b.dataset.k,id=b.dataset.id;closeM();if(k==="o"){const so=S.orders.find(o=>o.id===id);if(so){draft=clone(so);go("new-order")}}else if(k==="c"){editCust=id;custTab="customers";go("customers")}else if(k==="r"){recTab="recipes";editRec=id;go("recipes")}else if(k==="q"){go("requests")}else if(k==="p"){const r=ROUTES.find(x=>x[0]===id);if(r&&r[3])location.href=r[3];else go(id)}break}
+  case"payRemind":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;ensureTpls();save();draft=clone(o);go("new-order");setTimeout(()=>openCompose("payrem"),80);break}
   case"nudgeQ":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;ensureTpls();save();draft=clone(o);go("new-order");setTimeout(()=>openCompose("nudge"),80);break}
   case"openOrder":{const so=S.orders.find(o=>o.id===b.dataset.id);if(so&&so.approval&&so.approval.at&&!so.approval.seen){so.approval.seen=true;save()}draft=clone(so);go("new-order");break}
   case"tAdd":{const L=["Sizes","Flavors","Fillings","Frosting","Shapes","Colors","Toppings","Packaging"];
@@ -3072,6 +3083,36 @@ document.addEventListener("submit",e=>{
  if(f.dataset.a==="evAdd"){S.events.push({id:uid(),name:v,color:newEvColor});save();render();$("evName").focus()}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("modal").classList.contains("on"))closeM()});
+/* ---------- Search everything ---------- */
+let GSQ="";
+function gsOpen(){$("dialog").innerHTML=`<div class="dhead"><div><h2>Search</h2><p class="hint">Orders, quotes, customers, recipes and pages.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div><div class="dbody"><label class="gsin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="gsQ" placeholder="Name, order #, phone, email or recipe" aria-label="Search everything" autocomplete="off" value="${esc(GSQ)}"></label><div class="gsres" id="gsRes" role="listbox"></div></div>`;$("dialog").classList.remove("wide");$("modal").classList.add("on");gsDraw();setTimeout(()=>{const i=$("gsQ");if(i){i.focus();i.select()}},30)}
+function gsDraw(){const el=$("gsRes");if(!el)return;const q=GSQ.trim().toLowerCase(),dg=q.replace(/\D/g,"");
+ const hit=(...f)=>f.some(v=>v!=null&&String(v).toLowerCase().includes(q))||(dg.length>=3&&f.some(v=>v!=null&&String(v).replace(/\D/g,"").includes(dg)));
+ const fmt=d=>d?new Date(d+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):"No date";
+ const row=(k,id,t,d,v="")=>`<button class="rowi" role="option" data-a="gsGo" data-k="${k}" data-id="${esc(id)}"><span class="bd"><span class="t">${esc(t)}</span><br><span class="d">${esc(d)}</span></span><span class="v">${v}</span></button>`;
+ if(!q){const rec=S.orders.filter(o=>o.status!=="Cancelled").slice().sort((a,b)=>(b.updated||b.issued||b.date||"").localeCompare(a.updated||a.issued||a.date||"")).slice(0,6);
+  el.innerHTML=rec.length?`<h4>Recent Orders and Quotes</h4>${rec.map(o=>row("o",o.id,`#${o.no} · ${o.customer||"No name"}`,`${o.kind} · ${fmt(o.date)} · ${o.status}`,money(totals(o).total))).join("")}`:`<p class="hint">Type a name, order number, phone, email or recipe.</p>`;return}
+ const ev=id=>{const e=S.events.find(x=>x.id===id);return e?e.name:""};
+ const os=S.orders.filter(o=>hit(o.customer,o.no,"#"+o.no,o.email,o.phone,ev(o.eventId),o.status,...(o.items||[]).map(itemTitle))).sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,8);
+ const cs=S.customers.filter(c=>hit(fullName(c),c.email,c.phone,c.company)).slice(0,6);
+ const rs=(S.recipes||[]).filter(r=>hit(r.name,r.category)).slice(0,5);
+ const rq=(typeof RQ!=="undefined"&&RQ.state==="ready"?RQ.list:[]).filter(r=>hit(r.name,r.email,r.phone)).slice(0,4);
+ const ps=ROUTES.filter(r=>r[0]!=="sec"&&hit(r[1])).slice(0,5);
+ const n=os.length+cs.length+rs.length+rq.length+ps.length;
+ el.innerHTML=n?`${os.length?`<h4>Orders and Quotes</h4>${os.map(o=>row("o",o.id,`#${o.no} · ${o.customer||"No name"}`,`${o.kind} · ${fmt(o.date)}${ev(o.eventId)?" · "+ev(o.eventId):""} · ${o.status}`,money(totals(o).total))).join("")}`:""}
+ ${cs.length?`<h4>Customers</h4>${cs.map(c=>row("c",c.id,fullName(c)||"No name",[c.phone,c.email].filter(Boolean).join(" · ")||"No contact details")).join("")}`:""}
+ ${rq.length?`<h4>Requests</h4>${rq.map(r=>row("q",r.id,r.name||"Request",[r.email,r.phone].filter(Boolean).join(" · "))).join("")}`:""}
+ ${rs.length?`<h4>Recipes</h4>${rs.map(r=>row("r",r.id,r.name||"Recipe",r.category||"Recipe")).join("")}`:""}
+ ${ps.length?`<h4>Pages</h4>${ps.map(r=>row("p",r[0],r[1],"Go to page")).join("")}`:""}`:`<p class="hint">Nothing matches “${esc(GSQ)}”.</p>`;
+ const f=el.querySelector(".rowi");if(f)f.classList.add("sel")}
+document.addEventListener("input",e=>{if(e.target.id==="gsQ"){GSQ=e.target.value;gsDraw()}});
+document.addEventListener("keydown",e=>{
+ if((e.metaKey||e.ctrlKey)&&(e.key==="k"||e.key==="K")){e.preventDefault();gsOpen();return}
+ const tg=e.target,typing=tg&&(tg.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName));
+ if(e.key==="/"&&!typing&&!$("modal").classList.contains("on")){e.preventDefault();gsOpen();return}
+ if(tg&&tg.id==="gsQ"&&(e.key==="ArrowDown"||e.key==="ArrowUp"||e.key==="Enter")){const rows=[...document.querySelectorAll("#gsRes .rowi")];if(!rows.length)return;let i=rows.findIndex(r=>r.classList.contains("sel"));if(e.key==="Enter"){e.preventDefault();(rows[i]||rows[0]).click();return}e.preventDefault();rows.forEach(r=>r.classList.remove("sel"));i=Math.max(0,Math.min(rows.length-1,i+(e.key==="ArrowDown"?1:-1)));rows[i].classList.add("sel");rows[i].scrollIntoView({block:"nearest"})}
+});
+
 const fromHash=()=>{const h=location.hash.slice(1);if(ROUTES.some(r=>r[0]===h&&r[0]!=="sec"&&!r[3]))route=h};
 window.addEventListener("popstate",()=>{if(navDepth>0)navDepth--});
 window.addEventListener("hashchange",()=>{const was=route;if($("modal").classList.contains("on"))closeM();setTimeout(()=>{if(DIRTY&&SAVE_PAGES.has(was)&&route!==was){askLeave(()=>{})}},0);fromHash();editType=null;editTpl=null;render()});
