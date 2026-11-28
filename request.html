@@ -35,6 +35,15 @@ textarea{min-height:120px;resize:vertical}
 .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .done{text-align:center;padding:30px 20px}
 .done .big{font-family:Fraunces,Georgia,serif;font-size:28px;color:var(--teal);margin-bottom:6px}
+.sh{font:600 13px Inter,system-ui,sans-serif;color:var(--rose-ink);margin:22px 0 4px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.rtop .lead{margin-bottom:6px}.instr{color:var(--muted);font-size:14.5px;margin:0 0 6px}
+.rfhead{display:flex;align-items:center;gap:12px;padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}.rfhead img{width:56px;height:56px;object-fit:contain;border-radius:12px;background:#fff}.rfhead div{display:flex;flex-direction:column}.rfhead b{font-family:Fraunces,Georgia,serif;font-size:18px}.rfhead span{font-size:13px;color:var(--muted)}
+.picks{display:grid;gap:8px}.pick{border:1px solid var(--line);border-radius:12px;background:#fff;transition:border-color .15s}.pick.on{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-soft)}
+.pickhead{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-weight:500}.pickhead input{width:18px;height:18px;accent-color:var(--rose)}.pickhead span{flex:1}.pickhead em{font-style:normal;color:var(--rose-ink);font-weight:600}
+.pickbody{display:none;padding:0 14px 8px}.pick.on .pickbody{display:block}.pickbody:empty{display:none!important}
+.prenote{background:var(--rose-soft);color:var(--rose-ink);border-radius:12px;padding:12px 14px;margin:14px 0 6px;white-space:pre-wrap}
+html.embed body{background:transparent!important}html.embed .site-head,html.embed .site-foot{display:none}html.embed main{padding:0}html.embed .req-wrap{padding:0;max-width:none}html.embed .req-card{background:transparent;border:0;box-shadow:none;padding:4px}
+html.pv .site-head,html.pv .site-foot{display:none}html.pv main{padding:10px 0}html.pv .req-wrap{padding:0 10px}html.pv .dcb-trial,html.pv .dcb-beta-fab{display:none!important}
 @media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}input,select,textarea{font-size:16px}}
 </style>
 </head>
@@ -79,6 +88,8 @@ const params=new URLSearchParams(location.search.slice(1)||location.hash.slice(1
 const slug=(params.get('shop')||'').trim().toLowerCase();
 const like=(params.get('like')||'').slice(0,80),likeImg=params.get('img')||'';
 let info=null,pics=[],busy=false;
+const PREVIEW=params.get('preview')==='1',EMBED=params.get('embed')==='1'||PREVIEW&&false;
+if(params.get('embed')==='1')document.documentElement.classList.add('embed');
 
 const rpc=(fn,body)=>fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`,{method:'POST',headers:{...H,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
 
@@ -86,38 +97,60 @@ function shrink(file){return new Promise((res,rej)=>{const r=new FileReader();r.
 
 function closed(title,text){app.innerHTML=`<div class="done"><div class="big">${esc(title)}</div><p class="muted">${esc(text)}</p><p class="fine" style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
 
+const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},date:{on:true,req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false},handoff:{on:false,req:false},details:{on:true,req:true},photos:{on:true,req:false}};const ff={};for(const k in d)ff[k]=Object.assign({},d[k],(f.f||{})[k]||{});
+ let secs=Array.isArray(f.secs)?f.secs:[];const qs=info.questions||[];if(!f.v){secs=qs.length?[{id:'_old',title:'',mode:'always'}]:[];qs.forEach(q=>q.sec=q.sec||'_old')}
+ return{...f,f:ff,secs}};
+const req=on=>on?' <span class="req">*</span>':'';
+let picked=new Set();
 function form(){
- const today=new Date().toISOString().slice(0,10);
- app.innerHTML=`<span class="eyebrow">Cake request</span><h1>Order a cake from ${esc(info.business)}</h1>
- <p class="lead">Tell us about your celebration. You'll get a reply with questions or a quote. This isn't a booking until your quote is accepted.</p>
+ const today=new Date().toISOString().slice(0,10),c=F(),f=c.f,qs=info.questions||[],byId=id=>qs.find(q=>q.id===id);
+ const head=c.header&&!EMBED?`<div class="rfhead">${c.logo?`<img src="${esc(c.logo)}" alt="${esc(info.business)}">`:''}<div><b>${esc(info.business)}</b>${c.phone||c.email?`<span>${esc([c.phone,c.email].filter(Boolean).join(' · '))}</span>`:''}</div></div>`:'';
+ const sec=s=>{const list=qs.filter(q=>q.sec===s.id);if(s.mode==='pick')return `<div class="pick${picked.has(s.id)?' on':''}" data-sec="${esc(s.id)}"><label class="pickhead"><input type="checkbox" data-pick="${esc(s.id)}"${picked.has(s.id)?' checked':''}><span>${esc(s.title||'Extra')}</span>${s.price?`<em>${esc(s.price)}</em>`:''}</label><div class="pickbody">${list.map(qField).join('')}</div></div>`;
+  return `<div class="rsec" data-sec="${esc(s.id)}" data-mode="${esc(s.mode)}"${s.mode==='delivery'&&handoff()!=='Delivery'?' hidden':''}>${s.title?`<h2 class="sh">${esc(s.title)}</h2>`:''}${s.mode==='delivery'&&f.handoff.on?'':''}${list.map(qField).join('')}</div>`};
+ const picks=c.secs.filter(s=>s.mode==='pick'),other=c.secs.filter(s=>s.mode!=='pick');
+ app.innerHTML=`${head}<div class="rtop" style="text-align:${c.align==='center'?'center':'left'}"><span class="eyebrow">Cake request</span><h1>${esc(c.title||`Order a cake from ${info.business}`)}</h1>
+ <p class="lead">${esc(c.intro||"Tell us about your celebration. You'll get a reply with questions or a quote. This isn't a booking until your quote is accepted.")}</p>${c.instr?`<p class="instr">${esc(c.instr)}</p>`:''}</div>
  <form id="rf" novalidate>
-  <div class="grid2"><div class="field"><label for="f-name">Your name <span class="req">*</span></label><input type="text" id="f-name" required maxlength="120" autocomplete="name"></div>
-  <div class="field"><label for="f-email">Email <span class="req">*</span></label><input type="email" id="f-email" required maxlength="254" autocomplete="email"></div>
-  <div class="field"><label for="f-phone">Phone</label><input type="tel" id="f-phone" maxlength="40" autocomplete="tel"></div>
-  <div class="field"><label for="f-date">Event date</label><input type="date" id="f-date" min="${today}"><div id="dmsg" class="fine" style="margin-top:4px"></div></div>
-  ${info.event_types.length?`<div class="field"><label for="f-event">Occasion</label><select id="f-event"><option value="">Choose…</option>${info.event_types.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></div>`:''}
-  <div class="field"><label for="f-serv">How many servings?</label><input type="number" id="f-serv" min="0" max="10000" inputmode="numeric"></div></div>
+  <h2 class="sh">Your details</h2>
+  <div class="grid2"><div class="field"><label for="f-name">Your name${req(1)}</label><input type="text" id="f-name" required maxlength="120" autocomplete="name"></div>
+  <div class="field"><label for="f-email">Email${req(1)}</label><input type="email" id="f-email" required maxlength="254" autocomplete="email"></div>
+  ${f.phone.on?`<div class="field"><label for="f-phone">Phone${req(f.phone.req)}</label><input type="tel" id="f-phone" maxlength="40" autocomplete="tel"></div>`:''}</div>
+  <h2 class="sh">Your event</h2>
+  <div class="grid2"><div class="field"><label for="f-date">Event date${req(f.date.req)}</label><input type="date" id="f-date" min="${today}"><div id="dmsg" class="fine" style="margin-top:4px"></div></div>
+  ${f.event.on&&info.event_types.length?`<div class="field"><label for="f-event">Occasion${req(f.event.req)}</label><select id="f-event"><option value="">Choose…</option>${info.event_types.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></div>`:''}
+  ${f.servings.on?`<div class="field"><label for="f-serv">Servings or guests${req(f.servings.req)}</label><input type="number" id="f-serv" min="0" max="10000" inputmode="numeric"></div>`:''}
+  ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
+  ${f.handoff.on&&byId('f_handoff')?qField(byId('f_handoff')):''}</div>
+  ${picks.length?`<h2 class="sh">Add to your order</h2><p class="fine" style="margin:-4px 0 8px">Tap anything you'd like.</p><div class="picks">${picks.map(sec).join('')}</div>`:''}
+  ${other.map(sec).join('')}
   ${like?`<div class="like">${/^https:\/\/gcorvodfcxhumesttwvj\.supabase\.co\//.test(likeImg)?`<img src="${esc(likeImg)}" alt="">`:''}<div><b>Something like “${esc(like)}”</b><div class="fine" style="margin:0">From the ${esc(info.business)} gallery</div></div></div>`:''}
-  <div class="field"><label for="f-details">What would you like? <span class="req">*</span></label><textarea id="f-details" required maxlength="5000" placeholder="Flavors, colors, theme, tiers, any writing on the cake, allergies…">${like?esc(`I'd love something like "${like}" from your gallery.\n\n`):''}</textarea></div>
-  ${(info.questions||[]).map((q,i)=>qField(q,i)).join('')}
-  <div class="field"><span class="lbl">Inspiration photos (up to 8)</span><div class="pics" id="pics"></div></div>
+  <h2 class="sh">Your cake</h2>
+  <div class="field"><label for="f-details">Tell us about your cake${req(f.details.req)}</label><textarea id="f-details" maxlength="5000" placeholder="Flavors, colors, theme, tiers, any writing on the cake, allergies…">${like?esc(`I'd love something like "${like}" from your gallery.\n\n`):''}</textarea></div>
+  ${f.photos.on?`<div class="field"><span class="lbl">Inspiration photos (up to 8)${req(f.photos.req)}</span><div class="pics" id="pics"></div></div>`:''}
   <label class="trap" aria-hidden="true">Website<input id="f-web" tabindex="-1" autocomplete="off"></label>
+  ${c.note?`<div class="prenote">${esc(c.note)}</div>`:''}
   <div id="rmsg" role="status" aria-live="polite"></div>
-  <button class="btn primary submit" type="submit">Send my request</button>
+  <button class="btn primary submit" type="submit"${PREVIEW?' disabled':''}>${PREVIEW?'Send my request (preview)':'Send my request'}</button>
   <p class="fine">Your details go only to ${esc(info.business)} so they can reply about your cake.</p>
  </form>`;
- drawPics();
+ drawPics();sizeUp();
 }
-function qField(q,i){const id='q-'+i,lab=`${esc(q.q)}${q.required?' <span class="req">*</span>':''}`;
- if(q.type==='long')return `<div class="field"><label for="${id}">${lab}</label><textarea id="${id}" data-q="${i}" maxlength="1000" style="min-height:80px"></textarea></div>`;
- if(q.type==='choice')return `<div class="field"><label for="${id}">${lab}</label><select id="${id}" data-q="${i}"><option value="">Choose…</option>${(q.options||[]).map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>`;
- if(q.type==='yes')return `<div class="field"><span class="lbl">${lab}</span><div class="qyes"><label><input type="radio" name="${id}" data-q="${i}" value="Yes"> Yes</label><label><input type="radio" name="${id}" data-q="${i}" value="No"> No</label></div></div>`;
- return `<div class="field"><label for="${id}">${lab}</label><input type="text" id="${id}" data-q="${i}" maxlength="1000"></div>`}
-function answers(){return (info.questions||[]).map((q,i)=>{let v='';if(q.type==='yes'){const c=document.querySelector(`input[data-q="${i}"]:checked`);v=c?c.value:''}else{const el=document.querySelector(`[data-q="${i}"]`);v=el?el.value.trim():''}return{id:q.id,q:q.q,a:v,required:q.required}})}
+function handoff(){const el=document.querySelector('[data-q="f_handoff"]');return el?el.value:''}
+function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.q)}${req(q.required)}`;
+ if(q.type==='long')return `<div class="field"><label for="${id}">${lab}</label><textarea id="${id}" data-q="${esc(i)}" maxlength="1000" style="min-height:80px"></textarea></div>`;
+ if(q.type==='choice')return `<div class="field"><label for="${id}">${lab}</label><select id="${id}" data-q="${esc(i)}"><option value="">Choose…</option>${(q.options||[]).map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>`;
+ if(q.type==='yes')return `<div class="field"><span class="lbl">${lab}</span><div class="qyes"><label><input type="radio" name="${id}" data-q="${esc(i)}" value="Yes"> Yes</label><label><input type="radio" name="${id}" data-q="${esc(i)}" value="No"> No</label></div></div>`;
+ return `<div class="field"><label for="${id}">${lab}</label><input type="text" id="${id}" data-q="${esc(i)}" maxlength="1000"></div>`}
+function shown(q){if(!q.sec||q.sec==='_event')return true;if(q.sec==='_pick')return false;const s=F().secs.find(x=>x.id===q.sec);if(!s)return true;if(s.mode==='pick')return picked.has(s.id);if(s.mode==='delivery')return handoff()==='Delivery';return true}
+function answers(){const c=F(),out=(info.questions||[]).map(q=>{let v='';if(!shown(q))return{id:q.id,q:q.q,a:'',required:false};if(q.type==='yes'){const x=document.querySelector(`input[data-q="${CSS.escape(q.id)}"]:checked`);v=x?x.value:''}else{const el=document.querySelector(`[data-q="${CSS.escape(q.id)}"]`);v=el?el.value.trim():''}return{id:q.id,q:q.q,a:v,required:q.required}});
+ const pk=out.find(a=>a.id==='f_pick');if(pk)pk.a=c.secs.filter(s=>s.mode==='pick'&&picked.has(s.id)).map(s=>s.title+(s.price?` (${s.price})`:'')).join(', ');return out}
+function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.postMessage({type:'dcb-form-height',h:document.documentElement.scrollHeight},'*'))}
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
+ if(t.dataset&&t.dataset.q==='f_handoff'){document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
 function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;n.textContent=isFull(d)?'That date is fully booked. Please pick another date.':'';n.style.color=isFull(d)?'var(--rose-ink)':''}
 document.addEventListener('input',e=>{if(e.target.id==='f-date')dateNote()});
-function drawPics(){const box=$('pics');if(!box)return;box.innerHTML=pics.map((p,i)=>`<div class="pic"><img src="${p.url}" alt="Inspiration photo ${i+1}"><button type="button" data-del="${i}" aria-label="Remove photo">✕</button></div>`).join('')+(pics.length<8?`<label class="pic add"><input type="file" id="picIn" accept="image/*" multiple hidden>+ Add photos</label>`:'')}
+function drawPics(){const box=$('pics');if(!box)return;sizeUp();box.innerHTML=pics.map((p,i)=>`<div class="pic"><img src="${p.url}" alt="Inspiration photo ${i+1}"><button type="button" data-del="${i}" aria-label="Remove photo">✕</button></div>`).join('')+(pics.length<8?`<label class="pic add"><input type="file" id="picIn" accept="image/*" multiple hidden>+ Add photos</label>`:'')}
 
 document.addEventListener('change',async e=>{if(e.target.id!=='picIn')return;const files=[...e.target.files].slice(0,8-pics.length);for(const f of files){if(!f.type.startsWith('image/'))continue;try{pics.push(await shrink(f))}catch{}}drawPics()});
 document.addEventListener('click',e=>{const d=e.target.closest('[data-del]');if(d){pics.splice(+d.dataset.del,1);drawPics()}});
@@ -126,14 +159,16 @@ document.addEventListener('submit',async e=>{
  const m=$('rmsg'),btn=e.target.querySelector('button[type=submit]');m.className='';m.textContent='';
  const name=$('f-name').value.trim(),email=$('f-email').value.trim(),details=$('f-details').value.trim();
  if($('f-web').value)return;
- if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||!details){m.className='msg';m.textContent='Please add your name, a valid email and what you would like.';return}
+ const cf=F().f;if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){m.className='msg';m.textContent='Please add your name and a valid email.';return}
+ const need=[[cf.phone.on&&cf.phone.req&&$('f-phone')&&!$('f-phone').value.trim(),'your phone number'],[cf.date.req&&!$('f-date').value,'the event date'],[cf.event.on&&cf.event.req&&$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!details,'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
+ if(need){m.className='msg';m.textContent=`Please add ${need[1]}.`;return}
  if(isFull($('f-date').value)){m.className='msg';m.textContent='That date is fully booked. Please pick another date.';$('f-date').focus();return}
  const ans=answers(),miss=ans.find(a=>a.required&&!a.a);if(miss){m.className='msg';m.textContent=`Please answer: ${miss.q}`;return}
  busy=true;btn.disabled=true;btn.textContent='Sending…';
  try{
   const paths=[];
   for(const p of pics){const path=`${info.shop_id}/requests/${crypto.randomUUID()}.jpg`;const r=await fetch(`${SUPABASE_URL}/storage/v1/object/shop-files/${path}`,{method:'POST',headers:{...H,'Content-Type':'image/jpeg','x-upsert':'false'},body:p.blob,signal:AbortSignal.timeout(30000)});if(r.ok)paths.push(path)}
-  const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:$('f-phone').value.trim()||null,p_event_date:$('f-date').value||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv').value?+$('f-serv').value:null,p_details:details,p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
+  const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:($('f-phone')&&$('f-phone').value.trim())||null,p_event_date:$('f-date').value||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv')&&$('f-serv').value?+$('f-serv').value:null,p_details:details||'(No details given)',p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
   if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.message||'send failed')}
   try{const rid=await r.clone().json();if(typeof rid==='string')fetch(`${SUPABASE_URL}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'request',id:rid}),keepalive:true}).catch(()=>{})}catch{}
   app.innerHTML=`<div class="done"><div class="big">Request sent!</div><p class="muted">Thank you, ${esc(name.split(' ')[0])}. ${esc(info.business)} will reply to ${esc(email)} soon.</p></div>`;
@@ -141,7 +176,9 @@ document.addEventListener('submit',async e=>{
  finally{busy=false}
 });
 
+if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||e.data.type!=='dcb-form-preview')return;const keep=$('f-details')?null:null;info=e.data.info;picked=new Set([...picked].filter(id=>(info.form&&info.form.secs||[]).some(s=>s.id===id)));form()});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
 (async()=>{
+ if(PREVIEW)return;
  if(!slug){info={shop_id:'preview',business:'your cake artist',accepting:true,event_types:[{id:'',name:'Birthday'},{id:'',name:'Wedding'}],questions:[{id:'p1',q:'Cake flavor',type:'choice',options:['Vanilla','Chocolate','Not sure yet']},{id:'p2',q:'Pickup or delivery?',type:'choice',options:['Pickup','Delivery'],required:true}],full_dates:[]};form();const n=document.createElement('p');n.className='msg';n.textContent='Preview: add ?shop=your-shop-link to the address to use a real order form.';app.prepend(n);const f=$('rf');f.addEventListener('submit',ev=>{ev.stopImmediatePropagation();ev.preventDefault();$('rmsg').className='msg';$('rmsg').textContent='Preview only. Nothing was sent.'},true);return}
  try{const r=await rpc('shop_form_info',{p_slug:slug});if(!r.ok)throw 0;info=await r.json();
   if(!info)return closed('Order form not found','Check the link you were given, or contact the cake artist directly.');

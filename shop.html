@@ -689,6 +689,22 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:600px){.wrap>.cardhead{flex-wrap:wrap}.wrap>.cardhead>div{flex:1 1 200px;min-width:0}.wrap>.cardhead>span{flex-wrap:wrap}}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
 @media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
+.rqformcard2{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.rqformcard2>div{flex:1 1 220px;display:flex;flex-direction:column;gap:2px}.rqformcard2 small{color:var(--muted);font-size:13px}
+.wrap.rfpage{max-width:1280px}.rfgrid{display:grid;gap:18px;align-items:start}@media(min-width:1100px){.rfgrid{grid-template-columns:minmax(0,1fr) minmax(360px,.9fr)}.rfpvtab{display:none}}
+.rftabs{display:flex;gap:4px;overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:12px;scrollbar-width:none}.rftabs::-webkit-scrollbar{display:none}
+.rftabs button{flex:1 0 auto;border:0;background:none;border-radius:10px;padding:9px 12px;font-weight:500;color:var(--muted);cursor:pointer;min-height:40px}.rftabs button.on{background:var(--rose-soft);color:var(--rose-ink)}
+.rfpanel>.card{margin-bottom:12px}.rfpanel textarea{width:100%}
+.rflive{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}.rflive i{width:8px;height:8px;border-radius:50%;background:#c9b3c0}.rflive.on{color:#22703c}.rflive.on i{background:#2fa36b;box-shadow:0 0 0 3px #2fa36b26}
+.rfrow{display:flex;align-items:center;gap:12px;justify-content:space-between;cursor:pointer}.rfrow>span:first-child{display:flex;flex-direction:column;gap:2px}.rfrow small{color:var(--muted);font-size:13px}
+.rffields{padding-top:14px}.rffhead,.rffrow{display:grid;grid-template-columns:minmax(0,1fr) 64px 72px;gap:8px;align-items:center}.rffhead{font-size:12px;font-weight:600;color:var(--muted);padding:14px 0 6px;border-bottom:1px solid var(--line)}.rffhead span:not(:first-child){text-align:center}
+.rffrow{padding:10px 0;border-bottom:1px solid var(--line)}.rffrow>span:first-child{display:flex;flex-direction:column}.rffrow small{color:var(--muted);font-size:12.5px}.rfsw{display:flex;justify-content:center}.rfsw .note{font-size:12px}.rfopts{margin:8px 0 4px}
+.rfsec{padding-top:12px}.rfsechead{display:flex;gap:6px;align-items:center}.rfsechead input{flex:1;font-weight:600}.rfsecopts{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.rfsecopts select{flex:1 1 180px}.rfsecopts input{flex:0 1 140px}.rfaddq{margin-top:8px}
+.rfstep{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.rfstep:first-of-type{border-top:0}.rfstep>i{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:13px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--muted)}.rfstep.ok>i{background:#2fa36b;border-color:#2fa36b;color:#fff}.rfstep>div{flex:1;min-width:0}
+.rfglance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}.rfglance button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}.rfglance b{font:600 24px Fraunces,Georgia,serif;color:var(--rose-ink)}.rfglance span{font-size:12.5px;color:var(--muted)}
+.rfprev{position:sticky;top:76px}.rfprevbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-weight:600;font-size:14px}.rfprevbar .seg button{min-height:32px;padding:4px 10px}
+.rfframe{border:1px dashed #e6b4c4;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.4);margin:0 auto;max-width:400px;transition:max-width .2s}.rfframe.wide{max-width:none}.rfframe iframe{display:block;width:100%;height:calc(100vh - 190px);min-height:560px;border:0}
+@media(max-width:1099px){.rfprev{display:none;position:static}.rfprev.show{display:block}.rfprev.show .rfframe iframe{height:75vh}}
+@media(max-width:600px){.rftabs button{padding:8px 7px;font-size:13.5px;flex:1 1 auto}.rfsec .qrow>input[type=text]:first-child,.rfsec .qrow .qopts{flex:1 1 100%}.rfsec .qrow .qopts{order:2}.rfsec .qrow .qreq,.rfsec .qrow .mv{order:3}.rfsec .qrow select{flex:1}.rffhead,.rffrow{grid-template-columns:minmax(0,1fr) 52px 66px}.rfprevbar .seg{display:none}}
 .cpgrid{display:grid;gap:0 16px;grid-template-columns:minmax(0,1fr)}@media(min-width:1000px){.cpgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .cdl{display:grid;grid-template-columns:120px 1fr;gap:10px 12px;margin:6px 0 0;font-size:15px}.cdl dt{color:var(--muted)}.cdl dd{margin:0;overflow-wrap:anywhere}.cdl a{color:var(--rose-ink)}
 .nil{color:var(--muted)}.cnotes{white-space:pre-wrap;margin:0}
@@ -842,7 +858,7 @@ const save=()=>{if(typeof SAVE_PAGES!=="undefined"&&SAVE_PAGES.has(route)){DIRTY
 const blankOrder=()=>({id:null,no:null,customer:"",phone:"",email:"",eventId:S.events[0]?.id||"",kind:S.settings.defType,status:"Inquiry",date:"",time:"",handoff:"Collected",address:"",fee:0,items:[],notes:"",prodNotes:"",deposit:null,customerId:null,expiryDays:S.settings.expiry,images:[],imagesOnDoc:true,payments:[],issued:null});
 let route="today",draft=blankOrder(),editType=null,editTpl=null,M=null,search="",undoSnap=null;
 const I_STUDIO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 12 20 7.5M12 12v9M12 12 4 7.5"/></svg>';
-const ROUTES=[["sec","Overview"],["today","Today",I.sun],["sec","Orders"],["orders","Orders & quotes",I.list],["new-order","New order",I.order],["calendar","Calendar",I.cal],["requests","Requests",I.inbox],["bake","Bake sheet",I.whisk],["sec","Design"],["studio","Studio",I_STUDIO,"studio.html"],["portfolio","Portfolio",I.pic],["sec","Customers"],["customers","Customers",I.user],["sec","Kitchen"],["products","Product types",I.cake],["recipes","Recipes",I.book],["sec","Business"],["money","Money",I.coin],["lists","Lists & reports",I.list],["sec","Settings"],["events","Event types",I.tag],["emails","Email templates",I.mail],["preferences","Preferences",I.gear],["sec","Help"],["tools","Baker's tools",I.whisk],["help","Help & guides",I.book]];
+const ROUTES=[["sec","Overview"],["today","Today",I.sun],["sec","Orders"],["orders","Orders & quotes",I.list],["new-order","New order",I.order],["calendar","Calendar",I.cal],["requests","Requests",I.inbox],["reqform","Order form",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'],["bake","Bake sheet",I.whisk],["sec","Design"],["studio","Studio",I_STUDIO,"studio.html"],["portfolio","Portfolio",I.pic],["sec","Customers"],["customers","Customers",I.user],["sec","Kitchen"],["products","Product types",I.cake],["recipes","Recipes",I.book],["sec","Business"],["money","Money",I.coin],["lists","Lists & reports",I.list],["sec","Settings"],["events","Event types",I.tag],["emails","Email templates",I.mail],["preferences","Preferences",I.gear],["sec","Help"],["tools","Baker's tools",I.whisk],["help","Help & guides",I.book]];
 
 const paidUp=o=>{const t=totals(o);return t.total>0&&t.bal<=0.005};
 const pickupShown=o=>!S.settings.pickupPaidOnly||paidUp(o);
@@ -876,7 +892,7 @@ function nav(){$("nav").innerHTML=ROUTES.map(r=>r[0]==="sec"?`<div class="navsec
 function appbar(){const r=ROUTES.find(x=>x[0]===route);const t=document.getElementById("abTitle");if(t)t.textContent=route==="new-order"&&draft&&draft.id?`${draft.kind} #${draft.no}`:(r?r[1]:"");const b=document.getElementById("abBack");if(b)b.hidden=route==="today";document.body.classList.remove("navopen")}
 function siteCurrent(){document.querySelectorAll("[data-site]").forEach(a=>{const on=a.dataset.site===(route==="calendar"?"calendar":"shop");on?a.setAttribute("aria-current","page"):a.removeAttribute("aria-current")})}
 function render(){nav();siteCurrent();renderView();cloudChip();side();appbar();saveBar()}
-function renderView(){({today:vToday,calendar:vCalendar,requests:vRequests,bake:vBake,money:vMoney,customers:vCustomers,recipes:vRecipes,"new-order":vOrder,orders:vOrders,products:vProducts,events:vEvents,emails:vEmails,preferences:vPrefs,portfolio:vPortfolio,tools:vTools,help:vHelp,lists:vLists}[route]||vOrder)()}
+function renderView(){({today:vToday,calendar:vCalendar,requests:vRequests,reqform:vReqForm,bake:vBake,money:vMoney,customers:vCustomers,recipes:vRecipes,"new-order":vOrder,orders:vOrders,products:vProducts,events:vEvents,emails:vEmails,preferences:vPrefs,portfolio:vPortfolio,tools:vTools,help:vHelp,lists:vLists}[route]||vOrder)()}
 
 /* ---------- New order ---------- */
 function vOrder(){
@@ -1103,10 +1119,7 @@ function vRequests(){
   const cal='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
   const img='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>';
   const people='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 4.5a3.5 3.5 0 0 1 0 7M21 20c0-2.6-1.6-4.9-4-5.7"/></svg>';
-  body=`<details class="card rqform" data-keep="rq-form"${OPEN.has("rq-form")||!(b.slug&&b.accepting_requests)?" open":""}><summary class="rqform-sum"><span><b>Form settings</b><small>${b.accepting_requests&&b.slug?"Taking requests":"Not taking requests yet"} · link, questions and blocked dates</small></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></summary><div class="rqform-body"><div class="rqformcard"><div class="cardhead"><div><h3>Your order form</h3><p class="hint" style="margin:0">${b.accepting_requests&&b.slug?"Customers can send requests now.":"Pick a link name and switch it on to start taking requests."}</p></div><label class="toggle" style="margin:0;padding:6px 10px"><span class="d" style="font-size:12.5px">Taking requests</span><span class="sw2"><input type="checkbox" id="rqOn"${b.accepting_requests?" checked":""}${b.slug?"":" disabled"}><i></i></span></label></div>
-   <div class="addbar" style="align-items:center"><span class="note" style="white-space:nowrap">request.html?shop=</span><input type="text" id="rqSlug" value="${esc(b.slug||"")}" placeholder="your-shop-name" maxlength="60" aria-label="Order form link name"><button class="btn sm" data-a="rqSlugSave">Save</button></div>
-   ${link?`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="note" style="overflow-wrap:anywhere">${esc(link)}</span><button class="btn sm" data-a="rqCopy" data-v="${esc(link)}">Copy link</button><a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">Open</a></div>`:""}</div>
-  ${formSetupHtml()}</div></details>
+  body=`<div class="card rqformcard2"><div><b>Your order form</b><small>${b.accepting_requests&&b.slug?"Live. Customers can send requests.":"Not live yet."}${link?` <span class="note" style="overflow-wrap:anywhere">${esc(link)}</span>`:""}</small></div><span style="display:flex;gap:6px;flex-wrap:wrap">${link?`<button class="btn sm" data-a="rqCopy" data-v="${esc(link)}">Copy link</button>`:""}<button class="btn primary sm" data-a="go" data-r="reqform">Edit order form</button></span></div>
   <div class="psearch rqsearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="rqQ" placeholder="Search order requests" aria-label="Search order requests" value="${esc(RQ.q||"")}" oninput="rqSearch(this.value)"></div>
   <div class="rqpills" role="tablist">${[["all","All"],["new","New"],["replied","Replied"],["converted","Quoted"],["declined","Declined"]].map(([v,l])=>`<button type="button" role="tab" aria-selected="${RQ.filter===v}" class="${RQ.filter===v?"on":""}" data-a="rqFilter" data-v="${v}">${l}${v!=="all"&&counts[v]?` <span class="n">${counts[v]}</span>`:""}</button>`).join("")}</div>
   <div class="rqlist">${shown.length?shown.map(r=>{const e=rqEvent(r.event_type_id),st=ST[r.status]||[r.status,"new"],nPics=(r.image_paths||[]).length;
@@ -1147,6 +1160,99 @@ function formSetupHtml(){const fd=fullDates();const off=(S.settings.daysOff||[])
   ${CLOUD.state!=="on"?`<p class="note" style="margin:6px 0 0">Sign in so your form can see these.</p>`:""}</details></div>`}
 function sideRequests(){const n=RQ.list.filter(r=>r.status==="new").length;return `<div class="card white"><h3>Inbox</h3><div class="big">${RQ.state==="ready"?n:"–"}</div><p class="hint" style="margin:0">new request${n===1?"":"s"} waiting. “Make a quote” copies a request into a new quote, ready for prices.</p></div>`}
 async function rqPatch(id,body){await api(`/rest/v1/shop_requests?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",body,prefer:"return=minimal"});const r=RQ.list.find(x=>x.id===id);if(r)Object.assign(r,body)}
+
+/* ---------- Order form builder (top of form, fields, sections, share, live preview) ---------- */
+const RF_DEF=()=>({title:"",intro:"",instr:"",note:"",align:"left",header:true,
+ f:{phone:{on:true,req:false},date:{req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false,opts:"Under $100, $100 to $200, $200 to $350, $350 and up"},handoff:{on:true,req:true},details:{req:true},photos:{on:true,req:false}},
+ secs:[]});
+function rfCfg(){let F=S.reqForm;
+ if(!F||typeof F!=="object"){F=S.reqForm=RF_DEF();const old=(S.formQ||[]).filter(q=>q&&q.q&&q.q.trim());if(old.length)F.secs.push({id:"s"+uid(),title:"More about your cake",mode:"always",price:"",qs:old.map(q=>({id:q.id||"q"+uid(),q:q.q,type:q.type||"text",opts:q.opts||"",required:!!q.required}))})}
+ const d=RF_DEF();F.f=Object.assign({},d.f,F.f||{});for(const k in d.f)F.f[k]=Object.assign({},d.f[k],F.f[k]||{});F.secs=Array.isArray(F.secs)?F.secs:[];F.secs.forEach(s=>{s.qs=Array.isArray(s.qs)?s.qs:[];s.mode=s.mode||"always"});return F}
+const RF_MODES=[["always","Always show"],["pick","Customer picks it"],["delivery","Only for delivery"]];
+const RF_QT=[["text","Short answer"],["long","Long answer"],["choice","Pick one"],["yes","Yes / no"]];
+const rfOpts=v=>String(v||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,12);
+function rfPublic(){const F=rfCfg(),f=F.f,qs=[];
+ if(f.budget.on)qs.push({id:"f_budget",q:"Budget",type:"choice",options:rfOpts(f.budget.opts),required:!!f.budget.req,sec:"_event"});
+ if(f.handoff.on)qs.push({id:"f_handoff",q:"Pickup or delivery",type:"choice",options:["Pickup","Delivery"],required:!!f.handoff.req,sec:"_event"});
+ if(F.secs.some(s=>s.mode==="pick"))qs.push({id:"f_pick",q:"Extras chosen",type:"text",options:[],required:false,sec:"_pick"});
+ F.secs.forEach(s=>s.qs.filter(q=>q.q&&q.q.trim()).forEach(q=>qs.push({id:q.id,q:q.q.trim(),type:q.type,options:q.type==="choice"?rfOpts(q.opts):[],required:!!q.required,sec:s.id})));
+ const lg=S.settings.doc&&S.settings.doc.logo;
+ return{questions:qs.slice(0,40),form:{v:2,title:F.title,intro:F.intro,instr:F.instr,note:F.note,align:F.align==="center"?"center":"left",header:!!F.header,
+  f:Object.fromEntries(Object.entries(f).map(([k,x])=>[k,{on:x.on!==false,req:!!x.req}])),
+  secs:F.secs.map(s=>({id:s.id,title:s.title||"",mode:s.mode,price:s.mode==="pick"?(s.price||""):""})),
+  logo:F.header&&lg&&/^data:image\/(png|jpeg);base64,/.test(lg)&&lg.length<200000?lg:"",phone:S.settings.phone||"",email:S.settings.email||""}}}
+let rfTab="top",rfWide=false;
+function rfSw(path,on,dis){return `<span class="sw2"><input type="checkbox" data-rf="${path}"${on?" checked":""}${dis?" disabled":""}><i></i></span>`}
+function rfInfo(){const b=RQ.biz||{},P=rfPublic();return{shop_id:"preview",business:S.settings.biz||b.name||"Your cake shop",accepting:true,event_types:S.events.map(e=>({id:e.id,name:e.name})),full_dates:fullDates(),questions:P.questions,form:P.form}}
+function rfPush(){const fr=$("rfFrame");if(fr&&fr.contentWindow)try{fr.contentWindow.postMessage({type:"dcb-form-preview",info:rfInfo()},location.origin)}catch{}}
+window.addEventListener("message",e=>{if(e.origin===location.origin&&e.data&&e.data.type==="dcb-form-ready")rfPush()});
+function rfLink(){const b=RQ.biz||{};return b.slug?`${location.origin}${location.pathname.replace(/[^/]*$/,"")}request.html?shop=${b.slug}`:""}
+function rfEmbed(){const l=rfLink();return l?`<iframe src="${l}&embed=1" title="Cake order form" style="width:100%;min-height:900px;border:0" loading="lazy"></iframe>\n<script>addEventListener("message",function(e){if(e.data&&e.data.type==="dcb-form-height"){var f=document.querySelector('iframe[src^="${l}"]');if(f)f.style.height=e.data.h+"px"}})<\/script>`:""}
+function rfTop(F){return `<div class="card"><h3>What customers see at the top</h3>
+ <div class="field"><span class="lbl">Line up the heading</span><div class="seg" role="radiogroup">${[["left","Left"],["center","Center"]].map(([v,l])=>`<button type="button" role="radio" aria-checked="${F.align===v}" class="${F.align===v?"on":""}" data-a="rfAlign" data-v="${v}">${l}</button>`).join("")}</div></div>
+ <div class="field"><label for="rf-title">Heading</label><input type="text" id="rf-title" data-rf="title" value="${esc(F.title)}" maxlength="120" placeholder="Order a cake from ${esc(S.settings.biz||"your shop")}"></div>
+ <div class="field"><label for="rf-intro">A line under the heading</label><textarea id="rf-intro" data-rf="intro" maxlength="600" rows="2" placeholder="Tell us about your celebration and we'll reply with questions or a quote.">${esc(F.intro)}</textarea></div>
+ <div class="field"><label for="rf-instr">Tips for filling it in <span class="note">optional</span></label><textarea id="rf-instr" data-rf="instr" maxlength="800" rows="3" placeholder="The more you tell us, the faster we can send your quote.">${esc(F.instr)}</textarea></div>
+ <div class="field"><label for="rf-note">A note just above the Send button <span class="note">optional</span></label><textarea id="rf-note" data-rf="note" maxlength="600" rows="2" placeholder="Can't wait to see what you're dreaming up!">${esc(F.note)}</textarea></div></div>
+ <div class="card"><label class="rfrow"><span><b>Your logo and contact details</b><small>Shows above the heading on your own form link. Left off when the form is placed inside your website.</small></span>${rfSw("header",F.header)}</label>
+ ${F.header&&!(S.settings.doc&&S.settings.doc.logo)?`<p class="hint" style="margin:8px 0 0">No logo yet. Add one in <a href="#preferences">Preferences</a> under Quote &amp; invoice look.</p>`:""}</div>`}
+function rfFields(F){const f=F.f,row=(k,t,d,always,reqLocked)=>`<div class="rffrow"><span><b>${t}</b>${d?`<small>${d}</small>`:""}</span><span class="rfsw">${always?`<span class="note">Always</span>`:rfSw(`f.${k}.on`,f[k].on!==false)}</span><span class="rfsw">${reqLocked?`<span class="note">${reqLocked}</span>`:rfSw(`f.${k}.req`,f[k].req,!always&&f[k].on===false)}</span></div>`,head=t=>`<div class="rffhead"><span>${t}</span><span>Show</span><span>Required</span></div>`;
+ return `<div class="card rffields"><p class="hint" style="margin-top:0">Switch off anything you never need. Required means the customer can't send the form without it.</p>
+ ${head("Contact")}${row("","Name","",true,"Always")}${row("","Email","Your reply goes here",true,"Always")}${row("phone","Phone","")}
+ ${head("The event")}${row("date","Event date","Fully booked and blocked dates are crossed out",true)}${row("event","Occasion","Birthday, wedding and the rest of your event types")}${row("servings","Servings or guests","")}${row("budget","Budget","Customers pick a range")}
+ ${f.budget.on?`<div class="field rfopts"><label for="rf-bud">Budget choices, separated by commas</label><input type="text" id="rf-bud" data-rf="f.budget.opts" value="${esc(f.budget.opts)}" maxlength="400"></div>`:""}
+ ${row("handoff","Pickup or delivery","Delivery sections only show when they pick Delivery")}
+ ${head("The cake")}${row("details","Tell us about your cake","A big box for flavors, colors, theme and writing",true)}${row("photos","Inspiration photos","Up to 8 photos")}</div>
+ ${formSetupHtml().replace(/^[\s\S]*?(<div class="card"><details data-keep="off")/,"$1")}`}
+function rfSecs(F){const S2=F.secs;return `<div class="card"><h3>Sections and questions</h3><p class="hint" style="margin-bottom:0">Group extra questions into sections. A section can always show, show only for delivery, or be an extra the customer picks, like cupcakes or a delivery fee. Required questions only count when the section is showing.</p></div>
+ ${S2.map((s,i)=>`<div class="card rfsec"><div class="rfsechead"><input type="text" data-rf="secs.${i}.title" value="${esc(s.title)}" maxlength="80" placeholder="Section name, e.g. Flavors" aria-label="Section name"><button class="mv" data-a="rfSecMove" data-i="${i}" data-v="-1" aria-label="Move section up">↑</button><button class="mv" data-a="rfSecMove" data-i="${i}" data-v="1" aria-label="Move section down">↓</button><button class="mv del" data-a="rfSecDel" data-i="${i}" aria-label="Delete section">✕</button></div>
+  <div class="rfsecopts"><select data-rf="secs.${i}.mode" aria-label="When this section shows">${RF_MODES.map(([v,l])=>`<option value="${v}"${s.mode===v?" selected":""}>${l}</option>`).join("")}</select>${s.mode==="pick"?`<input type="text" data-rf="secs.${i}.price" value="${esc(s.price||"")}" maxlength="20" placeholder="Price, e.g. $35" aria-label="Price shown to the customer">`:""}</div>
+  ${s.qs.map((q,j)=>`<div class="qrow"><input type="text" data-rf="secs.${i}.qs.${j}.q" value="${esc(q.q)}" placeholder="Your question" maxlength="200" aria-label="Question"><select data-rf="secs.${i}.qs.${j}.type" aria-label="Answer type">${RF_QT.map(([v,l])=>`<option value="${v}"${q.type===v?" selected":""}>${l}</option>`).join("")}</select>
+   ${q.type==="choice"?`<input type="text" class="qopts" data-rf="secs.${i}.qs.${j}.opts" value="${esc(q.opts||"")}" placeholder="Choices, separated by commas" aria-label="Choices">`:""}
+   <label class="note qreq"><input type="checkbox" data-rf="secs.${i}.qs.${j}.required"${q.required?" checked":""}> Required</label><button class="mv" data-a="rfQMove" data-i="${i}" data-j="${j}" aria-label="Move question up">↑</button><button class="mv del" data-a="rfQDel" data-i="${i}" data-j="${j}" aria-label="Delete question">✕</button></div>`).join("")}
+  <button class="btn sm rfaddq" data-a="rfQAdd" data-i="${i}">+ Add a question</button></div>`).join("")}
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-a="rfSecAdd">+ Add a section</button>${S2.length?"":`<button class="btn" data-a="rfSecStarter">Add suggested sections</button>`}</div>`}
+function rfShare(F){const b=RQ.biz||{},link=rfLink(),P=rfPublic(),fon=Object.entries(F.f).filter(([k,x])=>x.on!==false).length+2,nq=F.secs.reduce((n,s)=>n+s.qs.length,0);
+ if(CLOUD.state!=="on"||RQ.state==="signin")return `<div class="card"><h3>Sign in to put your form online</h3><p class="hint">Your form link and the requests that come in are saved to your Dream Cake Builder account.</p><a class="btn primary sm" href="account.html?next=${encodeURIComponent("shop.html#reqform")}">Sign in</a></div>`;
+ if(RQ.state!=="ready")return `<div class="card"><p class="hint" style="margin:0">Loading your form link…</p></div>`;
+ return `<div class="card"><h3>Go live</h3>
+ <div class="rfstep${b.slug?" ok":""}"><i>${b.slug?"✓":"1"}</i><div><b>Choose your form link</b><div class="addbar" style="align-items:center;margin-top:6px"><span class="note" style="white-space:nowrap">request.html?shop=</span><input type="text" id="rqSlug" value="${esc(b.slug||"")}" placeholder="your-shop-name" maxlength="60" aria-label="Order form link name"><button class="btn sm" data-a="rqSlugSave">Save</button></div></div></div>
+ <div class="rfstep${b.accepting_requests&&b.slug?" ok":""}"><i>${b.accepting_requests&&b.slug?"✓":"2"}</i><div><b>Switch it on</b><label class="rfrow" style="margin-top:4px"><span><small>${b.accepting_requests?"Taking requests now":"Customers see “not taking requests right now”"}</small></span><span class="sw2"><input type="checkbox" id="rqOn"${b.accepting_requests?" checked":""}${b.slug?"":" disabled"}><i></i></span></label></div></div>
+ <div class="rfstep"><i>3</i><div><b>Share it with customers</b>${link?`<div class="note" style="overflow-wrap:anywhere;margin:6px 0">${esc(link)}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">Open form</a><button class="btn sm" data-a="rqCopy" data-v="${esc(link)}">Copy link</button><button class="btn sm" data-a="rfEmbedCopy">Copy code for your website</button></div><p class="hint" style="margin:8px 0 0">Paste the website code where you want the form on your own site. It takes on your site's background and leaves off the Dream Cake Builder header.</p>`:`<p class="hint" style="margin:4px 0 0">Save a link name first.</p>`}</div></div></div>
+ <div class="card"><h3>Your form at a glance</h3><div class="rfglance"><button type="button" data-a="rfTab" data-v="fields"><b>${fon}</b><span>fields showing</span></button><button type="button" data-a="rfTab" data-v="sections"><b>${F.secs.length}</b><span>section${F.secs.length===1?"":"s"}</span></button><button type="button" data-a="rfTab" data-v="sections"><b>${nq}</b><span>question${nq===1?"":"s"}</span></button></div>${P.questions.length>=40?`<p class="hint" style="margin:8px 0 0">Your form has the most questions it can hold (40).</p>`:""}</div>`}
+function vReqForm(){const F=rfCfg();if(RQ.state==="idle")setTimeout(loadRequests,0);const b=RQ.biz||{},live=b.accepting_requests&&b.slug;
+ const tabs=[["top","Top of form"],["fields","Fields"],["sections","Sections"],["share","Share"],["preview","Preview"]];
+ $("main").innerHTML=`<div class="wrap rfpage"><div class="cardhead"><div><h1>Order form</h1><p class="lead" style="margin:0">Choose what customers see when they ask you for a cake. The preview updates as you type.</p></div><span class="rflive${live?" on":""}"><i></i>${live?"Live":"Not live"}</span></div>
+ <div class="rfgrid"><div class="rfedit"><div class="rftabs" role="tablist">${tabs.map(([v,l])=>`<button type="button" role="tab" aria-selected="${rfTab===v}" class="${rfTab===v?"on":""}${v==="preview"?" rfpvtab":""}" data-a="rfTab" data-v="${v}">${l}</button>`).join("")}</div>
+  <div class="rfpanel">${rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="share"?rfShare(F):""}</div></div>
+ <div class="rfprev${rfTab==="preview"?" show":""}"><div class="rfprevbar"><span>Live preview</span><div class="seg"><button type="button" class="${rfWide?"":"on"}" data-a="rfWide" data-v="0">Phone</button><button type="button" class="${rfWide?"on":""}" data-a="rfWide" data-v="1">Computer</button></div></div><div class="rfframe${rfWide?" wide":""}"><iframe id="rfFrame" src="request.html?preview=1" title="Order form preview"></iframe></div></div></div></div>`}
+function sideReqForm(){return ""}
+function rfPaint(){if(route!=="reqform"||!document.querySelector(".rfpage .rfpanel")){render();return}const F=rfCfg();
+ document.querySelectorAll(".rftabs button").forEach(x=>{const on=x.dataset.v===rfTab;x.classList.toggle("on",on);x.setAttribute("aria-selected",on)});
+ document.querySelector(".rfpanel").innerHTML=rfTab==="top"?rfTop(F):rfTab==="fields"?rfFields(F):rfTab==="sections"?rfSecs(F):rfTab==="share"?rfShare(F):"";
+ document.querySelector(".rfprev").classList.toggle("show",rfTab==="preview");document.querySelector(".rfframe").classList.toggle("wide",rfWide);
+ document.querySelectorAll(".rfprevbar .seg button").forEach(x=>x.classList.toggle("on",(x.dataset.v==="1")===rfWide));saveBar();rfPush()}
+function rfSet(path,val){const ks=path.split(".");let o=rfCfg();for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks.at(-1)]=val}
+document.addEventListener("input",e=>{const el=e.target;if(!el.dataset||!el.dataset.rf||el.type==="checkbox"||el.tagName==="SELECT")return;rfSet(el.dataset.rf,el.value);save();rfPush()});
+document.addEventListener("change",e=>{const el=e.target;if(!el.dataset||!el.dataset.rf)return;if(el.type!=="checkbox"&&el.tagName!=="SELECT")return;const p=el.dataset.rf;rfSet(p,el.type==="checkbox"?el.checked:el.value);
+ if(/^f\.\w+\.on$/.test(p)&&!el.checked)rfSet(p.replace(/on$/,"req"),false);save();rfPush();if(el.tagName==="SELECT"||/^(f\.\w+\.on|header)$/.test(p))setTimeout(rfPaint,0)});
+function rfAct(a,b){const F=rfCfg(),i=+b.dataset.i,j=+b.dataset.j;
+ switch(a){case"rfTab":rfTab=b.dataset.v;rfPaint();return true;
+ case"rfWide":rfWide=b.dataset.v==="1";rfPaint();return true;
+ case"rfAlign":F.align=b.dataset.v;save();rfPaint();return true;
+ case"rfSecAdd":F.secs.push({id:"s"+uid(),title:"",mode:"always",price:"",qs:[{id:"q"+uid(),q:"",type:"text",opts:"",required:false}]});save();rfPaint();setTimeout(()=>{const n=document.querySelectorAll('.rfsechead input');if(n.length)n[n.length-1].focus()},0);return true;
+ case"rfSecStarter":F.secs.push({id:"s"+uid(),title:"Flavors",mode:"always",price:"",qs:[{id:"q"+uid(),q:"Cake flavor",type:"choice",opts:"Vanilla, Chocolate, Red velvet, Lemon, Not sure yet",required:false},{id:"q"+uid(),q:"Filling",type:"choice",opts:"Buttercream, Cream cheese, Fruit, Not sure yet",required:false}]},
+   {id:"s"+uid(),title:"Delivery",mode:"delivery",price:"",qs:[{id:"q"+uid(),q:"Delivery address",type:"long",opts:"",required:true},{id:"q"+uid(),q:"Delivery time",type:"text",opts:"",required:true}]},
+   {id:"s"+uid(),title:"Matching cupcakes",mode:"pick",price:"",qs:[{id:"q"+uid(),q:"How many cupcakes?",type:"text",opts:"",required:true}]},
+   {id:"s"+uid(),title:"Allergies",mode:"always",price:"",qs:[{id:"q"+uid(),q:"Does anyone have a food allergy?",type:"yes",opts:"",required:true}]});save();rfPaint();toast("Added 4 sections. Edit or delete any of them");return true;
+ case"rfSecDel":if(F.secs[i].qs.some(q=>q.q)&&!confirm(`Delete the “${F.secs[i].title||"untitled"}” section and its questions?`))return true;F.secs.splice(i,1);save();rfPaint();return true;
+ case"rfSecMove":move(F.secs,i,+b.dataset.v);save();rfPaint();return true;
+ case"rfQAdd":F.secs[i].qs.push({id:"q"+uid(),q:"",type:"text",opts:"",required:false});save();rfPaint();setTimeout(()=>{const n=document.querySelectorAll(`[data-rf^="secs.${i}.qs."][data-rf$=".q"]`);if(n.length)n[n.length-1].focus()},0);return true;
+ case"rfQDel":F.secs[i].qs.splice(j,1);save();rfPaint();return true;
+ case"rfQMove":move(F.secs[i].qs,j,-1);save();rfPaint();return true;
+ case"rfEmbedCopy":{const c=rfEmbed();try{navigator.clipboard.writeText(c).then(()=>toast("Website code copied"),()=>prompt("Copy this code",c))}catch{prompt("Copy this code",c)}return true}}
+ return false}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a^='rf']");if(!b||!b.closest("main"))return;if(rfAct(b.dataset.a,b)){e.stopImmediatePropagation();e.preventDefault()}},true);
 
 /* ---------- Portfolio ---------- */
 let pfPick=false;
@@ -1338,7 +1444,7 @@ const readMeta=()=>{try{return JSON.parse(localStorage.getItem(META_KEY))||{}}ca
 const writeMeta=m=>{try{localStorage.setItem(META_KEY,JSON.stringify(m))}catch{}};
 /* ---------- What customers see: full dates, form questions, portfolio ---------- */
 function fullDates(){const out=new Set((S.settings.daysOff||[]).filter(Boolean));const t=new Date();for(let i=0;i<400;i++){const d=new Date(t);d.setDate(t.getDate()+i);const k=isoD(d);const c=capacity(k);if(c.dayFull||c.weekFull)out.add(k)}return[...out].filter(k=>k>=isoD(t)).sort()}
-function publicInfo(){const P=S.portfolio||{};return{full_dates:fullDates(),questions:(S.formQ||[]).filter(q=>q.q&&q.q.trim()).map(q=>({id:q.id,q:q.q,type:q.type,options:q.type==="choice"?String(q.opts||"").split(",").map(x=>x.trim()).filter(Boolean):[],required:!!q.required})),
+function publicInfo(){const P=S.portfolio||{},RP=rfPublic();return{full_dates:fullDates(),questions:RP.questions,form:RP.form,
  portfolio_on:!!P.on,portfolio_intro:P.intro||"",portfolio:(P.items||[]).filter(x=>String(x.src).startsWith("sb:")).map(x=>({path:x.src.slice(3),title:x.title||"",note:x.note||"",event:x.event||"",servings:x.servings||null}))}}
 function forCloud(){const d=clone(S);(d.orders||[]).forEach(o=>{o.images=(o.images||[]).filter(x=>String(x).startsWith("sb:"))});if(d.portfolio)d.portfolio.items=(d.portfolio.items||[]).filter(x=>String(x.src).startsWith("sb:"));d.public=publicInfo();delete d.__local;return d}
 function mergeCloud(data){const localImgs={};(S.orders||[]).forEach(o=>{if((o.images||[]).length)localImgs[o.id]=o.images});
@@ -1776,7 +1882,7 @@ S.types.forEach(t=>{if(!t.ic)t.ic=EMO_IC[t.e]||(/cupcake/i.test(t.name)?"cupcake
 const tyIc=(t,cls="")=>`<span class="tyi ${cls}">${(TYI[t&&t.ic]||TYI.box)[1]}</span>`;
 
 /* ---------- Save: settings pages wait for the Save button ---------- */
-const SAVE_PAGES=new Set(["customers","products","recipes","events","emails","preferences"]);
+const SAVE_PAGES=new Set(["reqform","customers","products","recipes","events","emails","preferences"]);
 let DIRTY=false;
 function saveBar(){let b=$("savebar");if(!b){b=document.createElement("div");b.id="savebar";b.className="savebar";b.setAttribute("role","region");b.setAttribute("aria-label","Save changes");document.body.appendChild(b)}
  const on=SAVE_PAGES.has(route);document.body.classList.toggle("hassave",on);b.hidden=!on;if(!on)return;
@@ -2044,8 +2150,8 @@ let PREFQ="";
 function prefFilter(q,keep){PREFQ=q||"";const t=PREFQ.trim().toLowerCase(),root=document.querySelector(".prefs");if(!root)return;let any=false;root.querySelectorAll(".psec").forEach(sec=>{let n=0;sec.querySelectorAll(".prow").forEach(r=>{const hit=!t||r.dataset.q.includes(t)||sec.querySelector("h2").textContent.toLowerCase().includes(t);r.hidden=!hit;if(hit)n++});sec.hidden=!n;if(n)any=true});const e=document.getElementById("prefNone");if(e)e.hidden=any}
 function sidePrefs(){const s=S.settings;return `<div class="card white"><h3>At a glance</h3><div class="kv"><span>Next order</span><span>#${esc(s.nextNo)}</span></div><div class="kv"><span>Deposit</span><span>${esc(s.depositPct)}%</span></div><div class="kv"><span>Quotes held</span><span>${esc(s.expiry)} days</span></div><div class="kv"><span>Default tax</span><span>${esc(S.taxes.find(t=>t.id===s.defaultTax)?.name||"No tax")}</span></div></div><p class="note">Tap Save changes at the bottom when you're done.</p>`}
 
-function side(){$("side").innerHTML=({today:sideToday,calendar:sideCalendar,requests:sideRequests,bake:sideBake,money:sideMoney,customers:sideCustomers,recipes:sideRecipes,"new-order":sideOrder,orders:sideOrders,products:sideProducts,events:sideEvents,emails:sideEmails,preferences:sidePrefs,portfolio:sidePortfolio,tools:sideTools,help:sideHelp,lists:sideLists}[route]||sideOrder)()}
-const _side=side;side=function(){_side();const none=route==="customers";document.body.classList.toggle("noside",none);$("side").hidden=none};
+function side(){$("side").innerHTML=({today:sideToday,calendar:sideCalendar,requests:sideRequests,reqform:sideReqForm,bake:sideBake,money:sideMoney,customers:sideCustomers,recipes:sideRecipes,"new-order":sideOrder,orders:sideOrders,products:sideProducts,events:sideEvents,emails:sideEmails,preferences:sidePrefs,portfolio:sidePortfolio,tools:sideTools,help:sideHelp,lists:sideLists}[route]||sideOrder)()}
+const _side=side;side=function(){_side();const none=route==="customers"||route==="reqform";document.body.classList.toggle("noside",none);$("side").hidden=none};
 
 
 
