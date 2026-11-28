@@ -80,7 +80,7 @@ const params=new URLSearchParams(location.search.slice(1)||location.hash.slice(1
 const slug=(params.get('shop')||'').trim().toLowerCase();
 let P=null,urls={},filter='',RV=[];
 
-function msg(title,text){app.innerHTML=`<div class="empty"><div class="big">${esc(title)}</div><p>${esc(text)}</p><p style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
+function msg(title,text,req){app.innerHTML=`<div class="empty"><div class="big">${esc(title)}</div><p>${esc(text)}</p><p style="margin-top:14px">${req&&slug?`<a class="btn primary" href="request.html?shop=${encodeURIComponent(slug)}">Request a cake</a>`:`<a href="index.html">Go to Dream Cake Builder</a>`}</p></div>`}
 function draw(){
  const events=[...new Set(P.items.map(x=>x.event).filter(Boolean))];
  const shown=P.items.filter(x=>!filter||x.event===filter);
@@ -101,7 +101,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lb').classList.re
  try{
   const r=await fetch(`${SB}/rest/v1/rpc/shop_portfolio`,{method:'POST',headers:H,body:JSON.stringify({p_slug:slug}),signal:AbortSignal.timeout(15000)});
   if(!r.ok)throw 0;P=await r.json();
-  if(!P)return msg('This gallery is private','The cake artist hasn’t shared their gallery yet.');
+  if(!P)return msg('Gallery coming soon','This cake artist hasn’t shared their gallery yet, but you can still ask about a cake.',true);
   document.title=`${P.business} · Cake gallery`;
   draw();
   fetch(`${SB}/rest/v1/rpc/shop_reviews_public`,{method:'POST',headers:H,body:JSON.stringify({p_slug:slug})}).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.reviews&&j.reviews.length){RV=j.reviews;draw()}}).catch(()=>{});
