@@ -814,6 +814,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 @media(max-width:480px){.recedit .grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.recedit .grid3>.field:first-child,.recedit .grid3>.rcmk{grid-column:1/-1}}
 @media(max-width:480px){.calbar{display:grid!important;grid-template-columns:1.4fr 1fr;gap:8px}.calbar .cb-l,.calbar>select[aria-label="Event type"],.calbar>:not(select):not(.cb-l){grid-column:1/-1}.calbar select{width:100%;min-width:0}}
 .colors.pills .cpick{width:30px;height:46px;border-radius:999px;display:flex;align-items:center;justify-content:center}.colors.pills .cpick::after{content:"+";color:#fff;font:700 18px/1 Inter,sans-serif;text-shadow:0 1px 2px #0006;pointer-events:none}
+.pkphoto{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pkcur img{width:72px;height:72px;object-fit:cover;border-radius:12px;display:block;border:1px solid var(--line)}
 /* New order form: compact and tidy */
 .oform .card{padding:12px 14px;margin-bottom:10px}
 .oform .card h3{font-size:14.5px;margin:0 0 6px}
@@ -1755,6 +1756,9 @@ async function uploadPending(){if(!CLOUD.shopId)return;for(const o of [...S.orde
  for(const it of (S.portfolio&&S.portfolio.items)||[]){if(!String(it.src).startsWith("data:"))continue;const path=`${CLOUD.shopId}/portfolio/${(crypto.randomUUID?crypto.randomUUID():uid()+uid())}.jpg`;
   try{const se=await DCBAuth.session();const r=await fetch(`${SB}/storage/v1/object/shop-files/${path}`,{method:"POST",headers:{apikey:SBKEY,Authorization:"Bearer "+se.access_token,"Content-Type":"image/jpeg","x-upsert":"false"},body:await dataToBlob(it.src),signal:AbortSignal.timeout(30000)});
    if(r.ok){PIC.signed[path]={url:it.src,exp:Date.now()+50*60e3};const old=it.src;it.src="sb:"+path;(S.packages||[]).forEach(p=>{if(p.img===old)p.img=it.src})}}catch{}}
+ for(const pk of S.packages||[]){if(!String(pk.img||"").startsWith("data:"))continue;const path=`${CLOUD.shopId}/portfolio/pkg-${(crypto.randomUUID?crypto.randomUUID():uid()+uid())}.jpg`;
+  try{const se=await DCBAuth.session();const r=await fetch(`${SB}/storage/v1/object/shop-files/${path}`,{method:"POST",headers:{apikey:SBKEY,Authorization:"Bearer "+se.access_token,"Content-Type":"image/jpeg","x-upsert":"false"},body:await dataToBlob(pk.img),signal:AbortSignal.timeout(30000)});
+   if(r.ok){PIC.signed[path]={url:pk.img,exp:Date.now()+50*60e3};pk.img="sb:"+path}}catch{}}
  for(const e of S.expenses||[]){if(!String(e.receipt||"").startsWith("data:"))continue;const path=`${CLOUD.shopId}/receipts/${(crypto.randomUUID?crypto.randomUUID():uid()+uid())}.jpg`;
   try{const se=await DCBAuth.session();const r=await fetch(`${SB}/storage/v1/object/shop-files/${path}`,{method:"POST",headers:{apikey:SBKEY,Authorization:"Bearer "+se.access_token,"Content-Type":"image/jpeg","x-upsert":"false"},body:await dataToBlob(e.receipt),signal:AbortSignal.timeout(30000)});
    if(r.ok){PIC.signed[path]={url:e.receipt,exp:Date.now()+50*60e3};e.receipt="sb:"+path}}catch{}}
@@ -1769,7 +1773,7 @@ const writeMeta=m=>{try{if(CLOUD.uid&&!m.user)m={...m,user:CLOUD.uid};localStora
 function fullDates(){const out=new Set((S.settings.daysOff||[]).filter(Boolean));const t=new Date();for(let i=0;i<400;i++){const d=new Date(t);d.setDate(t.getDate()+i);const k=isoD(d);const c=capacity(k);if(c.dayFull||c.weekFull)out.add(k)}return[...out].filter(k=>k>=isoD(t)).sort()}
 function publicInfo(){const P=S.portfolio||{},RP=rfPublic();return{full_dates:fullDates(),review_url:/^https:\/\/\S{8,290}$/.test(S.settings.reviewUrl||"")?S.settings.reviewUrl:"",questions:RP.questions,form:RP.form,
  portfolio_on:!!P.on,portfolio_intro:P.intro||"",portfolio:(P.items||[]).filter(x=>String(x.src).startsWith("sb:")).map(x=>({path:x.src.slice(3),title:x.title||"",note:x.note||"",event:x.event||"",servings:x.servings||null}))}}
-function forCloud(){const d=clone(S);(d.orders||[]).forEach(o=>{o.images=(o.images||[]).filter(x=>String(x).startsWith("sb:"))});if(d.portfolio)d.portfolio.items=(d.portfolio.items||[]).filter(x=>String(x.src).startsWith("sb:"));d.public=publicInfo();delete d.__local;return d}
+function forCloud(){const d=clone(S);(d.orders||[]).forEach(o=>{o.images=(o.images||[]).filter(x=>String(x).startsWith("sb:"))});if(d.portfolio)d.portfolio.items=(d.portfolio.items||[]).filter(x=>String(x.src).startsWith("sb:"));(d.packages||[]).forEach(p=>{if(String(p.img||"").startsWith("data:"))p.img=""});d.public=publicInfo();delete d.__local;return d}
 function mergeCloud(data){const localImgs={};(S.orders||[]).forEach(o=>{if((o.images||[]).length)localImgs[o.id]=o.images});
  S=data;S.customers=S.customers||[];S.recipes=S.recipes||[];S.ingredients=S.ingredients||[];S.expenses=S.expenses||[];S.trips=S.trips||[];
  (S.orders||[]).forEach(o=>{const loc=(localImgs[o.id]||[]).filter(x=>String(x).startsWith("data:"));if(loc.length)o.images=[...(o.images||[]),...loc].slice(0,8)});
@@ -2405,7 +2409,9 @@ function vPackage(){const p=S.packages.find(x=>x.id===editPkg);if(!p){editPkg=nu
  <div class="card"><h3>What's Included</h3><p class="hint" style="margin:0 0 6px">Pick a product type and how many. Add details like size or flavor if they're set.</p>
   ${(p.items||[]).map((x,i)=>`<div class="pkrow"><select data-pki="${i}:typeId" aria-label="Product">${S.types.map(t=>`<option value="${esc(t.id)}"${x.typeId===t.id?" selected":""}>${esc(t.name)}</option>`).join("")}<option value=""${!x.typeId?" selected":""}>Something else…</option></select>${!x.typeId?`<input type="text" data-pki="${i}:label" value="${esc(x.label||"")}" placeholder="What is it?" aria-label="Item name">`:""}<input type="number" min="1" data-pki="${i}:qty" value="${esc(x.qty||1)}" aria-label="How many" class="pkqty"><input type="text" data-pki="${i}:note" value="${esc(x.note||"")}" placeholder='Details, e.g. 8" round' aria-label="Details"><button class="trash" data-a="pkDelRow" data-i="${i}" aria-label="Remove">${TRASH}</button></div>`).join("")||`<p class="nil">Nothing added yet.</p>`}
   <button class="btn sm" data-a="pkAddRow" style="margin-top:8px">+ Add to Package</button></div>
- <div class="card"><h3>Photo <span class="note">· optional</span></h3>${ph.length?`<p class="hint" style="margin:0 0 6px">Choose one from your Portfolio.</p><div class="pkpics"><button type="button" class="pkpic none${!p.img?" on":""}" data-a="pkPic" data-v="">No photo</button>${ph.map(x=>`<button type="button" class="pkpic${p.img===x.src?" on":""}" data-a="pkPic" data-v="${esc(x.src)}">${imgTag(x.src,x.title||"")}</button>`).join("")}</div>`:`<p class="hint" style="margin:0">Add photos to your <a href="#portfolio">Portfolio</a>, then pick one here.</p>`}</div>
+ <div class="card"><h3>Photo <span class="note">· optional</span></h3>
+  <div class="pkphoto">${p.img?`<span class="pkcur">${imgTag(p.img,"")}</span>`:""}<label class="btn sm" style="cursor:pointer">📷 ${p.img?"Upload a Different Photo":"Upload a Photo"}<input type="file" id="pkIn" accept="image/*" hidden></label>${p.img?`<button type="button" class="btn ghost sm" data-a="pkPic" data-v="">Remove Photo</button>`:""}</div>
+  ${ph.length?`<p class="hint" style="margin:10px 0 6px">Or choose one from your Portfolio.</p><div class="pkpics">${ph.map(x=>`<button type="button" class="pkpic${p.img===x.src?" on":""}" data-a="pkPic" data-v="${esc(x.src)}">${imgTag(x.src,x.title||"")}</button>`).join("")}</div>`:""}</div>
  <div class="card"><label class="toggle" style="margin:0"><div><div class="t">Show on My Order Form</div><div class="d">Customers can pick this package when they send a request.</div></div><span class="sw2"><input type="checkbox" data-pk="form"${p.form!==false?" checked":""}><i></i></span></label></div>
  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-a="pkgBack">Done</button><button class="btn danger" data-a="pkgDel">Delete Package</button></div></div>`}
 function vProducts(){
@@ -2984,6 +2990,7 @@ document.addEventListener("change",e=>{
  if(el.dataset.cb){const c=S.customers.find(x=>x.id===editCust);if(c){c[el.dataset.cb]=el.checked;save()}return}
  if(el.dataset.c&&el.tagName==="SELECT"){const c=S.customers.find(x=>x.id===editCust);c[el.dataset.c]=el.value;save();return}
  if(el.id==="pfIn"){addPortfolio(el.files);el.value="";return}
+ if(el.id==="pkIn"){const f=el.files&&el.files[0];el.value="";const p=S.packages.find(x=>x.id===editPkg);if(!f||!p)return;shrinkImg(f,1000,.82).then(d=>{p.img=d;persist();render()}).catch(()=>toast("That photo couldn't be read"));return}
  if(el.id==="pfOn"){S.portfolio.on=el.checked;save();setTimeout(render,0);toast(el.checked?(CLOUD.state==="on"?"Your gallery is public":"Sign in to put your gallery online"):"Your gallery is private");return}
  if(el.dataset.lbb){S.settings.label[el.dataset.lbb]=el.checked;save();const pv=document.querySelector(".lblprev");if(pv)pv.innerHTML=labelHtml();return}
  if(el.dataset.fq&&(el.type==="checkbox"||el.tagName==="SELECT")){const[i,k]=el.dataset.fq.split(":");S.formQ[+i][k]=el.type==="checkbox"?el.checked:el.value;save();if(k==="type")setTimeout(render,0);return}
