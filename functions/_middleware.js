@@ -29,6 +29,10 @@ const FORM = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 <style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px system-ui,sans-serif;background:#fdf3f6;color:#3b1d2e}form{background:#fff;padding:28px;border-radius:18px;box-shadow:0 10px 30px #c2185b22;width:min(340px,88vw)}h1{font-size:20px;margin:0 0 14px}input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #e3c3d2;border-radius:10px;font-size:16px}button{margin-top:12px;width:100%;padding:12px;border:0;border-radius:10px;background:#c2185b;color:#fff;font-size:16px;font-weight:600}</style></head>
 <body><form method="post" action="/team"><h1>Team sign-in</h1><input type="password" name="key" placeholder="Team password" autocomplete="current-password" autofocus required><button>Unlock this device</button></form></body></html>`;
 const clear = ['dcb_team=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax', 'dcb_team_ui=; Path=/; Max-Age=0; Secure; SameSite=Lax'];
+const BETA_OPEN = /^\/(shop|calendar)(\.html)?\/?$/i;
+const betaFor = env => teamKey(env) ? sha256('dcb-beta|' + teamKey(env)) : Promise.resolve('');
+const betaCookie = tok => `dcb_beta=${tok}; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; HttpOnly; SameSite=Lax`;
+const betaUi = `dcb_beta_ui=1; Path=/; Max-Age=${60 * 60 * 24 * 30}; Secure; SameSite=Lax`;
 
 // Link previews: when an artist shares their order form (iMessage, Instagram, Facebook), show their shop name instead of ours.
 const SB = 'https://gcorvodfcxhumesttwvj.supabase.co', SBKEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
@@ -76,6 +80,17 @@ export async function onRequest({ request, next, env }) {
       admin = !!(r && r.ok && (await r.json().catch(() => false)) === true);
     }
     const tok = await tokenFor(env);
+    // Beta artists (signed in with artist access) can open Orders and the calendar on their devices, nothing else private.
+    if (!admin && token && tok) {
+      const r2 = await fetch('https://gcorvodfcxhumesttwvj.supabase.co/rest/v1/rpc/dcb_has_artist_access', {
+        method: 'POST', headers: { apikey: 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb', Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: '{}'
+      }).catch(() => null);
+      if (r2 && r2.ok && (await r2.json().catch(() => false)) === true) {
+        const h = new Headers({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+        h.append('Set-Cookie', betaCookie(await betaFor(env))); h.append('Set-Cookie', betaUi);
+        return new Response(JSON.stringify({ ok: true, beta: true }), { status: 200, headers: h });
+      }
+    }
     if (!admin || !tok) return new Response(JSON.stringify({ ok: false }), { status: 403, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
     const h = new Headers({ 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
     h.append('Set-Cookie', keyCookie(tok)); h.append('Set-Cookie', uiCookie);
@@ -100,7 +115,8 @@ export async function onRequest({ request, next, env }) {
 
   if (LOCKED.test(path)) {
     const tok = await tokenFor(env);
-    if (!same(cookie(request, 'dcb_team'), tok)) return go('/coming-soon', ...clear);
+    const beta = BETA_OPEN.test(path) && tok && same(cookie(request, 'dcb_beta'), await betaFor(env));
+    if (!same(cookie(request, 'dcb_team'), tok) && !beta) return go('/coming-soon', ...clear);
     const res = await next();
     const out = new Response(res.body, res);
     out.headers.set('Cache-Control', 'private, no-store');

@@ -274,6 +274,7 @@
 // Signed in with the owner account: this device unlocks the private pages automatically (no team password needed).
 (() => {
   if (/(?:^|; )dcb_team_ui=/.test(document.cookie)) return;
+  if (/(?:^|; )dcb_beta_ui=/.test(document.cookie) && !/coming-soon/.test(location.pathname)) return;
   try { if (sessionStorage.getItem('dcb-team-tried')) return; } catch (e) {}
   const token = async () => {
     try { if (window.DCBAuth) { const s = await window.DCBAuth.session(); if (s && s.access_token) return s.access_token; } } catch (e) {}
@@ -285,6 +286,8 @@
     try { sessionStorage.setItem('dcb-team-tried', '1'); } catch (e) {}
     const r = await fetch('/team/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: t }) }).catch(() => null);
     if (!r || !r.ok) return;
+    const j = await r.json().catch(() => ({}));
+    if (j.beta) { if (/coming-soon/.test(location.pathname)) location.replace('/shop'); return; }
     document.documentElement.classList.add('team');
     if (/coming-soon/.test(location.pathname)) location.replace('/shop');
   };
