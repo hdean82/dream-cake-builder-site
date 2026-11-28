@@ -119,8 +119,8 @@ function shrink(file){return new Promise((res,rej)=>{const r=new FileReader();r.
 
 function closed(title,text){app.innerHTML=`<div class="done"><div class="big">${esc(title)}</div><p class="muted">${esc(text)}</p><p class="fine" style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
 
-const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},date:{on:true,req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false},handoff:{on:false,req:false},theme:{on:false,req:false},details:{on:true,req:true},photos:{on:true,req:false}};const ff={};for(const k in d)ff[k]=Object.assign({},d[k],(f.f||{})[k]||{});
- let secs=Array.isArray(f.secs)?f.secs:[];const qs=info.questions||[];if(!f.v){secs=qs.length?[{id:'_old',title:'',mode:'always'}]:[];qs.forEach(q=>q.sec=q.sec||'_old')}
+const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},date:{on:true,req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false},handoff:{on:false,req:false},theme:{on:true,req:false},details:{on:true,req:true},photos:{on:true,req:false}};const ff={};for(const k in d)ff[k]=Object.assign({},d[k],(f.f||{})[k]||{});
+ let secs=Array.isArray(f.secs)?f.secs:[];if(!Array.isArray(info.questions))info.questions=[];const qs=info.questions;if(ff.theme.on&&!qs.some(q=>q.id==='f_theme'))qs.push({id:'f_theme',q:'Theme',type:'text',sec:'_cake',required:!!ff.theme.req});if(!f.v){secs=qs.length?[{id:'_old',title:'',mode:'always'}]:[];qs.forEach(q=>q.sec=q.sec||'_old')}
  return{...f,f:ff,secs}};
 const req=on=>on?' <span class="req">*</span>':'';
 let picked=new Set();
