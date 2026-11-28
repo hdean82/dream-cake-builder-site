@@ -4984,6 +4984,16 @@ const rvEsc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':
 function shareableDesign(){const d=JSON.parse(snap());delete d.order;const raw=JSON.stringify(d),imgs={};let size=0;
  for(const id of new Set(raw.match(/"(i[a-z0-9]{5,12})"/g)||[])){const k=id.slice(1,-1),src=ED.get(k)?.src||store.get('dcs-img-'+k);if(src&&size+src.length<2400000){imgs[k]=src;size+=src.length}}
  if(Object.keys(imgs).length)d._imgs=imgs;return d}
+// 3D toppers that live only on this device (AI-made or uploaded .glb) go to the artist's private storage when a review
+// link is made, so the client sees them too. The client's page gets short-lived links from the review-models function.
+async function shareModels(d,se){const ids=[...new Set((JSON.stringify(d).match(/"m_u[a-z0-9]+"/g)||[]).map(x=>x.slice(4,-1)))];const uid=se?.user?.id;if(!ids.length||!uid)return;d._models={};
+ for(const id of ids){const M=MODELS['u'+id];if(!M||!M.buf)continue;const mark='dcs-upm-'+uid.slice(0,8)+'-'+id;
+  if(!store.get(mark)){const r=await fetch(CB.url+'/storage/v1/object/dcb-review-models/'+uid+'/'+id+'.glb',{method:'POST',headers:{apikey:CB.key,Authorization:'Bearer '+se.access_token,'Content-Type':'model/gltf-binary','x-upsert':'true'},body:M.buf});
+   if(!r.ok)throw new Error('Could not upload '+M[0]+' for the review link. Try again.');store.set(mark,1)}
+  d._models[id]={n:M[0],s:M[3]||3.4}}}
+async function reviewModels(tok,d){const want=d._models;delete d._models;if(!want||typeof want!=='object')return;
+ try{const r=await fetch(CB.url+'/functions/v1/review-models',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tok})});const j=await r.json().catch(()=>({}));
+  await Promise.all(Object.entries(j.models||{}).map(async([id,url])=>{try{const b=await(await fetch(url)).arrayBuffer();registerUserModel({id,name:want[id]?.n||'3D topper',buf:b,size:+want[id]?.s||3.4})}catch(e){console.error('review topper',e)}}))}catch(e){console.error('review toppers',e)}}
 async function reviewsPull(){try{const rows=await cbFetch('/rest/v1/shop_design_reviews?select=token,name,status,responder_name,message,responded_at,viewed_at');if(!rows)return;CB.reviews={};rows.forEach(r=>CB.reviews[r.name]=r);
  const seen=store.get('dcs-review-seen')||{};const fresh=rows.filter(r=>r.responded_at&&seen[r.token]!==r.responded_at);
  if(fresh.length){const r=fresh[0];toast(r.status==='approved'?`${r.responder_name} approved “${r.name}” 🎉`:`${r.responder_name} asked for changes to “${r.name}”: ${(r.message||'').slice(0,120)}`,7000);fresh.forEach(x=>seen[x.token]=x.responded_at);store.set('dcs-review-seen',seen)}}catch(_e){}}
@@ -5000,7 +5010,8 @@ $('#reviewBtn').onclick=async()=>{const se=window.DCBAuth&&await DCBAuth.session
  if(!se){toast('Sign in to send review links. Opening sign-in…');setTimeout(()=>{location.href='account.html?next='+encodeURIComponent('studio.html')},900);return}
  const b=$('#reviewBtn');b.disabled=true;const old=b.textContent;b.textContent='Creating link…';
  try{const list=savedList().filter(x=>x.name!==design.name);list.unshift({name:design.name,at:Date.now(),design:JSON.parse(snap())});store.set('dcs-designs',list.slice(0,60));cbPush(list[0]);
-  const tok=await cbFetch('/rest/v1/rpc/shop_design_share',{method:'POST',body:JSON.stringify({p_name:design.name,p_design:shareableDesign()})});
+  const shared=shareableDesign();await shareModels(shared,se);
+  const tok=await cbFetch('/rest/v1/rpc/shop_design_share',{method:'POST',body:JSON.stringify({p_name:design.name,p_design:shared})});
   const url=location.origin+location.pathname+'?review='+tok;await reviewsPull();reviewModal(url,CB.reviews&&CB.reviews[design.name])}
  catch(e){toast(e.message||'Could not create the link. Try again.')}finally{b.disabled=false;b.textContent=old}};
 if(!window.DCS_REVIEW)setTimeout(reviewsPull,1600);
@@ -5011,7 +5022,7 @@ if(window.DCS_REVIEW)(async()=>{const tok=window.DCS_REVIEW;const H={apikey:CB.k
  let R0;try{R0=await rpc('shop_design_view',{p_token:tok})}catch{R0=undefined}
  if(!R0){bar.innerHTML='<div class="rb-t"><b>This link isn’t active</b><span>Please ask your cake artist for a new link.</span></div>';fit();return}
  for(const [k,v] of Object.entries(R0.design._imgs||{}))if(/^data:image\//.test(v))ED.set(k,{ready:false,src:v});
- const d=R0.design;delete d._imgs;const base=defaultDesign();selectItem(null);commit(x=>{Object.keys(x).forEach(k=>delete x[k]);Object.assign(x,base,d,{scene:{...base.scene,...d.scene},message:{...base.message,...d.message}})});sel=0;pendingFrame=true;
+ const d=R0.design;delete d._imgs;await reviewModels(tok,d);const base=defaultDesign();selectItem(null);commit(x=>{Object.keys(x).forEach(k=>delete x[k]);Object.assign(x,base,d,{scene:{...base.scene,...d.scene},message:{...base.message,...d.message}})});sel=0;pendingFrame=true;
  document.title=R0.name+' · Your cake design';
  const RFS=(Array.isArray(d.refs)?d.refs:[]).filter(r=>ED.get(r.img)?.src),refsHtml=()=>RFS.length?'<div class="rb-refs"><b>Toppers & extras for your cake</b><div class="rb-refstrip">'+RFS.map((r,i)=>'<button type="button" class="rb-ref" data-ref="'+i+'"><img alt="" src="'+rvEsc(ED.get(r.img).src)+'"><span>'+rvEsc(r.note||'')+'</span></button>').join('')+'</div></div>':'';
  bar.addEventListener('click',e=>{const b=e.target.closest('[data-ref]');if(!b)return;const r=RFS[+b.dataset.ref];const ov=el('<div class="rb-lb" role="dialog" aria-modal="true"><div class="rb-lbc"><img alt=""><p></p><a target="_blank" rel="noopener" hidden>View the product</a><button type="button" class="btn">Close</button></div></div>');ov.querySelector('img').src=ED.get(r.img).src;ov.querySelector('p').textContent=r.note||'';const a=ov.querySelector('a');if(/^https:\/\//.test(r.link||'')){a.href=r.link;a.hidden=false}ov.onclick=ev=>{if(ev.target===ov||ev.target.closest('button'))ov.remove()};document.body.appendChild(ov)});
