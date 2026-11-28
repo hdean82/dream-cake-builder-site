@@ -41,6 +41,7 @@ textarea{min-height:120px;resize:vertical}
 .picks{display:grid;gap:8px}.pick{border:1px solid var(--line);border-radius:12px;background:#fff;transition:border-color .15s}.pick.on{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-soft)}
 .pickhead{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-weight:500}.pickhead input{width:18px;height:18px;accent-color:var(--rose)}.pickhead span{flex:1}.pickhead em{font-style:normal;color:var(--rose-ink);font-weight:600}
 .pickbody{display:none;padding:0 14px 8px}.pick.on .pickbody{display:block}.pickbody:empty{display:none!important}
+.pknote{display:flex;flex-direction:column;gap:2px;background:var(--rose-soft);border-radius:12px;padding:10px 12px;margin:2px 0 8px;font-size:14px}.pknote b{font-size:12.5px;color:var(--rose-ink)}
 .prenote{background:var(--rose-soft);color:var(--rose-ink);border-radius:12px;padding:12px 14px;margin:14px 0 6px;white-space:pre-wrap}
 html.embed body{background-color:transparent!important;background-image:none}html.embed .site-head,html.embed .site-foot{display:none}html.embed main{padding:0}html.embed .req-wrap{padding:0;max-width:none}html.embed .req-card{background:transparent;border:0;box-shadow:none;padding:4px}
 html.pv .site-head,html.pv .site-foot{display:none}html.pv main,html.pv.embed main{padding:10px 0}html.pv{overscroll-behavior:none}html.pv body{overscroll-behavior:none}html.pv .req-wrap{padding:0 10px}html.pv .dcb-trial,html.pv .dcb-beta-fab{display:none!important}
@@ -118,7 +119,7 @@ function shrink(file){return new Promise((res,rej)=>{const r=new FileReader();r.
 
 function closed(title,text){app.innerHTML=`<div class="done"><div class="big">${esc(title)}</div><p class="muted">${esc(text)}</p><p class="fine" style="margin-top:14px"><a href="index.html">Go to Dream Cake Builder</a></p></div>`}
 
-const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},date:{on:true,req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false},handoff:{on:false,req:false},details:{on:true,req:true},photos:{on:true,req:false}};const ff={};for(const k in d)ff[k]=Object.assign({},d[k],(f.f||{})[k]||{});
+const F=()=>{const f=(info&&info.form)||{};const d={phone:{on:true,req:false},date:{on:true,req:false},event:{on:true,req:false},servings:{on:true,req:false},budget:{on:false,req:false},handoff:{on:false,req:false},theme:{on:false,req:false},details:{on:true,req:true},photos:{on:true,req:false}};const ff={};for(const k in d)ff[k]=Object.assign({},d[k],(f.f||{})[k]||{});
  let secs=Array.isArray(f.secs)?f.secs:[];const qs=info.questions||[];if(!f.v){secs=qs.length?[{id:'_old',title:'',mode:'always'}]:[];qs.forEach(q=>q.sec=q.sec||'_old')}
  return{...f,f:ff,secs}};
 const req=on=>on?' <span class="req">*</span>':'';
@@ -158,10 +159,12 @@ function form(){
   ${f.servings.on?`<div class="field"><label for="f-serv">Servings or guests${req(f.servings.req)}</label><input type="number" id="f-serv" min="0" max="10000" inputmode="numeric"></div>`:''}
   ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
   ${f.handoff.on&&byId('f_handoff')?qField(byId('f_handoff')):''}</div>
+  ${f.handoff.on&&byId('f_handoff')&&(c.pickup||c.pickupLater)?`<div class="pknote" id="pkNote" hidden><b>Pickup address</b><span>${c.pickupLater?'Shared once your order is paid.':esc(c.pickup)}</span></div>`:''}
   ${picks.length?`<h2 class="sh">Add to your order</h2><p class="fine" style="margin:-4px 0 8px">Tap anything you'd like.</p><div class="picks">${picks.map(sec).join('')}</div>`:''}
   ${other.map(sec).join('')}
   ${like?`<div class="like">${/^https:\/\/gcorvodfcxhumesttwvj\.supabase\.co\//.test(likeImg)?`<img src="${esc(likeImg)}" alt="">`:''}<div><b>Something like “${esc(like)}”</b><div class="fine" style="margin:0">From the ${esc(info.business)} gallery</div></div></div>`:''}
   <h2 class="sh">Your cake</h2>
+  ${f.theme.on&&byId('f_theme')?qField(byId('f_theme')).replace('maxlength="1000"','maxlength="200" placeholder="Like Lion King, garden party or pink and gold"'):''}
   <div class="field"><label for="f-details">Tell us about your cake${req(f.details.req)}</label><textarea id="f-details" maxlength="5000" placeholder="Flavors, colors, theme, tiers, any writing on the cake, allergies…">${like?esc(`I'd love something like "${like}" from your gallery.\n\n`):''}</textarea></div>
   ${f.photos.on?`<div class="field"><span class="lbl">Inspiration photos (up to 8)${req(f.photos.req)}</span><div class="pics" id="pics"></div></div>`:''}
   <label class="trap" aria-hidden="true">Website<input id="f-web" tabindex="-1" autocomplete="off"></label>
@@ -183,7 +186,7 @@ function answers(){const c=F(),out=(info.questions||[]).map(q=>{let v='';if(!sho
  const pk=out.find(a=>a.id==='f_pick');if(pk)pk.a=c.secs.filter(s=>s.mode==='pick'&&picked.has(s.id)).map(s=>s.title+(s.price?` (${s.price})`:'')).join(', ');return out}
 function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.postMessage({type:'dcb-form-height',h:document.documentElement.scrollHeight},'*'))}
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
- if(t.dataset&&t.dataset.q==='f_handoff'){document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
+ if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
 function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;n.textContent=isFull(d)?'That date is fully booked. Please pick another date.':'';n.style.color=isFull(d)?'var(--rose-ink)':''}
 document.addEventListener('input',e=>{if(e.target.id==='f-date')dateNote()});
@@ -219,7 +222,7 @@ if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('messa
   const keep={};document.querySelectorAll('#rf input:not([type=file]):not([type=radio]):not([type=checkbox]),#rf select,#rf textarea').forEach(x=>{const k=x.id||x.dataset.q;if(k&&x.value)keep[k]=x.value});document.querySelectorAll('#rf input[type=radio]:checked').forEach(x=>keep['r:'+x.name]=x.value);
   const y=scrollY;info=e.data.info;picked=new Set([...picked].filter(id=>(info.form&&info.form.secs||[]).some(s=>s.id===id)));form();
   Object.entries(keep).forEach(([k,v])=>{if(k.startsWith('r:')){const r=document.querySelector(`#rf input[name="${CSS.escape(k.slice(2))}"][value="${CSS.escape(v)}"]`);if(r)r.checked=true;return}const el=document.getElementById(k)||document.querySelector(`[data-q="${CSS.escape(k)}"]`);if(el)el.value=v});
-  const ho=document.querySelector('[data-q="f_handoff"]');if(ho)document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=ho.value!=='Delivery');scrollTo(0,y)});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
+  const ho=document.querySelector('[data-q="f_handoff"]');if(ho){document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=ho.value!=='Delivery');const pk=$('pkNote');if(pk)pk.hidden=ho.value!=='Pickup'}scrollTo(0,y)});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
 (async()=>{
  if(PREVIEW)return;
  if(!slug){info={shop_id:'preview',business:'your cake artist',accepting:true,event_types:[{id:'',name:'Birthday'},{id:'',name:'Wedding'}],questions:[{id:'p1',q:'Cake flavor',type:'choice',options:['Vanilla','Chocolate','Not sure yet']},{id:'p2',q:'Pickup or delivery?',type:'choice',options:['Pickup','Delivery'],required:true}],full_dates:[]};form();const n=document.createElement('p');n.className='msg';n.textContent='Preview: add ?shop=your-shop-link to the address to use a real order form.';app.prepend(n);const f=$('rf');f.addEventListener('submit',ev=>{ev.stopImmediatePropagation();ev.preventDefault();$('rmsg').className='msg';$('rmsg').textContent='Preview only. Nothing was sent.'},true);return}
