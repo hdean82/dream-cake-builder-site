@@ -116,7 +116,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   </tbody></table>
   <div class="dtot"><div class="kv"><span>Subtotal</span><span>${esc(d.sub)}</span></div>${d.tax?`<div class="kv"><span>Tax</span><span>${esc(d.tax)}</span></div>`:''}${d.fee?`<div class="kv"><span>Delivery</span><span>${esc(d.fee)}</span></div>`:''}
    <div class="kv tot"><span>Total</span><span>${esc(d.total)}</span></div>${d.paid?`<div class="kv"><span>Paid</span><span>${esc(d.paid)}</span></div>`:''}
-   <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv tot"><span>Balance due</span><span>${esc(d.bal)}</span></div></div>
+   <div class="kv"><span>${esc(d.depLabel)}</span><span>${esc(d.dep)}</span></div><div class="kv" id="paidRow" hidden><span>Paid online</span><span id="paidAmt"></span></div><div class="kv tot"><span>Balance due</span><span id="balAmt">${esc(d.bal)}</span></div></div>
   <div id="payBox" class="noprint"></div>
   ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
   ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
@@ -162,6 +162,9 @@ let PAY=null,PAID=null;
 const fm=c=>'$'+(c/100).toFixed(2);
 async function payCall(body){const r=await fetch(`${SB}/functions/v1/shop-pay`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Payments are unavailable right now.');return j}
 function payDraw(){const box=$('payBox');if(!box)return;const d=Q.doc;let h='';
+ const online=Math.max(PAID||0,(PAY&&PAY.paid)||0),cents=v=>Math.round(parseFloat(String(v||'').replace(/[^0-9.]/g,''))*100)||0;
+ if(online>0&&$('paidRow')){$('paidRow').hidden=false;$('paidAmt').textContent='−'+fm(online);const left=Math.max(0,cents(d.bal)-online);$('balAmt').textContent=fm(left);
+  if(!PAID)h+=`<div class="paydone"><b>${left?'Payment received.':'Paid in full, thank you!'}</b> ${esc(fm(online))} paid online to ${esc(d.biz)}.</div>`}
  if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
  if(PAY&&PAY.enabled&&!d.cancelled){const isQ=d.kind==='quote',needApprove=isQ&&Q.status!=='approved';
   h+=`<div class="paybox"><b>Pay online</b><p class="note" style="margin:2px 0 10px">Secure card payment. It goes straight to ${esc(d.biz)}.</p>${needApprove?`<p class="note" style="margin:0 0 8px">Paying approves this quote and books your date.</p>`:''}
