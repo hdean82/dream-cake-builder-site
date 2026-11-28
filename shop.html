@@ -848,6 +848,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .cinsg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}.cinsg>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.cinsg b{font-family:Fraunces,Georgia,serif;font-size:20px;color:var(--plum,#4b103d)}
 .cnext2{display:flex;gap:10px;align-items:center;background:var(--rose-soft,#fbe7f1);border-radius:12px;padding:10px 12px}.cnext2>div{flex:1;display:flex;flex-direction:column}.cnext2 .ci{font-size:22px}
 .shsec{margin:0 0 12px}.shsec h4{margin:0 0 6px;font-size:14px;color:var(--plum,#4b103d)}.shrow{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:6px;cursor:pointer}.shrow input{accent-color:var(--teal,#177d79);width:20px;height:20px;flex:none}.shrow .bd{flex:1;display:flex;flex-direction:column;min-width:0}.shrow .qv{font-weight:600;white-space:nowrap;font-size:13.5px}.shrow.got{opacity:.5}.shrow.got b{text-decoration:line-through}
+.ltool{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 6px}.ltool select{width:auto;flex:1 1 200px;max-width:320px}.ltool #lstDays{flex:0 1 160px}.ltool .btn{align-self:stretch;min-width:84px}@media(max-width:520px){.ltool #lstPick{flex:1 1 100%;max-width:none}.ltool #lstDays{flex:1 1 auto}}.lmore{margin:0 0 12px;font-size:13.5px;color:var(--muted)}.lmore .linkbtn{font-size:13.5px}
 .mapsw{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 10px}
 .rlist{display:flex;flex-direction:column;gap:10px}.rstop{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.rstop.done{opacity:.6}
 .rnum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--rose,#c12c7e);color:#fff;display:grid;place-items:center;font-weight:700}.rstop.done .rnum{background:var(--teal,#177d79)}
@@ -1892,7 +1893,7 @@ function vMoney(){const key=monthKey(monCur),m=moneyFor(key),unit=(S.settings.un
 }
 /* ---------- Reports ---------- */
 let repRange="year";
-const REP_RANGES=[["month","This month"],["lastmonth","Last month"],["quarter","Last 3 months"],["year","This year"],["lastyear","Last year"],["all","All time"]];
+const REP_RANGES=[["month","This Month"],["lastmonth","Last Month"],["quarter","Last 3 Months"],["year","This Year"],["lastyear","Last Year"],["all","All Time"]];
 function repSpan(){const t=new Date(),y=t.getFullYear(),m=t.getMonth(),d=(Y,M,D)=>isoD(new Date(Y,M,D));
  return {month:[d(y,m,1),d(y,m+1,0)],lastmonth:[d(y,m-1,1),d(y,m,0)],quarter:[d(y,m-2,1),d(y,m+1,0)],year:[`${y}-01-01`,`${y}-12-31`],lastyear:[`${y-1}-01-01`,`${y-1}-12-31`],all:["0000-01-01","9999-12-31"]}[repRange]}
 function reportData(){const [a,b]=repSpan(),inR=d=>d&&d>=a&&d<=b;
@@ -1924,7 +1925,7 @@ function cashAhead(){const today=isoD(new Date()),dow=(new Date().getDay()+6)%7,
  <div class="cashw">${wk.map((w,i)=>`<div class="cwr"><span class="cwl">${esc(lbl(w,i))}</span><span class="cwt"><i class="b" style="width:${w.b?Math.max(1.5,w.b/max*100):0}%"></i><i class="q" style="width:${w.q?Math.max(1.5,w.q/max*100):0}%"></i></span><span class="cwv">${w.b||w.q?(w.b?money(w.b):"")+(w.q?`<span class="note">${w.b?" ":""}+ ${money(w.q)}</span>`:""):`<span class="note">–</span>`}</span></div>`).join("")}</div></div>`}
 function reportsHtml(){const r=reportData(),avg=r.orders.length?r.sales/r.orders.length:0,conv=r.quotes.length?Math.round(r.won/r.quotes.length*100):0;
  const top=Object.entries(r.byCust).sort((x,y)=>y[1].v-x[1].v).slice(0,8);
- return `<div class="seg" style="margin:0 0 12px;flex-wrap:wrap">${REP_RANGES.map(([v,l])=>`<button type="button" class="${repRange===v?"on":""}" data-a="repRange" data-v="${v}">${l}</button>`).join("")}</div>
+ return `<div class="ltool" style="margin:0 0 12px"><select id="repPick" aria-label="Time period">${REP_RANGES.map(([v,l])=>`<option value="${v}"${repRange===v?" selected":""}>${l}</option>`).join("")}</select></div>
  <div class="mstats"><div class="card mstat"><span class="lbl">Sales</span><b>${money(r.sales)}</b><span class="note">${r.orders.length} order${r.orders.length===1?"":"s"} · avg ${money(avg)}</span></div>
   <div class="card mstat"><span class="lbl">Money received</span><b>${money(r.received)}</b><span class="note">${money(r.owed)} still owed</span></div>
   <div class="card mstat"><span class="lbl">Profit estimate</span><b>${money(r.sales+r.fees-r.cost-r.expenses-r.mileCost)}</b><span class="note">after costs, expenses & mileage</span></div>
@@ -2624,7 +2625,7 @@ let LIST="handoffs",LISTDAYS=14;
 const mapHref=a=>(S.settings.maps||(/iPhone|iPad|Mac/.test(navigator.userAgent)?"apple":"google"))==="apple"?`https://maps.apple.com/?daddr=${encodeURIComponent(a)}`:`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(a)}`;
 function vLists(){const today=isoD(new Date()),end=addDays(today,LISTDAYS),live=S.orders.filter(o=>o.status!=="Cancelled"&&o.date&&o.date>=today&&o.date<=end).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
  const fd=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
- const tabs=[["handoffs","Pickups & deliveries"],["orders","Order list"],["quotes","Open quotes"],["balances","Balances due"],["baking","Baking list"],["sources","Where customers come from"]];
+ const tabs=[["handoffs","Pickups & Deliveries"],["orders","Order List"],["quotes","Open Quotes"],["balances","Balances Due"],["baking","Baking List"],["sources","Where Customers Come From"]];
  let rows="";
  if(LIST==="handoffs")rows=live.filter(o=>o.kind!=="Quote").map(o=>`<tr><td>${esc(fd(o.date))}<div class="note">${esc(o.time?t12(o.time):"")}</div></td><td><b>${esc(o.customer||"")}</b><div class="note">${esc(o.phone||"")}</div></td><td>${esc({Collected:"Pickup",Delivered:"Delivery",Shipped:"Shipped"}[o.handoff]||"")}<div class="note">${o.handoff==="Collected"||!o.address?"":`<a href="${mapHref(o.address)}" target="_blank" rel="noopener">${esc(o.address)}</a>`}</div></td><td class="n">${money(totals(o).bal)}</td></tr>`).join("");
  if(LIST==="orders")rows=live.filter(o=>o.kind!=="Quote").map(o=>`<tr><td>${esc(fd(o.date))}</td><td><b>#${esc(o.no)}</b> ${esc(o.customer||"")}<div class="note">${esc(o.items.filter(i=>!i.discount).map(itemTitle).join(", "))}</div></td><td>${esc(evt(o.eventId)?.name||"")}</td><td class="n">${money(totals(o).total)}</td></tr>`).join("");
@@ -2638,11 +2639,11 @@ function vLists(){const today=isoD(new Date()),end=addDays(today,LISTDAYS),live=
   rows=Object.entries(by).sort((a,b)=>b[1].sales-a[1].sales||b[1].n-a[1].n).map(([k,x])=>`<tr><td><b>${esc(k)}</b><span class="srcbar"><i style="width:${Math.round(x.sales/tot*100)}%"></i></span></td><td>${x.n}</td><td>${x.orders}</td><td class="n">${money(x.sales)}</td></tr>`).join("")}
  const heads={handoffs:["Date","Customer","How","Balance"],orders:["Date","Order","Event","Total"],quotes:["Event date","Quote","Contact","Total"],balances:["Due","Order","Contact","Balance"],baking:["Item","","","Qty"],sources:["Found you through","Customers",`Orders ${today.slice(0,4)}`,"Sales"]}[LIST];
  $("main").innerHTML=`<div class="wrap"><h1>Lists & reports</h1><p class="lead">Printable lists for the week ahead.</p>
- <div class="seg" style="margin-bottom:10px">${tabs.map(([k,l])=>`<button type="button" class="${LIST===k?"on":""}" data-l="${k}">${l}</button>`).join("")}</div>
- ${["handoffs","orders","baking"].includes(LIST)?`<div class="seg" style="margin-bottom:10px">${[7,14,30].map(n=>`<button type="button" class="${LISTDAYS===n?"on":""}" data-ld="${n}">Next ${n} days</button>`).join("")}</div>`:""}
+ <div class="ltool"><select id="lstPick" aria-label="Which list">${tabs.map(([k,l])=>`<option value="${k}"${LIST===k?" selected":""}>${l}</option>`).join("")}</select>${["handoffs","orders","baking"].includes(LIST)?`<select id="lstDays" aria-label="How far ahead">${[7,14,30].map(n=>`<option value="${n}"${LISTDAYS===n?" selected":""}>Next ${n} Days</option>`).join("")}</select>`:""}<button class="btn primary sm" data-a="docPrint">Print</button></div>
+ <p class="lmore">Also: <button class="linkbtn" data-a="jobsOpen">Job Sheets</button> · <button class="linkbtn" data-a="runOpen">Delivery Day</button> · <button class="linkbtn" data-a="go" data-r="bake">Shopping List</button></p>
  <div class="card white" id="docPrint"><h3>${esc(tabs.find(x=>x[0]===LIST)[1])}</h3>${LIST==="sources"?`<p class="hint">Where your customers say they found you, and what those customers spent this year. Ask “How did you hear about us?” on your order form and it fills in by itself.</p>`:""}<table class="dtable"><thead><tr>${heads.map((h,i)=>`<th${i===3?' class="n"':""}>${h}</th>`).join("")}</tr></thead><tbody>${rows||`<tr><td colspan="4" class="note">Nothing here right now.</td></tr>`}</tbody></table></div>
- <button class="btn primary" data-a="docPrint">Print this list</button></div>`;
- $("main").querySelectorAll("[data-l]").forEach(b=>b.addEventListener("click",()=>{LIST=b.dataset.l;vLists()}));
+</div>`;
+ { const lp=$("lstPick");if(lp)lp.onchange=()=>{LIST=lp.value;vLists()};const ld=$("lstDays");if(ld)ld.onchange=()=>{LISTDAYS=+ld.value;vLists()} }
  $("main").querySelectorAll("[data-ld]").forEach(b=>b.addEventListener("click",()=>{LISTDAYS=+b.dataset.ld;vLists()}));
 }
 function sideLists(){return`<div class="card"><h3>Lists</h3><p class="hint">Cancelled orders are left out. Print any list or save it as a PDF to share with your team or driver.</p></div>`}
@@ -3257,6 +3258,7 @@ function emlCard(){const wkAgo=Date.now()-7*864e5,cloud=EML.state==="ready";if(C
   return r.o?`<button class="rowi" data-a="openOrder" data-id="${esc(r.o.id)}">${inner}</button>`:`<div class="rowi">${inner}</div>`}).join("")}</div>
  ${shown.length>6?`<button class="btn sm ghost" data-a="emlAll" style="margin-top:6px">${EML.all?"Show fewer":`Show all ${shown.length}`}</button>`:""}</div>`}
 setInterval(()=>{if(CLOUD.state==="on"&&!EML.at&&EML.state==="idle"&&route==="today")emlLoad()},1500);
+document.addEventListener("change",e=>{if(e.target.id==="repPick"){repRange=e.target.value;render()}});
 document.addEventListener("change",e=>{if(e.target.id==="emlType"){EML.type=e.target.value;EML.all=false;render()}});
 /* ---------- Search everything ---------- */
 let GSQ="";
