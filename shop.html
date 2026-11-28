@@ -753,6 +753,7 @@ input[type=range]{width:100%;accent-color:var(--rose)}
 details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .slotgrid{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 8px;align-items:center;margin:6px 0 8px}.slotday{display:flex;align-items:center;gap:6px;min-width:64px}.slotday:not(.on) b{color:var(--muted)}.slotto{font-size:13px;color:var(--muted)}.slotgrid input[type=time]{min-width:0;padding:6px 8px}.slotgrid input:disabled{opacity:.45}.rfchk{display:flex;gap:8px;align-items:center;font-weight:500}
 .sigshow{margin:8px 0 10px;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:12px}.sigshow img{display:block;max-width:260px;width:100%;height:auto}.sigshow span{font-size:12.5px;color:var(--muted)}
+.rfready{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.rfready h4{margin:0 0 2px;font-size:15px}.rfready .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rfready .chip{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:13.5px;color:var(--ink)}.rfready .chip:hover{border-color:var(--rose);color:var(--rose-ink)}
 </style>
 </head>
 <body>
@@ -1323,7 +1324,17 @@ function rfSecs(F){const S2=F.secs;return `<div class="card"><h3>Sections and qu
    ${q.type==="choice"?`<input type="text" class="qopts" data-rf="secs.${i}.qs.${j}.opts" value="${esc(q.opts||"")}" placeholder="Choices, separated by commas" aria-label="Choices">`:""}
    <label class="note qreq"><input type="checkbox" data-rf="secs.${i}.qs.${j}.required"${q.required?" checked":""}> Required</label><button class="mv" data-a="rfQMove" data-i="${i}" data-j="${j}" aria-label="Move question up">↑</button><button class="mv del" data-a="rfQDel" data-i="${i}" data-j="${j}" aria-label="Delete question">✕</button></div>`).join("")}
   <button class="btn sm rfaddq" data-a="rfQAdd" data-i="${i}">+ Add a question</button></div>`).join("")}
- <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-a="rfSecAdd">+ Add a section</button>${S2.length?"":`<button class="btn" data-a="rfSecStarter">Add suggested sections</button>`}</div>`}
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-a="rfSecAdd">+ Add a section</button>${S2.length?"":`<button class="btn" data-a="rfSecStarter">Add suggested sections</button>`}</div>
+ <div class="rfready"><h4>Ready-made sections</h4><p class="hint">One tap adds a section you can edit. Priced add-ons become priced lines when you make the quote.</p><div class="chips">${RF_READY.map(r=>`<button class="chip" data-a="rfReady" data-v="${r.k}">+ ${esc(r.t)}</button>`).join("")}</div></div>`}
+const RF_READY=[
+ {k:"flavors",t:"Flavor & filling menu",sec:()=>({title:"Flavors",mode:"always",price:"",qs:[{q:"Cake flavor",type:"choice",opts:"Vanilla bean, Chocolate, Red velvet, Lemon, Strawberry, Funfetti, Not sure yet"},{q:"Filling",type:"choice",opts:"Vanilla buttercream, Chocolate ganache, Cream cheese, Strawberry, Lemon curd, Not sure yet"},{q:"Frosting",type:"choice",opts:"Buttercream, Swiss meringue, Cream cheese, Fondant, Not sure yet"}]})},
+ {k:"premium",t:"Premium flavor upgrade",sec:()=>({title:"Premium flavor upgrade",mode:"pick",price:"$15",qs:[{q:"Which premium flavor?",type:"choice",opts:"Pistachio, Salted caramel, Raspberry champagne, Cookies and cream"}]})},
+ {k:"tasting",t:"Tasting box",sec:()=>({title:"Tasting box",mode:"pick",price:"$30",qs:[{q:"Which flavors would you like to taste? (up to 4)",type:"long",opts:""},{q:"When would you like to pick up your tasting box?",type:"text",opts:""}]})},
+ {k:"flowers",t:"Fresh flowers",sec:()=>({title:"Fresh flowers",mode:"pick",price:"$25",qs:[{q:"Colors you'd like",type:"text",opts:""}]})},
+ {k:"cupcakes",t:"Matching cupcakes",sec:()=>({title:"Matching cupcakes",mode:"pick",price:"",qs:[{q:"How many cupcakes?",type:"text",opts:"",required:true}]})},
+ {k:"delivery",t:"Delivery details",sec:()=>({title:"Delivery",mode:"delivery",price:"",qs:[{q:"Delivery address",type:"long",opts:"",required:true},{q:"Delivery time",type:"text",opts:"",required:true},{q:"Venue contact and phone",type:"text",opts:""}]})},
+ {k:"allergy",t:"Allergies",sec:()=>({title:"Allergies",mode:"always",price:"",qs:[{q:"Does anyone have a food allergy?",type:"yes",opts:"",required:true},{q:"Tell us about the allergy",type:"text",opts:""}]})},
+ {k:"writing",t:"Writing on the cake",sec:()=>({title:"Writing on the cake",mode:"always",price:"",qs:[{q:"What should it say?",type:"text",opts:""},{q:"Name and age (for birthdays)",type:"text",opts:""}]})}];
 function rfShare(F){const b=RQ.biz||{},link=rfLink(),P=rfPublic(),fon=Object.entries(F.f).filter(([k,x])=>x.on!==false).length+2,nq=F.secs.reduce((n,s)=>n+s.qs.length,0);
  if(CLOUD.state!=="on"||RQ.state==="signin")return `<div class="card"><h3>Sign in to put your form online</h3><p class="hint">Your form link and the requests that come in are saved to your Dream Cake Builder account.</p><a class="btn primary sm" href="account.html?next=${encodeURIComponent("shop.html#reqform")}">Sign in</a></div>`;
  if(RQ.state!=="ready")return `<div class="card"><p class="hint" style="margin:0">Loading your form link…</p></div>`;
@@ -1398,6 +1409,7 @@ function rfAct(a,b){const F=rfCfg(),i=+b.dataset.i,j=+b.dataset.j;
    {id:"s"+uid(),title:"Delivery",mode:"delivery",price:"",qs:[{id:"q"+uid(),q:"Delivery address",type:"long",opts:"",required:true},{id:"q"+uid(),q:"Delivery time",type:"text",opts:"",required:true}]},
    {id:"s"+uid(),title:"Matching cupcakes",mode:"pick",price:"",qs:[{id:"q"+uid(),q:"How many cupcakes?",type:"text",opts:"",required:true}]},
    {id:"s"+uid(),title:"Allergies",mode:"always",price:"",qs:[{id:"q"+uid(),q:"Does anyone have a food allergy?",type:"yes",opts:"",required:true}]});save();rfPaint();toast("Added 4 sections. Edit or delete any of them");return true;
+ case"rfReady":{const r=RF_READY.find(x=>x.k===b.dataset.v);if(!r)return true;const x=r.sec();F.secs.push({id:"s"+uid(),title:x.title,mode:x.mode,price:x.price,qs:x.qs.map(q=>({id:"q"+uid(),q:q.q,type:q.type,opts:q.opts||"",required:!!q.required}))});save();rfPaint();toast(`Added “${x.title}”. Edit or delete it any time`);setTimeout(()=>{const c=document.querySelectorAll(".rfsec");if(c.length)c[c.length-1].scrollIntoView({block:"center",behavior:"smooth"})},60);return true}
  case"rfSecDel":if(F.secs[i].qs.some(q=>q.q)&&!confirm(`Delete the “${F.secs[i].title||"untitled"}” section and its questions?`))return true;F.secs.splice(i,1);save();rfPaint();return true;
  case"rfSecMove":move(F.secs,i,+b.dataset.v);save();rfPaint();return true;
  case"rfQAdd":F.secs[i].qs.push({id:"q"+uid(),q:"",type:"text",opts:"",required:false});save();rfPaint();setTimeout(()=>{const n=document.querySelectorAll(`[data-rf^="secs.${i}.qs."][data-rf$=".q"]`);if(n.length)n[n.length-1].focus()},0);return true;
