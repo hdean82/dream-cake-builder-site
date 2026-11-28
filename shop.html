@@ -2195,7 +2195,7 @@ function sideCustomers(){const top=S.customers.map(c=>({c,t:S.orders.filter(o=>o
 function sideCustomersOld2(){const top=S.customers.map(c=>({c,t:S.orders.filter(o=>o.customerId===c.id&&o.status!=="Cancelled").reduce((a,o)=>a+totals(o).total,0)})).sort((a,b)=>b.t-a.t).slice(0,5);
  return `<div class="card white"><h3>Customers</h3><div class="big">${S.customers.length}</div>${top.length&&top[0].t?`<span class="lbl" style="margin-top:8px">Top customers</span>${top.filter(x=>x.t).map(x=>`<div class="kv"><span>${esc(x.c.name)}</span><span>${money(x.t)}</span></div>`).join("")}`:""}</div>`}
 function linkCustomer(o){const nm=o.customer.trim();let c=o.customerId&&S.customers.find(x=>x.id===o.customerId);if(!c)c=S.customers.find(x=>lc(fullName(x))===lc(nm)&&(!o.email||!x.email||x.email.toLowerCase()===o.email.toLowerCase()));
- if(!c){c=fixCustomer({id:uid(),...splitName(nm),phone:o.phone||"",email:o.email||"",notes:""});S.customers.push(c)}else{if(nm&&lc(nm)!==lc(fullName(c))){Object.assign(c,splitName(nm));fixCustomer(c)}if(o.phone&&!c.phone)c.phone=o.phone;else if(o.phone)c.phone=o.phone;if(o.email)c.email=o.email}o.customerId=c.id}
+ if(!c){c=fixCustomer({id:uid(),...splitName(nm),phone:o.phone||"",email:o.email||"",notes:"",...(o.handoff&&o.handoff!=="Collected"&&String(o.address||"").trim()?{address:String(o.address).trim()}:{})});S.customers.push(c)}else{if(nm&&lc(nm)!==lc(fullName(c))){Object.assign(c,splitName(nm));fixCustomer(c)}if(o.phone&&!c.phone)c.phone=o.phone;else if(o.phone)c.phone=o.phone;if(o.email)c.email=o.email;if(o.handoff&&o.handoff!=="Collected"&&String(o.address||"").trim()&&!String(c.address||"").trim())c.address=String(o.address).trim()}o.customerId=c.id}
 
 /* ---------- Email from an order ---------- */
 function reviewLink(o){const b=RQ.biz||{};if(!b.slug)return"";const u=new URL(location.href.replace(/[^/]*$/,"")+"review.html");u.searchParams.set("shop",b.slug);if(o){const c=(o.items||[]).filter(i=>!i.discount).map(itemTitle).join(", ").slice(0,80);if(c)u.searchParams.set("cake",c);if(o.customer)u.searchParams.set("name",o.customer.slice(0,60))}return u.href}
@@ -2573,7 +2573,7 @@ document.addEventListener("click",e=>{
   case"calToday":calCur=new Date();calCur.setDate(1);calSel=isoD(new Date());render();break;
   case"calNew":draft=blankOrder();draft.date=calSel;go("new-order");break;
   case"calSamples":addSamples();break;
-  case"toOrder":logEv(draft,"Quote accepted and turned into an order");draft.kind="Order";if(["Inquiry","Quote sent"].includes(draft.status))draft.status="Confirmed";draft.issued=new Date().toISOString().slice(0,10);render();toast("Now an order. Save to keep the change");break;
+  case"toOrder":logEv(draft,"Quote accepted and turned into an order");draft.kind="Order";if(["Inquiry","Quote sent"].includes(draft.status))draft.status="Confirmed";draft.issued=new Date().toISOString().slice(0,10);render();if(draft.id)setTimeout(()=>{const sb=document.querySelector('[data-a="saveOrder"]');if(sb)sb.click()},0);else toast("Now an order. Save to keep the change");break;
   case"dupOrder":{const c=clone(draft);Object.assign(c,{id:null,no:null,date:"",time:"",status:"Inquiry",payments:[],emails:[],prep:{},tasks:{},log:[],issued:null,kind:S.settings.defType});c.items=c.items.map(it=>({...it,id:uid()}));draft=c;render();window.scrollTo(0,0);toast("Copied. Pick a new date, then save");break}
   case"useMargin":{const need=(+M.item.cost||0)/(1-Math.min(95,+S.settings.margin||0)/100);M.item.price=need.toFixed(2);renderItem();break}
   case"irAdd":M.item.recipes=M.item.recipes||[];M.item.recipes.push({id:S.recipes[0].id,batches:1});renderItem();break;
@@ -2683,7 +2683,7 @@ document.addEventListener("click",e=>{
   case"rqQuote":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;{const bc=blMatch(r.name,r.email);if(bc&&!confirm(`${fullName(bc)} is blacklisted${bc.blReason?" ("+bc.blReason+")":""}. Make a quote anyway?`))break}const en=rqEvent(r.event_type_id)?.name;const le=S.events.find(e=>en&&e.name.toLowerCase()===en.toLowerCase());
    const {c,isNew}=rqCustomer(r),p=rqParse(r);persist();
    draft=blankOrder();Object.assign(draft,{customer:fullName(c)||r.name,email:r.email||c.email||"",phone:r.phone||c.phone||"",customerId:c.id,date:r.event_date||"",time:p.time,kind:"Quote",status:"Inquiry",eventId:le?le.id:draft.eventId,
-    handoff:p.handoff||draft.handoff,address:p.handoff==="Delivered"?p.address:"",notes:r.details||"",images:(r.image_paths||[]).slice(0,8).map(x=>"sb:"+x),imagesOnDoc:false,requestId:r.id,
+    handoff:p.handoff||draft.handoff,address:p.handoff==="Delivered"?p.address:"",...(p.handoff==="Collected"&&rfCfg().pickupMode==="custom"&&String(rfCfg().pickupAddr||"").trim()&&String(rfCfg().pickupAddr).trim()!==String(S.settings.address||"").trim()?{pickupAlt:true,pickupAddr:String(rfCfg().pickupAddr).trim()}:{}),notes:r.details||"",images:(r.image_paths||[]).slice(0,8).map(x=>"sb:"+x),imagesOnDoc:false,requestId:r.id,
     prodNotes:[`From your online order form, ${new Date(r.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"})}`,r.servings?`Servings: ${r.servings}`:"",p.budget?`Budget: ${p.budget}`:"",p.extras?`Extras they picked: ${p.extras}`:"",p.address&&p.handoff!=="Delivered"?`Address: ${p.address}`:"",p.handoff==="Collected"&&rfCfg().pickupMode==="custom"&&rfCfg().pickupAddr?`Pickup at: ${rfCfg().pickupAddr}`:"",...p.rest.filter(x=>!/address/i.test(x.q)||p.handoff!=="Delivered").map(x=>`${x.q}: ${x.a}`)].filter(Boolean).join("\n")});
    {const picks=(rfCfg().secs||[]).filter(x=>x.mode==="pick"&&x.title&&p.extras&&p.extras.includes(x.title));
     picks.forEach(x=>{const pr=parseFloat(String(x.price||"").replace(/[^0-9.]/g,""))||0;draft.items.push({id:uid(),typeId:"",typeName:x.title.slice(0,80),qty:1,price:pr?pr.toFixed(2):"0",cost:"",tax:S.settings.defaultTax||"none",notes:"Picked on your order form",opts:{}})});
@@ -2774,7 +2774,7 @@ document.addEventListener("click",e=>{
   case"custDel":snap();S.customers=S.customers.filter(x=>x.id!==editCust);S.orders.forEach(o=>{if(o.customerId===editCust)o.customerId=null});editCust=null;save();render();toast("Customer deleted",true);break;
   case"listDel":snap();S.lists[b.dataset.k].splice(i,1);save();render();toast("Category removed",true);break;
   case"newOrder":draft=blankOrder();go("new-order");break;
-  case"oset":draft[b.dataset.k]=b.dataset.v;render();break;
+  case"oset":draft[b.dataset.k]=b.dataset.v;if(b.dataset.k==="handoff"&&b.dataset.v!=="Collected"&&!String(draft.address||"").trim()){const c=draft.customerId&&S.customers.find(x=>x.id===draft.customerId);const a=c&&[c.address,[c.city,[c.state,c.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")].filter(Boolean).join(", ");if(a){draft.address=a;setTimeout(()=>toast(`Filled in ${c.first||"their"} saved address`),0)}}render();break;
   case"addItem":openItem();break;
   case"pickType":{const ty=ptype(b.dataset.id);M={i:null,item:newItem(ty),tier:0};renderItem();break}
   case"editItem":if(draft.items[i]&&draft.items[i].discount)openDiscount(i);else openItem(i);break;
