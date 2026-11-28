@@ -1708,7 +1708,7 @@ async function cloudPush(){if(CLOUD.busy){clearTimeout(CLOUD.timer);CLOUD.timer=
  if(CLOUD.state==="conflict"||CLOUD.state==="noaccess"||CLOUD.state==="off")return;
  CLOUD.busy=true;cloudChip();
  try{await uploadPending()}catch{}
- try{const r=await api("/rest/v1/rpc/shop_save_snapshot",{method:"POST",body:{p_data:forCloud(),p_revision:CLOUD.rev}});
+ try{const r=await api("/rest/v1/rpc/shop_save_snapshot_v2",{method:"POST",body:{p_data:forCloud(),p_revision:CLOUD.rev}});
   CLOUD.rev=r.revision;CLOUD.dirty=false;CLOUD.state="on";CLOUD.fails=0;CLOUD.last=new Date();writeMeta({rev:CLOUD.rev,dirty:false,at:CLOUD.last.toISOString()})}
  catch(e){CLOUD.fails=(CLOUD.fails||0)+1;if(e.code==="40001"||/conflict/i.test(e.message))CLOUD.state="conflict";else if(e.code==="42501")CLOUD.state="noaccess";else if(e.code==="signin")CLOUD.state="off";else CLOUD.state="error"}
  finally{CLOUD.busy=false;cloudChip()}}
