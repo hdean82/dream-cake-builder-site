@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your cake conversation · Dream Cake Builder</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#c12c7e">
+<link rel="icon" href="lilac/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/dcb-theme.css">
+<style>
+.cw{max-width:640px;margin:0 auto;padding:0 16px}
+.ccard{padding:20px}
+.ccard h1{font-size:clamp(26px,4vw,34px);margin:2px 0 6px}
+.sum{background:var(--rose-soft);border-radius:12px;padding:10px 12px;font-size:14px;color:var(--rose-ink);margin:10px 0 14px;white-space:pre-wrap}
+.thread{display:flex;flex-direction:column;gap:10px;margin:8px 0 16px}
+.msg{max-width:84%;padding:10px 14px;border-radius:16px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.artist{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg.customer{align-self:flex-end;background:var(--rose);color:#fff;border-bottom-right-radius:6px}
+.msg small{display:block;font-size:11.5px;opacity:.75;margin-top:4px}
+.empty{color:var(--muted);text-align:center;padding:16px}
+textarea{width:100%;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font:inherit;font-size:16px;background:#fff;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}.row .btn{min-height:46px;padding:0 22px}
+.st{font-size:14px;color:var(--muted)}.st.bad{color:#b3261e}
+</style>
+</head>
+<body>
+<header class="site-head">
+ <div class="head-in">
+  <a class="brand" href="index.html" aria-label="Dream Cake Builder home"><img src="lilac/assets/favicon.svg" alt="" data-fallback width="34" height="34"><span class="bt"><span class="bn">Dream <span>Cake</span> Builder</span><small class="tag">See it before you bake it.</small></span></a>
+  <nav class="site-nav" aria-label="Main">
+   <a href="index.html">Home</a>
+   <a href="index.html#how-it-works">How It Works</a>
+   <a href="studio.html">Studio</a>
+   <a href="shop.html#orders" data-team>Orders</a>
+   <a href="shop.html#calendar" data-team>Calendar</a>
+   <a href="contact.html">Contact</a>
+   <a href="account.html" data-acct>Sign In</a>
+   <a class="btn primary sm cta" href="index.html#launch-list">Join Waitlist</a>
+  </nav>
+  <details class="menu">
+   <summary aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></summary>
+   <div class="menu-panel"><a href="index.html">Home</a><a href="index.html#how-it-works">How It Works</a><a href="studio.html">Studio</a><a href="shop.html#orders" data-team>Orders</a><a href="shop.html#calendar" data-team>Calendar</a><a href="contact.html">Contact</a><a href="account.html" data-acct>Sign In</a><a href="index.html#launch-list">Join Waitlist</a></div>
+  </details>
+ </div>
+</header>
+<main class="band">
+ <div class="cw"><div class="card ccard" id="app"><p class="muted">Loading your conversation…</p></div></div>
+</main>
+<footer class="site-foot"><div class="foot-in"><span>Conversations powered by <a href="index.html">Dream Cake Builder</a>.</span><a href="privacy.html">Privacy</a><span class="end">© <span data-year>2026</span></span></div></footer>
+<script src="assets/dcb-site.js" defer></script>
+<script>
+{
+const SB='https://gcorvodfcxhumesttwvj.supabase.co',KEY='sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb',H={apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'};
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const t=(new URLSearchParams(location.search).get('t')||'').trim(),app=$('app');let D=null,busy=false,draft='';
+const rpc=(fn,body)=>fetch(`${SB}/rest/v1/rpc/${fn}`,{method:'POST',headers:H,body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});
+const when=d=>new Date(d).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+function draw(){const m=D.messages||[];const box=$('reply');if(box)draft=box.value;
+ app.innerHTML=`<span class="eyebrow">Your cake request</span><h1>Chat with ${esc(D.business)}</h1>
+ <p class="muted" style="margin:0">Hi ${esc(D.name||'there')}! Messages about your cake request are all here. Write back below and ${esc(D.business)} gets an email.</p>
+ ${D.details?`<div class="sum">${D.event_date?'<b>'+esc(new Date(D.event_date+'T12:00').toLocaleDateString(undefined,{weekday:'short',month:'long',day:'numeric',year:'numeric'}))+'</b>\n':''}${esc(D.details)}</div>`:''}
+ <div class="thread" aria-live="polite">${m.length?m.map(x=>`<div class="msg ${x.from==='customer'?'customer':'artist'}">${esc(x.body)}<small>${x.from==='customer'?'You':esc(D.business)} · ${esc(when(x.at))}</small></div>`).join(''):'<p class="empty">No messages yet.</p>'}</div>
+ <form id="rf"><label for="reply" class="lbl" style="display:block;color:var(--muted);font-size:13px;margin-bottom:4px">Your reply</label><textarea id="reply" maxlength="4000" required placeholder="Type your message…"></textarea>
+ <div class="row"><button class="btn primary" type="submit">Send</button><span class="st" id="st" role="status"></span></div></form>`;
+ $('reply').value=draft;}
+async function load(first){try{const r=await rpc('shop_chat_thread',{p_token:t});if(!r.ok)throw 0;const j=await r.json();if(!j){app.innerHTML='<h1>Conversation not found</h1><p class="muted">Check the link in your email, or contact your cake artist directly.</p>';return}
+ const changed=!D||JSON.stringify(j.messages)!==JSON.stringify(D.messages);D=j;if(changed)draw();if(first)document.title=`Chat with ${j.business} · Dream Cake Builder`}catch{if(first)app.innerHTML='<h1>We couldn’t load this conversation</h1><p class="muted">Please check your connection and try again.</p>'}}
+document.addEventListener('submit',async e=>{if(e.target.id!=='rf')return;e.preventDefault();if(busy)return;const v=$('reply').value.trim(),st=$('st'),b=e.target.querySelector('button');if(!v){st.className='st bad';st.textContent='Write a message first.';return}
+ busy=true;b.disabled=true;st.className='st';st.textContent='Sending…';
+ try{const r=await rpc('shop_chat_reply',{p_token:t,p_body:v});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error(j&&j.message||'');
+  fetch(`${SB}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'reply',id:j}),keepalive:true}).catch(()=>{});
+  draft='';$('reply').value='';await load();const s2=$('st');if(s2){s2.textContent='Sent!'}}
+ catch(err){st.className='st bad';st.textContent=/too many/i.test(err.message)?'You’ve sent a lot of messages. Please wait a little and try again.':'Your message didn’t send. Please try again.'}
+ finally{busy=false;const b2=document.querySelector('#rf button');if(b2)b2.disabled=false}});
+if(!/^[0-9a-f-]{36}$/i.test(t))app.innerHTML='<h1>Conversation not found</h1><p class="muted">Check the link in your email, or contact your cake artist directly.</p>';
+else{load(true);setInterval(()=>{if(!document.hidden&&!busy)load()},20000)}
+}
+</script>
+</body>
+</html>

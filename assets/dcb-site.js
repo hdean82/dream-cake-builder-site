@@ -318,10 +318,11 @@
     declined: '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>',
     changes: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     message: '<path d="M4 5h16v11H9l-5 4z"/>',
+    reply: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/>',
     update: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/>',
     tip: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'
   };
-  const KL = { request: 'Cake request', approved: 'Approved', declined: 'Declined', changes: 'Changes asked', message: 'From Dream Cake Builder', update: 'What’s new', tip: 'Tip' };
+  const KL = { reply: 'Customer reply', request: 'Cake request', approved: 'Approved', declined: 'Declined', changes: 'Changes asked', message: 'From Dream Cake Builder', update: 'What’s new', tip: 'Tip' };
   const ago = d => { const s = (Date.now() - new Date(d)) / 1000; if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + ' min ago'; if (s < 86400) return Math.floor(s / 3600) + ' hr ago'; if (s < 604800) return Math.floor(s / 86400) + (s < 172800 ? ' day ago' : ' days ago'); return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
   let D = null, wrap = null, timer = null;
   function css() {

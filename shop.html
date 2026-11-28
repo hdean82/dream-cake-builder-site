@@ -689,6 +689,12 @@ body.hassave main{padding-bottom:84px}
 @media(max-width:600px){.wrap>.cardhead{flex-wrap:wrap}.wrap>.cardhead>div{flex:1 1 200px;min-width:0}.wrap>.cardhead>span{flex-wrap:wrap}}
 @media(max-width:600px){.sticky{flex-wrap:wrap;gap:6px}.sticky .primary{flex:1 1 100%}.sticky .btn:not(.primary){flex:1 1 0;min-width:0;padding-left:6px;padding-right:6px;font-size:13.5px}}
 @media(min-width:901px){#nav{background:rgba(255,250,245,.6)}aside{background:rgba(255,250,245,.6)}}
+.rqmc{font-size:12px;font-weight:600;color:var(--muted);background:#f6eef3;border-radius:999px;padding:2px 9px;margin-left:4px;white-space:nowrap}.rqmc.new{background:var(--rose);color:#fff}
+.rqchat{display:flex;flex-direction:column;gap:10px}.rqcsum{background:#fff7fa;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--muted)}.rqcsum div{margin-top:4px;white-space:pre-wrap}
+.rqthread{display:flex;flex-direction:column;gap:8px;max-height:min(46vh,420px);overflow-y:auto;padding:4px 2px;overscroll-behavior:contain}
+.rqm{max-width:84%;padding:9px 13px;border-radius:16px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:14.5px}.rqm small{display:block;font-size:11.5px;opacity:.75;margin-top:3px}
+.rqm.artist{align-self:flex-end;background:var(--rose);color:#fff;border-bottom-right-radius:6px}.rqm.customer{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px}
+.rqquick{display:flex;gap:6px;flex-wrap:wrap}.rqquick .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:34px}.rqchat textarea{width:100%}
 .rqformcard2{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.rqformcard2>div{flex:1 1 220px;display:flex;flex-direction:column;gap:2px}.rqformcard2 small{color:var(--muted);font-size:13px}
 .wrap.rfpage{max-width:1280px}.rfpro{border:1.5px solid #e6b4c4}.rfprohead{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;margin-bottom:6px}.rfbadge{flex:none;font-size:12.5px;font-weight:600;border-radius:999px;padding:4px 10px;background:var(--rose-soft);color:var(--rose-ink);white-space:nowrap}.rfbadge.on{background:#e3f5e8;color:#22703c}
 .rfimg{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.rfimg>div:last-child{display:flex;flex-direction:column;min-width:0}.rfimg small{color:var(--muted);font-size:13px}.rfimgp{flex:none;width:96px;height:64px;border-radius:12px;overflow:hidden;background:#f6eef2;display:grid;place-items:center;border:1px solid var(--line)}.rfimgp.lg{width:64px}.rfimgp img{width:100%;height:100%;object-fit:cover}.rfimgp.lg img{object-fit:contain}.rfimgp svg{width:22px;height:22px;color:var(--muted)}
@@ -1104,7 +1110,7 @@ let RQ={state:"idle",biz:null,list:[],events:[],pics:{},filter:"new",err:""};
 async function loadRequests(){RQ.state="loading";RQ.err="";render();
  try{RQ.biz=await api("/rest/v1/rpc/shop_ensure_business",{method:"POST",body:{}});
   const[list,events]=await Promise.all([api("/rest/v1/shop_requests?select=*&order=created_at.desc&limit=200"),api("/rest/v1/shop_event_types?select=id,name,color&order=sort")]);
-  RQ.list=list||[];RQ.events=events||[];try{RQ.addons=await api("/rest/v1/shop_addons?select=addon,active_until")||[]}catch{RQ.addons=[]}RQ.state="ready";render();signPics()}
+  RQ.list=list||[];RQ.events=events||[];try{RQ.addons=await api("/rest/v1/shop_addons?select=addon,active_until")||[]}catch{RQ.addons=[]}try{RQ.msgs=await api("/rest/v1/shop_request_messages?select=id,request_id,sender,body,created_at&order=created_at.asc&limit=2000")||[]}catch{RQ.msgs=[]}RQ.state="ready";render();signPics()}
  catch(e){RQ.state=e.code==="signin"?"signin":(e.code==="42501"||/artist access/i.test(e.message))?"noaccess":"error";RQ.err=e.message;render()}}
 async function signPics(){const need=[...new Set(RQ.list.flatMap(r=>r.image_paths||[]))].filter(pth=>!RQ.pics[pth]);if(!need.length)return;
  try{const res=await api("/storage/v1/object/sign/shop-files",{method:"POST",body:{expiresIn:3600,paths:need}});(res||[]).forEach(x=>{if(x.signedURL&&x.path)RQ.pics[x.path]=SB+"/storage/v1"+x.signedURL});if(route==="requests")render()}catch{}}
@@ -1131,7 +1137,7 @@ function vRequests(){
    const q=[r.name,r.email,r.phone,r.details,e&&e.name].filter(Boolean).join(" ").toLowerCase();
    return `<details class="card rq" data-keep="rq-${esc(r.id)}"${OPEN.has("rq-"+r.id)?" open":""} data-q="${esc(q)}"><summary class="rqsum">
     <div class="rqtop"><span class="rqwhen">${esc(new Date(r.created_at).toLocaleDateString(undefined,{month:"short",day:"numeric"}))}</span><span class="rqst ${st[1]}">${esc(st[0])}</span></div>
-    <b class="rqname">${esc(r.name)}</b>${blMatch(r.name,r.email)?` <span class="bltag">Blacklisted</span>`:""}${(()=>{const bc=blMatch(r.name,r.email);return bc?`<div class="rqbl">${I_STOP}<span><b>Blacklisted customer.</b> ${esc(fullName(bc))} is not allowed to order${bc.blReason?`: ${esc(bc.blReason)}`:"."}</span></div>`:""})()}
+    <b class="rqname">${esc(r.name)}</b>${(()=>{const ms=rqMsgs(r.id),last=ms[ms.length-1];return ms.length?` <span class="rqmc${last.sender==="customer"?" new":""}">${last.sender==="customer"?"New reply · ":""}${ms.length} message${ms.length>1?"s":""}</span>`:""})()}${blMatch(r.name,r.email)?` <span class="bltag">Blacklisted</span>`:""}${(()=>{const bc=blMatch(r.name,r.email);return bc?`<div class="rqbl">${I_STOP}<span><b>Blacklisted customer.</b> ${esc(fullName(bc))} is not allowed to order${bc.blReason?`: ${esc(bc.blReason)}`:"."}</span></div>`:""})()}
     ${e?`<div class="rqev"><i class="dot" style="background:${esc(e.color)}"></i>${esc(e.name)}</div>`:""}
     ${r.event_date?`<div class="rqdate">${cal}${esc(new Date(r.event_date+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"}))}</div>`:""}
     ${r.details?`<p class="rqprev">${esc(r.details)}</p>`:""}
@@ -1141,7 +1147,7 @@ function vRequests(){
    ${r.details?`<p style="white-space:pre-wrap;margin:8px 0">${esc(r.details)}</p>`:""}
    ${(r.answers||[]).length?`<dl class="rqans">${r.answers.map(x=>`<dt>${esc(x.q)}</dt><dd>${esc(x.a)}</dd>`).join("")}</dl>`:""}
    ${(r.image_paths||[]).length?`<div class="pics">${r.image_paths.map(pth=>RQ.pics[pth]?`<a class="pic" href="${esc(RQ.pics[pth])}" target="_blank" rel="noopener"><img src="${esc(RQ.pics[pth])}" alt="Inspiration photo"></a>`:`<div class="pic"></div>`).join("")}</div>`:""}
-   <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn primary sm" data-a="rqQuote" data-id="${esc(r.id)}">Make a quote</button><a class="btn sm" href="mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent("Your cake request")}">Email</a>${r.status!=="replied"?`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="replied">Mark replied</button>`:""}${r.status!=="declined"?`<button class="btn sm danger" data-a="rqStatus" data-id="${esc(r.id)}" data-v="declined">Decline</button>`:`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="new">Move back to new</button>`}</div></div></details>`}).join(""):`<div class="card empty">${I.inbox}${RQ.list.length?"Nothing in this list.":"No requests yet. Share your order form link to start receiving them."}</div>`}</div>
+   <div class="acts" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn primary sm" data-a="rqChat" data-id="${esc(r.id)}">${rqMsgs(r.id).length?"Open conversation":"Message"}</button><button class="btn sm" data-a="rqQuote" data-id="${esc(r.id)}">Make a quote</button>${r.status!=="replied"?`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="replied">Mark replied</button>`:""}${r.status!=="declined"?`<button class="btn sm danger" data-a="rqStatus" data-id="${esc(r.id)}" data-v="declined">Decline</button>`:`<button class="btn sm" data-a="rqStatus" data-id="${esc(r.id)}" data-v="new">Move back to new</button>`}</div></div></details>`}).join(""):`<div class="card empty">${I.inbox}${RQ.list.length?"Nothing in this list.":"No requests yet. Share your order form link to start receiving them."}</div>`}</div>
   <p class="pempty" id="rqNone" hidden>No requests match your search.</p>`}
  $("main").innerHTML=`<div class="wrap rqpage"><div class="cardhead"><div><h1>Requests</h1><p class="lead" style="margin:0">Cake requests from your online order form.</p></div>${RQ.state==="ready"?`<span style="display:flex;gap:6px"><button class="btn sm" data-a="rqReload">Refresh</button></span>`:""}</div>${body}</div>`;
  rqSearch(RQ.q||"");
@@ -1165,6 +1171,28 @@ function formSetupHtml(){const fd=fullDates();const off=(S.settings.daysOff||[])
   ${CLOUD.state!=="on"?`<p class="note" style="margin:6px 0 0">Sign in so your form can see these.</p>`:""}</details></div>`}
 function sideRequests(){const n=RQ.list.filter(r=>r.status==="new").length;return `<div class="card white"><h3>Inbox</h3><div class="big">${RQ.state==="ready"?n:"–"}</div><p class="hint" style="margin:0">new request${n===1?"":"s"} waiting. “Make a quote” copies a request into a new quote, ready for prices.</p></div>`}
 async function rqPatch(id,body){await api(`/rest/v1/shop_requests?id=eq.${encodeURIComponent(id)}`,{method:"PATCH",body,prefer:"return=minimal"});const r=RQ.list.find(x=>x.id===id);if(r)Object.assign(r,body)}
+
+/* ---------- Request conversations ---------- */
+const rqMsgs=id=>(RQ.msgs||[]).filter(m=>m.request_id===id);
+const rqChatLink=tok=>`${location.origin}${location.pathname.replace(/[^/]*$/,"")}chat?t=${tok}`;
+const RQ_QUICK=[["Thanks","Hi {first},\n\nThank you so much for your cake request! I'd love to make this for you. "],["More details","Hi {first},\n\nThanks for reaching out! Could you tell me a little more about the design you have in mind, and roughly how many people it needs to serve?"],["Date is booked","Hi {first},\n\nThank you for thinking of me! Unfortunately I'm fully booked on that date. "],["Quote coming","Hi {first},\n\nThanks for all the details! I'm putting your quote together now and will send it over shortly."]];
+let RQC=null;
+function openRqChat(id){const r=RQ.list.find(x=>x.id===id);if(!r)return;RQC={id,busy:false};const first=String(r.name||"").trim().split(/\s+/)[0]||"there",ms=rqMsgs(id),e=rqEvent(r.event_type_id);
+ $("dialog").innerHTML=`<div class="dhead"><div><h2>${esc(r.name)}</h2><p class="hint">${esc([r.email,r.phone].filter(Boolean).join(" · "))}</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
+ <div class="dbody rqchat"><div class="rqcsum">${e?`<b>${esc(e.name)}</b>`:""}${r.event_date?`${e?" · ":""}${esc(new Date(r.event_date+"T00:00").toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}))}`:""}${r.details?`<div>${esc(r.details.slice(0,240))}${r.details.length>240?"…":""}</div>`:""}</div>
+ <div class="rqthread" id="rqThread">${ms.length?ms.map(m=>`<div class="rqm ${m.sender}">${esc(m.body)}<small>${m.sender==="artist"?"You":esc(first)} · ${esc(new Date(m.created_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}))}</small></div>`).join(""):`<p class="hint" style="text-align:center;margin:10px 0">Start the conversation. ${esc(first)} gets your message by email with a link to write back, and their replies show up here and in your bell.</p>`}</div>
+ <div class="rqquick">${RQ_QUICK.map(([l],i)=>`<button type="button" class="chip" data-a="rqQuick" data-i="${i}">${esc(l)}</button>`).join("")}</div>
+ <label class="lbl" for="rqMsg">Your message</label><textarea id="rqMsg" rows="5" maxlength="4000" placeholder="Hi ${esc(first)},"></textarea>
+ ${!r.email?`<p class="hint" style="color:#b3261e">This request has no email, so the message can't be sent by email.</p>`:""}</div>
+ <div class="dfoot"><button class="btn" data-a="rqChatCopy">Copy their reply link</button><button class="btn primary" data-a="rqChatSend" id="rqChatBtn"${r.email?"":" disabled"}>Send message</button></div>`;
+ $("modal").classList.add("on");setTimeout(()=>{const t=$("rqThread");if(t)t.scrollTop=t.scrollHeight},0)}
+async function rqChatSend(){const r=RQ.list.find(x=>x.id===RQC.id),box=$("rqMsg"),b=$("rqChatBtn"),text=box.value.trim();if(!text){toast("Write a message first");return}if(RQC.busy)return;RQC.busy=true;b.disabled=true;b.textContent="Sending…";
+ try{const res=await api("/rest/v1/rpc/shop_request_message_send",{method:"POST",body:{p_request:r.id,p_body:text}});r.chat_token=res.token;if(r.status==="new")r.status="replied";
+  const link=rqChatLink(res.token),biz=S.settings.biz||"your cake artist";let mailed=true;
+  try{await sendEmail({to:r.email,subject:`${biz}: about your cake request`,text:`${text}\n\nReply here: ${link}`,template:"reqmsg",accent:S.settings.doc&&S.settings.doc.accent,copy:!!S.settings.copyMe})}catch(e){mailed=false}
+  RQ.msgs=RQ.msgs||[];RQ.msgs.push({id:res.id,request_id:r.id,sender:"artist",body:text,created_at:new Date().toISOString()});
+  toast(mailed?`Message sent to ${r.name}`:"Saved, but the email didn't go out. Copy their reply link and send it another way");openRqChat(r.id);if(route==="requests")vRequests()}
+ catch(e){toast(e.message||"Couldn't send that message")}finally{if(RQC)RQC.busy=false;const b2=$("rqChatBtn");if(b2){b2.disabled=false;b2.textContent="Send message"}}}
 
 /* ---------- Order form builder (top of form, fields, sections, share, live preview) ---------- */
 const RF_DEF=()=>({title:"",intro:"",instr:"",note:"",align:"left",header:true,
@@ -2336,6 +2364,10 @@ document.addEventListener("click",e=>{
   case"rqCopy":(navigator.clipboard?navigator.clipboard.writeText(b.dataset.v):Promise.reject()).then(()=>toast("Link copied"),()=>toast(b.dataset.v));break;
   case"rqSlugSave":{const v=$("rqSlug").value.trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"");if(!/^[a-z0-9][a-z0-9-]{2,59}$/.test(v)){toast("Use 3–60 letters, numbers or dashes");break}
    api(`/rest/v1/shop_businesses?id=eq.${RQ.biz.id}`,{method:"PATCH",body:{slug:v},prefer:"return=minimal"}).then(()=>{RQ.biz.slug=v;render();toast("Link saved")}).catch(e=>toast(e.code==="23505"?"That link name is taken. Try another":"Couldn't save the link"));break}
+  case"rqChat":openRqChat(b.dataset.id);break;
+  case"rqChatSend":rqChatSend();break;
+  case"rqQuick":{const r=RQ.list.find(x=>x.id===RQC.id),f=String(r&&r.name||"").trim().split(/\s+/)[0]||"there",box=$("rqMsg");box.value=RQ_QUICK[+b.dataset.i][1].replace("{first}",f);box.focus();box.setSelectionRange(box.value.length,box.value.length);break}
+  case"rqChatCopy":{const r=RQ.list.find(x=>x.id===RQC.id);if(!r||!r.chat_token){toast("Send a first message to make their reply link");break}const l=rqChatLink(r.chat_token);try{navigator.clipboard.writeText(l).then(()=>toast("Reply link copied"),()=>prompt("Copy this link",l))}catch{prompt("Copy this link",l)}break}
   case"rqStatus":rqPatch(b.dataset.id,{status:b.dataset.v}).then(()=>{render();toast("Updated")}).catch(()=>toast("Couldn't update that request"));break;
   case"fqAdd":{S.formQ.push({id:"q"+uid(),q:"",type:"text",opts:"",required:false});save();render();setTimeout(()=>{const n=document.querySelectorAll("[data-fq$=':q']");if(n.length)n[n.length-1].focus()},0);break}
   case"fqStarter":{S.formQ.push({id:"q"+uid(),q:"Cake flavor",type:"choice",opts:"Vanilla, Chocolate, Red velvet, Lemon, Not sure yet",required:false},{id:"q"+uid(),q:"Pickup or delivery?",type:"choice",opts:"Pickup, Delivery",required:true},{id:"q"+uid(),q:"Budget",type:"text",opts:"",required:false},{id:"q"+uid(),q:"Any allergies we should know about?",type:"long",opts:"",required:false},{id:"q"+uid(),q:"How did you hear about us?",type:"text",opts:"",required:false});save();render();toast("Added 5 questions. Edit or delete any of them");break}
