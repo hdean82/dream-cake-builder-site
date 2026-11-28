@@ -42,9 +42,9 @@ textarea{min-height:120px;resize:vertical}
 .pickhead{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;font-weight:500}.pickhead input{width:18px;height:18px;accent-color:var(--rose)}.pickhead span{flex:1}.pickhead em{font-style:normal;color:var(--rose-ink);font-weight:600}
 .pickbody{display:none;padding:0 14px 8px}.pick.on .pickbody{display:block}.pickbody:empty{display:none!important}
 .prenote{background:var(--rose-soft);color:var(--rose-ink);border-radius:12px;padding:12px 14px;margin:14px 0 6px;white-space:pre-wrap}
-html.embed body{background:transparent!important}html.embed .site-head,html.embed .site-foot{display:none}html.embed main{padding:0}html.embed .req-wrap{padding:0;max-width:none}html.embed .req-card{background:transparent;border:0;box-shadow:none;padding:4px}
-html.pv .site-head,html.pv .site-foot{display:none}html.pv main{padding:10px 0}html.pv .req-wrap{padding:0 10px}html.pv .dcb-trial,html.pv .dcb-beta-fab{display:none!important}
-html.lk body{background:var(--lk-bg)!important}
+html.embed body{background-color:transparent!important;background-image:none}html.embed .site-head,html.embed .site-foot{display:none}html.embed main{padding:0}html.embed .req-wrap{padding:0;max-width:none}html.embed .req-card{background:transparent;border:0;box-shadow:none;padding:4px}
+html.pv .site-head,html.pv .site-foot{display:none}html.pv main,html.pv.embed main{padding:10px 0}html.pv{overscroll-behavior:none}html.pv body{overscroll-behavior:none}html.pv .req-wrap{padding:0 10px}html.pv .dcb-trial,html.pv .dcb-beta-fab{display:none!important}
+html.lk body{background-color:var(--lk-bg)!important}
 html.lk .req-card{background:var(--lk-bg);color:var(--lk-ink);font-family:var(--lk-font);--rose:var(--lk-accent);--rose-ink:var(--lk-accent);--ink:var(--lk-ink);--muted:color-mix(in srgb,var(--lk-ink) 68%,transparent);--line:color-mix(in srgb,var(--lk-ink) 18%,transparent);--rose-soft:color-mix(in srgb,var(--lk-accent) 12%,transparent)}
 html.lk .req-card h1,html.lk .req-card .rfhead b{font-family:var(--lk-hfont);color:var(--lk-ink)}
 html.lk .req-card input,html.lk .req-card select,html.lk .req-card textarea,html.lk .req-card button{font-family:var(--lk-font);color:var(--lk-ink)}
@@ -57,6 +57,14 @@ html.lk.f-line .req-card :is(input[type=text],input[type=email],input[type=tel],
 html.lk.f-soft .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:color-mix(in srgb,var(--lk-ink) 6%,transparent);border:1px solid transparent}
 html.lk .req-card :is(input,select,textarea):focus{outline:2px solid var(--lk-accent);outline-offset:1px}
 .brandline{text-align:center;font-size:12px;margin:14px 0 2px;opacity:.75}.brandline a{color:inherit}
+.cover{margin:-4px -4px 16px;border-radius:14px;overflow:hidden;aspect-ratio:3/1;background:#f6e8ef}.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.flogo{display:block;max-height:90px;max-width:240px;width:auto;margin:0 0 12px}html.lk .req-card:has(.rtop[style*="center"]) .flogo{margin:0 auto 12px}
+html.lk.bs-outline .btn.primary{background:transparent;color:var(--lk-accent);border:2px solid var(--lk-accent)}html.lk.bs-soft .btn.primary{background:color-mix(in srgb,var(--lk-accent) 16%,transparent);color:var(--lk-accent);border-color:transparent}
+html.lk:not(.bw) .submit{width:auto;padding-left:28px;padding-right:28px}
+html.lk.ss-pill .sh{display:inline-block;border:0;background:color-mix(in srgb,var(--lk-accent) 14%,transparent);padding:5px 12px;border-radius:999px}html.lk.ss-plain .sh{border:0;padding-bottom:0}
+html.lk.c1 .grid2{grid-template-columns:minmax(0,1fr)}
+html.lk.sp-s .field{margin:6px 0}html.lk.sp-s .sh{margin-top:14px}html.lk.sp-l .field{margin:16px 0}html.lk.sp-l .sh{margin-top:32px}
+html.lk.cardon .req-card{border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px -30px rgba(0,0,0,.35);padding:22px;background:#fff}
 @media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}input,select,textarea{font-size:16px}}
 </style>
 </head>
@@ -100,7 +108,7 @@ const app=$('app');
 const params=new URLSearchParams(location.search.slice(1)||location.hash.slice(1));
 const slug=(params.get('shop')||'').trim().toLowerCase();
 const like=(params.get('like')||'').slice(0,80),likeImg=params.get('img')||'';
-let info=null,pics=[],busy=false;
+let info=null,pics=[],busy=false,lastPv='';
 const PREVIEW=params.get('preview')==='1',EMBED=params.get('embed')==='1'||PREVIEW&&false;
 if(params.get('embed')==='1')document.documentElement.classList.add('embed');
 
@@ -122,15 +130,22 @@ function applyLook(){const R=document.documentElement,L=(info.form&&info.form.lo
  const fam=[L.font,L.hfont!=='same'?L.hfont:null].filter(Boolean),id='lkfont',href='https://fonts.googleapis.com/css2?'+fam.map(f=>'family='+encodeURIComponent(f).replace(/%20/g,'+')+':wght@400;500;600;700').join('&')+'&display=swap';
  let ln=document.getElementById(id);if(!ln){ln=document.createElement('link');ln.id=id;ln.rel='stylesheet';document.head.appendChild(ln)}if(ln.href!==href)ln.href=href;
  R.style.setProperty('--lk-accent',L.accent||'#c12c7e');R.style.setProperty('--lk-ink',L.ink||'#3a1030');R.style.setProperty('--lk-bg',L.bg&&L.bg!=='none'?L.bg:'transparent');
- R.style.setProperty('--lk-font',`"${L.font||'Inter'}",system-ui,sans-serif`);R.style.setProperty('--lk-hfont',L.hfont&&L.hfont!=='same'?`"${L.hfont}",Georgia,serif`:`"${L.font||'Inter'}",system-ui,sans-serif`)}
+ R.style.setProperty('--lk-font',`"${L.font||'Inter'}",system-ui,sans-serif`);R.style.setProperty('--lk-hfont',L.hfont&&L.hfont!=='same'?`"${L.hfont}",Georgia,serif`:`"${L.font||'Inter'}",system-ui,sans-serif`);
+ const P=info.pro?L:{};['bs-solid','bs-outline','bs-soft','bw','ss-line','ss-pill','ss-plain','c1','sp-s','sp-l','cardon'].forEach(c=>R.classList.remove(c));
+ if(info.pro){R.classList.add('bs-'+(P.btnStyle||'solid'),'ss-'+(P.secStyle||'line'));if(P.btnWide!==false)R.classList.add('bw');if(+P.cols===1)R.classList.add('c1');if(P.space==='s'||P.space==='l')R.classList.add('sp-'+P.space);if(P.card==='card')R.classList.add('cardon')}else R.classList.add('bw');
+ const ok=v=>/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v||''),bgOn=info.pro&&ok(P.bgImg),fade=Math.min(90,Math.max(0,+P.bgFade||0))/100;
+ document.body.style.backgroundImage=bgOn?`linear-gradient(rgba(255,255,255,${fade}),rgba(255,255,255,${fade})),url("${P.bgImg}")`:'';document.body.style.backgroundSize=bgOn?'cover':'';document.body.style.backgroundPosition=bgOn?'center':'';
+ let cs=document.getElementById('lkcss');if(!cs){cs=document.createElement('style');cs.id='lkcss';document.head.appendChild(cs)}
+ cs.textContent=info.pro&&P.css?String(P.css).slice(0,4000).replace(/<\/?style/gi,'').replace(/@import[^;]*;?/gi,'').replace(/url\s*\(/gi,'(').replace(/expression\s*\(/gi,'('):""}
 function form(){
  applyLook();const LK=WEB()&&info.form&&info.form.look||{};
  const today=new Date().toISOString().slice(0,10),c=F(),f=c.f,qs=info.questions||[],byId=id=>qs.find(q=>q.id===id);
+ const PL=WEB()&&info.pro&&info.form&&info.form.look||{},okImg=v=>/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(v||'');const cover=okImg(PL.cover)?`<div class="cover"><img src="${PL.cover}" alt=""></div>`:'',flogo=okImg(PL.logo)?`<img class="flogo" src="${PL.logo}" alt="${esc(info.business)}">`:'';
  const head=c.header&&!WEB()?`<div class="rfhead">${c.logo?`<img src="${esc(c.logo)}" alt="${esc(info.business)}">`:''}<div><b>${esc(info.business)}</b>${c.phone||c.email?`<span>${esc([c.phone,c.email].filter(Boolean).join(' · '))}</span>`:''}</div></div>`:'';
  const sec=s=>{const list=qs.filter(q=>q.sec===s.id);if(s.mode==='pick')return `<div class="pick${picked.has(s.id)?' on':''}" data-sec="${esc(s.id)}"><label class="pickhead"><input type="checkbox" data-pick="${esc(s.id)}"${picked.has(s.id)?' checked':''}><span>${esc(s.title||'Extra')}</span>${s.price?`<em>${esc(s.price)}</em>`:''}</label><div class="pickbody">${list.map(qField).join('')}</div></div>`;
   return `<div class="rsec" data-sec="${esc(s.id)}" data-mode="${esc(s.mode)}"${s.mode==='delivery'&&handoff()!=='Delivery'?' hidden':''}>${s.title?`<h2 class="sh">${esc(s.title)}</h2>`:''}${s.mode==='delivery'&&f.handoff.on?'':''}${list.map(qField).join('')}</div>`};
  const picks=c.secs.filter(s=>s.mode==='pick'),other=c.secs.filter(s=>s.mode!=='pick');
- app.innerHTML=`${head}<div class="rtop"${LK.heading===false?" hidden":""} style="text-align:${c.align==='center'?'center':'left'}"><span class="eyebrow">Cake request</span><h1>${esc(c.title||`Order a cake from ${info.business}`)}</h1>
+ app.innerHTML=`${cover}${head}${flogo}<div class="rtop"${LK.heading===false?" hidden":""} style="text-align:${c.align==='center'?'center':'left'}"><span class="eyebrow">Cake request</span><h1>${esc(c.title||`Order a cake from ${info.business}`)}</h1>
  <p class="lead">${esc(c.intro||"Tell us about your celebration. You'll get a reply with questions or a quote. This isn't a booking until your quote is accepted.")}</p>${c.instr?`<p class="instr">${esc(c.instr)}</p>`:''}</div>
  <form id="rf" novalidate>
   <h2 class="sh">Your details</h2>
@@ -193,12 +208,18 @@ document.addEventListener('submit',async e=>{
   const r=await rpc('shop_submit_request',{p_slug:slug,p_name:name,p_email:email,p_phone:($('f-phone')&&$('f-phone').value.trim())||null,p_event_date:$('f-date').value||null,p_event_type_id:($('f-event')&&$('f-event').value)||null,p_servings:$('f-serv')&&$('f-serv').value?+$('f-serv').value:null,p_details:details||'(No details given)',p_image_paths:paths,p_answers:ans.filter(a=>a.a).map(a=>({id:a.id,a:a.a}))});
   if(!r.ok){const err=await r.json().catch(()=>({}));throw new Error(err.message||'send failed')}
   try{const rid=await r.clone().json();if(typeof rid==='string')fetch(`${SUPABASE_URL}/functions/v1/shop-notify`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'request',id:rid}),keepalive:true}).catch(()=>{})}catch{}
-  app.innerHTML=`<div class="done"><div class="big">Request sent!</div><p class="muted">Thank you, ${esc(name.split(' ')[0])}. ${esc(info.business)} will reply to ${esc(email)} soon.</p></div>`;
+  const PT=WEB()&&info.pro&&info.form&&info.form.look||{};const go=/^https:\/\/[^\s"'<>]+$/.test(PT.redirect||'')?PT.redirect:'';
+  app.innerHTML=`<div class="done"><div class="big">${esc(PT.thanksTitle||'Request sent!')}</div><p class="muted" style="white-space:pre-wrap">${PT.thanks?esc(PT.thanks.replace(/\{name\}/g,name.split(' ')[0])):`Thank you, ${esc(name.split(' ')[0])}. ${esc(info.business)} will reply to ${esc(email)} soon.`}</p>${go?`<p><a class="btn primary" href="${esc(go)}" target="_top">Continue</a></p>`:''}</div>`;sizeUp();
+  if(go)setTimeout(()=>{try{window.top.location.href=go}catch(e){location.href=go}},2500);
  }catch(err){m.className='msg';m.textContent=/fully booked/i.test(err.message)?'That date is fully booked. Please pick another date.':/too many/i.test(err.message)?'You have sent a few requests already. Please wait a little and try again.':/not taking/i.test(err.message)?'This shop is not taking requests right now.':'We couldn’t send your request. Please check your connection and try again.';btn.disabled=false;btn.textContent='Send my request'}
  finally{busy=false}
 });
 
-if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||e.data.type!=='dcb-form-preview')return;const keep=$('f-details')?null:null;info=e.data.info;picked=new Set([...picked].filter(id=>(info.form&&info.form.secs||[]).some(s=>s.id===id)));form()});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
+if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('message',e=>{if(e.origin!==location.origin||!e.data||e.data.type!=='dcb-form-preview')return;const nx=JSON.stringify(e.data.info);if(nx===lastPv)return;lastPv=nx;
+  const keep={};document.querySelectorAll('#rf input:not([type=file]):not([type=radio]):not([type=checkbox]),#rf select,#rf textarea').forEach(x=>{const k=x.id||x.dataset.q;if(k&&x.value)keep[k]=x.value});document.querySelectorAll('#rf input[type=radio]:checked').forEach(x=>keep['r:'+x.name]=x.value);
+  const y=scrollY;info=e.data.info;picked=new Set([...picked].filter(id=>(info.form&&info.form.secs||[]).some(s=>s.id===id)));form();
+  Object.entries(keep).forEach(([k,v])=>{if(k.startsWith('r:')){const r=document.querySelector(`#rf input[name="${CSS.escape(k.slice(2))}"][value="${CSS.escape(v)}"]`);if(r)r.checked=true;return}const el=document.getElementById(k)||document.querySelector(`[data-q="${CSS.escape(k)}"]`);if(el)el.value=v});
+  const ho=document.querySelector('[data-q="f_handoff"]');if(ho)document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=ho.value!=='Delivery');scrollTo(0,y)});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
 (async()=>{
  if(PREVIEW)return;
  if(!slug){info={shop_id:'preview',business:'your cake artist',accepting:true,event_types:[{id:'',name:'Birthday'},{id:'',name:'Wedding'}],questions:[{id:'p1',q:'Cake flavor',type:'choice',options:['Vanilla','Chocolate','Not sure yet']},{id:'p2',q:'Pickup or delivery?',type:'choice',options:['Pickup','Delivery'],required:true}],full_dates:[]};form();const n=document.createElement('p');n.className='msg';n.textContent='Preview: add ?shop=your-shop-link to the address to use a real order form.';app.prepend(n);const f=$('rf');f.addEventListener('submit',ev=>{ev.stopImmediatePropagation();ev.preventDefault();$('rmsg').className='msg';$('rmsg').textContent='Preview only. Nothing was sent.'},true);return}

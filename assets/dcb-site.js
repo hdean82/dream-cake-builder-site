@@ -302,3 +302,71 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add); else add();
   new MutationObserver(add).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 })();
+
+// Notifications bell for signed-in artists: new cake requests, customer approvals, and messages and updates from Dream Cake Builder staff.
+(() => {
+  const SB = 'https://gcorvodfcxhumesttwvj.supabase.co', KEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb', STORE = 'sb-gcorvodfcxhumesttwvj-auth-token';
+  const stored = () => { try { const s = JSON.parse(localStorage.getItem(STORE)); return s && s.access_token ? s : null; } catch (e) { return null; } };
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  if (window.self !== window.top || /[?&](embed|preview)=1/.test(location.search)) return;
+  const authReady = () => window.DCBAuth ? Promise.resolve() : new Promise(res => { const s = document.createElement('script'); s.src = 'assets/dcb-auth.js'; s.onload = res; s.onerror = res; document.head.appendChild(s); });
+  async function token() { if (!stored()) return ''; await authReady(); try { const s = window.DCBAuth && await window.DCBAuth.session(); return s && s.access_token || ''; } catch (e) { return ''; } }
+  async function rpc(fn) { const t = await token(); if (!t) throw new Error('signin'); const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' }, body: '{}' }); if (!r.ok) throw new Error('failed'); const tx = await r.text(); return tx ? JSON.parse(tx) : null; }
+  const IC = {
+    request: '<path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/>',
+    approved: '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.7 2.7L16 10"/>',
+    declined: '<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>',
+    changes: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+    message: '<path d="M4 5h16v11H9l-5 4z"/>',
+    update: '<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3"/>',
+    tip: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'
+  };
+  const KL = { request: 'Cake request', approved: 'Approved', declined: 'Declined', changes: 'Changes asked', message: 'From Dream Cake Builder', update: 'What’s new', tip: 'Tip' };
+  const ago = d => { const s = (Date.now() - new Date(d)) / 1000; if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + ' min ago'; if (s < 86400) return Math.floor(s / 3600) + ' hr ago'; if (s < 604800) return Math.floor(s / 86400) + (s < 172800 ? ' day ago' : ' days ago'); return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); };
+  let D = null, wrap = null, timer = null;
+  function css() {
+    if (document.getElementById('dcb-bell-css')) return; const st = document.createElement('style'); st.id = 'dcb-bell-css';
+    st.textContent = `.dcb-bell{position:relative;flex:none;display:flex}.dcb-bell>button{position:relative;width:40px;height:40px;border-radius:12px;border:1px solid #eed3e3;background:#fff;color:#4b103d;display:grid;place-items:center;cursor:pointer}.dcb-bell>button:hover{background:#fff4f9}.dcb-bell>button:focus-visible{outline:2px solid #c12c7e;outline-offset:2px}.dcb-bell>button svg{width:20px;height:20px}
+.dcb-bell .n{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#c12c7e;color:#fff;font:700 11px/19px Inter,system-ui,sans-serif;text-align:center;box-shadow:0 0 0 2px #fff}
+.dcb-bpanel{position:fixed;z-index:80;width:min(380px,calc(100vw - 16px));max-height:min(560px,calc(100vh - 80px));display:flex;flex-direction:column;background:#fff;border:1px solid #eed3e3;border-radius:18px;box-shadow:0 24px 60px -24px #4b103d99;overflow:hidden;font:15px/1.45 Inter,system-ui,sans-serif;color:#3a1030}
+.dcb-bpanel[hidden]{display:none}.dcb-bpanel .bh{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid #f3e0ea}.dcb-bpanel .bh b{font:600 18px Fraunces,Georgia,serif}.dcb-bpanel .bh button{border:0;background:none;font:inherit;font-size:13px;color:#9a1b5f;cursor:pointer;padding:6px}
+.dcb-bpanel .bl{overflow-y:auto;padding:6px}.dcb-bpanel .bi{display:flex;gap:11px;padding:10px;border-radius:12px;color:inherit;text-decoration:none;position:relative}.dcb-bpanel a.bi:hover,.dcb-bpanel a.bi:focus-visible{background:#fff4f9;outline:none}
+.dcb-bpanel .bi i{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fde3f0;color:#9a1b5f}.dcb-bpanel .bi i svg{width:18px;height:18px}.dcb-bpanel .bi.k-approved i{background:#e3f5e8;color:#22703c}.dcb-bpanel .bi.k-declined i,.dcb-bpanel .bi.k-changes i{background:#fff2d6;color:#7a5410}.dcb-bpanel .bi.k-update i,.dcb-bpanel .bi.k-tip i{background:#eaf3ff;color:#244d84}
+.dcb-bpanel .bt2{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.dcb-bpanel .bt2 small{font-size:11.5px;font-weight:600;color:#8a6a80}.dcb-bpanel .bt2 b{font-weight:600;font-size:14.5px;line-height:1.3}.dcb-bpanel .bt2 span{font-size:13.5px;color:#6b4a62;overflow-wrap:anywhere}.dcb-bpanel .bt2 time{font-size:12px;color:#8a6a80}
+.dcb-bpanel .bi.new::after{content:"";position:absolute;right:10px;top:14px;width:8px;height:8px;border-radius:50%;background:#c12c7e}.dcb-bpanel .bi.new .bt2{padding-right:14px}
+.dcb-bpanel .be{padding:30px 20px;text-align:center;color:#8a6a80;font-size:14px}.dcb-bpanel .bf{border-top:1px solid #f3e0ea;padding:10px 16px;font-size:13px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.dcb-bpanel .bf a{color:#9a1b5f;font-weight:600}
+header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-width:860px){.head-in .dcb-bell{margin-left:auto}.head-in .dcb-bell+details.menu{margin-left:8px}}@media(prefers-reduced-motion:no-preference){.dcb-bell.ring>button svg{animation:dcbring .9s ease 1}}@keyframes dcbring{0%,100%{transform:rotate(0)}20%{transform:rotate(14deg)}40%{transform:rotate(-12deg)}60%{transform:rotate(8deg)}80%{transform:rotate(-4deg)}}`;
+    document.head.appendChild(st);
+  }
+  function mount() {
+    if (wrap) return true; const hi = document.querySelector('.site-head .head-in'), sh = document.querySelector('header .spacer');
+    if (!hi && !sh) return false; css();
+    wrap = document.createElement('div'); wrap.className = 'dcb-bell';
+    wrap.innerHTML = `<button type="button" aria-label="Notifications" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span class="n" hidden></span></button>`;
+    if (hi) { const menu = hi.querySelector('details.menu'); if (menu) hi.insertBefore(wrap, menu); else hi.appendChild(wrap); }
+    else sh.after(wrap);
+    const p = document.createElement('div'); p.className = 'dcb-bpanel'; p.id = 'dcbBellPanel'; p.hidden = true; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Notifications'); document.body.appendChild(p);
+    const btn = wrap.querySelector('button');
+    btn.addEventListener('click', () => p.hidden ? open() : close());
+    document.addEventListener('click', e => { if (!p.hidden && !p.contains(e.target) && !wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !p.hidden) { close(); btn.focus(); } });
+    addEventListener('resize', () => { if (!p.hidden) place(); });
+    return true;
+  }
+  function place() { const p = document.getElementById('dcbBellPanel'), r = wrap.querySelector('button').getBoundingClientRect(); p.style.top = Math.round(r.bottom + 8) + 'px'; const w = Math.min(380, innerWidth - 16), right = Math.max(8, Math.round(innerWidth - r.right)); const fit = Math.min(right, innerWidth - w - 8); p.style.left = 'auto'; p.style.right = Math.max(8, fit) + 'px'; }
+  function badge() { const n = wrap.querySelector('.n'), u = D ? D.unread : 0; n.hidden = !u; n.textContent = u > 9 ? '9+' : String(u); wrap.querySelector('button').setAttribute('aria-label', u ? `Notifications, ${u} new` : 'Notifications'); }
+  function draw() {
+    const p = document.getElementById('dcbBellPanel'), seen = D && D.seen_at ? new Date(D.seen_at) : new Date(0), items = (D && D.items) || [];
+    p.innerHTML = `<div class="bh"><b>Notifications</b>${items.length ? '<button type="button" data-bclose>Close</button>' : ''}</div><div class="bl">${items.length ? items.map(it => { const href = it.link ? (/^https:\/\//.test(it.link) ? it.link : (it.link.startsWith('/') ? it.link : '/' + it.link)) : ''; const inner = `<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[it.kind] || IC.message}</svg></i><span class="bt2"><small>${esc(KL[it.kind] || 'Notice')}</small><b>${esc(it.title)}</b>${it.body ? `<span>${esc(it.body)}</span>` : ''}<time datetime="${esc(it.at)}">${esc(ago(it.at))}</time></span>`; const cls = `bi k-${esc(it.kind)}${new Date(it.at) > seen ? ' new' : ''}`; return href ? `<a class="${cls}" href="${esc(href)}"${/^https:\/\//.test(href) ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>` : `<div class="${cls}">${inner}</div>`; }).join('') : '<div class="be">You’re all caught up. New cake requests, approvals and news from Dream Cake Builder show up here.</div>'}</div>
+     <div class="bf"><a href="/shop#requests">All requests</a>${D && D.admin ? '<a href="/beta-admin#notices">Send a notice</a>' : ''}</div>`;
+    const c = p.querySelector('[data-bclose]'); if (c) c.onclick = close;
+  }
+  async function load() { try { D = await rpc('dcb_my_notifications'); if (!D) return; const before = +(wrap.dataset.u || 0); badge(); if (D.unread > before && before >= 0 && wrap.dataset.u) { wrap.classList.remove('ring'); void wrap.offsetWidth; wrap.classList.add('ring'); } wrap.dataset.u = D.unread; if (!document.getElementById('dcbBellPanel').hidden) draw(); } catch (e) { if (e.message === 'signin') stop(); } }
+  function open() { const p = document.getElementById('dcbBellPanel'); draw(); place(); p.hidden = false; wrap.querySelector('button').setAttribute('aria-expanded', 'true'); if (D && D.unread) { rpc('dcb_notifications_seen').catch(() => {}); D.unread = 0; wrap.dataset.u = '0'; badge(); } }
+  function close() { const p = document.getElementById('dcbBellPanel'); p.hidden = true; wrap.querySelector('button').setAttribute('aria-expanded', 'false'); if (D) D.seen_at = new Date().toISOString(); }
+  function stop() { if (timer) clearInterval(timer); timer = null; if (wrap) { wrap.remove(); wrap = null; const p = document.getElementById('dcbBellPanel'); if (p) p.remove(); } }
+  function start() { if (!stored()) { stop(); return; } if (!mount()) return; load(); if (!timer) timer = setInterval(() => { if (!document.hidden) load(); }, 120000); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  addEventListener('dcb-auth', () => setTimeout(start, 50));
+  addEventListener('focus', () => { if (wrap) load(); });
+})();

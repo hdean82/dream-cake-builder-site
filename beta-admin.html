@@ -102,8 +102,24 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
  <p class="lede" style="color:var(--muted);margin-top:6px">Requests to join, your testers, and everything they've reported.</p>
  <p class="st bad" id="aErr" hidden></p>
  <div id="aBody" hidden>
-  <div class="tabs2" role="tablist"><button class="on" data-t="reports">Reports <span id="nR"></span></button><button data-t="apps">Requests <span id="nA"></span></button><button data-t="testers">Testers <span id="nT"></span></button><button data-t="activity">Activity</button></div>
-  <section data-p="reports"><div class="addrow"><input id="rq" type="search" placeholder="Search reports"><select id="rs" style="font:inherit;padding:10px;border:1px solid #e3c3d4;border-radius:10px"><option value="">Any status</option><option value="sent">Sent</option><option value="reviewing">Reviewing</opt<script src="assets/dcb-auth.js"></script>
+  <div class="tabs2" role="tablist"><button class="on" data-t="reports">Reports <span id="nR"></span></button><button data-t="apps">Requests <span id="nA"></span></button><button data-t="testers">Testers <span id="nT"></span></button><button data-t="activity">Activity</button><button data-t="notices">Notices</button></div>
+  <section data-p="reports"><div class="addrow"><input id="rq" type="search" placeholder="Search reports"><select id="rs" style="font:inherit;padding:10px;border:1px solid #e3c3d4;border-radius:10px"><option value="">Any status</option><option value="sent">Sent</option><option value="reviewing">Reviewing</option><option value="in_progress">In progress</option><option value="completed">Completed</option><option value="wontfix">Not planned</option></select></div><div class="list" id="lR"></div></section>
+  <section data-p="apps" hidden><div class="list" id="lA"></div></section>
+  <section data-p="testers" hidden>
+   <form class="addrow" id="addT"><input name="name" placeholder="Name" maxlength="100"><input name="email" type="email" placeholder="Email" required maxlength="254"><button class="btn primary" type="submit">Invite</button></form>
+   <div class="list" id="lT"></div></section>
+  <section data-p="activity" hidden><div class="list" id="lH"></div></section>
+  <section data-p="notices" hidden>
+   <form class="it" id="ntForm"><b>Send a notice</b><p class="m" style="margin:0">It shows in the bell at the top of every page for the people you pick.</p>
+    <div class="addrow" style="margin:4px 0 0"><select class="sel" name="kind" aria-label="Kind"><option value="message">Message from us</option><option value="update">What’s new</option><option value="tip">Tip</option></select><select class="sel" name="audience" id="ntAud" aria-label="Who sees it"><option value="artists">All cake artists</option><option value="everyone">Everyone signed in</option><option value="one">One person</option></select><input name="email" id="ntEmail" type="email" placeholder="Their account email" maxlength="254" hidden></div>
+    <input name="title" required maxlength="140" placeholder="Title, e.g. Holiday hours" style="font:inherit;padding:10px 12px;border:1px solid #e3c3d4;border-radius:10px">
+    <textarea name="body" maxlength="2000" placeholder="Message (optional)"></textarea>
+    <input name="link" maxlength="300" placeholder="Link (optional), e.g. shop#reqform or https://…" style="font:inherit;padding:10px 12px;border:1px solid #e3c3d4;border-radius:10px">
+    <div class="acts"><button class="btn primary" type="submit">Send notice</button><span class="m" id="ntOk"></span></div></form>
+   <div class="list" id="lN"></div></section>
+ </div>
+</main>
+<script src="assets/dcb-auth.js"></script>
 <script>
 (function(){const FN='https://gcorvodfcxhumesttwvj.supabase.co/functions/v1/beta',$=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),when=d=>new Date(d).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
  const ST=[['sent','Sent'],['reviewing','Reviewing'],['in_progress','In progress'],['completed','Completed 💗'],['wontfix','Not planned']],SL=Object.fromEntries(ST),KIND={bug:'Problem',idea:'Idea',question:'Question'};
@@ -133,16 +149,16 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
    else if(b.dataset.act){await api({action:'admin_tester',id:+b.dataset.act,active:b.dataset.on==='1'});await load()}
    else if(b.dataset.copy){await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied'}}catch(x){err(esc(x.message));b.disabled=false}});
  $('addT').addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(!confirm('Invite '+(d.name||d.email)+' and email them their beta link?'))return;try{const j=await api({action:'admin_invite',email:d.email,name:d.name});e.target.reset();alert(j.emailed?'Invite sent to '+d.email+'.':'Added, but the email didn\'t send. Their link: '+j.link);await load()}catch(x){err(esc(x.message))}});
- (async()=>{try{const s=await DCBAuth.session();if(!s||!s.access_token){err('Sign in with the owner account first. <a href="account.html?next=/beta-admin">Sign in</a>');return}tok=s.access_token;load()}catch(e){err('Sign in with the owner account first. <a href="account.html?next=/beta-admin">Sign in</a>')}})();
-})();
-</script>.t);return}
-  try{if(b.dataset.rep){await api({action:'admin_report',id:+b.dataset.rep,status:b.dataset.s});await load()}
-   else if(b.dataset.inv){const a=D.applications.find(x=>x.id==b.dataset.inv);if(!confirm('Invite '+a.name+' and email them their beta link?'))return;b.disabled=true;const j=await api({action:'admin_invite',email:a.email,name:a.name,application_id:a.id});alert(j.emailed?'Invite sent to '+a.email+'.':'Added, but the email didn\'t send. Their link: '+j.link);await load()}
-   else if(b.dataset.dec){await api({action:'admin_app',id:+b.dataset.dec,status:'declined'});await load()}
-   else if(b.dataset.act){await api({action:'admin_tester',id:+b.dataset.act,active:b.dataset.on==='1'});await load()}
-   else if(b.dataset.copy){await navigator.clipboard.writeText(b.dataset.copy);b.textContent='Copied'}}catch(x){err(esc(x.message))}});
- $('addT').addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(!confirm('Invite '+(d.name||d.email)+' and email them their beta link?'))return;try{const j=await api({action:'admin_invite',email:d.email,name:d.name});e.target.reset();alert(j.emailed?'Invite sent to '+d.email+'.':'Added, but the email didn\'t send. Their link: '+j.link);await load()}catch(x){err(esc(x.message))}});
- (async()=>{try{const s=await DCBAuth.session();if(!s||!s.access_token){err('Sign in with the owner account first. <a href="account.html">Sign in</a>');return}tok=s.access_token;load()}catch(e){err('Sign in with the owner account first. <a href="account.html">Sign in</a>')}})();
+ const SB='https://gcorvodfcxhumesttwvj.supabase.co',SKEY='sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+ const rpc=async(fn,body)=>{const r=await fetch(`${SB}/rest/v1/rpc/${fn}`,{method:'POST',headers:{apikey:SKEY,Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify(body||{})});const t=await r.text();const j=t?JSON.parse(t):null;if(!r.ok)throw new Error((j&&j.message)||'Something went wrong.');return j};
+ const NK={message:'Message',update:'What’s new',tip:'Tip'},NA={artists:'All cake artists',everyone:'Everyone signed in',one:'One person'};
+ async function notices(){try{const L=await rpc('dcb_list_notices');$('lN').innerHTML=L.length?L.map(n=>`<div class="it"><div class="top"><b>${esc(n.title)}</b><span class="tag2">${NK[n.kind]||n.kind}</span></div><div class="m">${esc(n.audience==='one'?(n.to||'One person'):NA[n.audience])} · ${when(n.at)}${n.link?' · '+esc(n.link):''}</div>${n.body?`<div class="tx">${esc(n.body)}</div>`:''}<div class="acts"><button class="btn sm" data-ndel="${esc(n.id)}">Delete</button></div></div>`).join(''):'<div class="empty">No notices sent yet.</div>'}catch(e){$('lN').innerHTML=`<div class="empty">${esc(e.message)}</div>`}}
+ $('ntAud').addEventListener('change',e=>{$('ntEmail').hidden=e.target.value!=='one';$('ntEmail').required=e.target.value==='one'});
+ $('ntForm').addEventListener('submit',async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),btn=e.target.querySelector('button');btn.disabled=true;$('ntOk').textContent='';
+  try{await rpc('dcb_post_notice',{p_kind:d.kind,p_title:d.title,p_body:d.body||'',p_link:d.link||'',p_audience:d.audience,p_email:d.email||null});e.target.reset();$('ntEmail').hidden=true;$('ntOk').textContent='Sent. It’s in their bell now.';notices()}catch(x){$('ntOk').textContent=x.message}finally{btn.disabled=false}});
+ document.addEventListener('click',async e=>{const b=e.target.closest('[data-ndel]');if(!b)return;if(!confirm('Delete this notice? It disappears from everyone’s bell.'))return;try{await rpc('dcb_delete_notice',{p_id:b.dataset.ndel});notices()}catch(x){err(esc(x.message))}});
+ const showTab=t=>{const b=document.querySelector(`.tabs2 [data-t="${t}"]`);if(b)b.click()};
+ (async()=>{try{const s=await DCBAuth.session();if(!s||!s.access_token){err('Sign in with the owner account first. <a href="account.html?next=/beta-admin">Sign in</a>');return}tok=s.access_token;load().then(()=>{notices();if(location.hash==='#notices')showTab('notices')})}catch(e){err('Sign in with the owner account first. <a href="account.html?next=/beta-admin">Sign in</a>')}})();
 })();
 </script>
 <script src="assets/dcb-site.js" defer></script>
