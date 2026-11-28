@@ -175,6 +175,7 @@ function form(){
   ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
   ${f.handoff.on&&byId('f_handoff')?qField(byId('f_handoff')):''}</div>
   <div class="grid2">${byId('f_time')?`<div id="tWrap">${qField(byId('f_time'))}</div>`:''}${byId('f_daddr')?`<div id="daWrap"${handoff()!=='Delivery'?' hidden':''}>${qField(byId('f_daddr'))}</div>`:''}</div>
+  ${qs.some(q=>q.sec==='_delivery'&&q.id!=='f_daddr')?`<div id="dlvWrap" class="grid2"${handoff()!=='Delivery'?' hidden':''}>${qs.filter(q=>q.sec==='_delivery'&&q.id!=='f_daddr').map(q=>q.type==='long'?`<div style="grid-column:1/-1">${qField(q)}</div>`:qField(q)).join('')}</div><div id="dothWrap" class="grid2" hidden>${qs.filter(q=>q.sec==='_dother').map(qField).join('')}</div>`:''}
   ${f.handoff.on&&byId('f_handoff')&&(c.pickup||c.pickupLater)?`<div class="pknote" id="pkNote" hidden><b>Pickup address</b><span>${c.pickupLater?'Shared once your order is paid.':esc(c.pickup)}</span></div>`:''}
   ${f.handoff.on&&byId('f_handoff')&&byId('f_ptime')&&c.slots?`<div class="field ptwrap" id="ptWrap" hidden><label for="q-f_ptime">Pickup time</label><select id="q-f_ptime" data-q="f_ptime"><option value="">Choose a time…</option></select><div class="fine" id="ptMsg" style="margin-top:4px"></div></div>`:''}
   ${picks.length?`<h2 class="sh">Add to your order</h2><p class="fine" style="margin:-4px 0 8px">Tap anything you'd like.</p><div class="picks">${picks.map(sec).join('')}</div>`:''}
@@ -226,12 +227,14 @@ function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.id==='f_time'?timeLabel()
  return `<div class="field"><label for="${id}">${lab}</label><input type="text" id="${id}" data-q="${esc(i)}" maxlength="1000"></div>`}
 function slotPick(){const w=$('ptWrap');return !!w&&!w.hidden}
 function timeLabel(){const h=handoff();return h==='Delivery'?'Delivery time':h==='Pickup'?'Pickup time':'Time needed'}
-function tSync(){const t=$('tWrap'),d=$('daWrap');if(t){t.hidden=slotPick();const l=t.querySelector('label');if(l)l.innerHTML=esc(timeLabel())+req(1)}if(d)d.hidden=handoff()!=='Delivery'}
-function shown(q){if(q.id==='f_time')return !slotPick();if(q.sec==='_delivery')return handoff()==='Delivery';if(!q.sec||q.sec==='_event')return true;if(q.sec==='_pick')return false;const s=F().secs.find(x=>x.id===q.sec);if(!s)return true;if(s.mode==='pick')return picked.has(s.id);if(s.mode==='delivery')return handoff()==='Delivery';return true}
+function tSync(){const t=$('tWrap'),d=$('daWrap');if(t){t.hidden=slotPick();const l=t.querySelector('label');if(l)l.innerHTML=esc(timeLabel())+req(1)}if(d)d.hidden=handoff()!=='Delivery';const dw=$('dlvWrap');if(dw)dw.hidden=handoff()!=='Delivery';const dt=$('dothWrap');if(dt)dt.hidden=!otherContact()}
+function otherContact(){const el=document.querySelector('[data-q="f_dwho"]');return handoff()==='Delivery'&&!!el&&el.value==='Someone else'}
+function shown(q){if(q.id==='f_time')return !slotPick();if(q.sec==='_delivery')return handoff()==='Delivery';if(q.sec==='_dother')return otherContact();if(!q.sec||q.sec==='_event')return true;if(q.sec==='_pick')return false;const s=F().secs.find(x=>x.id===q.sec);if(!s)return true;if(s.mode==='pick')return picked.has(s.id);if(s.mode==='delivery')return handoff()==='Delivery';return true}
 function answers(){const c=F(),out=(info.questions||[]).map(q=>{let v='';if(!shown(q))return{id:q.id,q:q.q,a:'',required:false};if(q.type==='yes'){const x=document.querySelector(`input[data-q="${CSS.escape(q.id)}"]:checked`);v=x?x.value:''}else{const el=document.querySelector(`[data-q="${CSS.escape(q.id)}"]`);v=el?el.value.trim():''}return{id:q.id,q:q.q,a:v,required:q.required}});
  const pk=out.find(a=>a.id==='f_pick');if(pk)pk.a=c.secs.filter(s=>s.mode==='pick'&&picked.has(s.id)).map(s=>s.title+(s.price?` (${s.price})`:'')).join(', ');return out}
 function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.postMessage({type:'dcb-form-height',h:document.documentElement.scrollHeight},'*'))}
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
+ if(t.dataset&&t.dataset.q==='f_dwho'){tSync();sizeUp()}
  if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';ptUpdate();document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');tSync();sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
 let WAIT=false;
