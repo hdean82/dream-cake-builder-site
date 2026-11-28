@@ -467,7 +467,8 @@ header .dcb-bell{margin-left:6px}.head-in .dcb-bell{margin-left:8px}@media(max-w
     }).join('-');
   }
   function fix(el) {
-    if (!el.isConnected || el.closest(SKIP)) return;
+    if (!el.isConnected) return;
+    { const anc = el.closest(SKIP); if (anc && !(/^(P|BLOCKQUOTE)$/.test(anc.tagName) && el.matches('.btn,button,a.btn,label,summary,h1,h2,h3,h4'))) return; }
     const nodes = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement && n.parentElement.closest(SKIP) && el.contains(n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
     for (let n; (n = tw.nextNode());) if (/\S/.test(n.nodeValue)) nodes.push(n);
     if (!nodes.length) return;
