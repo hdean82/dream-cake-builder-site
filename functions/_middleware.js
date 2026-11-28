@@ -30,6 +30,33 @@ const FORM = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta n
 <body><form method="post" action="/team"><h1>Team sign-in</h1><input type="password" name="key" placeholder="Team password" autocomplete="current-password" autofocus required><button>Unlock this device</button></form></body></html>`;
 const clear = ['dcb_team=; Path=/; Max-Age=0; Secure; HttpOnly; SameSite=Lax', 'dcb_team_ui=; Path=/; Max-Age=0; Secure; SameSite=Lax'];
 
+// Link previews: when an artist shares their order form (iMessage, Instagram, Facebook), show their shop name instead of ours.
+const SB = 'https://gcorvodfcxhumesttwvj.supabase.co', SBKEY = 'sb_publishable_6ruYyVr__8c65Az5WCsiaA_jD9AcOgb';
+async function shopPreview(slug) {
+  try {
+    const r = await fetch(SB + '/rest/v1/rpc/shop_form_info', { method: 'POST', headers: { apikey: SBKEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_slug: slug }), signal: AbortSignal.timeout(2500), cf: { cacheTtl: 600, cacheEverything: true } });
+    if (!r.ok) return null;
+    const i = await r.json(); if (!i || typeof i.business !== 'string' || !i.business.trim()) return null;
+    const f = i.form || {}, name = i.business.trim().slice(0, 80);
+    const desc = String(f.intro || '').replace(/\s+/g, ' ').trim().slice(0, 180) || `Tell ${name} about your celebration and request a custom cake.`;
+    const img = /^https:\/\//.test(f.logo || '') ? f.logo : '';
+    return { title: `Order a cake from ${name}`, desc, img };
+  } catch { return null; }
+}
+async function withPreview(res, p, url) {
+  if (!p || !(res.headers.get('Content-Type') || '').includes('text/html')) return res;
+  const set = (sel, v) => ({ element(e) { e.setAttribute('content', v); } });
+  let rw = new HTMLRewriter()
+    .on('title', { element(e) { e.setInnerContent(p.title); } })
+    .on('meta[property="og:title"]', set(0, p.title)).on('meta[name="twitter:title"]', set(0, p.title))
+    .on('meta[property="og:description"]', set(0, p.desc)).on('meta[name="description"]', set(0, p.desc))
+    .on('meta[property="og:url"]', set(0, url));
+  if (p.img) rw = rw.on('meta[property="og:image"]', set(0, p.img)).on('meta[name="twitter:image"]', set(0, p.img));
+  const out = rw.transform(res);
+  out.headers.set('Cache-Control', 'public, max-age=300');
+  return out;
+}
+
 export async function onRequest({ request, next, env }) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -77,6 +104,13 @@ export async function onRequest({ request, next, env }) {
     out.headers.set('Cache-Control', 'private, no-store');
     out.headers.set('X-Robots-Tag', 'noindex');
     return out;
+  }
+  if (/^\/request(\.html)?\/?$/i.test(path) && request.method === 'GET') {
+    const slug = (url.searchParams.get('shop') || '').trim().toLowerCase();
+    if (/^[a-z0-9-]{2,60}$/.test(slug)) {
+      const [res, p] = await Promise.all([next(), shopPreview(slug)]);
+      return withPreview(res, p, url.href);
+    }
   }
   return next();
 }
