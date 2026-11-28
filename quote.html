@@ -18,6 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/dcb-theme.css">
 <style>
+.rvq{margin:10px 0 2px;font-size:14px;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #eed3e3}.rvq .st{color:#e0a100;letter-spacing:1px}.rvq .q{display:block;color:#79536e;font-size:13px;margin-top:3px}
+
 .q-wrap{max-width:780px;margin:0 auto;padding:6px 14px 30px}
 .doc{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;box-shadow:0 8px 24px #7a1a5a12}
 .dtop{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--acc);padding-bottom:12px;margin-bottom:12px}
@@ -115,6 +117,9 @@ const safeLink=u=>/^https:\/\/[^\s"'<>]+$/.test(u||'')?u:'';
 
 function msg(t,x){app.innerHTML=`<div class="empty"><div class="big">${esc(t)}</div><p>${esc(x)}</p></div>`}
 const TRACK={Confirmed:1,Baking:2,Ready:3,Completed:4};
+let RVQ=null;function fillRv(){const el=document.getElementById('rvq');if(!el)return;const paint=()=>{const R=(RVQ&&RVQ.reviews||[]).filter(x=>+x.rating>=1);if(!R.length)return;const avg=R.reduce((a,x)=>a+ +x.rating,0)/R.length,top=R.find(x=>+x.rating>=4&&x.body);
+ el.innerHTML=`<span class="st" aria-hidden="true">${'★'.repeat(Math.round(avg))}${'☆'.repeat(5-Math.round(avg))}</span> <b>${avg.toFixed(1)}</b> from ${R.length} review${R.length===1?'':'s'}${top?`<span class="q">“${esc(String(top.body).length>110?String(top.body).slice(0,107).trim()+'…':top.body)}” ${esc(top.name||'')}</span>`:''}`;el.hidden=false};
+ if(RVQ)return paint();rpc('shop_reviews_public',{p_slug:Q.doc.slug}).then(j=>{RVQ=j||{reviews:[]};paint()}).catch(()=>{})}
 function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
  document.title=`${d.title||'Quote'} #${d.no} · ${d.biz}`;
  const when=Q.responded_at?new Date(Q.responded_at).toLocaleDateString(undefined,{month:'long',day:'numeric'}):'';
@@ -147,10 +152,11 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   :Q.expired?`<div class="state no"><b>This quote has expired.</b> Send ${esc(d.biz)} a message below to ask for a new one.</div>${answerBox(true)}`
   :answerBox(false)}
  <p class="noprint" style="text-align:center;margin:12px 0 0"><button class="btn sm" type="button" onclick="print()">Print Or Save As PDF</button></p>`;
+ fillRv()
 }
 function answerBox(msgOnly){const isQ=Q.doc.kind==='quote';
  return `<form class="answer noprint" id="ans" novalidate><h2>${msgOnly?'Send A Message':isQ?'Ready To Book?':'Questions?'}</h2>
-  <p class="note" style="margin:0">${msgOnly?`Your message goes straight to ${esc(Q.doc.biz)}.`:isQ?`Approve to let ${esc(Q.doc.biz)} know you'd like to go ahead, or send a question first.`:`Let ${esc(Q.doc.biz)} know if anything needs changing.`}</p>
+  <p class="note" style="margin:0">${msgOnly?`Your message goes straight to ${esc(Q.doc.biz)}.`:isQ?`Approve to let ${esc(Q.doc.biz)} know you'd like to go ahead, or send a question first.`:`Let ${esc(Q.doc.biz)} know if anything needs changing.`}</p>${isQ&&!msgOnly&&/^[a-z0-9-]{2,60}$/.test(Q.doc.slug||'')?'<div id="rvq" class="rvq" hidden></div>':''}
   <div class="field"><label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="120" value="${esc(Q.responder_name||Q.doc.customer||'')}"></div>
   <div class="field"><label for="a-msg">Message <span class="note">optional</span></label><textarea id="a-msg" maxlength="2000" placeholder="Anything you'd like to add or change"></textarea></div>
   ${!msgOnly&&isQ?`<div class="sigwrap"><label for="sigPad">Sign to approve</label><canvas class="sigpad" id="sigPad" aria-label="Signature pad. Draw your signature with your finger or mouse."></canvas><div class="sigrow"><span class="note">Use your finger or mouse</span><button type="button" id="sigClear">Clear</button></div></div>`:''}
