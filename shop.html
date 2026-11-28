@@ -755,6 +755,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .sigshow{margin:8px 0 10px;padding:8px 10px;background:#fff;border:1px solid var(--line);border-radius:12px}.sigshow img{display:block;max-width:260px;width:100%;height:auto}.sigshow span{font-size:12.5px;color:var(--muted)}
 .rfready{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}.rfready h4{margin:0 0 2px;font-size:15px}.rfready .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rfready .chip{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:13.5px;color:var(--ink)}.rfready .chip:hover{border-color:var(--rose);color:var(--rose-ink)}
 .kplan summary{cursor:pointer;list-style:none}.kplan summary::-webkit-details-marker{display:none}.kpday{margin-top:10px}.kpd{display:block;font-size:13px;color:var(--rose-ink);margin-bottom:4px}.kpd.late{color:#b3261e}.kpday .tdue{display:none}.kpday .kpd.late+.tlist .tdue{display:inline}
+.igcv{display:block;width:100%;max-width:360px;margin:0 auto;height:auto;border-radius:12px;box-shadow:0 10px 30px -18px #4b103d88}
 </style>
 </head>
 <body>
@@ -1423,6 +1424,31 @@ document.addEventListener("click",e=>{const b=e.target.closest("[data-a^='rf']")
 /* ---------- Portfolio ---------- */
 let pfPick=false;
 function pfLink(){const b=RQ.biz||{};const slug=b.slug;return slug?`${location.origin}${location.pathname.replace(/[^/]*$/,"")}portfolio.html?shop=${slug}`:""}
+/* ---------- Instagram post maker: a branded 4:5 post or 9:16 story from a portfolio photo ---------- */
+let IG={i:0,fmt:"post"};
+function igCaption(x){const b=S.settings.biz&&S.settings.biz!=="My cake shop"?S.settings.biz:"";const ev=x.event?x.event.toLowerCase():"";
+ return [`${x.title||"Custom cake"} ✨`,x.note||"",`${ev?`Made for a ${ev}`:"Made to order"}${x.servings?`, serving ${x.servings}`:""}.`,"",`Booking now. Tap the link in bio to request your date${b?` with ${b}`:""}! 🎂`,"",`#customcakes #cakeartist #${ev?ev.replace(/[^a-z]/g,""):"celebration"}cake #cakedesign #bakedwithlove`].filter((l,k,a)=>l||a[k-1]).join("\n")}
+function igOpen(i){IG.i=i;const x=S.portfolio.items[i];if(!x)return;
+ $("dialog").innerHTML=`<div class="dhead"><div><h2>Instagram post</h2><p class="hint">A branded picture and a caption, ready to share.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
+ <div class="dbody"><div class="seg" style="margin-bottom:10px"><button type="button" class="${IG.fmt==="post"?"on":""}" data-a="igFmt" data-v="post">Feed post 4:5</button><button type="button" class="${IG.fmt==="story"?"on":""}" data-a="igFmt" data-v="story">Story 9:16</button></div>
+ <canvas id="igCv" class="igcv" aria-label="Post preview"></canvas>
+ <div class="field" style="margin-top:12px"><label for="igCap">Caption</label><textarea id="igCap" rows="8">${esc(igCaption(x))}</textarea></div></div>
+ <div class="dfoot"><button class="btn" data-a="igCopy">Copy caption</button><button class="btn primary" data-a="igSave">Download picture</button></div>`;
+ $("modal").classList.add("on");igDraw()}
+async function igDraw(){const x=S.portfolio.items[IG.i],cv=$("igCv");if(!x||!cv)return;const W=1080,H=IG.fmt==="post"?1350:1920;cv.width=W;cv.height=H;const c=cv.getContext("2d");
+ const acc=(S.settings.doc&&S.settings.doc.accent)||"#c12c7e",biz=S.settings.biz&&S.settings.biz!=="My cake shop"?S.settings.biz:"";
+ const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,"#fff4f8");g.addColorStop(1,"#fdeff5");c.fillStyle=g;c.fillRect(0,0,W,H);
+ // sprinkles
+ const rnd=(n=>()=>(n=(n*9301+49297)%233280)/233280)(7),cols=["#f7a8cb","#a8d8f0","#ffd98a","#c6b3f0","#9fe0c4"];for(let k=0;k<70;k++){c.save();c.translate(rnd()*W,rnd()*H);c.rotate(rnd()*6.3);c.fillStyle=cols[k%5];c.globalAlpha=.55;c.beginPath();c.roundRect(-14,-4,28,8,4);c.fill();c.restore()}
+ const pad=60,top=IG.fmt==="post"?60:200,ph=IG.fmt==="post"?960:1240;
+ const img=await new Promise(res=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>res(im);im.onerror=()=>res(null);im.src=picSrc(x.src)});
+ c.save();c.shadowColor="rgba(75,16,61,.25)";c.shadowBlur=40;c.shadowOffsetY=18;c.fillStyle="#fff";c.beginPath();c.roundRect(pad,top,W-pad*2,ph,44);c.fill();c.restore();
+ c.save();c.beginPath();c.roundRect(pad+12,top+12,W-pad*2-24,ph-24,34);c.clip();
+ if(img){const bw=W-pad*2-24,bh=ph-24,r=Math.max(bw/img.width,bh/img.height),w=img.width*r,h=img.height*r;c.drawImage(img,pad+12+(bw-w)/2,top+12+(bh-h)/2,w,h)}else{c.fillStyle="#efe7e9";c.fillRect(0,0,W,H)}c.restore();
+ const ty=top+ph+(IG.fmt==="post"?110:150);c.textAlign="center";c.fillStyle="#4b103d";c.font=`600 ${IG.fmt==="post"?72:84}px Fraunces, Georgia, serif`;
+ const t=x.title||"Custom cake";let fs=IG.fmt==="post"?72:84;while(c.measureText(t).width>W-120&&fs>40){fs-=4;c.font=`600 ${fs}px Fraunces, Georgia, serif`}c.fillText(t,W/2,ty);
+ c.font="600 34px Inter, system-ui, sans-serif";c.fillStyle=acc;const sub=[x.event,x.servings?`serves ${x.servings}`:""].filter(Boolean).join(" · ");if(sub)c.fillText(sub,W/2,ty+56);
+ if(biz){c.font="600 30px Inter, system-ui, sans-serif";const bw=c.measureText(biz).width+60;const by=IG.fmt==="post"?H-70:H-170;c.fillStyle=acc;c.beginPath();c.roundRect(W/2-bw/2,by-44,bw,62,31);c.fill();c.fillStyle="#fff";c.fillText(biz,W/2,by-3)}}
 function vPortfolio(){const P=S.portfolio;if(RQ.state==="idle")setTimeout(loadRequests,0);const link=pfLink();
  $("main").innerHTML=`<div class="wrap"><div class="cardhead"><div><h1>Portfolio</h1><p class="lead" style="margin:0">Your best cakes on a public page. Each one has an “Order something like this” button that opens your order form.</p></div><button class="btn primary" data-a="pfAddFromOrders">+ From your orders</button></div>
  <div class="card"><div class="cardhead"><div><h3>Your gallery page</h3><p class="hint" style="margin:0">${P.on?(link?"Live. Share it on Instagram, Facebook and your bio.":"Pick your order form link name under Requests to get a gallery link."):"Off. Only you can see it here."}</p></div><label class="toggle" style="margin:0;padding:6px 10px"><span class="d" style="font-size:12.5px">Show publicly</span><span class="sw2"><input type="checkbox" id="pfOn"${P.on?" checked":""}><i></i></span></label></div>
@@ -1433,7 +1459,7 @@ function vPortfolio(){const P=S.portfolio;if(RQ.state==="idle")setTimeout(loadRe
    <div class="field"><label>Name</label><input type="text" data-pf="${i}:title" value="${esc(x.title||"")}" maxlength="80" placeholder="e.g. Lilac Lambeth"></div>
    <div class="grid2"><div class="field"><label>Occasion</label><select data-pf="${i}:event"><option value="">–</option>${S.events.map(e=>`<option${x.event===e.name?" selected":""}>${esc(e.name)}</option>`).join("")}</select></div><div class="field"><label>Servings</label><input type="number" min="0" data-pf="${i}:servings" value="${esc(x.servings||"")}"></div></div>
    <div class="field"><label>Note</label><input type="text" data-pf="${i}:note" value="${esc(x.note||"")}" maxlength="300" placeholder="Flavors, technique, what made it special"></div>
-   <div style="display:flex;gap:6px"><button class="mv" data-a="pfMove" data-i="${i}" data-v="-1" aria-label="Move earlier">←</button><button class="mv" data-a="pfMove" data-i="${i}" data-v="1" aria-label="Move later">→</button><button class="btn sm danger" style="margin-left:auto" data-a="pfDel" data-i="${i}">Remove</button></div></div>`).join("")}
+   <div style="display:flex;gap:6px"><button class="mv" data-a="pfMove" data-i="${i}" data-v="-1" aria-label="Move earlier">←</button><button class="mv" data-a="pfMove" data-i="${i}" data-v="1" aria-label="Move later">→</button><button class="btn sm" style="margin-left:auto" data-a="igOpen" data-i="${i}">Instagram post</button><button class="btn sm danger" data-a="pfDel" data-i="${i}">Remove</button></div></div>`).join("")}
   ${P.items.length<60?`<label class="card pfadd"><input type="file" id="pfIn" accept="image/*" multiple hidden>${I.pic}<span>Upload photos</span><span class="note">Finished cakes or Studio renders</span></label>`:""}</div></div>`}
 function sidePortfolio(){const P=S.portfolio;return `<div class="card white"><h3>Gallery</h3><div class="big">${P.items.length}</div><p class="hint" style="margin:0">photo${P.items.length===1?"":"s"}${P.on?" showing publicly":", not public yet"}. Up to 60. Photos stay private until you switch the page on.</p></div>`}
 async function shrinkImg(f,max=1280,q=.8){const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});const k=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);return c.toDataURL("image/jpeg",q)}
@@ -2462,6 +2488,10 @@ document.addEventListener("click",e=>{
   case"logoDel":delete S.settings.doc.logo;save();render();toast("Logo removed");break;
   case"rebookSkip":{S.settings.rebookSkip=S.settings.rebookSkip||{};S.settings.rebookSkip[b.dataset.id]=b.dataset.y;save();render();toast("Hidden until next year");break}
   case"rebookMsg":{const o=S.orders.find(x=>x.id===b.dataset.id);if(!o)break;ensureTpls();save();draft=clone(o);go("new-order");setTimeout(()=>openCompose("rebook"),80);break}
+  case"igOpen":igOpen(+b.dataset.i);break;
+  case"igFmt":IG.fmt=b.dataset.v;igOpen(IG.i);break;
+  case"igCopy":navigator.clipboard.writeText($("igCap").value).then(()=>toast("Caption copied. Paste it into Instagram"),()=>toast("Couldn't copy. Select the text and copy it"));break;
+  case"igSave":{const cv=$("igCv");try{cv.toBlob(bl=>{const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download=((S.portfolio.items[IG.i].title||"cake").replace(/[^a-z0-9]+/gi,"-").toLowerCase())+(IG.fmt==="post"?"-post":"-story")+".png";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},"image/png");toast("Picture saved. Post it from your photos")}catch(e){toast("This photo can't be saved here. Try re-uploading it")}break}
   case"custToday":editCust=b.dataset.id;custTab="customers";go("customers");break;
   case"sdAdd":{const c=S.customers.find(x=>x.id===editCust);if(c){(c.dates=c.dates||[]).push({label:"",date:""});save();render()}}break;
   case"sdDel":{const c=S.customers.find(x=>x.id===editCust);if(c&&c.dates){c.dates.splice(+b.dataset.i,1);save();render()}}break;
