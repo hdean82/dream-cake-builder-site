@@ -164,14 +164,14 @@ async function payCall(body){const r=await fetch(`${SB}/functions/v1/shop-pay`,{
 function payDraw(){const box=$('payBox');if(!box)return;const d=Q.doc;let h='';
  if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
  if(PAY&&PAY.enabled&&!d.cancelled){const isQ=d.kind==='quote',needApprove=isQ&&Q.status!=='approved';
-  h+=`<div class="paybox"><b>Pay online</b><p class="note" style="margin:2px 0 10px">Secure card payment. It goes straight to ${esc(d.biz)}.</p>${needApprove?`<p class="note" style="margin:0 0 8px">Approve the quote below first, then pay your deposit here to book your date.</p>`:''}
-  <div class="payrow">${PAY.deposit?`<button class="btn primary" type="button" data-pay="deposit"${needApprove?' disabled':''}>Pay deposit ${esc(fm(PAY.deposit))}</button>`:''}${PAY.balance?`<button class="btn${PAY.deposit?'':' primary'}" type="button" data-pay="balance"${needApprove?' disabled':''}>Pay ${PAY.deposit?'in full':'balance'} ${esc(fm(PAY.balance))}</button>`:''}</div><p class="note" id="payMsg" role="status" style="margin:8px 0 0"></p></div>`}
+  h+=`<div class="paybox"><b>Pay online</b><p class="note" style="margin:2px 0 10px">Secure card payment. It goes straight to ${esc(d.biz)}.</p>${needApprove?`<p class="note" style="margin:0 0 8px">Paying approves this quote and books your date.</p>`:''}
+  <div class="payrow">${PAY.deposit?`<button class="btn primary" type="button" data-pay="deposit">Pay deposit ${esc(fm(PAY.deposit))}</button>`:''}${PAY.balance?`<button class="btn${PAY.deposit?'':' primary'}" type="button" data-pay="balance">Pay ${PAY.deposit?'in full':'balance'} ${esc(fm(PAY.balance))}</button>`:''}</div><p class="note" id="payMsg" role="status" style="margin:8px 0 0"></p></div>`}
  box.innerHTML=h}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-pay]');if(!b)return;const m=$('payMsg');document.querySelectorAll('[data-pay]').forEach(x=>x.disabled=true);b.textContent='Opening secure checkout…';
  try{const j=await payCall({action:'checkout',token,what:b.dataset.pay});if(!/^https:\/\/checkout\.stripe\.com\//.test(j.url||''))throw new Error('Payments are unavailable right now.');location.href=j.url}
  catch(err){if(m)m.textContent=err.message;payDraw()}});
 async function payInit(){try{const u=new URLSearchParams(location.search),sid=u.get('paid')||'';
-  if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)){const j=await payCall({action:'confirm',token,session:sid}).catch(()=>null);if(j&&j.ok)PAID=j.amount;try{history.replaceState(null,'',location.pathname+'?t='+token)}catch{}}
+  if(/^cs_(test|live)_[A-Za-z0-9]+$/.test(sid)){const j=await payCall({action:'confirm',token,session:sid}).catch(()=>null);if(j&&j.ok){PAID=j.amount;if(Q&&Q.status==='sent'){Q.status='approved';Q.responded_at=new Date().toISOString();draw()}}try{history.replaceState(null,'',location.pathname+'?t='+token)}catch{}}
   PAY=await payCall({action:'options',token}).catch(()=>null);payDraw()}catch{}}
 (async()=>{
  if(!/^[0-9a-f-]{36}$/i.test(token))return msg('Link not found','Please check the link you were sent.');
