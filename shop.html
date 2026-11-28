@@ -799,6 +799,14 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .cnew .cnewhide,.cnew~* .cnewhide,.cnew~.cnewhide{display:none!important}
 .cgrid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:0 10px}
 @media(max-width:480px){.cedit .cpair{grid-template-columns:repeat(2,minmax(0,1fr))!important}.cgrid3{grid-template-columns:repeat(2,minmax(0,1fr))}.cgrid3>.field:first-child{grid-column:1/-1}}
+/* Packages */
+.pklist{display:grid;gap:8px;margin-top:8px}.pkcard{width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}.pkcard .emo{overflow:hidden}.pkcard .emo img{width:100%;height:100%;object-fit:cover}
+.pkp{font-weight:600;text-align:right;white-space:nowrap}.pkp small{display:block;font-weight:400;font-size:11.5px;color:var(--teal,#1d7a5a)}
+.pkrow{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1.4fr) auto;grid-template-areas:"sel qty note del" "lab lab lab .";gap:6px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}.pkrow:first-of-type{border-top:0;padding-top:0}
+.pkrow select{grid-area:sel}.pkrow .pkqty{grid-area:qty}.pkrow input[data-pki$=":note"]{grid-area:note}.pkrow input[data-pki$=":label"]{grid-area:lab}.pkrow .trash{grid-area:del}
+@media(max-width:600px){.pkrow{grid-template-columns:minmax(0,1fr) 64px auto;grid-template-areas:"sel qty del" "lab lab lab" "note note note"}}
+.pkpics{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}.pkpic{aspect-ratio:1;border:2px solid var(--line);border-radius:12px;padding:0;overflow:hidden;background:#fff;cursor:pointer}.pkpic img{width:100%;height:100%;object-fit:cover;display:block}.pkpic.on{border-color:var(--rose);box-shadow:0 0 0 3px #c12c7e33}.pkpic.none{font-size:12.5px;color:var(--muted)}
+.pktile .e{overflow:hidden;border-radius:10px}.pktile .e img{width:44px;height:44px;object-fit:cover}.pktile small{display:block;color:var(--muted);font-size:12px}
 /* New order form: compact and tidy */
 .oform .card{padding:12px 14px;margin-bottom:10px}
 .oform .card h3{font-size:14.5px;margin:0 0 6px}
@@ -926,7 +934,7 @@ if(Array.isArray(S.tpls)&&!S.tpls.some(t=>t.id==="cancel")){const c=TPL.find(x=>
 S.ingredients=S.ingredients||[];S.recipes=S.recipes||[];
 if(!Array.isArray(S.prepSteps))S.prepSteps=[["Order toppers & special supplies",10],["Make sugar flowers & decorations",7],["Shop for ingredients",4],["Bake layers",2],["Fill, stack & crumb coat",2],["Decorate",1],["Box, label & hand off",0]].map(([name,days])=>({id:uid(),name,days}));
 if(S.settings.maxDay==null)S.settings.maxDay="";if(S.settings.maxWeek==null)S.settings.maxWeek="";
-S.todos=S.todos||[];S.suppliers=S.suppliers||[];S.formQ=S.formQ||[];S.portfolio=S.portfolio||{on:false,intro:"",items:[]};S.settings.daysOff=S.settings.daysOff||[];
+S.todos=S.todos||[];S.packages=S.packages||[];S.suppliers=S.suppliers||[];S.formQ=S.formQ||[];S.portfolio=S.portfolio||{on:false,intro:"",items:[]};S.settings.daysOff=S.settings.daysOff||[];
 if(!S.settings.servingBasis)S.settings.servingBasis={wedding:2,party:3};S.expenses=S.expenses||[];S.trips=S.trips||[];if(S.settings.mileRate==null)S.settings.mileRate="";
 S.lists=S.lists||{expense:["Ingredients","Packaging","Equipment","Decorations","Delivery & mileage","Marketing"],income:["Cake orders","Classes","Tips"],recipe:["Cakes","Fillings","Frostings","Cookies"]};
 if(S.settings.instalments==null)S.settings.instalments=2;
@@ -942,7 +950,7 @@ let dirtyT=0;const dirtyCheck=()=>{clearTimeout(dirtyT);dirtyT=setTimeout(()=>{i
 const save=()=>{if(typeof SAVE_PAGES!=="undefined"&&SAVE_PAGES.has(route)){DIRTY=true;saveBar();dirtyCheck();return true}return persist()};
 
 const blankOrder=()=>({id:null,no:null,customer:"",phone:"",email:"",eventId:S.events[0]?.id||"",kind:S.settings.defType,status:"Inquiry",date:"",time:"",handoff:"Collected",address:"",fee:0,items:[],notes:"",prodNotes:"",deposit:null,customerId:null,expiryDays:S.settings.expiry,images:[],imagesOnDoc:true,payments:[],issued:null});
-let route="today",draft=blankOrder(),editType=null,editTpl=null,M=null,search="",undoSnap=null;
+let editPkg=null,route="today",draft=blankOrder(),editType=null,editTpl=null,M=null,search="",undoSnap=null;
 const I_STUDIO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M12 12 20 7.5M12 12v9M12 12 4 7.5"/></svg>';
 const ROUTES=[["sec","Overview"],["today","Today",I.sun],["sec","Orders"],["orders","Orders & quotes",I.list],["new-order","New order",I.order],["calendar","Calendar",I.cal],["requests","Requests",I.inbox],["reqform","Order form",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3" width="15" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>'],["bake","Bake sheet",I.whisk],["sec","Design"],["studio","Studio",I_STUDIO,"studio.html"],["portfolio","Portfolio",I.pic],["sec","Customers"],["customers","Customers",I.user],["sec","Kitchen"],["products","Product types",I.cake],["recipes","Recipes",I.book],["sec","Business"],["money","Money",I.coin],["lists","Lists & reports",I.list],["sec","Settings"],["events","Event types",I.tag],["emails","Email templates",I.mail],["preferences","Preferences",I.gear],["account","Account settings",I.user,"account.html"],["sec","Website"],["home","Home page",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7v8.5a1 1 0 0 1-1 1h-4.5V15h-5v5.5H5a1 1 0 0 1-1-1z"/></svg>',"index.html"],["contact","Contact us",I.mail,"contact.html"],["sec","Help"],["tools","Baker's tools",I.whisk],["help","Help & guides",I.book]];
 
@@ -1066,6 +1074,7 @@ function openItem(i){
  const on=S.types.filter(t=>t.on),off=S.types.filter(t=>!t.on);
  $("dialog").innerHTML=`<div class="dhead"><div><h2>Add an item</h2><p class="hint">Choose what you're adding to this order.</p></div><button class="mv" data-a="closeM" aria-label="Close">✕</button></div>
  <div class="dbody"><p class="lbl" style="margin-top:10px">Your products</p><div class="tiles">${on.map(t=>`<button class="tile" data-a="pickType" data-id="${esc(t.id)}"><span class="e">${tyIc(t)}</span>${esc(t.name)}</button>`).join("")}</div>
+ ${S.packages.length?`<p class="lbl" style="margin-top:16px">Packages</p><div class="tiles">${S.packages.filter(p=>p.name).map(p=>`<button class="tile pktile" data-a="pickPkg" data-id="${esc(p.id)}"><span class="e">${p.img?imgTag(p.img,""):tyIc({ic:"box"})}</span>${esc(p.name)}<small>${pkgPrice(p)}</small></button>`).join("")}</div>`:""}
  ${off.length?`<p class="lbl" style="margin-top:16px">More product types</p><div class="tiles">${off.map(t=>`<button class="tile" data-a="pickType" data-id="${esc(t.id)}"><span class="e">${tyIc(t)}</span>${esc(t.name)}</button>`).join("")}</div>`:""}</div>`;
  $("modal").classList.add("on");
 }
@@ -1297,6 +1306,7 @@ function rqParse(r){const out={handoff:"",address:"",time:"",budget:"",extras:""
   if(/^pickup or delivery/i.test(q)){out.handoff=/deliver/i.test(a)?"Delivered":/ship/i.test(a)?"Shipped":"Collected";return}
   if(/^budget$/i.test(q)){out.budget=a;return}
   if(/^extras chosen$/i.test(q)){out.extras=a;return}
+  if(/^package$/i.test(q)){out.pkg=a;return}
   {const k={"type of place":"dlvType","place":"dlvType","gate or door code":"dlvCode","arrival instructions":"dlvNote","day-of contact":"dlvWho","contact name":"dlvName","contact phone":"dlvPhone"}[q.toLowerCase()];if(k){out[k]=k==="dlvWho"?(/else/i.test(a)?"other":""):a;return}}
   if(/address/i.test(q)&&!out.address){out.address=a;return}
   if(/\btime\b/i.test(q)&&!out.time){const m=a.match(/(\d{1,2})(?::(\d{2}))?\s*(a\.?m\.?|p\.?m\.?)?/i);if(m){let h=+m[1];const mm=m[2]||"00",ap=(m[3]||"").toLowerCase();if(ap.startsWith("p")&&h<12)h+=12;if(ap.startsWith("a")&&h===12)h=0;if(h<24&&+mm<60){out.time=`${String(h).padStart(2,"0")}:${mm}`;return}}}
@@ -1360,10 +1370,11 @@ function rfPublic(){const F=rfCfg(),f=F.f,qs=[];
  if(f.handoff.on)qs.push(...DLV_QS);
  {const sl=f.handoff.on&&rfSlots(F);if(sl){const all=[...new Set(sl.days.filter(Boolean).flatMap(d=>slotTimes(d.from,d.to,sl.step)))];qs.push({id:"f_ptime",q:"Pickup time",type:"choice",options:all.slice(0,12),required:false,sec:"_event"})}}
  if(f.theme.on)qs.push({id:"f_theme",q:"Theme",type:"text",options:[],required:!!f.theme.req,sec:"_cake"});
+ {const pk=(S.packages||[]).filter(p=>p.name&&p.form!==false);if(pk.length)qs.push({id:"f_pkg",q:"Package",type:"choice",options:pk.map(p=>p.name).slice(0,12),required:false,sec:"_pkgs"})}
  if(F.secs.some(s=>s.mode==="pick"))qs.push({id:"f_pick",q:"Extras chosen",type:"text",options:[],required:false,sec:"_pick"});
  F.secs.forEach(s=>s.qs.filter(q=>q.q&&q.q.trim()).forEach(q=>qs.push({id:q.id,q:q.q.trim(),type:q.type,options:q.type==="choice"?rfOpts(q.opts):[],required:!!q.required,sec:s.id})));
  const lg=S.settings.doc&&S.settings.doc.logo;
- return{questions:qs.slice(0,40),form:{v:2,title:F.title,intro:F.intro,instr:F.instr,note:F.note,align:F.align==="center"?"center":"left",header:!!F.header,
+ return{questions:qs.slice(0,40),form:{v:2,packages:(S.packages||[]).filter(p=>p.name&&p.form!==false).slice(0,12).map(p=>({id:p.id,name:p.name,desc:String(p.desc||"").slice(0,400),price:pkgPrice(p),contents:pkgLines(p).slice(0,12),img:String(p.img||"").startsWith("sb:")?p.img.slice(3):""})),title:F.title,intro:F.intro,instr:F.instr,note:F.note,align:F.align==="center"?"center":"left",header:!!F.header,
   f:Object.fromEntries(Object.entries(f).map(([k,x])=>[k,["phone","event"].includes(k)?{on:true,req:true}:k==="date"?{on:true,req:true}:{on:x.on!==false,req:!!x.req}])),
   secs:F.secs.map(s=>({id:s.id,title:s.title||"",mode:s.mode,price:s.mode==="pick"?(s.price||""):""})),look:F.look,hideBrand:F.hideBrand,pickup:f.handoff.on?String((F.pickupMode==="custom"?F.pickupAddr:S.settings.address)||"").trim():"",pickupLater:!!S.settings.pickupPaidOnly&&F.pickupMode!=="custom",slots:f.handoff.on?rfSlots(F):null,minDays:Math.max(0,Math.min(60,+F.minDays||0)),
   logo:F.header&&lg&&/^data:image\/(png|jpeg);base64,/.test(lg)&&lg.length<200000?lg:"",phone:S.settings.phone||"",email:S.settings.email||""}}}
@@ -1736,7 +1747,7 @@ async function uploadPending(){if(!CLOUD.shopId)return;for(const o of [...S.orde
    if(r.ok){o.images[i]="sb:"+path;PIC.signed[path]={url:x,exp:Date.now()+50*60e3}}}catch{}}}
  for(const it of (S.portfolio&&S.portfolio.items)||[]){if(!String(it.src).startsWith("data:"))continue;const path=`${CLOUD.shopId}/portfolio/${(crypto.randomUUID?crypto.randomUUID():uid()+uid())}.jpg`;
   try{const se=await DCBAuth.session();const r=await fetch(`${SB}/storage/v1/object/shop-files/${path}`,{method:"POST",headers:{apikey:SBKEY,Authorization:"Bearer "+se.access_token,"Content-Type":"image/jpeg","x-upsert":"false"},body:await dataToBlob(it.src),signal:AbortSignal.timeout(30000)});
-   if(r.ok){PIC.signed[path]={url:it.src,exp:Date.now()+50*60e3};it.src="sb:"+path}}catch{}}
+   if(r.ok){PIC.signed[path]={url:it.src,exp:Date.now()+50*60e3};const old=it.src;it.src="sb:"+path;(S.packages||[]).forEach(p=>{if(p.img===old)p.img=it.src})}}catch{}}
  for(const e of S.expenses||[]){if(!String(e.receipt||"").startsWith("data:"))continue;const path=`${CLOUD.shopId}/receipts/${(crypto.randomUUID?crypto.randomUUID():uid()+uid())}.jpg`;
   try{const se=await DCBAuth.session();const r=await fetch(`${SB}/storage/v1/object/shop-files/${path}`,{method:"POST",headers:{apikey:SBKEY,Authorization:"Bearer "+se.access_token,"Content-Type":"image/jpeg","x-upsert":"false"},body:await dataToBlob(e.receipt),signal:AbortSignal.timeout(30000)});
    if(r.ok){PIC.signed[path]={url:e.receipt,exp:Date.now()+50*60e3};e.receipt="sb:"+path}}catch{}}
@@ -1793,7 +1804,7 @@ async function cloudConnect(){const se=window.DCBAuth&&await DCBAuth.session();i
   else if(!meta.dirty&&meta.rev!=null){mergeCloud(snap.data);CLOUD.state="on";writeMeta({rev:cloudRev,dirty:false});draft=blankOrder();render();toast("Updated with changes from your other device")}
   else{CLOUD.latest=snap;CLOUD.state="conflict";chooseCopy(snap)}
  }catch(e){CLOUD.state=e.code==="42501"||/artist access/i.test(e.message)?"noaccess":e.code==="signin"?"off":"error"}
- if(CLOUD.state==="on"&&CLOUD.bizName&&(!S.settings.biz||S.settings.biz==="My cake shop")&&CLOUD.bizName!=="My cake shop"){S.settings.biz=CLOUD.bizName;save();try{render()}catch{}}
+ if(CLOUD.state==="on"&&CLOUD.bizName&&(!S.settings.biz||S.settings.biz==="My cake shop")&&CLOUD.bizName!=="My cake shop"){S.settings.biz=CLOUD.bizName;persist();try{render()}catch{}}
  cloudChip();if(CLOUD.state==="on"){try{side()}catch{}setTimeout(()=>syncApprovals(true),500)}}
 function chooseCopy(snap){const d=snap.data||{},when=snap.updated_at?new Date(snap.updated_at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"earlier";
  $("dialog").innerHTML=`<div class="dhead"><div><h2>Which copy should we keep?</h2><p class="hint">This device and your account both have saved orders.</p></div></div>
@@ -2298,7 +2309,7 @@ async function syncApprovals(force){if(CLOUD.state!=="on"||(!force&&Date.now()-A
    if(r.client_message)logEv(o,`Message from ${who}: ${r.client_message.slice(0,300)}`)}
   if(r.signature&&o.approval&&!o.approval.sig){o.approval.sig=r.signature;o.approval.signedAt=r.signed_at;logEv(o,`Signed online by ${r.responder_name||o.customer}`);changed=true}
   if(r.status==="revoked"&&o.share&&o.share.token&&!o.share.off){o.share.off=true;changed=true}}
- if(changed){if(draft&&draft.id){const fresh=S.orders.find(x=>x.id===draft.id);if(fresh){draft.approval=clone(fresh.approval||null);draft.status=fresh.status;draft.log=clone(fresh.log||[])}}save();render();if(news.length)toast(news.slice(0,2).join(" · "))}}
+ if(changed){if(draft&&draft.id){const fresh=S.orders.find(x=>x.id===draft.id);if(fresh){draft.approval=clone(fresh.approval||null);draft.status=fresh.status;draft.log=clone(fresh.log||[])}}persist();render();if(news.length)toast(news.slice(0,2).join(" · "))}}
 window.addEventListener("focus",()=>syncApprovals());setInterval(()=>{if(!document.hidden)syncApprovals()},120e3);
 function approvalBadge(o){const a=o.approval||{};if(a.status==="approved")return`<span class="pill on">Approved${a.name?" by "+esc(a.name):""}</span>`;if(a.status==="declined")return`<span class="pill" style="background:#fde8e6;color:#b3261e">Declined</span>`;if(a.viewed)return`<span class="pill">Viewed</span>`;return o.share&&o.share.token&&!o.share.off?`<span class="pill">Link sent</span>`:""}
 function wrapCard(d){if(!d.id||d.status!=="Completed")return"";const W=d.wrap||{},inPf=(d.images||[]).some(x=>S.portfolio.items.some(p=>p.src===x));const sent=(d.emails||[]).some(e=>e.key==="followup");
@@ -2362,7 +2373,27 @@ async function addPics(files){const room=8-(draft.images||[]).length;for(const f
 /* ---------- Product types ---------- */
 // Stacked tiers only make sense for layered cakes (not cupcakes, cake pops, cake jars, mini or cheesecakes, cookies…)
 const tierable=n=>/cake/i.test(n||"")&&!/cup ?cake|cake ?pop|cake ?jar|mini|cheese ?cake|pan ?cake|cake ?ball|cake ?slice/i.test(n||"");
+/* ---------- Packages: several items sold together at one price ---------- */
+const pkgPrice=p=>money(+p.price||0);
+const pkgLines=p=>(p.items||[]).filter(x=>x&&(x.typeId||x.label)).map(x=>`${+x.qty>1?x.qty+" × ":""}${x.label||(ptype(x.typeId)||{}).name||"Item"}${x.note?` (${x.note})`:""}`);
+const pkgText=p=>pkgLines(p).join(", ");
+function pkgItem(p){return{id:uid(),typeId:"",typeName:p.name,qty:1,price:String(+p.price||0),cost:"",tax:S.settings.defaultTax,notes:pkgText(p),opts:{},pkg:p.id}}
+function pkgPhotos(){return((S.portfolio&&S.portfolio.items)||[]).filter(x=>x&&x.src)}
+function vPackage(){const p=S.packages.find(x=>x.id===editPkg);if(!p){editPkg=null;return vProducts()}
+ const ph=pkgPhotos();
+ $("main").innerHTML=`<div class="wrap oform"><button class="back" data-a="pkgBack">‹ All Product Types</button>
+ <div class="card"><h1 style="font-size:22px;margin:0 0 4px">${esc(p.name||"New package")}</h1><p class="hint">Several items sold together at one price, like a party package.</p>
+  <div class="ogrid"><div class="field" style="grid-column:span 2"><label for="pk-name">Package Name</label><input type="text" id="pk-name" data-pk="name" value="${esc(p.name)}" maxlength="60" placeholder="e.g. Birthday Party Package"></div><div class="field"><label for="pk-price">Price ($)</label><input type="number" id="pk-price" data-pk="price" min="0" step="0.01" value="${esc(p.price)}" placeholder="0.00"></div></div>
+  <div class="field"><label for="pk-desc">Description <span class="note">· customers see this</span></label><textarea id="pk-desc" data-pk="desc" rows="2" maxlength="400" placeholder="e.g. Everything you need for a party of 20.">${esc(p.desc||"")}</textarea></div>
+ </div>
+ <div class="card"><h3>What's Included</h3><p class="hint" style="margin:0 0 6px">Pick a product type and how many. Add details like size or flavor if they're set.</p>
+  ${(p.items||[]).map((x,i)=>`<div class="pkrow"><select data-pki="${i}:typeId" aria-label="Product">${S.types.map(t=>`<option value="${esc(t.id)}"${x.typeId===t.id?" selected":""}>${esc(t.name)}</option>`).join("")}<option value=""${!x.typeId?" selected":""}>Something else…</option></select>${!x.typeId?`<input type="text" data-pki="${i}:label" value="${esc(x.label||"")}" placeholder="What is it?" aria-label="Item name">`:""}<input type="number" min="1" data-pki="${i}:qty" value="${esc(x.qty||1)}" aria-label="How many" class="pkqty"><input type="text" data-pki="${i}:note" value="${esc(x.note||"")}" placeholder='Details, e.g. 8" round' aria-label="Details"><button class="trash" data-a="pkDelRow" data-i="${i}" aria-label="Remove">${TRASH}</button></div>`).join("")||`<p class="nil">Nothing added yet.</p>`}
+  <button class="btn sm" data-a="pkAddRow" style="margin-top:8px">+ Add to Package</button></div>
+ <div class="card"><h3>Photo <span class="note">· optional</span></h3>${ph.length?`<p class="hint" style="margin:0 0 6px">Choose one from your Portfolio.</p><div class="pkpics"><button type="button" class="pkpic none${!p.img?" on":""}" data-a="pkPic" data-v="">No photo</button>${ph.map(x=>`<button type="button" class="pkpic${p.img===x.src?" on":""}" data-a="pkPic" data-v="${esc(x.src)}">${imgTag(x.src,x.title||"")}</button>`).join("")}</div>`:`<p class="hint" style="margin:0">Add photos to your <a href="#portfolio">Portfolio</a>, then pick one here.</p>`}</div>
+ <div class="card"><label class="toggle" style="margin:0"><div><div class="t">Show on My Order Form</div><div class="d">Customers can pick this package when they send a request.</div></div><span class="sw2"><input type="checkbox" data-pk="form"${p.form!==false?" checked":""}><i></i></span></label></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" data-a="pkgBack">Done</button><button class="btn danger" data-a="pkgDel">Delete Package</button></div></div>`}
 function vProducts(){
+ if(editPkg)return vPackage();
  if(editType){const t=ptype(editType);if(!t){editType=null;return vProducts()}
   $("main").innerHTML=`<div class="wrap"><button class="back" data-a="backType">‹ All product types</button>
   <div class="card"><div class="cardhead"><div class="emo">${tyIc(t)}</div><div><h1 style="font-size:22px">${esc(t.name)}</h1><p class="hint">These lists become the dropdowns when you add ${esc(t.name.toLowerCase())} to an order.</p></div></div>
@@ -2382,6 +2413,8 @@ function vProducts(){
  <label class="tick" title="Show as a tile when adding an item to an order"><input type="checkbox" data-a="tOn" data-id="${esc(t.id)}"${t.on?" checked":""} aria-label="Show ${esc(t.name)} first when adding an item"><i></i></label>
  <button class="gear" data-a="tEdit" data-id="${esc(t.id)}" aria-label="Options for ${esc(t.name)}" title="Options">${GEAR}</button></div></div>`).join("")}</div></div>`;
  dragList("#tyList",(a,b)=>{reorder(S.types,a,b);save();render()});
+ $("main").querySelector(".wrap").insertAdjacentHTML("beforeend",`<div class="cardhead" style="margin-top:22px"><div><h2 style="margin:0">Packages</h2><p class="hint" style="margin:2px 0 0">Several items sold together at one price, like a party package. They show on your order form and in Add Item.</p></div><button class="btn primary" data-a="pkgAdd">+ Add Package</button></div>
+ <div class="pklist">${S.packages.map(p=>`<button type="button" class="tycard pkcard" data-a="pkgEdit" data-id="${esc(p.id)}"><span class="emo">${p.img?imgTag(p.img,""):tyIc({ic:"box"})}</span><span class="bd"><span class="t">${esc(p.name||"New package")}</span><span class="d">${esc(pkgText(p)||"Nothing added yet")}</span></span><span class="pkp">${pkgPrice(p)}${p.form!==false?`<small>On order form</small>`:""}</span></button>`).join("")||`<p class="hint">No packages yet.</p>`}</div>`);
 }
 function sideProducts(){const on=S.types.filter(t=>t.on),off=S.types.filter(t=>!t.on);return `<div class="card white"><h3>Quick Add</h3><div class="big">${on.length} shown first</div><p class="hint">When you tap “Add Item” on an order, these ${on.length} product types show as big buttons so you can pick them in one tap.${off.length?` The other ${off.length} (${esc(off.map(t=>t.name).join(", "))}) are one more tap away, under “More Product Types”.`:""}</p><p class="hint" style="margin:6px 0 0">Tick or untick a type in the Quick Add column to change this.</p></div><div class="card white"><h3>Tip</h3><p class="hint" style="margin:0">Put your best sellers at the top. Drag ⋮⋮ to change the order of types and options.</p></div>`}
 
@@ -2759,6 +2792,7 @@ document.addEventListener("click",e=>{
    {const picks=(rfCfg().secs||[]).filter(x=>x.mode==="pick"&&x.title&&p.extras&&p.extras.includes(x.title));
     picks.forEach(x=>{const pr=parseFloat(String(x.price||"").replace(/[^0-9.]/g,""))||0;draft.items.push({id:uid(),typeId:"",typeName:x.title.slice(0,80),qty:1,price:pr?pr.toFixed(2):"0",cost:"",tax:S.settings.defaultTax||"none",notes:"Picked on your order form",opts:{}})});
     if(picks.length)draft.prodNotes=draft.prodNotes.replace(/^Extras they picked: .*$/m,"Extras they picked (added as items): "+p.extras)}
+   {const pk=p.pkg&&(S.packages||[]).find(x=>lc(x.name)===lc(p.pkg));if(pk)draft.items.unshift(pkgItem(pk));else if(p.pkg)draft.prodNotes=(draft.prodNotes?draft.prodNotes+"\n":"")+"Package they picked: "+p.pkg}
    logEv(draft,"Started from an online request");
    rqPatch(r.id,{status:"converted"}).catch(()=>{});go("new-order");toast(`Request copied into a new quote${isNew?` and ${fullName(c)} added to Customers`:""}. Add items and prices`);break}
   case"rqCust":{const r=RQ.list.find(x=>x.id===b.dataset.id);if(!r)break;const {c,isNew}=rqCustomer(r);persist();vRequests();toast(isNew?`${fullName(c)} added to Customers`:`Request saved to ${fullName(c)}'s profile`);break}
@@ -2847,6 +2881,14 @@ document.addEventListener("click",e=>{
   case"newOrder":draft=blankOrder();go("new-order");break;
   case"oset":draft[b.dataset.k]=b.dataset.v;if(b.dataset.k==="handoff"&&b.dataset.v!=="Collected"&&!String(draft.address||"").trim()){const c=draft.customerId&&S.customers.find(x=>x.id===draft.customerId);const a=c&&[c.address,[c.city,[c.state,c.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ")].filter(Boolean).join(", ");if(a){draft.address=a;setTimeout(()=>toast(`Filled in ${c.first||"their"} saved address`),0)}}render();break;
   case"addItem":openItem();break;
+  case"pkgAdd":{const p={id:uid(),name:"",price:"",desc:"",items:[{typeId:(S.types[0]||{}).id||"",qty:1,note:""}],img:"",form:true};S.packages.push(p);persist();editPkg=p.id;render();setTimeout(()=>{const n=$("pk-name");if(n)n.focus()},50);break}
+  case"pkgEdit":editPkg=b.dataset.id;render();break;
+  case"pkgBack":{const p=S.packages.find(x=>x.id===editPkg);if(p&&!p.name.trim()){toast("Give the package a name");$("pk-name")&&$("pk-name").focus();break}editPkg=null;persist();render();break}
+  case"pkgDel":{if(!confirm("Delete this package? Orders that already have it keep it."))break;snap();S.packages=S.packages.filter(x=>x.id!==editPkg);editPkg=null;persist();render();toast("Package deleted",true);break}
+  case"pkAddRow":{const p=S.packages.find(x=>x.id===editPkg);p.items.push({typeId:(S.types[0]||{}).id||"",qty:1,note:""});persist();render();break}
+  case"pkDelRow":{const p=S.packages.find(x=>x.id===editPkg);p.items.splice(+b.dataset.i,1);persist();render();break}
+  case"pkPic":{const p=S.packages.find(x=>x.id===editPkg);p.img=b.dataset.v;persist();render();break}
+  case"pickPkg":{const p=S.packages.find(x=>x.id===b.dataset.id);if(!p)break;draft.items.push(pkgItem(p));closeM();render();toast(`${p.name} added`);break}
   case"pickType":{const ty=ptype(b.dataset.id);M={i:null,item:newItem(ty),tier:0};renderItem();break}
   case"editItem":if(draft.items[i]&&draft.items[i].discount)openDiscount(i);else openItem(i);break;
   case"addDiscount":if(!draft.items.some(x=>!x.discount)){toast("Add an item first");break}openDiscount(null);break;
@@ -2994,6 +3036,7 @@ document.addEventListener("input",e=>{
  if(el.dataset.s&&el.type!=="checkbox"){S.settings[el.dataset.s]=el.value;save();side();return}
  if(el.dataset.g!=null&&el.tagName==="INPUT"&&!el.closest("form")){ptype(editType).groups[+el.dataset.g].name=el.value;save();return}
  if(el.dataset.oi){const[gi,ii]=el.dataset.oi.split(":").map(Number);const gr=ptype(editType).groups[gi];const old=gr.items[ii];gr.items[ii]=el.value;if(gr.prices&&old in gr.prices){gr.prices[el.value]=gr.prices[old];delete gr.prices[old]}save();return}
+ if(el.dataset.pk||el.dataset.pki){const p=S.packages.find(x=>x.id===editPkg);if(!p)return;if(el.dataset.pk){const k=el.dataset.pk;p[k]=el.type==="checkbox"?el.checked:el.value;if(k==="name"){const h=document.querySelector("main h1");if(h)h.textContent=el.value||"New package"}}else{const[i,k]=el.dataset.pki.split(":");p.items[+i][k]=k==="qty"?Math.max(1,+el.value||1):el.value;if(k==="typeId"){persist();render();return}}persist();return}
  if(el.dataset.op){const[gi,ii]=el.dataset.op.split(":").map(Number);const gr=ptype(editType).groups[gi];gr.prices=gr.prices||{};const v=gr.items[ii];if(el.value==="")delete gr.prices[v];else gr.prices[v]=+el.value;save();return}
  if(el.dataset.en){S.events[+el.dataset.en].name=el.value;save();side();return}
  if(el.dataset.tx){const[i,k]=el.dataset.tx.split(":");S.taxes[+i][k]=k==="rate"?(+el.value||0):el.value;save();side();return}
