@@ -160,6 +160,7 @@ function form(){
   ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
   ${f.handoff.on&&byId('f_handoff')?qField(byId('f_handoff')):''}</div>
   ${f.handoff.on&&byId('f_handoff')&&(c.pickup||c.pickupLater)?`<div class="pknote" id="pkNote" hidden><b>Pickup address</b><span>${c.pickupLater?'Shared once your order is paid.':esc(c.pickup)}</span></div>`:''}
+  ${f.handoff.on&&byId('f_handoff')&&byId('f_ptime')&&c.slots?`<div class="field ptwrap" id="ptWrap" hidden><label for="q-f_ptime">Pickup time</label><select id="q-f_ptime" data-q="f_ptime"><option value="">Choose a time…</option></select><div class="fine" id="ptMsg" style="margin-top:4px"></div></div>`:''}
   ${picks.length?`<h2 class="sh">Add to your order</h2><p class="fine" style="margin:-4px 0 8px">Tap anything you'd like.</p><div class="picks">${picks.map(sec).join('')}</div>`:''}
   ${other.map(sec).join('')}
   ${like?`<div class="like">${/^https:\/\/gcorvodfcxhumesttwvj\.supabase\.co\//.test(likeImg)?`<img src="${esc(likeImg)}" alt="">`:''}<div><b>Something like “${esc(like)}”</b><div class="fine" style="margin:0">From the ${esc(info.business)} gallery</div></div></div>`:''}
@@ -175,6 +176,14 @@ function form(){
  </form>${WEB()&&info.brand!==false?`<p class="brandline"><a href="https://www.dreamcakebuilder.com" target="_blank" rel="noopener">Order form by Dream Cake Builder</a></p>`:''}`;
  drawPics();sizeUp();
 }
+const t12s=t=>{const[h,m]=t.split(':').map(Number);return `${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`};
+function slotTimes(from,to,step){const st=Math.max(15,+step||60),toM=v=>{const[h,m]=String(v||'').split(':').map(Number);return h*60+(m||0)};const out=[];for(let m=toM(from);m+st<=toM(to)+0.1&&out.length<48;m+=st)out.push(t12s(`${Math.floor(m/60)}:${m%60}`));return out}
+function ptUpdate(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q-f_ptime'),msg=$('ptMsg'),d=$('f-date')&&$('f-date').value;
+ w.hidden=!sl||handoff()!=='Pickup';if(w.hidden)return;const keep=sel.value;
+ if(!d){sel.hidden=true;msg.textContent='Pick your event date to see pickup times.';return}
+ const day=sl.days[new Date(d+'T12:00').getDay()],times=day?slotTimes(day.from,day.to,sl.step):[];
+ sel.hidden=!times.length;msg.textContent=times.length?'':'No pickup times that day. Pick another date, or choose Delivery.';
+ sel.innerHTML='<option value="">Choose a time…</option>'+times.map(t=>`<option${t===keep?' selected':''}>${esc(t)}</option>`).join('');if(!times.includes(keep))sel.value=''}
 function handoff(){const el=document.querySelector('[data-q="f_handoff"]');return el?el.value:''}
 function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.q)}${req(q.required)}`;
  if(q.type==='long')return `<div class="field"><label for="${id}">${lab}</label><textarea id="${id}" data-q="${esc(i)}" maxlength="1000" style="min-height:80px"></textarea></div>`;
@@ -186,10 +195,10 @@ function answers(){const c=F(),out=(info.questions||[]).map(q=>{let v='';if(!sho
  const pk=out.find(a=>a.id==='f_pick');if(pk)pk.a=c.secs.filter(s=>s.mode==='pick'&&picked.has(s.id)).map(s=>s.title+(s.price?` (${s.price})`:'')).join(', ');return out}
 function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.postMessage({type:'dcb-form-height',h:document.documentElement.scrollHeight},'*'))}
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
- if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
+ if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';ptUpdate();document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
 function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;n.textContent=isFull(d)?'That date is fully booked. Please pick another date.':'';n.style.color=isFull(d)?'var(--rose-ink)':''}
-document.addEventListener('input',e=>{if(e.target.id==='f-date')dateNote()});
+document.addEventListener('input',e=>{if(e.target.id==='f-date'){dateNote();ptUpdate()}});document.addEventListener('change',e=>{if(e.target.id==='f-date')ptUpdate()});
 function drawPics(){const box=$('pics');if(!box)return;sizeUp();box.innerHTML=pics.map((p,i)=>`<div class="pic"><img src="${p.url}" alt="Inspiration photo ${i+1}"><button type="button" data-del="${i}" aria-label="Remove photo">✕</button></div>`).join('')+(pics.length<8?`<label class="pic add"><input type="file" id="picIn" accept="image/*" multiple hidden>+ Add photos</label>`:'')}
 
 document.addEventListener('change',async e=>{if(e.target.id!=='picIn')return;const files=[...e.target.files].slice(0,8-pics.length);for(const f of files){if(!f.type.startsWith('image/'))continue;try{pics.push(await shrink(f))}catch{}}drawPics()});
@@ -222,7 +231,7 @@ if(PREVIEW){document.documentElement.classList.add('pv');addEventListener('messa
   const keep={};document.querySelectorAll('#rf input:not([type=file]):not([type=radio]):not([type=checkbox]),#rf select,#rf textarea').forEach(x=>{const k=x.id||x.dataset.q;if(k&&x.value)keep[k]=x.value});document.querySelectorAll('#rf input[type=radio]:checked').forEach(x=>keep['r:'+x.name]=x.value);
   const y=scrollY;info=e.data.info;picked=new Set([...picked].filter(id=>(info.form&&info.form.secs||[]).some(s=>s.id===id)));form();
   Object.entries(keep).forEach(([k,v])=>{if(k.startsWith('r:')){const r=document.querySelector(`#rf input[name="${CSS.escape(k.slice(2))}"][value="${CSS.escape(v)}"]`);if(r)r.checked=true;return}const el=document.getElementById(k)||document.querySelector(`[data-q="${CSS.escape(k)}"]`);if(el)el.value=v});
-  const ho=document.querySelector('[data-q="f_handoff"]');if(ho){document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=ho.value!=='Delivery');const pk=$('pkNote');if(pk)pk.hidden=ho.value!=='Pickup'}scrollTo(0,y)});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
+  const ho=document.querySelector('[data-q="f_handoff"]');if(ho){document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=ho.value!=='Delivery');const pk=$('pkNote');if(pk)pk.hidden=ho.value!=='Pickup';ptUpdate()}scrollTo(0,y)});if(parent!==window)parent.postMessage({type:'dcb-form-ready'},location.origin)}
 (async()=>{
  if(PREVIEW)return;
  if(!slug){info={shop_id:'preview',business:'your cake artist',accepting:true,event_types:[{id:'',name:'Birthday'},{id:'',name:'Wedding'}],questions:[{id:'p1',q:'Cake flavor',type:'choice',options:['Vanilla','Chocolate','Not sure yet']},{id:'p2',q:'Pickup or delivery?',type:'choice',options:['Pickup','Delivery'],required:true}],full_dates:[]};form();const n=document.createElement('p');n.className='msg';n.textContent='Preview: add ?shop=your-shop-link to the address to use a real order form.';app.prepend(n);const f=$('rf');f.addEventListener('submit',ev=>{ev.stopImmediatePropagation();ev.preventDefault();$('rmsg').className='msg';$('rmsg').textContent='Preview only. Nothing was sent.'},true);return}
