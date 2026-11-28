@@ -195,11 +195,13 @@
     if (built || document.documentElement.classList.contains('viewer') || window.top !== window) return;
     if (!(await tester())) return;
     built = true;
+    const CSS2 = '.dcb-bug{opacity:.92}@media(max-width:820px){.dcb-bug span{display:none}.dcb-bug{padding:9px!important;border-radius:999px!important}}body{padding-bottom:max(var(--dcb-pb,0px),56px)}';
+    { const s2 = document.createElement('style'); s2.textContent = CSS2; document.head.appendChild(s2); }
     const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     if (!document.body.dataset.betaBoard) {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'dcb-bug'; b.setAttribute('aria-haspopup', 'dialog');
-      b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg>Report a problem';
+      b.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg><span>Report a problem</span>'; b.setAttribute('aria-label', 'Report a problem');
       document.body.appendChild(b);
       b.addEventListener('click', () => open());
     }
