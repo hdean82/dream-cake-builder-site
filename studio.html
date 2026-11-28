@@ -729,7 +729,7 @@ const ROSE_GEO=new Map();
 function rosetteGeo(tip='1M',lod=1){const key=tip+'|'+lod;if(ROSE_GEO.has(key))return ROSE_GEO.get(key);
  // The rope is extruded through a star-shaped tip: crisp ridges with V grooves, slightly flattened where it lies on the cake, twisting gently.
  // The spiral is tight enough that each loop presses against the last, and the outer ring closes so the tail tucks in.
- const closed=tip==='2D',turns=closed?2.5:2.25,teeth=closed?10:8,depth=closed?.3:.36,segs=Math.max(48,Math.round(120*lod)),rad=teeth*(lod>=.7?6:lod>=.5?5:4),TA=s=>s*turns*2*PI;
+ const closed=tip==='2D',turns=closed?2.5:2.25,teeth=closed?10:8,depth=closed?.3:.36,segs=Math.max(lod<.35?36:48,Math.round(120*lod)),rad=teeth*(lod>=.7?6:lod>=.5?5:lod>=.35?4:3),TA=s=>s*turns*2*PI;
  const g=sweep(s=>{const th=TA(s),r=.03+.79*Math.pow(Math.min(1,s/.62),.85)*(1-.06*smooth(.9,1,s));return new V3(Math.cos(th)*r,.38*Math.pow(1-Math.min(1,s/.7),.9)+.2-.05*smooth(.85,1,s),Math.sin(th)*r)},s=>{const th=TA(s);return new V3(-Math.cos(th),0,-Math.sin(th))},segs,rad,(s,th)=>{
    const taper=1-.75*smooth(.82,1,s),k=.33*(1.1-.2*smooth(0,.3,s))*(1-.06*s)*taper,ph=teeth*(th+s*(closed?2.2:1.2))/2,crest=Math.pow(Math.abs(Math.cos(ph)),closed?.55:.4),rr=k*(1-depth+depth*crest);return[rr*.82,rr]});
  const core=new T.LatheGeometry([new V2(0,.66),new V2(.1,.62),new V2(.24,.42),new V2(.34,.18),new V2(.3,.05),new V2(0,.05)],teeth*3),cp=core.attributes.position;for(let i=0;i<cp.count;i++){const x=cp.getX(i),z=cp.getZ(i),k=1-.12*(1-Math.pow(Math.abs(Math.cos(teeth*Math.atan2(z,x)/2)),.4));cp.setX(i,x*k);cp.setZ(i,z*k)}core.computeVertexNormals();
@@ -954,7 +954,7 @@ ic('sails','<path d="M8 27C8 12 14 5 22 3c-2 8 0 16-2 24z" fill="#3a2118"/><path
 // Place one decoration group on tier i. Positions follow the tier's real (wobbly) wall.
 const ROUND_PLACED=[];
 // Finished decoration groups are remembered between rebuilds. Changing one piece (or the lighting, or another tier) reuses every other group as it was instead of building it again.
-const DECO_CACHE=new Map(),PART_CACHE=new Map();
+const DECO_CACHE=new Map(),PART_CACHE=new Map(),PIPE_CACHE=new Map();
 // Same idea for stencils and other heavy pieces that have no tappable items: remember what they added and add it again.
 function cachedAdds(key,add,fn){if(!key)return fn(add);const hit=PART_CACHE.get(key);if(hit){PART_CACHE.delete(key);PART_CACHE.set(key,hit);for(const a of hit)add(a.m,a.part==='topper'?a.g.clone():a.g,a.part);return}const rec=[];fn((m,g,part)=>{g=norm(g);rec.push({m,g:part==='topper'?g.clone():g,part});return add(m,g,part)});PART_CACHE.set(key,rec);if(PART_CACHE.size>80)PART_CACHE.delete(PART_CACHE.keys().next().value)}
 const tierKey=(t,extra)=>{try{return JSON.stringify([{...t,decor:0,adj:0},extra,design.character,design.cakeType,design.themeKey,design.showSeams])}catch(e){return null}};
@@ -2778,7 +2778,7 @@ const GLY=new Map(),NUM_FONT={generateShapes(text,size,ff){const gk=text+'|'+(ff
   for(const h of holes){const host=shapes.filter(q=>pip(h.P[0],q.o.P)).sort((a,b)=>Math.abs(a.o.a)-Math.abs(b.o.a))[0];if(host)host.s.holes.push(new T.Path(conv(h.P)))}
   return shapes.map(q=>q.s)}};
 function loadNumFont(){return Promise.resolve(NUM_FONT)}
-let KISS=null;function kissBase(){if(KISS)return KISS;const P=[new V2(0,0)];for(let k=0;k<=24;k++){const t=k/24,rr=t<.08?.34+.04*Math.sin(t/.08*PI/2):.38*Math.pow(1-(t-.08)/.92,.75);P.push(new V2(Math.max(1e-3,rr),t*.62))}const g=new T.LatheGeometry(P,40),p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i),a=Math.atan2(z,x),k=1+.16*Math.cos(8*a+y*5)*smooth(0,.1,y)*(1-smooth(.5,.62,y));p.setX(i,x*k+.05*Math.pow(smooth(.4,.62,y),2));p.setZ(i,z*k)}g.computeVertexNormals();KISS=g;return g}
+let KISS=null;function kissBase(){if(KISS)return KISS;const P=[new V2(0,0)];const KN=LITE?14:24;for(let k=0;k<=KN;k++){const t=k/KN,rr=t<.08?.34+.04*Math.sin(t/.08*PI/2):.38*Math.pow(1-(t-.08)/.92,.75);P.push(new V2(Math.max(1e-3,rr),t*.62))}const g=new T.LatheGeometry(P,LITE?28:40),p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i),a=Math.atan2(z,x),k=1+.16*Math.cos(8*a+y*5)*smooth(0,.1,y)*(1-smooth(.5,.62,y));p.setX(i,x*k+.05*Math.pow(smooth(.4,.62,y),2));p.setZ(i,z*k)}g.computeVertexNormals();KISS=g;return g}
 // Sculpted outline used only by the Sports #2. Smooth Bezier fondant cuts replace the traced typeface stair-steps.
 function sportTwoShape(){const p=new T.Shape();p.moveTo(-.96,.45);
  p.bezierCurveTo(-.94,.78,-.70,1.00,-.31,1.035);p.bezierCurveTo(.16,1.108,.65,.966,.875,.70);
@@ -2789,7 +2789,7 @@ function sportTwoShape(){const p=new T.Shape();p.moveTo(-.96,.45);
  p.bezierCurveTo(-.953,-.548,-.743,-.366,-.52,-.21);p.bezierCurveTo(-.196,.017,.16,.156,.313,.351);
  p.bezierCurveTo(.414,.48,.363,.604,.233,.647);p.bezierCurveTo(.045,.707,-.196,.662,-.305,.477);
  p.quadraticCurveTo(-.325,.443,-.37,.443);p.lineTo(-.911,.392);p.quadraticCurveTo(-.967,.392,-.96,.45);p.closePath();return p;}
-let NUM_BODY=null;const WALL_OFF=new Map();
+let NUM_BODY=null;const WALL_OFF=new Map(),WALL_GEO=new Map(),EXT_GEO=new Map();
 function buildNumber(D,add,setPart){NUM_BODY=null;const N=D.number||{},text=(N.text||'1').slice(0,3);if(!NUM_FONT){loadNumFont().catch(()=>{});totalH=3;boardR=8;return false}
  const special=D.themeKey==='sig_sports'&&text==='2',aspect=N.aspect??1,shapes=special?[sportTwoShape()]:NUM_FONT.generateShapes(text,10);if(aspect!==1)for(const sh of shapes)for(const path of [sh,...sh.holes])for(const seg of path.curves){for(const k of ['v1','v2','v0','v3'])if(seg[k]&&!seg[k]._numStretch){seg[k].x*=aspect;seg[k]._numStretch=true;}}const probe=new T.ShapeGeometry(shapes);probe.computeBoundingBox();const bb=probe.boundingBox,k=(N.height||12)/Math.max(.1,bb.max.y-bb.min.y),cx=(bb.min.x+bb.max.x)/2,cy=(bb.min.y+bb.max.y)/2;probe.dispose();
  numSize={w:(bb.max.x-bb.min.x)*k,d:(bb.max.y-bb.min.y)*k};
@@ -2801,7 +2801,7 @@ function buildNumber(D,add,setPart){NUM_BODY=null;const N=D.number||{},text=(N.t
  const bh=D.board==='wood'?1.2:.5,layers=N.layers===1?1:((D.themeKey==='sig_blocks'&&N.layers===3)?3:2),LH=.85,kh=.62*(N.kissSize??1),cakeM=dmat(NUM_CAKES[N.cake]||NUM_CAKES.golden,{r:.62,sh:.35}),creamM=pipeMat(N.cream||'#fbf7f1'),q=rng(777+(N.seed||0));
  let y=bh;const sp=.8*(N.kissSize??1),pts=[];for(let row=0,z=-numSize.d/2-1;z<numSize.d/2+1;z+=sp*.866,row++)for(let x=-numSize.w/2-1+(row%2?sp/2:0);x<numSize.w/2+1;x+=sp)if(N.style!=='frosted'&&N.style!=='naked'&&deep(x,z,sp*.38))pts.push([x,z]);
  const kisses=yy=>{const base=kissBase();for(const[x,z]of pts){const g=base.clone(),s=(N.kissSize??1)*(.92+q()*.16);g.rotateY(q()*6.28);g.scale(s,s*(.95+q()*.12),s);g.translate(x+(q()-.5)*.04,yy,z+(q()-.5)*.04);setPart('kisses');add(creamM,tint(g,1+(q()-.5)*.06))}};
- const style=N.style==='frosted'||N.style==='naked'?N.style:'kisses',ext=(depth,bt,bs)=>{let g=new T.ExtrudeGeometry(shapes,{depth,bevelEnabled:true,bevelThickness:bt*1.25,bevelSize:special?bs/k:bs*1.25,bevelSegments:special?6:6,curveSegments:special?32:32,steps:1});g.translate(-cx,-cy,0);g.scale(k,k,1);g.rotateX(-PI/2);try{g=toCreasedNormals(g,PI/5)}catch(e){}return g},smoothM=dmat(N.cream||'#fbf7f1',{r:.5,sh:.3});
+ const style=N.style==='frosted'||N.style==='naked'?N.style:'kisses',ext=(depth,bt,bs)=>{const ek=JSON.stringify(['ext',N.text,N.height,N.aspect,N.font,D.themeKey,k,depth,bt,bs]),eh=EXT_GEO.get(ek);if(eh)return eh.clone();let g=new T.ExtrudeGeometry(shapes,{depth,bevelEnabled:true,bevelThickness:bt*1.25,bevelSize:special?bs/k:bs*1.25,bevelSegments:special?6:6,curveSegments:special?32:32,steps:1});g.translate(-cx,-cy,0);g.scale(k,k,1);g.rotateX(-PI/2);try{g=toCreasedNormals(g,PI/5)}catch(e){}EXT_GEO.set(ek,g.clone());if(EXT_GEO.size>12)EXT_GEO.delete(EXT_GEO.keys().next().value);return g},smoothM=dmat(N.cream||'#fbf7f1',{r:.5,sh:.3});
  if(style==='frosted'){const H=layers*LH+(layers-1)*.2,g=ext(H,.16,.14);g.translate(0,y+.16,0);NUM_BODY=g;setPart('number');if(N.zones&&N.zones.length){g.computeBoundingBox();const bb=g.boundingBox,Z=N.zones.slice(0,6),zr=Z.map(z=>new T.Vector4(z[0],z[1],z[2],z[3])),zc=Z.map(z=>new T.Color(z[4]));while(zr.length<6){zr.push(new T.Vector4(2,2,2,2));zc.push(new T.Color('#fff'))}const zs=Z.map(z=>z[5]||0);while(zs.length<6)zs.push(0);const zm=smoothM.clone();zm.color.set('#ffffff');zm.onBeforeCompile=s=>{s.uniforms.zR={value:zr};s.uniforms.zC={value:zc};s.uniforms.bMin={value:bb.min.clone()};s.uniforms.bMax={value:bb.max.clone()};s.uniforms.zS={value:zs};s.uniforms.zBase={value:new T.Color(N.cream||'#ffffff')};s.vertexShader='varying vec3 vZp;\n'+s.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvZp=position;');s.fragmentShader='varying vec3 vZp;uniform vec4 zR[6];uniform vec3 zC[6];uniform vec3 bMin;uniform vec3 bMax;uniform vec3 zBase;uniform float zS[6];\n'+s.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n{float u=(vZp.x-bMin.x)/(bMax.x-bMin.x),v=(vZp.z-bMin.z)/(bMax.z-bMin.z);vec3 zc=zBase;for(int k=5;k>=0;k--){vec4 r=zR[k];if(v>=r.x&&v<r.y&&u>=r.z&&u<r.w){zc=zC[k];if(zS[k]>0.&&vZp.y>bMax.y-.17&&fract(u*zS[k])<.042)zc=vec3(.97);else if(zS[k]>0.)zc*=.94+.09*sin(u*740.)*sin(v*631.);else if(zS[k]<-1.5){float plank=fract((u+.4*v)*20.);zc*=.94+.085*sin(u*111.+v*65.)+.09*smoothstep(.01,.08,plank);zc*=1.-.14*(1.-smoothstep(.018,.056,plank));}else if(zS[k]<-.5){zc*=.94+.075*sin(u*510.)*sin(v*435.);}}}diffuseColor.rgb*=zc;}')};zm.customProgramCacheKey=()=>'zones'+JSON.stringify(N.zones);add(zm,g)}else add(smoothM,g);y+=H+.34}
  else if(style==='naked'){for(let L=0;L<layers;L++){const g=ext(LH,.1,.08);g.translate(0,y+.1,0);setPart('number');add(cakeM,g);y+=LH+.2;const f=ext(.14,.04,.03);f.translate(0,y-.08,0);setPart('kisses');add(smoothM,f);y+=.08}}
  else for(let L=0;L<layers;L++){const g=ext(LH,.1,.08);g.translate(0,y+.1,0);setPart('number');add(cakeM,g);y+=LH+.2;kisses(y-.06);y+=kh*.92}
@@ -2840,10 +2840,16 @@ function buildNumber(D,add,setPart){NUM_BODY=null;const N=D.number||{},text=(N.t
     return ng};
    for(let rr=0;rr<rows;rr++){const sh=(rr%2)*bl*.5,y0=wy+rr*rh+rh*.04,y1=wy+(rr+1)*rh-rh*.04;for(let k=0;k<per;k++){const s0=k*bl+sh+bl*.05,s1=(k+1)*bl+sh-bl*.05,ci=Math.floor(wq()*cols.length);lists[ci].push(brick(s0,s1,y0,y1));
      if(stud)for(const f of[.2,.5,.8]){const[x,z,nx,nz]=at(s0+(s1-s0)*f),bead=new T.CylinderGeometry(.071,.081,.041,10);bead.rotateX(PI/2);bead.rotateY(Math.atan2(nx,nz));{const w=wAt(s0+(s1-s0)*f)+.24;bead.translate(x+nx*w,(y0+y1)/2,z+nz*w)};{const bn=bead.toNonIndexed();bn.deleteAttribute('uv');lists[ci].push(bn)}}}}};
-  polys.forEach(pl=>{walk(pl.outer);pl.holes.forEach(walk)});
-  lists.forEach((l,ci)=>{if(l.length){setPart('number');add(mats[ci],mergeGeometries(l))}})}
+  {const wk=JSON.stringify(['wall',D.number,D.themeKey,y,bh]);let merged=WALL_GEO.get(wk);if(!merged){polys.forEach(pl=>{walk(pl.outer);pl.holes.forEach(walk)});merged=lists.map(l=>l.length?norm(mergeGeometries(l)):null);WALL_GEO.set(wk,merged);if(WALL_GEO.size>8)WALL_GEO.delete(WALL_GEO.keys().next().value)}
+  merged.forEach((g,ci)=>{if(g){setPart('number');add(mats[ci],g)}})}}
  if(N.holeFill){const fm=dmat(N.holeFill,{r:.18,cc:1,ccr:.04,sh:.2});polys.forEach(pl=>pl.holes.forEach(h=>{const sh=new T.Shape(h.map(([x,z])=>new V2(x,-z)));const g=new T.ExtrudeGeometry(sh,{depth:Math.max(.5,y-bh-.12),bevelEnabled:false,curveSegments:8});g.rotateX(-PI/2);g.translate(0,bh,0);setPart('number');add(fm,g)}))}
  totalH=y;boardR=Math.max(numSize.w,numSize.d)/2+1.6;return{inside,deep,top:y,pts,y0:bh,polys}}
+function placeNumberDecorCached(dc,ctx,add,sportsShade,D){let key=null;try{const A={},adj=D.tiers[0].adj||{};for(const k in adj)if(k.startsWith('d:'+dc.id+':'))A[k]=adj[k];key=JSON.stringify(['num',dc,A,D.number,D.themeKey,ctx.top,!!sportsShade,ctx.placed])}catch(e){}
+ const hit=key&&DECO_CACHE.get(key);
+ if(hit){DECO_CACHE.delete(key);DECO_CACHE.set(key,hit);const base=ITEMS.length;hit.items.forEach(it=>ITEMS.push({...it}));for(const a of hit.adds){CUR_ITEM=a.it>=0?base+a.it:-1;add(a.m,a.g,a.part)}CUR_ITEM=-1;hit.placed.forEach(p=>ctx.placed.push([...p]));return}
+ const base=ITEMS.length,p0=ctx.placed.length,adds=[];const add2=(m,g,part)=>{g=norm(g);adds.push({m,g,part,it:CUR_ITEM>=base?CUR_ITEM-base:-1});return part===undefined?add(m,g):add(m,g,part)};
+ placeNumberDecor(dc,ctx,add2,sportsShade);CUR_ITEM=-1;
+ if(key){DECO_CACHE.set(key,{adds,items:ITEMS.slice(base).map(x=>({...x})),placed:ctx.placed.slice(p0).map(p=>[...p])});if(DECO_CACHE.size>160)DECO_CACHE.delete(DECO_CACHE.keys().next().value)}}
 function placeNumberDecor(dc,ctx,add,sportsShade=null){const def=DECOR[dc.type];if(!def||def.mane)return;const q=rng(dc.seed||7),S=(dc.size??100)/100,n=Math.max(1,Math.min(def.max,Math.round(dc.count||1))),c=dc.color||def.color,part='deco'+dc.id,W=numSize.w/2,Dd=numSize.d/2,placed=ctx.placed,TADJ=design.tiers[0]?.adj||{};let itemN=0;
  // Every piece on a number cake is its own item too: tap it, then move, resize, turn, tilt, raise or hide it.
  const reg=()=>{const key='d:'+dc.id+':'+(itemN++);CUR_ITEM=regItem({tier:0,key,kind:'deco',dc:dc.id,dtype:dc.type,mode:'n'});return TADJ[key]},movd=(aj,x,z)=>{if(aj?.at&&aj.at.d!=null){x=Math.cos(aj.at.a)*aj.at.d;z=Math.sin(aj.at.a)*aj.at.d}if(aj){x-=aj.u||0;z-=aj.v||0}return[x,z]};
@@ -3266,7 +3272,7 @@ let ITEMS=[],CUR_ITEM=-1;const regItem=info=>{ITEMS.push(info);return ITEMS.leng
 const stampItem=g=>{const n=g.attributes.position.count;g.setAttribute('iid',new T.BufferAttribute(new Float32Array(n).fill(CUR_ITEM),1));return g};
 setTimeout(()=>loadUserModels(),400);
 function build(){if(typeof invalidate==='function')invalidate(1500);MAT_GEN++;const _t0=performance.now();try{buildCake()}catch(err){console.error(err);toast('Something in this design could not be drawn. Try Undo.')}try{updateStudioBar()}catch{}try{if(!thumbJob)evictMats()}catch{}$('#loading')?.remove();refitIfGrown();window.__buildMs=Math.round(performance.now()-_t0)}
-window.__dcsBuild=()=>build();
+window.__dcsBuild=()=>build();window.__dcsTris=()=>{let n=0;const by={};cake.traverse(o=>{if(o.geometry){const c=(o.geometry.index?o.geometry.index.count:o.geometry.attributes.position.count)/3;n+=c;const k=o.userData?.part||'?';by[k]=(by[k]||0)+Math.round(c)}});return{n:Math.round(n),by}};
 var fitTop=null;function cakeTop(){const b=new T.Box3().setFromObject(cake);return b.isEmpty()?0:b.max.y}
 function refitIfGrown(){if(!autoFit||thumbJob||fitTop===null)return;const t=cakeTop();if(Math.abs(t-fitTop)>.25)goView(autoFit)}
 // Printed patterns on a tier's side (fondant cut-outs or painted): cow spots, racing checks, polka dots. Returns 0..1 coverage.
@@ -3648,11 +3654,15 @@ function buildCake(){
   }
   if(cowMap||patMap)cowPrintUV(tg,h,r);const mm=cowMap?cowPrintMat(t,r,h,1000+i*31):patMap?patPrintMat(t,r,h,1000+i*31):t.texture==='bagMouth'?dmat(t.color,{r:.74,sh:.17,cc:.035}):D.themeKey==='sig_moneybag'?dmat(t.color,{r:.72,sh:.20,cc:.035}):D.themeKey==='sig_crawfish'?surfaceMat(t):surfaceMat(t,cascadeDepth);
   const m=new T.Mesh(tg,mm);m.position.y=y;m.castShadow=m.receiveShadow=true;m.userData={tier:i,part:'surface'};cake.add(m);tierMeshes.push(m);
+  const __add0=add,__pk=tierKey(t,['pipe',i,r,h,y,nr,typeof exposedTop==='undefined'?0:exposedTop,D.tiers.map(x=>[x.d,x.h,x.shape,x.edge]),Object.entries(t.adj||{}).filter(([k])=>!k.startsWith('d:')),typeof LITE!=='undefined'&&LITE]),__ph=__pk&&PIPE_CACHE.get(__pk);
+  // Piping, borders, bows and texture details for this tier are reused when nothing about the tier changed.
+  if(__ph){PIPE_CACHE.delete(__pk);PIPE_CACHE.set(__pk,__ph);const base=ITEMS.length;__ph.items.forEach(it=>ITEMS.push({...it}));for(const a of __ph.adds){CUR_ITEM=a.it>=0?base+a.it:-1;__add0(a.m,a.g,a.part)}CUR_ITEM=-1;curPart=__ph.end}
+  else{const __base=ITEMS.length,__rec=[];const add=(m,g,part)=>{const pp=part??curPart;g=norm(g);__rec.push({m,g,part:pp,it:CUR_ITEM>=__base?CUR_ITEM-__base:-1});return __add0(m,g,pp)};
   const col=k=>t[k]||t.pipe,pm=pipeMat(t.pipe),am=pipeMat(t.accent),pearlM=METALS[t.pearlColor]?pearlColorMat(t.pearlColor):pipeMat(t.pearlColor||t.pipe),topM=pipeMat(col('topColor')),botM=pipeMat(col('bottomColor')),sideM=pipeMat(col('sideColor')),dropM=pipeMat(col('dropColor'));
   const pipeScale=Math.max(.75,Math.min(1.25,t.d/9));
   const AR=t.pipeArc&&t.pipeArc.span<360?t.pipeArc:null,inArc=a=>{if(!AR)return true;let d=((a-PI/2-(AR.center||0)*PI/180)%(2*PI)+3*PI)%(2*PI)-PI;return Math.abs(d)<=AR.span*PI/360};
   const shellRing=(Rr,yy,rm,mat)=>{const n=Math.max(12,Math.round(2*PI*Rr/(rm*1.75))),sp=2*PI*Rr/n;for(let k=0;k<n;k++){const a=k/n*2*PI+J(.02);if(!inArc(a))continue;const sc=1+J(.09),L=sp*1.45*sc,rr=rm*sc,tw=J(.6),Tt=new V3(-Math.sin(a),0,Math.cos(a)),C=radial(a).multiplyScalar(Rr+off(a,yy)+J(.03)).setY(yy+rr*.55+J(.02));const g=sweep(s=>C.clone().addScaledVector(Tt,(s-.5)*L).setY(C.y+Math.sin(s*PI)*rr*.12-(1-prof(s))*rr*.5),()=>radial(a),22,24,(s,th)=>{const kk=rr*prof(s)*(1+.16*Math.cos(8*th+s*2.2+tw));return[kk,kk*.8]});tint(g,shade());add(mat,g)}};
-  const beadRow=(Rr,yy,rb,mat=pearlM)=>{const n=Math.max(8,Math.round(2*PI*Rr/(rb*1.85))),base=new T.SphereGeometry(rb*1.04,12,9);for(let k=0;k<n;k++){const a=k/n*2*PI;if(!inArc(a))continue;const g=base.clone(),s=1+J(.03);g.scale(s,s,s);const p=radial(a).multiplyScalar(Rr+off(a,yy)+rb*.45);g.translate(p.x,yy+J(.012),p.z);tint(g,shade());add(mat,g)}};
+  const beadRow=(Rr,yy,rb,mat=pearlM)=>{const n=Math.max(8,Math.round(2*PI*Rr/(rb*1.85))),base=new T.SphereGeometry(rb*1.04,LITE?8:12,LITE?6:9);for(let k=0;k<n;k++){const a=k/n*2*PI;if(!inArc(a))continue;const g=base.clone(),s=1+J(.03);g.scale(s,s,s);const p=radial(a).multiplyScalar(Rr+off(a,yy)+rb*.45);g.translate(p.x,yy+J(.012),p.z);tint(g,shade());add(mat,g)}};
   const starRing=(Rr,yy,rr,mat)=>{const n=Math.max(10,Math.round(2*PI*Rr/(rr*1.9))),base=starDropGeo();for(let k=0;k<n;k++){const a=k/n*2*PI;if(!inArc(a))continue;const g=base.clone(),sc=rr/.3*(1+J(.04));g.scale(sc,sc,sc);g.rotateY(J(3));const p=radial(a).multiplyScalar(Rr+off(a,yy));g.translate(p.x,yy,p.z);tint(g,shade());add(mat,g)}};
   const zigRing=(Rr,yy,rad,mat)=>{const A0=AR?PI/2+(AR.center||0)*PI/180-AR.span*PI/360:0,AS=AR?AR.span*PI/180:2*PI,A=u=>A0+AS*u,N=Math.max(10,Math.round(Rr*AS/(2*PI)*7)*2),tri=x=>Math.abs((((x%1)+1)%1)*2-1);add(mat,tint(sweep(u=>radial(A(u)).multiplyScalar(Rr+off(A(u),yy)+rad*.5).setY(yy+rad*1.3*(tri(u*N/2)-.5)*2*.5),u=>radial(A(u)),Math.max(40,N*10),10,()=>[rad*.8,rad*.8]),shade()))};
   // Piped grass (grass tip 233): many short tapered strands, leaning out over the edge. On top it fills a band in from the edge.
@@ -3777,7 +3787,7 @@ function buildCake(){
   // Rosette cake: rows of rosettes around the side and rings across the top, optionally shaded light to dark (ombre).
   if(t.texture==='rosettes'&&t.roseWrap==='pillow'){
    curPart='rosettes';
-   const base=rosetteGeo(t.roseTip||'1M',.62), silver=new T.Color(t.color);
+   const base=rosetteGeo(t.roseTip||'1M',LITE?.3:.5), silver=new T.Color(t.color);
    const mats=[-.065,0,.072].map(v=>dmat('#'+silver.clone().multiplyScalar(1+v).getHexString(),{r:.48,metal:t.finish==='metallic'?.31:0,sh:.16,cc:.15}));
    const push=(P,N,rad,gloss,depth=0)=>{
     const g=base.clone(),sx=rad*(.975+q()*.055),sz=rad*(.98+q()*.04);
@@ -3827,7 +3837,7 @@ function buildCake(){
    }
    curPart='piping';
   }
-  else if(t.texture==='rosettes'){curPart='rosettes';const tip=t.roseTip||'1M',rs=(t.roseSize??100)/100,base=rosetteGeo(tip,.45),nRows=Math.max(2,Math.round(h/(1.05*rs))),hr=h/nRows,rad=hr*.58,c1=new T.Color(t.color),c2=new T.Color(t.ombre?(t.ombreColor||'#fbf7f1'):t.color),cc=new T.Color(),sc=rad/1.02;
+  else if(t.texture==='rosettes'){curPart='rosettes';const tip=t.roseTip||'1M',rs=(t.roseSize??100)/100,base=rosetteGeo(tip,LITE?.3:.45),nRows=Math.max(2,Math.round(h/(1.05*rs))),hr=h/nRows,rad=hr*.58,c1=new T.Color(t.color),c2=new T.Color(t.ombre?(t.ombreColor||'#fbf7f1'):t.color),cc=new T.Color(),sc=rad/1.02;
    // Sides: rows from the board up to the top edge; the top row sits high enough to curl over the edge.
    for(let row=0;row<nRows;row++){const yy=y+hr*(row+.5)+(row===nRows-1?hr*.08:0),n=Math.max(8,Math.round(2*PI*r/(rad*1.72))),k=t.ombre?row/Math.max(1,nRows-1):0;cc.copy(c1).lerp(c2,k);const mat=pipeMat('#'+cc.getHexString());
     for(let j=0;j<n;j++){const a=(j+(row%2?.5:0))/n*2*PI+J(.015),g=base.clone();g.rotateY(q()*6.28);g.scale(sc*(1+J(.04)),sc*.85,sc*(1+J(.04)));g.rotateX(PI/2);add(mat,tint(place(g,a,yy+J(.015),R_at(a,yy)-rad*.12),shade()))}}
@@ -3849,8 +3859,10 @@ function buildCake(){
   if(D.themeKey==='sig_crawfish'&&i===0)potHardware(r,h,y,add);
   if(t.texture==='foreversugar'||t.texture==='foreversweep')foreverRuffles(t,{r,h,y,R_at,add},i);
   if(t.texture==='foreverlace')foreverLace(t,{r,h,y,R_at,add});
+  
+  if(__pk){PIPE_CACHE.set(__pk,{adds:__rec,items:ITEMS.slice(__base).map(x=>({...x})),end:curPart});if(PIPE_CACHE.size>40)PIPE_CACHE.delete(PIPE_CACHE.keys().next().value)}}
   if(t.stencil?.pattern){try{cachedAdds(tierKey(t,['sten',i,r,h,y]),add,a2=>buildStencil(t,{r,h,y,R_at,add:a2}))}catch(err){console.error('Stencil skipped',err)}}if(t.coat&&t.coat.type&&t.coat.type!=='none'){try{buildCoat(t,{r,h,y,R_at,add})}catch(err){console.error('Coating skipped',err)}}
-  if(t.topImg||t.sideImg){try{buildEdibles(t,{r,h,y,R_at,add,SHf,q})}catch(err){console.error('Edible image skipped',err)}}
+  if(t.topImg||t.sideImg){try{buildEdibles(t,{r,h,y,R_at,add,SHf,q:rng(5000+i*97)})}catch(err){console.error('Edible image skipped',err)}}
   curPart='piping';ROUND_PLACED.length=0;(t.decor||[]).forEach(dc=>{if(dc.off)return;try{placeDecorCached(dc,{i,r,h,y,nr,R_at,add,SH:SHf,BY:boardTopY,BR:boardR,R0:reach},t)}catch(err){console.error('Decoration skipped',dc.type,err)}});
   y+=h});
  totalH=y;curTier=D.tiers.length-1;curPart='topper';
@@ -3973,7 +3985,7 @@ function numberCake(){let sportsShade=null;const D=design,bh=D.board==='wood'?1.
    const piece=mg(G);piece.rotateY(turn);piece.translate(x,bh+.014,z);add(dmat(c,{r:.53,cc:.30}),piece,'looseBoardBrick');
   }
  }
- if(ctx){ctx.placed=[];(D.tiers[0].decor||[]).forEach(dc=>{try{placeNumberDecor(dc,ctx,add,sportsShade)}catch(err){console.error('Decoration skipped',dc.type,err)}})}else totalH=3;
+ if(ctx){ctx.placed=[];(D.tiers[0].decor||[]).forEach(dc=>{try{placeNumberDecorCached(dc,ctx,add,sportsShade,D)}catch(err){console.error('Decoration skipped',dc.type,err)}})}else totalH=3;
  for(const{mat,list,tier,part}of buckets.values()){const g=mergeGeometries(list);if(!g)continue;const m=new T.Mesh(g,mat);m.castShadow=!mat.userData.noShadow;m.receiveShadow=!mat.userData.noShadow;m.userData={tier,part};if(mat.userData.depth)m.customDepthMaterial=mat.userData.depth;cake.add(m)}
  if(msgMesh){cake.remove(msgMesh);msgMesh=null}applyShine();if(!build.done){build.done=true;goView('three',true)}else if(pendingFrame&&ctx){pendingFrame=false;goView('three')}if(ctx)setTimeout(renderSummary,0)}
 const TABLES={white:'White',marble:'Marble',wood:'Wood',linen:'Linen',color:'Color'};
