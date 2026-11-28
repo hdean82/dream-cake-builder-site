@@ -121,7 +121,7 @@ function draw(){const d=Q.doc,st=Q.status,isQ=d.kind==='quote';
   ${(d.images||[]).length?`<span class="lbl">Your cake</span><div class="dpics">${d.images.map(p=>urls[p]?`<img src="${esc(urls[p])}" alt="Cake design" loading="lazy">`:'').join('')}</div>`:''}
   ${d.notes?`<span class="lbl">Notes</span><p class="pre">${esc(d.notes)}</p>`:''}
   ${(()=>{const sec=[],pay=safeLink(d.payLink)&&!d.cancelled?`<p class="noprint" style="margin:8px 0 0"><a class="btn primary paybtn" href="${esc(safeLink(d.payLink))}" target="_blank" rel="noopener noreferrer">Pay Online</a></p>`:'';
-   if(d.payNote||pay)sec.push(`<section class="dsec"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
+   if(d.payNote||pay)sec.push(`<section class="dsec" id="howPay"><h4>How to pay</h4>${d.payNote?`<div class="rich">${richHtml(d.payNote)}</div>`:''}${pay}</section>`);
    if(d.footer)sec.push(`<section class="dsec dthanks"><div class="rich">${richHtml(d.footer)}</div></section>`);
    (Array.isArray(d.policies)?d.policies:d.cancelPolicy?[{t:'Cancellation policy',h:d.cancelPolicy}]:[]).forEach(p=>{if(p&&p.h)sec.push(`<details class="dsec dfold"><summary>${esc(p.t||'Policy')}</summary><div class="rich">${richHtml(p.h)}</div></details>`)});
    if(d.terms)sec.push(`<details class="dsec dfold"><summary>Full terms &amp; conditions</summary><div class="rich">${richHtml(d.terms)}</div></details>`);
@@ -163,7 +163,7 @@ const fm=c=>'$'+(c/100).toFixed(2);
 async function payCall(body){const r=await fetch(`${SB}/functions/v1/shop-pay`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Payments are unavailable right now.');return j}
 function payDraw(){const box=$('payBox');if(!box)return;const d=Q.doc;let h='';
  const online=Math.max(PAID||0,(PAY&&PAY.paid)||0),cents=v=>Math.round(parseFloat(String(v||'').replace(/[^0-9.]/g,''))*100)||0;
- if(online>0&&$('paidRow')){$('paidRow').hidden=false;$('paidAmt').textContent='−'+fm(online);const left=Math.max(0,cents(d.bal)-online);$('balAmt').textContent=fm(left);
+ if(online>0&&$('paidRow')){$('paidRow').hidden=false;$('paidAmt').textContent='−'+fm(online);const left=Math.max(0,cents(d.bal)-online);$('balAmt').textContent=fm(left);if(!left&&$('howPay'))$('howPay').hidden=true;
   if(!PAID)h+=`<div class="paydone"><b>${left?'Payment received.':'Paid in full, thank you!'}</b> ${esc(fm(online))} paid online to ${esc(d.biz)}.</div>`}
  if(PAID)h+=`<div class="paydone"><b>Payment received, thank you!</b> ${esc(fm(PAID))} went to ${esc(d.biz)}. Keep this page for your records.</div>`;
  if(PAY&&PAY.enabled&&!d.cancelled){const isQ=d.kind==='quote',needApprove=isQ&&Q.status!=='approved';
