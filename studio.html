@@ -2102,7 +2102,8 @@ const MX=[
  ['crawfish','Boiled Crawfish','up',{}],['corn_cob','Corn On The Cob','front',{}],['corn_round','Corn Round','front',{}],['potato','Red Potato','front',{}],
  ['cash_fan','Fanned Cash','front',{ds:true}],['cash_bundle','Cash Bundle','front',{}],['clapperboard','Clapperboard','front',{}],['ticket','Admit One Ticket','front',{ds:true}],['glove','Baseball Glove','front',{}],
  ['calla_lily','Calla Lily Sugar Flower','front',{ds:true}],['wedding_rings','Gold Wedding Rings','front',{metal:.8,rough:.3}],['graduation_cap','Graduation Cap','front',{}],
- ['lion_cub','Baby Lion Cub','front',{}],['lion_rock','Lion Cub On A Rock','front',{}]];
+ ['lion_cub','Baby Lion Cub','front',{}],['lion_rock','Lion Cub On A Rock','front',{}],
+ ['radiant_peony','Radiant Peach Peony','front',{ds:true}],['pink_lily','Pink Lily Sugar Flower','front',{ds:true}],['cherry_cupcake','Cherry Sprinkle Cupcake','front',{}],['pink_cupcake','Pink Frosted Cupcake','front',{}],['satin_bow_red','Red Satin Bow','front',{ds:true}],['macaron_stack','Pastel Macaron Stack','front',{}],['rainbow_unicorn','Prancing Rainbow Unicorn','front',{}],['crochet_unicorn','Crochet-Style Unicorn','front',{}],['strawberry_whole','Fresh Strawberry','front',{}]];
 for(const[k,label,face,o]of MX){MODELS['mx_'+k]=[label,'✨','/assets/models/'+k+'.glb',1,null,null,null,o];
  DECOR['mx_'+k]={label:label+' (Sculpted)',layouts:['cluster','crown','band','cascade','scatter'],layout:'cluster',count:1,max:24,color:'',colors:[],sp:1.4,side:'up',roll:face==='front'?.1:.5,spin:.6,sink:0,embed:-.004,noTilt:true,model:true,
   make:(q,c,mode,dc)=>{const id='mx_'+k,e=MODEL_CACHE[id];if(!e){loadModel(id);return[]}if(!e.parts)return[];const out=e.parts.map(([m,g])=>[m,g.clone()]);if(mode==='side'&&face==='up')out.forEach(([,g])=>{g.rotateX(PI/2)});if(dc&&dc.flip)out.forEach(([,g])=>g.rotateZ(PI));return out}};
