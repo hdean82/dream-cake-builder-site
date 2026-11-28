@@ -63,6 +63,7 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
 .welcome .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .welcome .btn:not(.primary){background:transparent;color:#fff;border-color:#ffffff66}
 
+#bSetup form{display:grid;gap:6px;max-width:360px;margin-top:10px}#bSetup input[type=password],#bSetup input[type=text]{padding:11px 12px;border:1px solid #e3c6d6;border-radius:10px;font:inherit;font-size:16px}.pwl{font-weight:600;font-size:14px;margin-top:4px}.pwshow{font-size:14px;display:flex;gap:6px;align-items:center}#bSetup .note{margin:0;font-size:13px;color:#f3cfe2}#bSetup .btn{margin-top:6px;justify-self:start}
 </style>
 </head>
 <body>
@@ -87,6 +88,20 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
 </header>
 
 <main class="bwrap">
+ <section class="welcome" id="bSetup" hidden>
+  <h2 id="bSetupHi">Create your password</h2>
+  <p>Your Dream Cake Builder account uses <b id="bSetupEmail"></b>. Choose a password and you're in.</p>
+  <form id="pwForm" novalidate>
+   <label class="pwl" for="pw1">Password</label>
+   <input id="pw1" type="password" autocomplete="new-password" minlength="8" required>
+   <label class="pwl" for="pw2">Type it again</label>
+   <input id="pw2" type="password" autocomplete="new-password" minlength="8" required>
+   <label class="pwshow"><input type="checkbox" id="pwShow"> Show password</label>
+   <p class="note">At least 8 characters.</p>
+   <button class="btn primary" type="submit">Create password and sign in</button>
+   <p class="st" id="pwSt" role="status"></p>
+  </form>
+ </section>
  <section class="welcome" id="bWelcome" hidden>
   <h2 id="bHi">You're in the beta!</h2>
   <p>This device is now set up. A <b>Report a problem</b> button sits in the bottom corner of every page. Use it whenever something is confusing, broken or missing. Your <b>Beta board</b> shows everything that's been reported, so you can add a “me too” instead of writing it again, and follow each report from sent to done.</p>
@@ -134,9 +149,24 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
 (function(){const FN='https://gcorvodfcxhumesttwvj.supabase.co/functions/v1/beta',q=new URLSearchParams(location.search),code=(q.get('code')||'').trim().toLowerCase();
  const W=document.getElementById('bWelcome'),E=document.getElementById('bErr');
  if(code){fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'check',code})}).then(r=>r.json()).then(j=>{
-   if(j.ok){try{localStorage.setItem('dcb-beta-code',code)}catch(e){}document.getElementById('bHi').textContent=j.name?"You're in the beta, "+j.name+"!":"You're in the beta!";W.hidden=false;document.getElementById('apply').hidden=true;window.dispatchEvent(new Event('dcb-beta'));try{history.replaceState(null,'','beta')}catch(e){}}
+   if(j.ok){try{localStorage.setItem('dcb-beta-code',code)}catch(e){}document.getElementById('bHi').textContent=j.name?"You're in the beta, "+j.name+"!":"You're in the beta!";
+    if(j.needs_password&&j.email){const P=document.getElementById('bSetup');document.getElementById('bSetupHi').textContent=j.name?"Welcome, "+j.name+"! Create your password":"Create your password";document.getElementById('bSetupEmail').textContent=j.email;P.hidden=false;document.getElementById('apply').hidden=true;window.dispatchEvent(new Event('dcb-beta'));setupPw(code,j.email);return}
+    W.hidden=false;document.getElementById('apply').hidden=true;window.dispatchEvent(new Event('dcb-beta'));try{history.replaceState(null,'','beta')}catch(e){}}
    else{E.textContent=j.error||"This beta link isn't active.";E.hidden=false}}).catch(()=>{E.textContent="We couldn't check your beta link. Check your connection and open it again.";E.hidden=false})}
  else{try{if(localStorage.getItem('dcb-beta-code')){W.hidden=false;document.getElementById('apply').hidden=true}}catch(e){}}
+
+ function setupPw(code,email){const f=document.getElementById('pwForm'),st=document.getElementById('pwSt'),b=f.querySelector('button[type=submit]'),a=document.getElementById('pw1'),c=document.getElementById('pw2');
+  document.getElementById('pwShow').onchange=e=>{a.type=c.type=e.target.checked?'text':'password'};setTimeout(()=>a.focus(),50);
+  f.addEventListener('submit',async e=>{e.preventDefault();st.className='st';
+   if(a.value.length<8){st.textContent='Use at least 8 characters.';st.className='st bad';return a.focus()}
+   if(a.value!==c.value){st.textContent="Those two don't match. Type it again.";st.className='st bad';return c.focus()}
+   b.disabled=true;st.textContent='Setting up your account…';
+   try{const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'setup',code,password:a.value})}),j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.ok){b.disabled=false;st.className='st bad';st.innerHTML='';st.append(j.error||'Your password couldn’t be saved. Please try again.');if(j.signin){const l=document.createElement('a');l.href='account.html';l.textContent=' Go to sign in';st.append(l)}return}
+    for(let i=0;i<40&&!window.DCBAuth;i++)await new Promise(r=>setTimeout(r,100));
+    if(window.DCBAuth)await DCBAuth.signInWithPassword(j.email||email,a.value);
+    document.getElementById('bSetup').hidden=true;W.hidden=false;document.getElementById('bHi').textContent="You're all set! You're signed in.";try{history.replaceState(null,'','beta')}catch(e){}window.scrollTo({top:0,behavior:'smooth'})}
+   catch(err){b.disabled=false;st.className='st bad';st.textContent='Your password was saved, but signing in didn’t finish. Go to the Account page and sign in with your email and new password.'}})}
  const f=document.getElementById('bForm'),st=document.getElementById('bStatus'),btn=f.querySelector('button');const say=(t,c)=>{st.textContent=t;st.className='st '+(c||'')};
  f.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(f),d=Object.fromEntries(fd);d.cakes=fd.getAll('cakes');d.action='apply';
   if(!d.name.trim())return say('Add your name.','bad'),f.name.focus();
@@ -152,6 +182,7 @@ h1,h2,h3,label,.btn,summary{text-transform:none}
   catch(err){say("Your request couldn't be sent. Check your connection and try again.",'bad')}btn.disabled=false});
 })();
 </script>
+<script src="assets/dcb-auth.js" defer></script>
 <script src="assets/dcb-site.js" defer></script>
 </body>
 </html>
