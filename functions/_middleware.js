@@ -1,8 +1,8 @@
-// Launch teaser: Orders and the customer pages stay private until launch.
+// Launch teaser: Orders stays private until launch. Customer pages (request form, quotes and invoices, chat) are open.
 // The team password lives only in Cloudflare (Pages > Settings > Variables and Secrets > TEAM_KEY), never in this code.
 // Visit /team?key=YOUR-PASSWORD once on a device to unlock it; /team?off locks that device again.
 // Devices keep a token derived from the password, so changing TEAM_KEY locks every device until it is unlocked again.
-const LOCKED = /^\/(shop|request|portfolio|quote|calendar|beta-admin|pricing)(\.html)?\/?$/i;
+const LOCKED = /^\/(shop|portfolio|calendar|beta-admin|pricing)(\.html)?\/?$/i;
 const YEAR = 60 * 60 * 24 * 365;
 
 async function sha256(text) {
