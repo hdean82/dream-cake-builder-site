@@ -29,7 +29,7 @@
 .field>label,.lbl{display:block;color:var(--muted);font-size:13px;margin-bottom:4px}
 .req{color:var(--rose)}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.grid2>.field{min-width:0}.field{min-width:0}
-input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{width:100%;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea{width:100%;min-height:40px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
 textarea{min-height:120px;resize:vertical}
 .pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
 .pic{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#fff}
@@ -64,9 +64,9 @@ html.lk .btn.primary{background:var(--lk-accent);border-color:var(--lk-accent);c
 html.lk .sh,html.lk .eyebrow{color:var(--lk-accent)}
 html.lk.s-s .req-card{font-size:14px}html.lk.s-m .req-card{font-size:15.5px}html.lk.s-l .req-card{font-size:17.5px}html.lk.s-l .req-card input,html.lk.s-l .req-card select,html.lk.s-l .req-card textarea{font-size:17px}
 html.lk.c-square .req-card :is(input,select,textarea,.btn,.pick,.pic,.prenote){border-radius:0}html.lk.c-round .req-card :is(input,select,textarea,.btn,.pick,.pic,.prenote){border-radius:10px}html.lk.c-pill .req-card :is(input,select,.btn){border-radius:999px;padding-left:16px}html.lk.c-pill .req-card :is(textarea,.pick,.pic,.prenote){border-radius:20px}
-html.lk.f-box .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:transparent;border:1px solid var(--line)}
-html.lk.f-line .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:transparent;border:0;border-bottom:1.5px solid var(--line);border-radius:0!important;padding-left:2px}
-html.lk.f-soft .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea){background:color-mix(in srgb,var(--lk-ink) 6%,transparent);border:1px solid transparent}
+html.lk.f-box .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea){background:transparent;border:1px solid var(--line)}
+html.lk.f-line .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea){background:transparent;border:0;border-bottom:1.5px solid var(--line);border-radius:0!important;padding-left:2px}
+html.lk.f-soft .req-card :is(input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea){background:color-mix(in srgb,var(--lk-ink) 6%,transparent);border:1px solid transparent}
 html.lk .req-card :is(input,select,textarea):focus{outline:2px solid var(--lk-accent);outline-offset:1px}
 .brandline{text-align:center;font-size:12px;margin:14px 0 2px;opacity:.75}.brandline a{color:inherit}
 .cover{margin:-4px -4px 16px;border-radius:14px;overflow:hidden;aspect-ratio:3/1;background:#f6e8ef}.cover img{width:100%;height:100%;object-fit:cover;display:block}
@@ -167,13 +167,14 @@ function form(){
   <h2 class="sh">Your details</h2>
   <div class="grid2"><div class="field"><label for="f-name">Your name${req(1)}</label><input type="text" id="f-name" required maxlength="120" autocomplete="name"></div>
   <div class="field"><label for="f-email">Email${req(1)}</label><input type="email" id="f-email" required maxlength="254" autocomplete="email"></div>
-  ${f.phone.on?`<div class="field"><label for="f-phone">Phone${req(f.phone.req)}</label><input type="tel" id="f-phone" maxlength="40" autocomplete="tel"></div>`:''}</div>
+  ${true?`<div class="field"><label for="f-phone">Phone${req(1)}</label><input type="tel" id="f-phone" maxlength="40" autocomplete="tel"></div>`:''}</div>
   <h2 class="sh">Your event</h2>
-  <div class="grid2"><div class="field"><label for="f-date">Event date${req(f.date.req)}</label><input type="date" id="f-date" min="${leadMin()}">${+c.minDays?`<div class="fine" style="margin-top:4px">Please order at least ${+c.minDays} day${+c.minDays===1?"":"s"} ahead.</div>`:""}<div id="dmsg" class="fine" style="margin-top:4px"></div></div>
-  ${f.event.on&&info.event_types.length?`<div class="field"><label for="f-event">Occasion${req(f.event.req)}</label><select id="f-event"><option value="">Choose…</option>${info.event_types.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></div>`:''}
+  <div class="grid2"><div class="field"><label for="f-date">Event date${req(!WAIT)}</label><input type="date" id="f-date" min="${leadMin()}">${+c.minDays?`<div class="fine" style="margin-top:4px">Please order at least ${+c.minDays} day${+c.minDays===1?"":"s"} ahead.</div>`:""}<div id="dmsg" class="fine" style="margin-top:4px"></div></div>
+  ${f.event.on&&info.event_types.length?`<div class="field"><label for="f-event">Occasion${req(1)}</label><select id="f-event"><option value="">Choose…</option>${info.event_types.map(e=>`<option value="${esc(e.id)}">${esc(e.name)}</option>`).join('')}</select></div>`:''}
   ${f.servings.on?`<div class="field"><label for="f-serv">Servings or guests${req(f.servings.req)}</label><input type="number" id="f-serv" min="0" max="10000" inputmode="numeric"></div>`:''}
   ${f.budget.on&&byId('f_budget')?qField(byId('f_budget')):''}
   ${f.handoff.on&&byId('f_handoff')?qField(byId('f_handoff')):''}</div>
+  <div class="grid2">${byId('f_time')?`<div id="tWrap">${qField(byId('f_time'))}</div>`:''}${byId('f_daddr')?`<div id="daWrap"${handoff()!=='Delivery'?' hidden':''}>${qField(byId('f_daddr'))}</div>`:''}</div>
   ${f.handoff.on&&byId('f_handoff')&&(c.pickup||c.pickupLater)?`<div class="pknote" id="pkNote" hidden><b>Pickup address</b><span>${c.pickupLater?'Shared once your order is paid.':esc(c.pickup)}</span></div>`:''}
   ${f.handoff.on&&byId('f_handoff')&&byId('f_ptime')&&c.slots?`<div class="field ptwrap" id="ptWrap" hidden><label for="q-f_ptime">Pickup time</label><select id="q-f_ptime" data-q="f_ptime"><option value="">Choose a time…</option></select><div class="fine" id="ptMsg" style="margin-top:4px"></div></div>`:''}
   ${picks.length?`<h2 class="sh">Add to your order</h2><p class="fine" style="margin:-4px 0 8px">Tap anything you'd like.</p><div class="picks">${picks.map(sec).join('')}</div>`:''}
@@ -208,7 +209,8 @@ function draftInit(){const f=$('rf');if(!f||PREVIEW)return;let d=null;try{d=JSON
  let tm;f.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(draftSave,400)});f.addEventListener('change',()=>{clearTimeout(tm);tm=setTimeout(draftSave,400)})}
 const t12s=t=>{const[h,m]=t.split(':').map(Number);return `${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'AM':'PM'}`};
 function slotTimes(from,to,step){const st=Math.max(15,+step||60),toM=v=>{const[h,m]=String(v||'').split(':').map(Number);return h*60+(m||0)};const out=[];for(let m=toM(from);m+st<=toM(to)+0.1&&out.length<48;m+=st)out.push(t12s(`${Math.floor(m/60)}:${m%60}`));return out}
-function ptUpdate(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q-f_ptime'),msg=$('ptMsg'),d=$('f-date')&&$('f-date').value;
+function ptUpdate(){ptUpdate0();tSync()}
+function ptUpdate0(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q-f_ptime'),msg=$('ptMsg'),d=$('f-date')&&$('f-date').value;
  w.hidden=!sl||handoff()!=='Pickup';if(w.hidden)return;const keep=sel.value;
  if(!d){sel.hidden=true;msg.textContent='Pick your event date to see pickup times.';return}
  const day=sl.days[new Date(d+'T12:00').getDay()],times=day?slotTimes(day.from,day.to,sl.step):[];
@@ -216,17 +218,21 @@ function ptUpdate(){const w=$('ptWrap');if(!w)return;const sl=F().slots,sel=$('q
  sel.innerHTML='<option value="">Choose a time…</option>'+times.map(t=>`<option${t===keep?' selected':''}>${esc(t)}</option>`).join('');if(!times.includes(keep))sel.value=''}
 function leadMin(){const n=+(F().minDays)||0,d=new Date();d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function handoff(){const el=document.querySelector('[data-q="f_handoff"]');return el?el.value:''}
-function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.q)}${req(q.required)}`;
+function qField(q){const i=q.id,id='q-'+i,lab=`${esc(q.id==='f_time'?timeLabel():q.q)}${req(q.required)}`;
+ if(q.type==='time')return `<div class="field"><label for="${id}">${lab}</label><input type="time" id="${id}" data-q="${esc(i)}" step="900"></div>`;
  if(q.type==='long')return `<div class="field"><label for="${id}">${lab}</label><textarea id="${id}" data-q="${esc(i)}" maxlength="1000" style="min-height:80px"></textarea></div>`;
  if(q.type==='choice')return `<div class="field"><label for="${id}">${lab}</label><select id="${id}" data-q="${esc(i)}"><option value="">Choose…</option>${(q.options||[]).map(o=>`<option>${esc(o)}</option>`).join('')}</select></div>`;
  if(q.type==='yes')return `<div class="field"><span class="lbl">${lab}</span><div class="qyes"><label><input type="radio" name="${id}" data-q="${esc(i)}" value="Yes"> Yes</label><label><input type="radio" name="${id}" data-q="${esc(i)}" value="No"> No</label></div></div>`;
  return `<div class="field"><label for="${id}">${lab}</label><input type="text" id="${id}" data-q="${esc(i)}" maxlength="1000"></div>`}
-function shown(q){if(!q.sec||q.sec==='_event')return true;if(q.sec==='_pick')return false;const s=F().secs.find(x=>x.id===q.sec);if(!s)return true;if(s.mode==='pick')return picked.has(s.id);if(s.mode==='delivery')return handoff()==='Delivery';return true}
+function slotPick(){const w=$('ptWrap');return !!w&&!w.hidden}
+function timeLabel(){const h=handoff();return h==='Delivery'?'Delivery time':h==='Pickup'?'Pickup time':'Time needed'}
+function tSync(){const t=$('tWrap'),d=$('daWrap');if(t){t.hidden=slotPick();const l=t.querySelector('label');if(l)l.innerHTML=esc(timeLabel())+req(1)}if(d)d.hidden=handoff()!=='Delivery'}
+function shown(q){if(q.id==='f_time')return !slotPick();if(q.sec==='_delivery')return handoff()==='Delivery';if(!q.sec||q.sec==='_event')return true;if(q.sec==='_pick')return false;const s=F().secs.find(x=>x.id===q.sec);if(!s)return true;if(s.mode==='pick')return picked.has(s.id);if(s.mode==='delivery')return handoff()==='Delivery';return true}
 function answers(){const c=F(),out=(info.questions||[]).map(q=>{let v='';if(!shown(q))return{id:q.id,q:q.q,a:'',required:false};if(q.type==='yes'){const x=document.querySelector(`input[data-q="${CSS.escape(q.id)}"]:checked`);v=x?x.value:''}else{const el=document.querySelector(`[data-q="${CSS.escape(q.id)}"]`);v=el?el.value.trim():''}return{id:q.id,q:q.q,a:v,required:q.required}});
  const pk=out.find(a=>a.id==='f_pick');if(pk)pk.a=c.secs.filter(s=>s.mode==='pick'&&picked.has(s.id)).map(s=>s.title+(s.price?` (${s.price})`:'')).join(', ');return out}
 function sizeUp(){if(EMBED&&parent!==window)requestAnimationFrame(()=>parent.postMessage({type:'dcb-form-height',h:document.documentElement.scrollHeight},'*'))}
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.pick){t.checked?picked.add(t.dataset.pick):picked.delete(t.dataset.pick);t.closest('.pick').classList.toggle('on',t.checked);sizeUp()}
- if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';ptUpdate();document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');sizeUp()}});
+ if(t.dataset&&t.dataset.q==='f_handoff'){const pk=$('pkNote');if(pk)pk.hidden=t.value!=='Pickup';ptUpdate();document.querySelectorAll('.rsec[data-mode="delivery"]').forEach(x=>x.hidden=t.value!=='Delivery');tSync();sizeUp()}});
 const isFull=d=>!!d&&(info.full_dates||[]).includes(d);
 let WAIT=false;
 function dateNote(){const d=$('f-date')&&$('f-date').value,n=$('dmsg');if(!n)return;WAIT=false;if(isFull(d)){n.innerHTML='That date is fully booked. Pick another date, or <button type="button" class="linkish" id="waitBtn">join the waitlist for it</button>.';n.style.color='var(--rose-ink)'}else{n.textContent='';n.style.color=''}}
@@ -242,11 +248,11 @@ document.addEventListener('submit',async e=>{
  const name=$('f-name').value.trim(),email=$('f-email').value.trim(),details=(WAIT&&$('f-date').value&&isFull($('f-date').value)?`⏳ WAITLIST for ${new Date($('f-date').value+'T12:00').toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'})} (fully booked when they asked).\n\n`:'')+$('f-details').value.trim();
  if($('f-web').value)return;
  const cf=F().f;if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){m.className='msg';m.textContent='Please add your name and a valid email.';return}
- const need=[[cf.phone.on&&cf.phone.req&&$('f-phone')&&!$('f-phone').value.trim(),'your phone number'],[cf.date.req&&!$('f-date').value,'the event date'],[cf.event.on&&cf.event.req&&$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!$('f-details').value.trim(),'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
+ const need=[[$('f-phone')&&$('f-phone').value.replace(/\D/g,'').length<7,'your phone number'],[!WAIT&&!$('f-date').value,'the event date'],[slotPick()&&$('q-f_ptime')&&!$('q-f_ptime').value,'a pickup time'],[$('f-event')&&!$('f-event').value,'the occasion'],[cf.servings.on&&cf.servings.req&&$('f-serv')&&!$('f-serv').value,'how many servings'],[cf.details.req&&!$('f-details').value.trim(),'what you would like'],[cf.photos.on&&cf.photos.req&&!pics.length,'at least one inspiration photo']].find(x=>x[0]);
  if(need){m.className='msg';m.textContent=`Please add ${need[1]}.`;return}
  if(isFull($('f-date').value)&&!WAIT){m.className='msg';m.innerHTML='That date is fully booked. Pick another date, or <button type="button" class="linkish" id="waitBtn">join the waitlist for it</button>.';$('f-date').focus();return}
  if($('f-date').value&&$('f-date').value<leadMin()){m.className='msg';m.textContent=`Please pick a date at least ${+F().minDays} day${+F().minDays===1?'':'s'} from today.`;$('f-date').focus();return}
- const ans=answers(),miss=ans.find(a=>a.required&&!a.a);if(miss){m.className='msg';m.textContent=`Please answer: ${miss.q}`;return}
+ const ans=answers(),miss=ans.find(a=>a.required&&!a.a);if(miss){m.className='msg';m.textContent=`Please answer: ${miss.id==='f_time'?timeLabel():miss.q}`;return}
  busy=true;btn.disabled=true;btn.textContent='Sending…';
  try{
   const paths=[];
