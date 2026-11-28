@@ -757,6 +757,7 @@ details.rq:has(.rqbl){border-color:#e4a39b;box-shadow:inset 4px 0 0 #b3261e}
 .kplan summary{cursor:pointer;list-style:none}.kplan summary::-webkit-details-marker{display:none}.kpday{margin-top:10px}.kpd{display:block;font-size:13px;color:var(--rose-ink);margin-bottom:4px}.kpd.late{color:#b3261e}.kpday .tdue{display:none}.kpday .kpd.late+.tlist .tdue{display:inline}
 .igcv{display:block;width:100%;max-width:360px;margin:0 auto;height:auto;border-radius:12px;box-shadow:0 10px 30px -18px #4b103d88}
 .wrapcard .wstep{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.wrapcard .wstep:first-of-type{border-top:0}.wck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:#fff}.wstep.done .wck{background:#2f7d5b;border-color:#2f7d5b}.wtx{flex:1;min-width:0}.wtx b{display:block}.wstep.done .wtx b{color:var(--muted);text-decoration:line-through}
+.srcbar{display:block;height:6px;border-radius:3px;background:var(--rose-soft,#fde3f0);margin-top:5px;max-width:200px;overflow:hidden}.srcbar i{display:block;height:100%;background:var(--rose,#c12c7e);border-radius:3px}
 </style>
 </head>
 <body>
@@ -1233,6 +1234,7 @@ function rqCustomer(r){const em=lc(r.email),ph=String(r.phone||"").replace(/\D/g
  let c=S.customers.find(x=>em&&lc(x.email)===em)||S.customers.find(x=>ph.length>=7&&String(x.phone||"").replace(/\D/g,"").endsWith(ph.slice(-10)))||S.customers.find(x=>!x.email&&lc(fullName(x))===lc(r.name));
  const isNew=!c;if(!c){c=fixCustomer({id:uid(),...splitName(r.name),phone:r.phone||"",email:r.email||"",notes:"",source:"Website"});S.customers.push(c)}
  else{if(!c.phone&&r.phone)c.phone=r.phone;if(!c.email&&r.email)c.email=r.email;if(!c.first&&!c.last){Object.assign(c,splitName(r.name));fixCustomer(c)}if(!c.source)c.source="Website"}
+ {const hs=(r.answers||[]).find(x=>/how did you (hear|find)/i.test(String(x.q||""))&&x.a);if(hs){const v=String(hs.a).trim().slice(0,60),m=SOURCES.find(x=>lc(x)===lc(v));if(isNew||!c.source||c.source==="Website")c.source=m||v}}
  const e=rqEvent(r.event_type_id),p=rqParse(r);c.requests=Array.isArray(c.requests)?c.requests:[];
  const rec={id:r.id,at:r.created_at,date:r.event_date||"",event:e?e.name:"",servings:r.servings||"",details:String(r.details||"").slice(0,1500),answers:(r.answers||[]).filter(x=>x&&x.a).slice(0,40).map(x=>({q:String(x.q).slice(0,200),a:String(x.a).slice(0,500)})),photos:(r.image_paths||[]).length};
  const k=c.requests.findIndex(x=>x.id===r.id);if(k>-1)c.requests[k]=rec;else c.requests.unshift(rec);
@@ -1338,6 +1340,7 @@ const RF_READY=[
  {k:"cupcakes",t:"Matching cupcakes",sec:()=>({title:"Matching cupcakes",mode:"pick",price:"",qs:[{q:"How many cupcakes?",type:"text",opts:"",required:true}]})},
  {k:"delivery",t:"Delivery details",sec:()=>({title:"Delivery",mode:"delivery",price:"",qs:[{q:"Delivery address",type:"long",opts:"",required:true},{q:"Delivery time",type:"text",opts:"",required:true},{q:"Venue contact and phone",type:"text",opts:""}]})},
  {k:"allergy",t:"Allergies",sec:()=>({title:"Allergies",mode:"always",price:"",qs:[{q:"Does anyone have a food allergy?",type:"yes",opts:"",required:true},{q:"Tell us about the allergy",type:"text",opts:""}]})},
+ {k:"source",t:"How did you hear about us?",sec:()=>({title:"One last thing",mode:"always",price:"",qs:[{q:"How did you hear about us?",type:"choice",opts:SOURCES.join(", ")}]})},
  {k:"writing",t:"Writing on the cake",sec:()=>({title:"Writing on the cake",mode:"always",price:"",qs:[{q:"What should it say?",type:"text",opts:""},{q:"Name and age (for birthdays)",type:"text",opts:""}]})}];
 function rfShare(F){const b=RQ.biz||{},link=rfLink(),P=rfPublic(),fon=Object.entries(F.f).filter(([k,x])=>x.on!==false).length+2,nq=F.secs.reduce((n,s)=>n+s.qs.length,0);
  if(CLOUD.state!=="on"||RQ.state==="signin")return `<div class="card"><h3>Sign in to put your form online</h3><p class="hint">Your form link and the requests that come in are saved to your Dream Cake Builder account.</p><a class="btn primary sm" href="account.html?next=${encodeURIComponent("shop.html#reqform")}">Sign in</a></div>`;
@@ -2392,18 +2395,23 @@ document.addEventListener("change",e=>{if(e.target.id!=="logoIn")return;const f=
 let LIST="handoffs",LISTDAYS=14;
 function vLists(){const today=isoD(new Date()),end=addDays(today,LISTDAYS),live=S.orders.filter(o=>o.status!=="Cancelled"&&o.date&&o.date>=today&&o.date<=end).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
  const fd=d=>new Date(d+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
- const tabs=[["handoffs","Pickups & deliveries"],["orders","Order list"],["quotes","Open quotes"],["balances","Balances due"],["baking","Baking list"]];
+ const tabs=[["handoffs","Pickups & deliveries"],["orders","Order list"],["quotes","Open quotes"],["balances","Balances due"],["baking","Baking list"],["sources","Where customers come from"]];
  let rows="";
  if(LIST==="handoffs")rows=live.filter(o=>o.kind!=="Quote").map(o=>`<tr><td>${esc(fd(o.date))}<div class="note">${esc(o.time?t12(o.time):"")}</div></td><td><b>${esc(o.customer||"")}</b><div class="note">${esc(o.phone||"")}</div></td><td>${esc({Collected:"Pickup",Delivered:"Delivery",Shipped:"Shipped"}[o.handoff]||"")}<div class="note">${esc(o.handoff==="Collected"?"":o.address||"")}</div></td><td class="n">${money(totals(o).bal)}</td></tr>`).join("");
  if(LIST==="orders")rows=live.filter(o=>o.kind!=="Quote").map(o=>`<tr><td>${esc(fd(o.date))}</td><td><b>#${esc(o.no)}</b> ${esc(o.customer||"")}<div class="note">${esc(o.items.filter(i=>!i.discount).map(itemTitle).join(", "))}</div></td><td>${esc(evt(o.eventId)?.name||"")}</td><td class="n">${money(totals(o).total)}</td></tr>`).join("");
  if(LIST==="quotes")rows=S.orders.filter(o=>o.kind==="Quote"&&o.status!=="Cancelled").sort((a,b)=>(a.date||"9").localeCompare(b.date||"9")).map(o=>`<tr><td>${o.date?esc(fd(o.date)):"No date"}</td><td><b>#${esc(o.no)}</b> ${esc(o.customer||"")}</td><td>${esc(o.email||o.phone||"")}</td><td class="n">${money(totals(o).total)}</td></tr>`).join("");
  if(LIST==="balances")rows=S.orders.filter(o=>o.kind!=="Quote"&&o.status!=="Cancelled"&&totals(o).bal>0.005).sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(o=>`<tr><td>${o.date?esc(fd(o.date)):""}</td><td><b>#${esc(o.no)}</b> ${esc(o.customer||"")}</td><td>${esc(o.phone||o.email||"")}</td><td class="n">${money(totals(o).bal)}</td></tr>`).join("");
  if(LIST==="baking"){const by={};live.filter(o=>o.kind!=="Quote").forEach(o=>o.items.filter(i=>!i.discount).forEach(it=>{const k=itemTitle(it);by[k]=(by[k]||0)+(+it.qty||1)}));rows=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<tr><td colspan="3"><b>${esc(k)}</b></td><td class="n">${n}</td></tr>`).join("")}
- const heads={handoffs:["Date","Customer","How","Balance"],orders:["Date","Order","Event","Total"],quotes:["Event date","Quote","Contact","Total"],balances:["Due","Order","Contact","Balance"],baking:["Item","","","Qty"]}[LIST];
+ if(LIST==="sources"){const yr=today.slice(0,4),by={};const custOf=o=>S.customers.find(c=>c.id===o.customerId)||S.customers.find(c=>c.email&&o.email&&lc(c.email)===lc(o.email))||S.customers.find(c=>lc(fullName(c))===lc(o.customer));
+  S.customers.forEach(c=>{const k=c.source||"Not sure";by[k]=by[k]||{n:0,orders:0,sales:0};by[k].n++});
+  S.orders.filter(o=>o.kind==="Order"&&o.status!=="Cancelled"&&(o.date||"").slice(0,4)===yr).forEach(o=>{const c=custOf(o),k=(c&&c.source)||"Not sure";by[k]=by[k]||{n:0,orders:0,sales:0};by[k].orders++;by[k].sales+=totals(o).total});
+  const tot=Object.values(by).reduce((a,x)=>a+x.sales,0)||1;
+  rows=Object.entries(by).sort((a,b)=>b[1].sales-a[1].sales||b[1].n-a[1].n).map(([k,x])=>`<tr><td><b>${esc(k)}</b><span class="srcbar"><i style="width:${Math.round(x.sales/tot*100)}%"></i></span></td><td>${x.n}</td><td>${x.orders}</td><td class="n">${money(x.sales)}</td></tr>`).join("")}
+ const heads={handoffs:["Date","Customer","How","Balance"],orders:["Date","Order","Event","Total"],quotes:["Event date","Quote","Contact","Total"],balances:["Due","Order","Contact","Balance"],baking:["Item","","","Qty"],sources:["Found you through","Customers",`Orders ${today.slice(0,4)}`,"Sales"]}[LIST];
  $("main").innerHTML=`<div class="wrap"><h1>Lists & reports</h1><p class="lead">Printable lists for the week ahead.</p>
  <div class="seg" style="margin-bottom:10px">${tabs.map(([k,l])=>`<button type="button" class="${LIST===k?"on":""}" data-l="${k}">${l}</button>`).join("")}</div>
  ${["handoffs","orders","baking"].includes(LIST)?`<div class="seg" style="margin-bottom:10px">${[7,14,30].map(n=>`<button type="button" class="${LISTDAYS===n?"on":""}" data-ld="${n}">Next ${n} days</button>`).join("")}</div>`:""}
- <div class="card white" id="docPrint"><h3>${esc(tabs.find(x=>x[0]===LIST)[1])}</h3><table class="dtable"><thead><tr>${heads.map((h,i)=>`<th${i===3?' class="n"':""}>${h}</th>`).join("")}</tr></thead><tbody>${rows||`<tr><td colspan="4" class="note">Nothing here right now.</td></tr>`}</tbody></table></div>
+ <div class="card white" id="docPrint"><h3>${esc(tabs.find(x=>x[0]===LIST)[1])}</h3>${LIST==="sources"?`<p class="hint">Where your customers say they found you, and what those customers spent this year. Ask “How did you hear about us?” on your order form and it fills in by itself.</p>`:""}<table class="dtable"><thead><tr>${heads.map((h,i)=>`<th${i===3?' class="n"':""}>${h}</th>`).join("")}</tr></thead><tbody>${rows||`<tr><td colspan="4" class="note">Nothing here right now.</td></tr>`}</tbody></table></div>
  <button class="btn primary" data-a="docPrint">Print this list</button></div>`;
  $("main").querySelectorAll("[data-l]").forEach(b=>b.addEventListener("click",()=>{LIST=b.dataset.l;vLists()}));
  $("main").querySelectorAll("[data-ld]").forEach(b=>b.addEventListener("click",()=>{LISTDAYS=+b.dataset.ld;vLists()}));
